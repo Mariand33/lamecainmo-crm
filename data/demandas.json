@@ -1,0 +1,15 @@
+[
+  {
+    "tipoOperacion": "alquiler",
+    "tipoPropiedad": "dpto",
+    "zona": "macrocentro",
+    "presupuestoMax": 400000,
+    "moneda": "ARS",
+    "dormitoriosMin": 0,
+    "notas": "",
+    "contacto": "",
+    "creadoPor": "mariano@inmo.com",
+    "fecha": "2026-03-05T14:13:58.990Z",
+    "estado": "demanda"
+  }
+]

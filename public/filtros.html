@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Filtros y Búsqueda - EQUIPO BUZZACCHI</title>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial, sans-serif;
+      display:flex;
+      background:#f4f6f9;
+      height:100vh;
+    }
+
+    /* SIDEBAR IGUAL QUE EN DASHBOARD */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #6a5acd, #4b3ca7);
+      color: white;
+      height: 100vh;
+      padding: 18px;
+      box-sizing: border-box;
+    }
+
+    .sidebar-logo {
+      text-align: center;
+      padding: 10px 8px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 8px;
+    }
+
+    .sidebar-logo img {
+      max-width: 130px;
+      height: auto;
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    .logo-frase {
+      margin-top: 4px;
+      font-size: 11px;
+      line-height: 1.3;
+      opacity: 0.95;
+    }
+
+    .sidebar a {
+      display:block;
+      color:white;
+      text-decoration:none;
+      padding:10px 12px;
+      margin:8px 0;
+      border-radius:6px;
+      font-size:14px;
+    }
+
+    .sidebar a:hover {
+      background:rgba(255,255,255,0.2);
+    }
+
+    .sidebar a.activo {
+      background:white;
+      color:#4b3ca7;
+      font-weight:bold;
+    }
+
+    .main {
+      flex:1;
+      padding:20px 30px;
+      overflow:auto;
+      box-sizing:border-box;
+    }
+
+    h1 {
+      margin-top:0;
+      font-size:28px;
+    }
+
+    .card {
+      background:white;
+      padding:16px;
+      border-radius:10px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.06);
+      margin-bottom:16px;
+    }
+
+    label {
+      font-size:13px;
+      font-weight:bold;
+      display:block;
+      margin-bottom:4px;
+    }
+
+    input, select {
+      width:100%;
+      padding:6px 8px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      font-size:13px;
+      margin-bottom:10px;
+      box-sizing:border-box;
+    }
+
+    .fila {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .fila > div {
+      flex:1;
+      min-width:160px;
+    }
+
+    button {
+      padding:6px 12px;
+      border-radius:6px;
+      border:none;
+      background:black;
+      color:white;
+      cursor:pointer;
+      font-size:13px;
+      margin-right:8px;
+    }
+
+    button:hover {
+      opacity:0.9;
+    }
+
+    .btn-secundario {
+      background:#888;
+    }
+
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+    }
+
+    th, td {
+      padding:8px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+      vertical-align:top;
+    }
+
+    thead {
+      background:#f0f0f5;
+    }
+
+    .btn-ver {
+      border:none;
+      background:#0984e3;
+      color:white;
+      padding:4px 8px;
+      border-radius:6px;
+      font-size:12px;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+      margin-right:4px;
+    }
+
+    .resumen {
+      font-size:12px;
+      color:#555;
+      margin-bottom:8px;
+    }
+
+    /* BOTÓN DE VOZ */
+    .campo-voz {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .btn-voz {
+      width:30px;
+      height:30px;
+      border-radius:50%;
+      border:none;
+      cursor:pointer;
+      background:#ff7675;
+      color:white;
+      font-size:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .btn-voz.grabando {
+      background:#d63031;
+      box-shadow:0 0 0 4px rgba(214,48,49,0.3);
+    }
+
+    @media (max-width:900px) {
+      .sidebar { display:none; }
+      body { display:block; }
+      .main { padding:14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+  <div class="logo-buzzacchi">
+    <img src="/logo.png" alt="Vanina Buzzacchi" style="max-width:100%; max-height:60px; margin-bottom:10px;">
+  </div>
+
+  <a href="dashboard.html">Dashboard</a>
+  <a href="form.html">Nuevo Inmueble</a>
+  <a href="compradores.html">Compradores</a>
+  <a href="filtros.html">Filtros y Búsqueda</a>
+  <a href="/logout">Cerrar sesión</a>
+
+</div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <div class="main">
+    <h1>Filtros y Búsqueda</h1>
+
+    <!-- FILTROS -->
+    <div class="card">
+      <div class="fila">
+        <div>
+          <label>Buscar por texto (título, zona, dirección, descripción)</label>
+          <div class="campo-voz">
+            <input type="text" id="fTexto" placeholder="Ej: banda norte, depto, 2 dormitorios...">
+            <button id="btnVoz" class="btn-voz" title="Buscar por voz">🎤</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fila">
+        <div>
+          <label>Operación</label>
+          <select id="fOperacion">
+            <option value="">Todas</option>
+            <option value="venta">Venta</option>
+            <option value="alquiler">Alquiler</option>
+          </select>
+        </div>
+        <div>
+          <label>Precio mínimo</label>
+          <input type="number" id="fPrecioMin" placeholder="Ej: 50000">
+        </div>
+        <div>
+          <label>Precio máximo</label>
+          <input type="number" id="fPrecioMax" placeholder="Ej: 200000">
+        </div>
+      </div>
+
+      <div>
+        <button onclick="aplicarFiltros()">Buscar</button>
+        <button class="btn-secundario" onclick="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="card">
+      <div class="resumen" id="resumenResultados">Cargando inmuebles...</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Operación</th>
+            <th>Precio</th>
+            <th>Zona / Dirección</th>
+            <th>Creado por</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyResultados">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let inmueblesOriginal = [];
+
+    // Cargar datos desde la API
+    function cargarInmuebles() {
+      fetch("/api/inmuebles")
+        .then(res => res.json())
+        .then(data => {
+          inmueblesOriginal = Array.isArray(data) ? data : [];
+          renderResultados(inmueblesOriginal, true);
+        })
+        .catch(err => {
+          console.error("Error cargando inmuebles:", err);
+          document.getElementById("resumenResultados").innerText =
+            "Error al cargar inmuebles.";
+        });
+    }
+
+    // Renderizar tabla
+    function renderResultados(lista, esInicial = false) {
+      const tbody = document.getElementById("tbodyResultados");
+      const resumen = document.getElementById("resumenResultados");
+
+      tbody.innerHTML = "";
+
+      if (!lista.length) {
+        resumen.innerText = esInicial
+          ? "No hay inmuebles cargados todavía."
+          : "No se encontraron inmuebles con esos filtros.";
+        return;
+      }
+
+      resumen.innerText = `Resultados: ${lista.length} de ${inmueblesOriginal.length} inmuebles.`;
+
+      lista.forEach((i, index) => {
+        const tr = document.createElement("tr");
+
+        const precioNum = Number(i.precio || 0);
+        const precioTexto = isNaN(precioNum) ? "Consultar" : "$" + precioNum.toFixed(0);
+
+        const zonaDir = [
+          i.zona || "",
+          i.direccion || ""
+        ].filter(Boolean).join(" - ");
+
+        const opTexto =
+          i.tipoOperacion === "alquiler"
+            ? "Alquiler"
+            : "Venta";
+
+        tr.innerHTML = `
+          <td>${i.titulo || ""}</td>
+          <td>${opTexto}</td>
+          <td>${precioTexto}</td>
+          <td>${zonaDir}</td>
+          <td>${i.creadoPor || "-"}</td>
+          <td>
+            <a href="/ver.html?index=${index}" class="btn-ver">Ver</a>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Aplicar filtros
+    function aplicarFiltros() {
+      const texto = (document.getElementById("fTexto").value || "").toLowerCase().trim();
+      const operacion = document.getElementById("fOperacion").value;
+      const precioMin = Number(document.getElementById("fPrecioMin").value || 0);
+      const precioMaxRaw = document.getElementById("fPrecioMax").value;
+      const precioMax = precioMaxRaw ? Number(precioMaxRaw) : null;
+
+      const filtrados = inmueblesOriginal.filter(inm => {
+        // Texto
+        if (texto) {
+          const combo = [
+            inm.titulo || "",
+            inm.descripcion || "",
+            inm.zona || "",
+            inm.direccion || ""
+          ].join(" ").toLowerCase();
+
+          if (!combo.includes(texto)) return false;
+        }
+
+        // Operación
+        if (operacion && inm.tipoOperacion !== operacion) {
+          return false;
+        }
+
+        // Precio
+        const p = Number(inm.precio || 0);
+        if (precioMin && p < precioMin) return false;
+        if (precioMax !== null && p > precioMax) return false;
+
+        return true;
+      });
+
+      renderResultados(filtrados, false);
+    }
+
+    // Limpiar filtros
+    function limpiarFiltros() {
+      document.getElementById("fTexto").value = "";
+      document.getElementById("fOperacion").value = "";
+      document.getElementById("fPrecioMin").value = "";
+      document.getElementById("fPrecioMax").value = "";
+      renderResultados(inmueblesOriginal, true);
+    }
+
+    // Búsqueda por voz (si el navegador lo permite)
+    (function activarBusquedaVoz() {
+      const btnVoz = document.getElementById("btnVoz");
+      const campoTexto = document.getElementById("fTexto");
+      if (!btnVoz || !campoTexto) return;
+
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        console.warn("Reconocimiento de voz no soportado en este navegador.");
+        btnVoz.style.display = "none";
+        return;
+      }
+
+      const reco = new SpeechRecognition();
+      reco.lang = "es-AR";
+      reco.interimResults = false;
+      reco.maxAlternatives = 1;
+
+      let escuchando = false;
+
+      btnVoz.addEventListener("click", () => {
+        if (!escuchando) {
+          try {
+            reco.start();
+            escuchando = true;
+            btnVoz.classList.add("grabando");
+          } catch (e) {
+            console.error("Error al iniciar reconocimiento:", e);
+          }
+        } else {
+          reco.stop();
+          escuchando = false;
+          btnVoz.classList.remove("grabando");
+        }
+      });
+
+      reco.addEventListener("result", e => {
+        const texto = e.results[0][0].transcript;
+        console.log("Reconocido:", texto);
+        campoTexto.value = texto;
+        aplicarFiltros();
+      });
+
+      reco.addEventListener("end", () => {
+        escuchando = false;
+        btnVoz.classList.remove("grabando");
+      });
+
+      reco.addEventListener("error", e => {
+        console.error("Error de voz:", e);
+        escuchando = false;
+        btnVoz.classList.remove("grabando");
+      });
+    })();
+
+    window.addEventListener("load", cargarInmuebles);
+  </script>
+
+</body>
+</html>

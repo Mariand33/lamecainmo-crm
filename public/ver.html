@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ficha del inmueble - EQUIPO BUZZACCHI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:#f4f6f9;
+      padding:20px;
+      margin:0;
+    }
+
+    .ficha {
+      background:white;
+      max-width:1000px;
+      margin:0 auto;
+      padding:24px;
+      border-radius:12px;
+      box-shadow:0 4px 20px rgba(0,0,0,0.12);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .logo-buzzacchi {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .logo-buzzacchi img {
+      max-height: 60px;
+      width: auto;
+      display: block;
+    }
+
+    .contacto {
+      text-align:right;
+      font-size:12px;
+      color:#555;
+      line-height:1.4;
+    }
+
+    .contacto strong {
+      display:block;
+      font-size:13px;
+      color:#333;
+    }
+
+    .datos-principales {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:16px;
+      margin-bottom:16px;
+    }
+
+    .titulo-bloque {
+      max-width:60%;
+    }
+
+    .titulo-bloque h1 {
+      margin:0;
+      font-size:24px;
+      color:#222;
+    }
+
+    .titulo-bloque p {
+      margin:6px 0 0;
+      color:#777;
+      font-size:13px;
+    }
+
+    .precio-bloque {
+      text-align:right;
+    }
+
+    .precio-bloque .etiqueta {
+      font-size:11px;
+      text-transform:uppercase;
+      color:#999;
+      letter-spacing:1px;
+    }
+
+    .precio-bloque .precio {
+      font-size:22px;
+      font-weight:bold;
+      color:#27ae60;
+      margin-top:4px;
+    }
+
+    .precio-bloque .tag-operacion {
+      display:inline-block;
+      margin-top:6px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:#f0f0ff;
+      color:#4b3ca7;
+      font-size:11px;
+    }
+
+    .seccion {
+      margin-top:18px;
+    }
+
+    .seccion h3 {
+      margin:0 0 8px;
+      font-size:14px;
+      text-transform:uppercase;
+      color:#666;
+      letter-spacing:1px;
+    }
+
+    .seccion p {
+      margin:0;
+      font-size:13px;
+      color:#444;
+      line-height:1.5;
+      white-space:pre-wrap;
+    }
+
+    .imagenes {
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .imagenes img {
+      width:100%;
+      max-width:300px;
+      height:auto;
+      border-radius:10px;
+      object-fit:cover;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .video-wrap video {
+      width:100%;
+      max-width:520px;
+      border-radius:12px;
+      margin-top:10px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.08);
+      background:#000;
+    }
+
+    pre {
+      background:#f8f8ff;
+      padding:10px;
+      border-radius:6px;
+      white-space:pre-wrap;
+      font-size:12px;
+      border:1px solid #e0e0ff;
+      color:#333;
+    }
+
+    .acciones {
+      margin-top:20px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    button {
+      border:none;
+      padding:8px 12px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    .btn-volver { background:#6c5ce7; color:white; }
+    .btn-pdf    { background:#0984e3; color:white; }
+    .btn-copy   { background:#00b894; color:white; }
+    .btn-wa     { background:#25D366; color:white; }
+
+    .footer-interno {
+      margin-top:24px;
+      border-top:1px solid #eee;
+      padding-top:10px;
+      font-size:11px;
+      color:#888;
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .seguimiento-interno {
+      /* visible normalmente, oculto en modo cliente */
+    }
+
+    .bloque-contacto {
+      display: none;
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .bloque-contacto h3 {
+      color: #4b3ca7;
+      margin-bottom: 5px;
+    }
+
+    .modo-cliente .seguimiento-interno {
+      display: none !important;
+    }
+
+    .modo-cliente .bloque-contacto {
+      display: block;
+    }
+
+    @media print {
+      body {
+        background:white;
+        padding:0;
+      }
+
+      .ficha {
+        box-shadow:none;
+        border-radius:0;
+        max-width:100%;
+        padding:16px;
+      }
+
+      .acciones {
+        display:none;
+      }
+
+      .imagenes img {
+        max-width:260px;
+      }
+
+      .video-wrap video {
+        max-width:420px;
+      }
+
+      body.modo-cliente .seguimiento-interno {
+        display:none !important;
+      }
+
+      .logo-buzzacchi img {
+        max-height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ficha">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-buzzacchi">
+        <img src="/logo.png" alt="EQUIPO BUZZACCHI">
+      </div>
+      <div class="contacto">
+        <strong>Contacto</strong>
+        <div>WhatsApp: +54 358 570-1632</div>
+        <div>Email: vaninabuzzacchi.inmobiliaria@gmail.com</div>
+        <div>Río Cuarto, Córdoba</div>
+      </div>
+    </div>
+
+    <!-- DATOS PRINCIPALES -->
+    <div class="datos-principales">
+      <div class="titulo-bloque">
+        <h1 id="titulo">Título inmueble</h1>
+        <p id="subtitulo">Propiedad gestionada por EQUIPO BUZZACCHI</p>
+      </div>
+      <div class="precio-bloque">
+        <div class="tag-operacion" id="tagOperacion"></div>
+        <div class="etiqueta">Precio</div>
+        <div class="precio" id="precio">$0</div>
+      </div>
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <div class="seccion">
+      <h3>Descripción</h3>
+      <p id="descripcion"></p>
+    </div>
+
+    <!-- GALERÍA -->
+    <div class="seccion">
+      <h3>Galería de imágenes</h3>
+      <div class="imagenes" id="galeria"></div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="seccion">
+      <h3>Video de la propiedad</h3>
+      <div class="video-wrap" id="videoPropiedad"></div>
+    </div>
+
+    <!-- MATCH CON COMPRADORES -->
+    <div class="seccion">
+      <h3>Coincidencias con compradores / jugadores</h3>
+      <div id="matchCompradores"></div>
+    </div>
+
+    <!-- SEGUIMIENTO INTERNO -->
+    <div class="seccion seccion-seguimiento seguimiento-interno">
+      <h3>Seguimiento / interesados</h3>
+      <pre id="seguimientoTexto">Sin notas de seguimiento todavía.</pre>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="acciones">
+      <button class="btn-volver" onclick="window.location.href='/dashboard.html'">Volver al dashboard</button>
+      <button class="btn-pdf" onclick="imprimirCliente()">PDF para cliente (sin seguimiento)</button>
+      <button class="btn-pdf" onclick="imprimirInterno()">PDF interno (con seguimiento)</button>
+      <button class="btn-copy" onclick="copiarTexto()">Copiar texto WhatsApp</button>
+      <button class="btn-wa" onclick="abrirWhatsApp()">Abrir WhatsApp con texto</button>
+      <button class="btn-volver" onclick="abrirFormularioLead()">Link formulario cliente</button>
+    </div>
+
+    <!-- PIE INTERNO -->
+    <div class="footer-interno seguimiento-interno">
+      <div>Ficha generada por EQUIPO BUZZACCHI · Uso interno</div>
+      <div>Asesor: <span id="creadoPor"></span></div>
+    </div>
+
+    <!-- BLOQUE CONTACTO CLIENTE -->
+    <div class="bloque-contacto">
+      <h3>Vanina Buzzacchi Negocios Inmobiliarios</h3>
+      <p>Tel: +54 358 570-1632</p>
+      <p>Email: vaninabuzzacchi.inmobiliaria@gmail.com</p>
+      <p>Río Cuarto, Córdoba - Argentina</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const index = params.get("index");
+    let inmuebleActual = null;
+
+    // ---------- FUNCIÓN: MATCHES DESDE INMUEBLE ----------
+    function cargarMatchesInmueble(idx) {
+      fetch("/api/match-inmueble/" + idx)
+        .then(res => res.json())
+        .then(data => {
+          const cont = document.getElementById("matchCompradores");
+          if (!cont) return;
+
+          cont.innerHTML = "";
+
+          if (!data.matches || data.matches.length === 0) {
+            cont.innerHTML = "<p>No hay compradores con coincidencias fuertes todavía.</p>";
+            return;
+          }
+
+          data.matches.forEach(m => {
+            const c = m.comprador;
+
+            const div = document.createElement("div");
+            div.style.padding = "8px 10px";
+            div.style.border = "1px solid #e0f2f1";
+            div.style.borderRadius = "8px";
+            div.style.marginBottom = "8px";
+            div.style.background = "#f0fffb";
+            div.style.fontSize = "13px";
+
+            const presupuesto = (Number(c.presupuestoMax) || 0);
+            const textoPresu = presupuesto
+              ? ((c.moneda || "USD") + " " + presupuesto.toLocaleString("es-AR"))
+              : "A definir";
+
+            div.innerHTML = `
+              <strong>${c.nombre || "Sin nombre"}</strong>
+              <span style="font-size:11px; background:#d1f2eb; color:#00695c; padding:2px 6px; border-radius:999px; margin-left:6px;">
+                Score Match: ${m.score}
+              </span><br>
+              Operación: ${c.tipoOperacionBuscada || "-"} · Tipo: ${c.tipoPropiedad || "-"}<br>
+              Zona: ${c.zonaPreferida || "-"} · Presupuesto: ${textoPresu}<br>
+              <a href="/comprador.html?index=${m.indexComprador}" style="font-size:12px; color:#0984e3;">
+                Ver ficha de comprador
+              </a>
+            `;
+
+            cont.appendChild(div);
+          });
+        })
+        .catch(err => {
+          console.error("Error cargando matches de inmueble:", err);
+        });
+    }
+
+    // ---------- CARGA DEL INMUEBLE ----------
+    fetch("/api/inmuebles")
+      .then(res => res.json())
+      .then(data => {
+        if (!data || !data[index]) {
+          document.getElementById("titulo").innerText = "Inmueble no encontrado";
+          document.getElementById("descripcion").innerText =
+            "Revisá que hayas entrado desde el Dashboard y que el índice sea correcto.";
+          return;
+        }
+
+        const inm = data[index];
+        inmuebleActual = inm;
+
+        document.getElementById("titulo").innerText      = inm.titulo || "";
+        document.getElementById("precio").innerText      = inm.precio ? "$" + inm.precio : "$0";
+        document.getElementById("descripcion").innerText = inm.descripcion || "";
+        document.getElementById("creadoPor").innerText   = inm.creadoPor || "-";
+
+        const tagOp = document.getElementById("tagOperacion");
+        if (inm.tipoOperacion) {
+          tagOp.innerText = inm.tipoOperacion.toUpperCase();
+        } else {
+          tagOp.style.display = "none";
+        }
+
+        const seg = (inm.leads && inm.leads.length)
+          ? inm.leads.map(l =>
+              `• ${l.fecha} - ${l.nombre} (${l.estado})\n  ${l.notas}`
+            ).join("\n\n")
+          : "Sin notas de seguimiento todavía.";
+        document.getElementById("seguimientoTexto").innerText = seg;
+
+        // GALERÍA: sin duplicados
+        const galeria = document.getElementById("galeria");
+        galeria.innerHTML = "";
+        const yaAgregadas = new Set();
+
+        if (inm.imagenes && inm.imagenes.length) {
+          inm.imagenes.forEach(nombre => {
+            const src = "/uploads/" + nombre;
+            if (yaAgregadas.has(src)) return;
+            yaAgregadas.add(src);
+
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = inm.titulo || "Foto inmueble";
+            galeria.appendChild(img);
+          });
+        } else {
+          galeria.innerHTML = "<p>No hay imágenes cargadas.</p>";
+        }
+
+        // VIDEO
+        const videoWrap = document.getElementById("videoPropiedad");
+        if (inm.video) {
+          videoWrap.innerHTML = `
+            <video controls>
+              <source src="/uploads/${inm.video}" type="video/mp4">
+              Tu navegador no soporta video.
+            </video>
+          `;
+        } else {
+          videoWrap.innerHTML = "<p>No hay video cargado.</p>";
+        }
+
+        // MATCH
+        cargarMatchesInmueble(index);
+      })
+      .catch(err => {
+        console.error("Error obteniendo inmueble:", err);
+      });
+
+    // ---------- ACCIONES PDF / WHATSAPP ----------
+    function imprimirCliente() {
+      document.body.classList.add("modo-cliente");
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove("modo-cliente");
+      }, 500);
+    }
+
+    function imprimirInterno() {
+      window.print();
+    }
+
+    function armarTextoResumen() {
+      if (!inmuebleActual) return "";
+
+      let txt = "";
+      txt += (inmuebleActual.titulo || "") + "\n";
+      txt += "Precio: " +
+        (inmuebleActual.precio ? "$" + inmuebleActual.precio : "Consultar") +
+        "\n\n";
+      txt += (inmuebleActual.descripcion || "") + "\n\n";
+      txt += "Consultas: Vanina Buzzacchi Negocios Inmobiliarios\n";
+      txt += "WhatsApp: +54 358 570-1632\n";
+      txt += "Email: vaninabuzzacchi.inmobiliaria@gmail.com\n";
+      return txt;
+    }
+
+    function copiarTexto() {
+      const txt = armarTextoResumen();
+      if (!txt) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt)
+          .then(() => alert("Texto copiado al portapapeles"))
+          .catch(() =>
+            alert("No se pudo copiar automáticamente. Podés copiar manualmente.")
+          );
+      } else {
+        alert("Tu navegador no permite copia automática. Copiá el texto manualmente.");
+      }
+    }
+
+    function abrirWhatsApp() {
+      const txt = encodeURIComponent(armarTextoResumen());
+      if (!txt) return;
+      const url = "https://wa.me/?text=" + txt;
+      window.open(url, "_blank");
+    }
+
+    function abrirFormularioLead() {
+      const params = new URLSearchParams(window.location.search);
+      const index = params.get("index");
+      if (!index) return;
+      const url = "/consulta.html?index=" + index;
+      window.open(url, "_blank");
+    }
+  </script>
+</body>
+</html>

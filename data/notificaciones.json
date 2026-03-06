@@ -1,0 +1,398 @@
+[
+  {
+    "id": 1772632559945,
+    "ts": 1772632559945,
+    "tipo": "inmueble_lista",
+    "titulo": "Casa Moderna en Venta - 3 Dorm - 3 Baños - Garage triple y Pileta.",
+    "indexInmueble": 6
+  },
+  {
+    "id": 1772640682536,
+    "ts": 1772640682231,
+    "tipo": "nuevo_inmueble",
+    "titulo": "3 propiedades en 1",
+    "zona": "Zona Cucú Quintitas Golf",
+    "precio": 120000,
+    "moneda": "USD",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772641878776,
+    "ts": 1772641878776,
+    "tipo": "inmueble_editado",
+    "titulo": "3 propiedades en 1",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772641981872,
+    "ts": 1772641981872,
+    "tipo": "foto_eliminada",
+    "titulo": "3 propiedades en 1",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772641984432,
+    "ts": 1772641984432,
+    "tipo": "foto_eliminada",
+    "titulo": "3 propiedades en 1",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772641987794,
+    "ts": 1772641987794,
+    "tipo": "foto_eliminada",
+    "titulo": "3 propiedades en 1",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772641991422,
+    "ts": 1772641991422,
+    "tipo": "inmueble_editado",
+    "titulo": "3 propiedades en 1",
+    "indexInmueble": 8
+  },
+  {
+    "id": 1772644356918,
+    "ts": 1772644356918,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa 3 Dorm - Banda Norte",
+    "indexInmueble": 2
+  },
+  {
+    "id": 1772644364994,
+    "ts": 1772644364994,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa 3 Dorm - Banda Norte",
+    "indexInmueble": 2
+  },
+  {
+    "id": 1772650871439,
+    "ts": 1772650871439,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Oportunidad",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "indexInmueble": 9
+  },
+  {
+    "id": 1772650965017,
+    "ts": 1772650965017,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Oportunidad",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "indexInmueble": 10
+  },
+  {
+    "id": 1772653299118,
+    "ts": 1772653299118,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Oportunidad",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "indexInmueble": 11
+  },
+  {
+    "id": 1772653394607,
+    "ts": 1772653394607,
+    "tipo": "inmueble_publicada",
+    "titulo": "Casa Moderna en Venta - 3 Dorm - 3 Baños - Garage triple y Pileta.",
+    "indexInmueble": 6
+  },
+  {
+    "id": 1772653489191,
+    "ts": 1772653489191,
+    "tipo": "inmueble_editado",
+    "titulo": "Duplex",
+    "indexInmueble": 11
+  },
+  {
+    "id": 1772659294843,
+    "ts": 1772659294843,
+    "tipo": "inmueble_editado",
+    "titulo": "Duplex",
+    "indexInmueble": 9
+  },
+  {
+    "id": 1772676511992,
+    "ts": 1772676511992,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Oportunidad",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "indexInmueble": 10
+  },
+  {
+    "id": 1772719628390,
+    "ts": 1772719628390,
+    "tipo": "nueva_demanda",
+    "titulo": "Demanda: casa alquiler",
+    "zona": "banda norte",
+    "precio": 450000,
+    "moneda": "USD"
+  },
+  {
+    "id": 1772719806866,
+    "ts": 1772719806866,
+    "tipo": "nueva_demanda",
+    "titulo": "Demanda: dpto alquiler",
+    "zona": "macrocentro",
+    "precio": 400,
+    "moneda": "ARS"
+  },
+  {
+    "id": 1772720038991,
+    "ts": 1772720038991,
+    "tipo": "nueva_demanda",
+    "titulo": "Demanda: dpto alquiler",
+    "zona": "macrocentro",
+    "precio": 400000,
+    "moneda": "ARS"
+  },
+  {
+    "id": 1772734867607,
+    "ts": 1772734867607,
+    "tipo": "nueva_oportunidad",
+    "titulo": "dpto (Venta) AUGUSTA",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "origen": "marketplace",
+    "indexInmueble": 11
+  },
+  {
+    "id": 1772735759300,
+    "ts": 1772735759300,
+    "tipo": "nueva_oportunidad",
+    "titulo": "casa (Venta)",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "origen": "marketplace",
+    "indexInmueble": 12
+  },
+  {
+    "id": 1772735811060,
+    "ts": 1772735811060,
+    "tipo": "inmueble_editado",
+    "titulo": "casa (Venta)",
+    "indexInmueble": 12
+  },
+  {
+    "id": 1772735946426,
+    "ts": 1772735946426,
+    "tipo": "inmueble_editado",
+    "titulo": "casa (Venta)",
+    "indexInmueble": 12
+  },
+  {
+    "id": 1772736294392,
+    "ts": 1772736294392,
+    "tipo": "inmueble_publicada",
+    "titulo": "Casa Moderna en Venta - 3 Dorm - 3 Baños - Garage triple y Pileta.",
+    "indexInmueble": 6
+  },
+  {
+    "id": 1772736604058,
+    "ts": 1772736604058,
+    "tipo": "nueva_oportunidad",
+    "titulo": "dpto (Venta) AUGUSTA",
+    "zona": "",
+    "precio": 0,
+    "moneda": "USD",
+    "origen": "instagram",
+    "indexInmueble": 13
+  },
+  {
+    "id": 1772736662742,
+    "ts": 1772736662742,
+    "tipo": "inmueble_editado",
+    "titulo": "Dpto (Venta) AUGUSTA",
+    "indexInmueble": 11
+  },
+  {
+    "id": 1772747375558,
+    "ts": 1772747375558,
+    "tipo": "nuevo_radar",
+    "titulo": "Radar Calle",
+    "zona": "Macrocentro",
+    "operacion": "venta",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772747442643,
+    "ts": 1772747442643,
+    "tipo": "inmueble_editado",
+    "titulo": "Radar Calle",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772747583194,
+    "ts": 1772747583194,
+    "tipo": "foto_eliminada",
+    "titulo": "Radar Calle",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772747657882,
+    "ts": 1772747657882,
+    "tipo": "inmueble_editado",
+    "titulo": "Radar Calle",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772747664113,
+    "ts": 1772747664113,
+    "tipo": "inmueble_editado",
+    "titulo": "Radar Calle",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772748316180,
+    "ts": 1772748316180,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Oportunidad (Venta)",
+    "zona": "Los Aromos",
+    "precio": 0,
+    "moneda": "USD",
+    "origen": "instagram",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772748382295,
+    "ts": 1772748382295,
+    "tipo": "inmueble_editado",
+    "titulo": "Oportunidad (Venta)",
+    "indexInmueble": 14
+  },
+  {
+    "id": 1772751411423,
+    "ts": 1772751411423,
+    "tipo": "nuevo_inmueble",
+    "titulo": "Propiedad de 3 Dormitorios -",
+    "zona": "Riverside",
+    "precio": 570000,
+    "moneda": "USD",
+    "operacion": "venta",
+    "creadoPor": "cata@inmo.com",
+    "indexInmueble": 15
+  },
+  {
+    "id": 1772752002103,
+    "ts": 1772752002103,
+    "tipo": "nuevo_inmueble",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "zona": "Country Riverside",
+    "precio": 570000,
+    "moneda": "USD",
+    "operacion": "venta",
+    "creadoPor": "desconocido",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772752383365,
+    "ts": 1772752383365,
+    "tipo": "nueva_oportunidad",
+    "titulo": "Dpto Alquilado hasta Feb 2027",
+    "zona": "Macrocentro",
+    "precio": 48000,
+    "moneda": "USD",
+    "origen": "otro",
+    "indexInmueble": 17
+  },
+  {
+    "id": 1772752719157,
+    "ts": 1772752719157,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772752834935,
+    "ts": 1772752834935,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772752852705,
+    "ts": 1772752852705,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772752946162,
+    "ts": 1772752946162,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772753145663,
+    "ts": 1772753145663,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772753418375,
+    "ts": 1772753418375,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772753600199,
+    "ts": 1772753600199,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772753680927,
+    "ts": 1772753680927,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772754020310,
+    "ts": 1772754020310,
+    "tipo": "foto_eliminada",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772754062106,
+    "ts": 1772754062106,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772764021851,
+    "ts": 1772764021851,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  },
+  {
+    "id": 1772797042916,
+    "ts": 1772797042916,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa 3 Dorm - Banda Norte",
+    "indexInmueble": 2
+  },
+  {
+    "id": 1772800575064,
+    "ts": 1772800575064,
+    "tipo": "inmueble_editado",
+    "titulo": "Casa de 4 Dormitorios. 2000 mts",
+    "indexInmueble": 16
+  }
+]

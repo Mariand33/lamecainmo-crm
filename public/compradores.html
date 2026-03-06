@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Compradores - EQUIPO BUZZACCHI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+
+<style>
+  /* ===== Sidebar Search + Cursor ===== */
+  .side-top{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:14px;
+    margin-bottom:10px;
+  }
+
+  .side-search{
+    position:relative;
+  }
+
+  .side-search input{
+    width:100%;
+    padding:10px 12px 10px 36px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.10);
+    color:#fff;
+    outline:none;
+    font-size:13px;
+  }
+  .side-search input::placeholder{ color:rgba(255,255,255,0.75); }
+
+  .side-search .icon{
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:14px;
+    opacity:.9;
+    pointer-events:none;
+  }
+
+  .side-search .hint{
+    margin-top:6px;
+    font-size:11px;
+    opacity:.85;
+  }
+
+  /* Cursor / item activo */
+  .sidebar a{
+    position:relative;
+  }
+
+  .sidebar a.active{
+    background: rgba(255,255,255,0.22);
+    font-weight:800;
+  }
+
+  .sidebar a.active::before{
+    content:"";
+    position:absolute;
+    left:-8px;
+    top:8px;
+    bottom:8px;
+    width:4px;
+    border-radius:999px;
+    background:#fff;
+    opacity:.95;
+  }
+
+  /* “sin resultados” */
+  .side-empty{
+    font-size:12px;
+    opacity:.85;
+    margin:6px 2px 0;
+    display:none;
+  }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      background: #f4f6f9;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #6a5acd, #4b3ca7);
+      color: white;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+    }
+
+    .sidebar-logo {
+      text-align: center;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .sidebar-logo img {
+      width: 130px;
+      height: auto;
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    .logo-frase {
+      font-size: 11px;
+      line-height: 1.3;
+      opacity: 0.95;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .sidebar a.activo {
+      background: rgba(0,0,0,0.18);
+      font-weight: bold;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .subtitulo {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .card {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 13px;
+      display: block;
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .fila {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    button {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-primario {
+      background: #27ae60; /* VERDE principal */
+      color: white;
+      margin-top: 12px;
+    }
+
+    .btn-primario:hover {
+      opacity: 0.93;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead {
+      background: #f0f0f5;
+    }
+
+    .link-ver {
+      font-size: 12px;
+      color: #0984e3;
+      text-decoration: none;
+      margin-right: 8px;
+    }
+
+    .link-ver:hover {
+      text-decoration: underline;
+    }
+
+    .btn-eliminar {
+      background: #e74c3c;
+      color: white;
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .chip-estado {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: white;
+    }
+    .chip-frio     { background: #95a5a6; }
+    .chip-tibio    { background: #f1c40f; color:#333; }
+    .chip-caliente { background: #27ae60; }
+
+    .chip-nivel {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e8f8f0;
+      color: #2d8650;
+    }
+
+    .chip-tipo {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #eef3ff;
+      color: #4b3ca7;
+      margin-bottom: 2px;
+    }
+
+    /* 📱 RESPONSIVE */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        position: static;
+      }
+
+      .sidebar-logo {
+        margin-bottom: 8px;
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .sidebar-logo img {
+        max-width: 100px;
+      }
+
+      .logo-frase {
+        display: none;
+      }
+
+      .sidebar a {
+        padding: 6px 10px;
+        margin: 4px 4px;
+        font-size: 12px;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .subtitulo {
+        font-size: 12px;
+      }
+
+      table {
+        font-size: 12px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      th, td {
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">
+        Confianza, trayectoria y resultados en Río Cuarto
+      </div>
+    </div>
+
+    <a href="dashboard.html">Dashboard</a>
+    <a href="form.html">Nuevo Inmueble</a>
+    <a href="compradores.html" class="activo">Compradores</a>
+    <a href="filtros.html">Filtros y Búsqueda</a>
+    <a href="marketing.html">Panel Marketing</a>
+    <a href="/logout">Cerrar sesión</a>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="content">
+    <h1>Compradores</h1>
+    <p class="subtitulo">
+      Acá vive tu base de demanda: compradores finales, inversores y jugadores mixtos.
+    </p>
+
+    <!-- 🎯 Alta de nuevo comprador -->
+    <div class="card">
+      <h2 style="margin-top:0; font-size:18px;">Nuevo comprador / jugador</h2>
+      <form action="/compradores/nuevo" method="POST">
+        <div class="fila">
+          <div class="col">
+            <label>Nombre</label>
+            <input type="text" name="nombre" required />
+          </div>
+          <div class="col">
+            <label>Teléfono</label>
+            <input type="text" name="telefono" />
+          </div>
+          <div class="col">
+            <label>Email</label>
+            <input type="email" name="email" />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="col">
+            <label>Operación buscada</label>
+            <select name="tipoOperacionBuscada">
+              <option value="">(cualquiera)</option>
+              <option value="compra">Compra</option>
+              <option value="alquiler">Alquiler</option>
+              <option value="inversion">Inversión</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Tipo de propiedad</label>
+            <input type="text" name="tipoPropiedad" placeholder="casa, depto, local..." />
+          </div>
+          <div class="col">
+            <label>Zona preferida</label>
+            <input type="text" name="zonaPreferida" />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="col">
+            <label>Presupuesto máx.</label>
+            <input type="number" name="presupuestoMax" />
+          </div>
+          <div class="col">
+            <label>Moneda</label>
+            <select name="moneda">
+              <option value="USD">USD</option>
+              <option value="ARS">ARS</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Dormitorios mín.</label>
+            <input type="number" name="dormitoriosMin" />
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="col">
+            <label>Estado</label>
+            <select name="estado">
+              <option value="frio">Frío</option>
+              <option value="tibio" selected>Tibio</option>
+              <option value="caliente">Caliente</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Tipo de jugador</label>
+            <select name="tipoJugador">
+              <option value="comprador-final">Comprador final</option>
+              <option value="inversor">Inversor</option>
+              <option value="mixto">Mixto</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Forma de pago</label>
+            <select name="formaPago">
+              <option value="indefinido">Indefinido</option>
+              <option value="contado">Contado</option>
+              <option value="credito">Crédito</option>
+              <option value="permuta">Permuta</option>
+              <option value="mixto">Mixto</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>Horizonte de compra</label>
+            <select name="horizonteCompra">
+              <option value="0-3">0 a 3 meses</option>
+              <option value="3-6">3 a 6 meses</option>
+              <option value="6-12">6 a 12 meses</option>
+              <option value="+12">Más de 12 meses</option>
+            </select>
+          </div>
+        </div>
+
+        <label>Notas</label>
+        <textarea name="notas" placeholder="Preferencias, comentarios, juego que quiere jugar..."></textarea>
+
+        <button type="submit" class="btn-primario">Guardar comprador</button>
+      </form>
+    </div>
+
+    <!-- 📋 Listado de compradores -->
+    <div class="card">
+      <h2 style="margin-top:0; font-size:18px;">Listado de compradores / jugadores</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Contacto</th>
+            <th>Operación / Tipo</th>
+            <th>Zona</th>
+            <th>Presupuesto</th>
+            <th>Horizonte</th>
+            <th>Estado</th>
+            <th>Jugador</th>
+            <th>Score / Nivel</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaCompradores">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function dibujarEstado(estadoCrudo) {
+      const estado = (estadoCrudo || "").toLowerCase();
+      if (estado === "caliente") {
+        return '<span class="chip-estado chip-caliente">Caliente</span>';
+      } else if (estado === "frio" || estado === "frío") {
+        return '<span class="chip-estado chip-frio">Frío</span>';
+      } else {
+        return '<span class="chip-estado chip-tibio">Tibio</span>';
+      }
+    }
+
+    function textoHorizonte(h) {
+      switch (h) {
+        case "0-3":  return "0–3 meses";
+        case "3-6":  return "3–6 meses";
+        case "6-12": return "6–12 meses";
+        case "+12":  return "+12 meses";
+        default:     return "-";
+      }
+    }
+
+    function textoTipoJugador(t) {
+      if (t === "inversor") return "Inversor";
+      if (t === "mixto") return "Mixto";
+      return "Comprador final";
+    }
+
+    function textoFormaPago(fp) {
+      switch (fp) {
+        case "contado":   return "Contado";
+        case "credito":   return "Crédito";
+        case "permuta":   return "Permuta";
+        case "mixto":     return "Mixto";
+        case "indefinido":
+        default:          return "Indefinido";
+      }
+    }
+
+    function cargarCompradores() {
+      fetch("/api/compradores")
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("tablaCompradores");
+          tbody.innerHTML = "";
+
+          data.forEach((c, index) => {
+            const tr = document.createElement("tr");
+
+            const presupuestoNum = Number(c.presupuestoMax) || 0;
+            const textoPresu =
+              presupuestoNum > 0
+                ? (c.moneda || "USD") + " " + presupuestoNum.toLocaleString("es-AR")
+                : "-";
+
+            const horiz = textoHorizonte(c.horizonteCompra);
+            const tipoJ = textoTipoJugador(c.tipoJugador);
+            const fp    = textoFormaPago(c.formaPago);
+            const score = typeof c.score === "number" ? c.score : 0;
+            const nivel = c.nivel || "Explorador";
+
+            tr.innerHTML = `
+              <td>${c.nombre || ""}</td>
+              <td>
+                ${c.telefono || ""}<br/>
+                <small>${c.email || ""}</small>
+              </td>
+              <td>
+                <div>${c.tipoOperacionBuscada || ""}</div>
+                <small>${c.tipoPropiedad || ""}</small>
+              </td>
+              <td>${c.zonaPreferida || ""}</td>
+              <td>${textoPresu}</td>
+              <td>${horiz}</td>
+              <td>${dibujarEstado(c.estado)}</td>
+              <td>
+                <span class="chip-tipo">${tipoJ}</span><br/>
+                <small>${fp}</small>
+              </td>
+              <td>
+                <span class="chip-nivel">${nivel}</span><br/>
+                <small>Score: ${score}</small>
+              </td>
+              <td>
+                <a href="/comprador.html?index=${index}" class="link-ver">Ver</a>
+                <a href="/comprador_editar.html?index=${index}" class="link-ver">Editar</a>
+                <form action="/compradores/eliminar/${index}" method="POST" style="display:inline;">
+                  <button type="submit" class="btn-eliminar">Eliminar</button>
+                </form>
+              </td>
+            `;
+
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => console.error("Error al cargar compradores:", err));
+    }
+
+    window.addEventListener("load", cargarCompradores);
+  </script>
+</body>
+</html>

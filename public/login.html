@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Acceso interno · Vanina Buzzacchi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Montserrat", system-ui, sans-serif;
+      background: #f4f6f9;
+    }
+
+    /* CONTENEDOR GENERAL */
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px 32px;
+    }
+
+    /* LOGO */
+    .logo-buzzacchi {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo-buzzacchi img {
+      display: inline-block;
+      width: 80%;
+      max-width: 260px;
+      height: auto;
+    }
+
+    /* TARJETA */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 28px 24px 32px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      text-align: center;
+      color: #111;
+    }
+
+    .subtitulo {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid #d5d7de;
+      font-size: 14px;
+      outline: none;
+      transition: 0.2s ease;
+      background: #fafbff;
+    }
+
+    input:focus {
+      border-color: #c79b2b;
+      box-shadow: 0 0 0 2px rgba(199,155,43,0.15);
+      background: #fff;
+    }
+
+    .campo {
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 12px;
+      margin-top: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(120deg, #c79b2b, #e3c067);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(199,155,43,0.35);
+      transition: 0.15s ease;
+    }
+
+    button:hover {
+      opacity: 0.95;
+      box-shadow: 0 8px 20px rgba(199,155,43,0.4);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .ayuda {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #999;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* MOBILE */
+    @media (max-width: 480px) {
+      .page-wrapper {
+        padding-top: 28px;
+      }
+
+      .logo-buzzacchi img {
+        width: 75%;
+        max-width: 210px;
+      }
+
+      .card {
+        padding: 24px 20px 28px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="page-wrapper">
+
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+    </div>
+
+    <div class="card">
+
+      <h1>Iniciar sesión</h1>
+      <div class="subtitulo">
+        ACCESO INTERNO · EQUIPO BUZZACCHI
+      </div>
+
+      <form action="/login" method="POST" autocomplete="off">
+
+        <div class="campo">
+          <label>Email</label>
+          <input type="email" name="email" required placeholder="tu@inmo.com">
+        </div>
+
+        <div class="campo">
+          <label>Contraseña</label>
+          <input type="password" name="password" required placeholder="••••••••">
+        </div>
+
+        <button type="submit">Ingresar</button>
+
+      </form>
+
+      <div class="ayuda">
+        Acceso exclusivo para el equipo interno.
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

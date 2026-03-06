@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Demandas - EQUIPO BUZZACCHI</title>
+
+  <style>
+    :root{
+      --verde1:#0e6b4d; --verde2:#094634; --bg:#f4f6f9; --card:#ffffff;
+      --txt:#1f2937; --muted:#6b7280; --b:#e5e7eb; --azul:#0984e3;
+      --ok:#27ae60; --rojo:#e74c3c;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh;}
+    .sidebar{width:250px;background:linear-gradient(180deg,var(--verde1),var(--verde2));color:#fff;padding:20px;}
+    .logo{text-align:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.2);}
+    .logo img{max-width:120px;height:auto;display:block;margin:0 auto 6px;}
+    .logo .frase{font-size:11px;opacity:.95;line-height:1.3;}
+    .side-search{margin:12px 0 10px;}
+    .side-search input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.10);color:#fff;outline:none;font-size:13px;}
+    .side-search input::placeholder{color:rgba(255,255,255,.75);}
+    .sidebar a{display:block;color:#fff;text-decoration:none;padding:10px;margin:8px 0;border-radius:10px;font-size:14px;}
+    .sidebar a:hover{background:rgba(255,255,255,.18);}
+    .sidebar a.active{background:rgba(255,255,255,.22);font-weight:800;}
+
+    .content{flex:1;padding:22px;overflow:auto;}
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+    h1{margin:0;font-size:22px;}
+    .muted{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.35;}
+
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+    @media(max-width:980px){.grid{grid-template-columns:1fr;}}
+
+    .card{background:var(--card);border:1px solid #eef2f7;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.06);padding:14px;}
+
+    .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;}
+    @media(max-width:720px){.row{grid-template-columns:1fr;}}
+
+    label{font-size:12px;font-weight:800;display:block;margin-bottom:6px;color:#374151;}
+    input,select,textarea{width:100%;padding:9px 10px;border-radius:12px;border:1px solid #d1d5db;font-size:13px;background:#fff;outline:none;}
+    textarea{min-height:90px;resize:vertical;}
+    .full{grid-column:1/-1;}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center;justify-content:space-between;}
+    .btn{border:none;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;font-size:13px;color:#fff;background:var(--verde1);}
+    .btn:hover{opacity:.95;}
+    .btn-ghost{background:#111827;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
+    .btn-mini{padding:7px 10px;border-radius:12px;font-size:12px;font-weight:800;}
+    .btn-blue{background:#1f6feb;}
+    .btn-red{background:var(--rojo);}
+
+    .pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:900;border:1px solid rgba(0,0,0,.08);}
+    .pill-venta{background:#e0f2fe;color:#075985;}
+    .pill-alquiler{background:#dcfce7;color:#166534;}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #eef2f7;box-shadow:0 6px 18px rgba(0,0,0,.05);}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px;vertical-align:top;}
+    thead{background:#f0f0f5;}
+    .right{text-align:right;}
+    .small{font-size:12px;color:var(--muted);}
+    .empty{padding:12px;color:var(--muted);font-size:13px;}
+
+    .match-box{margin-top:12px;border:1px dashed #cbd5e1;background:#f8fafc;border-radius:14px;padding:12px;}
+    .match-title{font-weight:900;font-size:13px;margin:0 0 8px;}
+    .match-item{background:#fff;border:1px solid #eef2f7;border-radius:14px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-top:8px;box-shadow:0 4px 12px rgba(0,0,0,.04);}
+    .match-item .t{font-weight:900;font-size:13px;line-height:1.2;}
+    .match-item .m{font-size:12px;color:var(--muted);margin-top:4px;white-space:pre-line;}
+    .match-score{font-weight:900;font-size:12px;padding:4px 8px;border-radius:999px;background:#FEF3C7;color:#92400E;border:1px solid rgba(146,64,14,.2);white-space:nowrap;}
+
+    .top-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .top-tools input{width:min(340px,100%);background:#fff;}
+
+    /* Analyzer UI */
+    .an-row{display:grid;grid-template-columns:1fr;gap:10px;}
+    .an-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .tag{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900;
+      border:1px solid rgba(0,0,0,.08); background:#f3f4f6; color:#111827;
+    }
+    .tag.good{background:#dcfce7;color:#166534;border-color:rgba(22,101,52,.18);}
+    .tag.warn{background:#fef3c7;color:#92400e;border-color:rgba(146,64,14,.18);}
+    .tag.bad{background:#fee2e2;color:#991b1b;border-color:rgba(153,27,27,.18);}
+    .an-help{font-size:12px;color:var(--muted);line-height:1.35;}
+    .btn-sec{background:#111827;}
+  </style>
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/logo.png" alt="Vanina Buzzacchi">
+      <div class="frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+    </div>
+
+    <div class="side-search">
+      <input id="menuSearch" placeholder="🔎 Buscar en menú..." />
+    </div>
+
+    <a href="/dashboard.html">Dashboard</a>
+    <a href="/radar.html">📡 Radar Calle</a>
+    <a href="/oportunidad.html">Nueva Oportunidad</a>
+    <a href="/form.html">Nuevo Inmueble</a>
+    <a href="/compradores.html">Compradores</a>
+    <a href="/demandas.html" class="active">🧲 Demandas</a>
+    <a href="/filtros.html">Filtros y Búsqueda</a>
+    <a href="/marketing.html">Panel Marketing</a>
+    <a href="/logout">Cerrar sesión</a>
+  </div>
+
+  <div class="content">
+    <div class="topbar">
+      <div>
+        <h1>Demandas</h1>
+        <div class="muted">
+          Pegá mensajes del grupo y autocompletá la demanda. Luego “Matchear” devuelve resultados más finos.
+        </div>
+      </div>
+      <div class="top-tools">
+        <input id="q" placeholder="Buscar demanda (zona, tipo, contacto)..." />
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <!-- ANALIZADOR -->
+        <div class="card" style="margin-bottom:14px;">
+          <h2 style="margin:0 0 10px;font-size:16px;">Analizar mensaje del grupo</h2>
+
+          <div class="an-row">
+            <textarea id="mensajeGrupo" placeholder="Pegá el mensaje del grupo acá...&#10;Ej: Busco depto macrocentro hasta 400.000 ARS, 1 dorm, pago seguro."></textarea>
+
+            <div class="an-meta">
+              <button class="btn" type="button" id="btnAnalizar">Analizar mensaje</button>
+              <button class="btn btn-sec" type="button" id="btnLimpiar" style="background:#111827;">Limpiar</button>
+
+              <span class="tag" id="tagTipo">tipo: -</span>
+              <span class="tag" id="tagConf">conf: -</span>
+              <span class="tag" id="tagSug">sug: -</span>
+            </div>
+
+            <div class="an-help">
+              Tip rápido: copiás el texto del WhatsApp, tocás “Analizar” y se autocompleta el formulario.
+              Si el mensaje parece “OFERTA”, te lo marca igual (vos decidís si lo cargás como Demanda u Oportunidad).
+            </div>
+          </div>
+        </div>
+
+        <!-- NUEVA DEMANDA -->
+        <div class="card">
+          <h2 style="margin:0 0 10px;font-size:16px;">Nueva Demanda</h2>
+
+          <form action="/demandas/nuevo" method="POST" id="formDemanda">
+            <div class="row">
+              <div>
+                <label>Operación</label>
+                <select name="tipoOperacion" required id="tipoOperacion">
+                  <option value="alquiler">Alquiler</option>
+                  <option value="venta">Venta</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Tipo propiedad</label>
+                <input name="tipoPropiedad" id="tipoPropiedad" placeholder="depto / casa / local / terreno" />
+              </div>
+
+              <div>
+                <label>Tipo tolerante</label>
+                <select name="toleranteTipo" id="toleranteTipo">
+                  <option value="si" selected>SI (recomendado)</option>
+                  <option value="no">NO (estricto)</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Zona / Barrio</label>
+                <input name="zona" id="zona" placeholder="Centro / Banda Norte / Alberdi..." />
+              </div>
+
+              <div>
+                <label>Presupuesto máximo</label>
+                <input type="number" name="presupuestoMax" id="presupuestoMax" placeholder="750000" />
+              </div>
+
+              <div>
+                <label>Moneda</label>
+                <select name="moneda" id="moneda">
+                  <option value="ARS">ARS</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Margen abajo (%)</label>
+                <input type="number" name="margenAbajo" id="margenAbajo" value="30" />
+              </div>
+
+              <div>
+                <label>Margen arriba (%)</label>
+                <input type="number" name="margenArriba" id="margenArriba" value="20" />
+              </div>
+
+              <div>
+                <label>Moneda estricta</label>
+                <select name="monedaEstricta" id="monedaEstricta">
+                  <option value="no" selected>NO</option>
+                  <option value="si">SI</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Permitir sin precio</label>
+                <select name="permitirSinPrecio" id="permitirSinPrecio">
+                  <option value="no" selected>NO</option>
+                  <option value="si">SI</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Dormitorios mínimos</label>
+                <input type="number" name="dormitoriosMin" id="dormitoriosMin" placeholder="1" />
+              </div>
+
+              <div class="full">
+                <label>Contacto</label>
+                <input name="contacto" id="contacto" placeholder="Nombre / Tel / Inmobiliaria (ej: Jackelin - 358...)" />
+              </div>
+
+              <div class="full">
+                <label>Notas</label>
+                <textarea name="notas" id="notas" placeholder="Ej: Hasta 750k, paga seguro, necesita ya..."></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" type="submit">Guardar Demanda</button>
+              <a class="btn btn-ghost" href="/dashboard.html">Volver</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- LISTADO -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <h2 style="margin:0;font-size:16px;">Demandas cargadas</h2>
+          <div class="small" id="countInfo">0</div>
+        </div>
+        <div id="listWrap"><div class="empty">Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- MATCH RESULTS -->
+    <div class="card" style="margin-top:14px;">
+      <h2 style="margin:0 0 10px;font-size:16px;">Resultados de Match</h2>
+      <div class="muted" style="margin-top:0;">Elegí una demanda y tocá “Matchear”.</div>
+      <div class="match-box" id="matchBox"><div class="empty">Sin resultados aún.</div></div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Sidebar search =====
+    (function(){
+      const search = document.getElementById("menuSearch");
+      const links = document.querySelectorAll(".sidebar a");
+      const norm = s => (s||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+      function apply(){
+        const f = norm(search.value);
+        links.forEach(a=>{
+          const t = norm(a.textContent);
+          a.style.display = (!f || t.includes(f)) ? "block" : "none";
+        });
+      }
+      search.addEventListener("input", apply);
+      apply();
+    })();
+
+    // ===== Util =====
+    const norm = s => (s||"").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+
+    function pillOperacion(op){
+      op = norm(op);
+      if(op === "alquiler") return `<span class="pill pill-alquiler">ALQUILER</span>`;
+      return `<span class="pill pill-venta">VENTA</span>`;
+    }
+
+    function money(moneda, n){
+      const v = Number(n||0);
+      if(!v) return "Consultar";
+      const m = (moneda||"ARS").toUpperCase();
+      return `${m} ${v.toLocaleString("es-AR")}`;
+    }
+
+    // ===== Analizador UI =====
+    const mensajeGrupo = document.getElementById("mensajeGrupo");
+    const btnAnalizar  = document.getElementById("btnAnalizar");
+    const btnLimpiar   = document.getElementById("btnLimpiar");
+
+    const tagTipo = document.getElementById("tagTipo");
+    const tagConf = document.getElementById("tagConf");
+    const tagSug  = document.getElementById("tagSug");
+
+    function setTag(el, txt, cls){
+      el.className = "tag" + (cls ? (" " + cls) : "");
+      el.textContent = txt;
+    }
+
+    function clasificarConf(c){
+      const n = Number(c||0);
+      if(n >= 75) return "good";
+      if(n >= 45) return "warn";
+      return "bad";
+    }
+
+    function fillIf(selector, value){
+      if(value === undefined || value === null) return;
+      const el = document.querySelector(selector);
+      if(!el) return;
+      const v = String(value).trim();
+      if(v !== "") el.value = v;
+    }
+
+    async function analizarMensaje(){
+      const texto = (mensajeGrupo.value || "").trim();
+      if(!texto){
+        alert("Pegá un mensaje primero.");
+        return;
+      }
+
+      btnAnalizar.disabled = true;
+      btnAnalizar.textContent = "Analizando...";
+
+      try{
+        const r = await fetch("/api/analizar-mensaje", {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ texto })
+        });
+
+        const data = await r.json();
+
+        // UI tags
+        setTag(tagTipo, `tipo: ${data.tipo || "-"}`, data.tipo === "demanda" ? "good" : (data.tipo === "oferta" ? "warn" : "bad"));
+        setTag(tagConf, `conf: ${Number(data.confianza||0)}%`, clasificarConf(data.confianza));
+        setTag(tagSug,  `sug: ${data.sugerencia || "-"}`, (data.sugerencia||"").includes("demanda") ? "good" : "warn");
+
+        // Autocompleta el form
+        const c = data.campos || {};
+
+        fillIf("[name='tipoOperacion']", c.tipoOperacion);
+        fillIf("[name='tipoPropiedad']", c.tipoPropiedad);
+        fillIf("[name='zona']", c.zona);
+        fillIf("[name='presupuestoMax']", c.precio);
+        fillIf("[name='moneda']", c.moneda);
+        fillIf("[name='dormitoriosMin']", c.dormitoriosMin);
+
+        // cosas extra: si te las manda el analizador
+        fillIf("[name='contacto']", c.contacto);
+        if(c.notas && document.getElementById("notas")){
+          // sumamos las notas abajo sin pisar
+          const notas = document.getElementById("notas");
+          const prev = (notas.value || "").trim();
+          notas.value = prev ? (prev + "\n" + c.notas) : c.notas;
+        }
+
+      }catch(e){
+        alert("Error analizando. Revisá que exista /api/analizar-mensaje en el server.");
+      }finally{
+        btnAnalizar.disabled = false;
+        btnAnalizar.textContent = "Analizar mensaje";
+      }
+    }
+
+    btnAnalizar.addEventListener("click", analizarMensaje);
+
+    btnLimpiar.addEventListener("click", () => {
+      mensajeGrupo.value = "";
+      setTag(tagTipo, "tipo: -");
+      setTag(tagConf, "conf: -");
+      setTag(tagSug,  "sug: -");
+    });
+
+    // ===== Demandas UI =====
+    const listWrap = document.getElementById("listWrap");
+    const matchBox = document.getElementById("matchBox");
+    const countInfo = document.getElementById("countInfo");
+    const q = document.getElementById("q");
+
+    let DEMANDAS = [];
+
+    async function loadDemandas(){
+      const r = await fetch("/api/demandas");
+      const data = await r.json();
+      DEMANDAS = Array.isArray(data) ? data : [];
+      renderDemandas();
+    }
+
+    function renderDemandas(){
+      const filtro = norm(q.value);
+      const items = DEMANDAS
+        .map((d, idx)=>({d, idx}))
+        .filter(x=>{
+          if(!filtro) return true;
+          const s = norm(
+            (x.d.zona||"") + " " + (x.d.tipoPropiedad||"") + " " + (x.d.contacto||"") + " " +
+            (x.d.notas||"") + " " + (x.d.tipoOperacion||"")
+          );
+          return s.includes(filtro);
+        });
+
+      countInfo.textContent = `${items.length} demanda(s)`;
+
+      if(items.length === 0){
+        listWrap.innerHTML = `<div class="empty">No hay demandas con ese filtro.</div>`;
+        return;
+      }
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Operación</th><th>Zona</th><th>Tipo</th><th>Presupuesto</th><th>Contacto</th>
+              <th class="right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      items.forEach(({d, idx})=>{
+        html += `
+          <tr>
+            <td>${pillOperacion(d.tipoOperacion)}</td>
+            <td>${(d.zona || "-")}</td>
+            <td>${(d.tipoPropiedad || "-")} <div class="small">tipo: ${(d.toleranteTipo||"si")==="si"?"tolerante":"estricto"}</div></td>
+            <td>${money(d.moneda, d.presupuestoMax)}</td>
+            <td>
+              <div style="font-weight:800;">${(d.contacto || "-")}</div>
+              <div class="small">${(d.notas || "").slice(0, 90)}</div>
+            </td>
+            <td class="right">
+              <button class="btn btn-mini btn-blue" onclick="matchDemanda(${idx})">Matchear</button>
+              <form action="/demandas/eliminar/${idx}" method="POST" style="display:inline;">
+                <button class="btn btn-mini btn-red" type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      listWrap.innerHTML = html;
+    }
+
+    async function matchDemanda(idx){
+      matchBox.innerHTML = `<div class="empty">Matcheando...</div>`;
+      try{
+        const r = await fetch(`/api/match-demanda/${idx}`);
+        const data = await r.json();
+
+        const total = Number(data.totalMatches || 0);
+        const matches = Array.isArray(data.matches) ? data.matches : [];
+
+        if(total === 0){
+          matchBox.innerHTML = `<div class="empty">No hubo matches (probá con zona más amplia o tolerante).</div>`;
+          return;
+        }
+
+        let html = `<div class="match-title">Matches encontrados: ${total}</div>`;
+
+        matches.slice(0, 25).forEach(m=>{
+          const inm = m.inmueble || {};
+          const estado = norm(inm.estadoPublicacion || "");
+          const origen = (inm.origen || "").toUpperCase();
+          const precio = money(inm.moneda, inm.precio);
+
+          const verUrl = (estado === "oportunidad")
+            ? `/oportunidad-ver.html?index=${m.indexInmueble}`
+            : `/ver.html?index=${m.indexInmueble}`;
+
+          const extra = [
+            inm.zona ? `• Zona: ${inm.zona}` : "",
+            precio ? `• Precio: ${precio}` : "",
+            estado ? `• Estado: ${estado}` : "",
+            origen ? `• Origen: ${origen}` : ""
+          ].filter(Boolean).join("\n");
+
+          html += `
+            <div class="match-item">
+              <div>
+                <div class="t">${inm.titulo || "(sin título)"}</div>
+                <div class="m">${extra}</div>
+                <div style="margin-top:8px;">
+                  <a class="btn btn-mini btn-blue" href="${verUrl}" style="text-decoration:none;display:inline-flex;">Ver</a>
+                </div>
+              </div>
+              <div class="match-score">score ${m.score}</div>
+            </div>
+          `;
+        });
+
+        matchBox.innerHTML = html;
+      }catch(e){
+        matchBox.innerHTML = `<div class="empty">Error al matchear. Revisá consola/servidor.</div>`;
+      }
+    }
+
+    q.addEventListener("input", renderDemandas);
+    window.matchDemanda = matchDemanda;
+
+    loadDemandas();
+(function(){
+  const p = new URLSearchParams(location.search);
+  const set = (name, val) => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    if (val === null || val === undefined) return;
+    const s = String(val).trim();
+    if (!s) return;
+    el.value = s;
+  };
+
+  set("tipoOperacion", p.get("tipoOperacion"));
+  set("tipoPropiedad", p.get("tipoPropiedad"));
+  set("zona", p.get("zona"));
+  set("presupuestoMax", p.get("presupuestoMax"));
+  set("moneda", p.get("moneda"));
+  set("dormitoriosMin", p.get("dormitoriosMin"));
+  set("contacto", p.get("contacto"));
+  set("notas", p.get("notas"));
+})();
+  </script>
+</body>
+</html>

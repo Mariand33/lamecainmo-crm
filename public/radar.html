@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Radar Calle - EQUIPO BUZZACCHI</title>
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;padding:14px;}
+    .wrap{max-width:920px;margin:0 auto;background:#fff;border-radius:16px;padding:16px;box-shadow:0 10px 26px rgba(0,0,0,.10);}
+    h1{margin:0 0 6px 0;font-size:22px;}
+    .muted{margin:0 0 14px 0;color:#6b7280;font-size:13px;line-height:1.35;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:820px){.grid{grid-template-columns:1fr;}}
+    label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#374151;}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:12px;font-size:14px;}
+    textarea{min-height:90px;resize:vertical;}
+    .full{grid-column:1/-1;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:12px;}
+
+    .btn{border:none;border-radius:12px;padding:12px 14px;font-weight:900;background:#0e6b4d;color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;}
+    .btn:hover{opacity:.95;}
+    .btn-dark{background:#111827;}
+
+    .preview{margin-top:12px;border:1px dashed #cbd5e1;background:#f8fafc;border-radius:14px;padding:12px;display:flex;gap:12px;align-items:flex-start;}
+    .preview img{width:150px;height:110px;border-radius:12px;object-fit:cover;background:#e5e7eb;display:none;}
+    .small{font-size:12px;color:#6b7280;line-height:1.35;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📡 Radar Calle</h1>
+    <p class="muted">Sacás foto del cartel, anotás 2 datos y guardás. Entra como <b>RADAR</b> al motor de match.</p>
+
+    <!-- IMPORTANTE: name="thumb" debe coincidir con upload.single("thumb") -->
+    <form action="/radar" method="POST" enctype="multipart/form-data">
+      <div class="grid">
+        <div class="full">
+          <label>Foto del cartel (cámara)</label>
+          <input type="file" name="thumb" accept="image/*" capture="environment" id="thumb" required />
+          <div class="small">Tip: esto abre cámara trasera en el celular.</div>
+        </div>
+
+        <div>
+          <label>Operación</label>
+          <select name="tipoOperacion">
+            <option value="">No sé</option>
+            <option value="alquiler">Alquiler</option>
+            <option value="venta">Venta</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Tipo</label>
+          <select name="tipoPropiedad">
+            <option value="">No sé</option>
+            <option value="casa">Casa</option>
+            <option value="depto">Depto</option>
+            <option value="local">Local</option>
+            <option value="terreno">Terreno</option>
+            <option value="galpon">Galpón</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Zona / Barrio</label>
+          <input name="zona" placeholder="Ej: Macrocentro / Banda Norte..." />
+        </div>
+
+        <div>
+          <label>Dirección / Referencia</label>
+          <input name="direccion" placeholder="Ej: Sabattini 1200 / frente a..." />
+        </div>
+
+        <div>
+          <label>Teléfono (si lo ves)</label>
+          <input name="telefono" placeholder="Ej: 358..." />
+        </div>
+
+        <div>
+          <label>Título (opcional)</label>
+          <input name="titulo" placeholder="Ej: Cartel en Sabattini (alquiler)" />
+        </div>
+
+        <div class="full">
+          <label>Nota rápida</label>
+          <textarea name="nota" placeholder="Ej: cartel grande, rejas negras, dueño atiende tarde..."></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn" type="submit">Guardar Radar</button>
+        <a class="btn btn-dark" href="/dashboard.html">Volver</a>
+      </div>
+
+      <div class="preview">
+        <img id="imgPrev" alt="preview" />
+        <div class="small" id="txtPrev">Cuando elijas una foto, te muestro una vista previa.</div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const thumb = document.getElementById("thumb");
+    const imgPrev = document.getElementById("imgPrev");
+    const txtPrev = document.getElementById("txtPrev");
+
+    thumb.addEventListener("change", () => {
+      const f = thumb.files && thumb.files[0];
+      if(!f) return;
+      imgPrev.src = URL.createObjectURL(f);
+      imgPrev.style.display = "block";
+      txtPrev.textContent = "Foto lista ✅ Ahora completá 2 datos y guardá.";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Ver oportunidad</title>
+  <style>
+    body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px;}
+    .box{max-width:900px;margin:0 auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    h1{margin:0 0 8px}
+    .muted{color:#6b7280;font-size:13px}
+    .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+    .card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;min-width:220px}
+    .card b{display:block;margin-bottom:6px}
+    a.btn{display:inline-block;margin-top:12px;background:#2980b9;color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
+    a.btn2{display:inline-block;margin-top:12px;margin-left:8px;background:#27ae60;color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
+    textarea{width:100%;min-height:120px;padding:10px;border-radius:10px;border:1px solid #e5e7eb;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1 id="ttl">Oportunidad</h1>
+    <div class="muted" id="sub"></div>
+
+    <div class="row" id="cards"></div>
+
+    <div id="linkWrap"></div>
+
+    <textarea id="desc" readonly></textarea>
+
+    <a class="btn" href="/dashboard.html">← Volver</a>
+    <a class="btn2" id="btnEditar" href="#">Editar</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const index = Number(params.get("index"));
+
+    if (Number.isNaN(index)) {
+      alert("Falta index");
+      location.href = "/dashboard.html";
+    }
+
+    fetch("/api/inmuebles")
+      .then(r => r.json())
+      .then(arr => {
+        const o = arr[index];
+        if (!o) {
+          alert("No existe esa oportunidad.");
+          location.href = "/dashboard.html";
+          return;
+        }
+
+        document.getElementById("ttl").textContent = o.titulo || "Oportunidad";
+        document.getElementById("sub").textContent =
+          `Estado: ${o.estadoPublicacion || "-"} • Origen: ${o.origen || "N/D"} • Creado por: ${o.creadoPor || "-"}`;
+
+        const cards = document.getElementById("cards");
+        const precio = (o.precio && Number(o.precio) > 0)
+          ? `${o.moneda || "USD"} ${Number(o.precio).toLocaleString("es-AR")}`
+          : "Consultar";
+
+        const items = [
+          ["Operación", (o.tipoOperacion || "").toUpperCase()],
+          ["Zona", o.zona || "-"],
+          ["Precio", precio],
+          ["Tel/Dueño", o.telefonoDueno || o.telefonoPropietario || "-"]
+        ];
+
+        cards.innerHTML = items.map(([k,v]) => `
+          <div class="card"><b>${k}</b><div>${v || "-"}</div></div>
+        `).join("");
+
+        const link = o.linkPublicacion || o.link || "";
+        const linkWrap = document.getElementById("linkWrap");
+        if (link) {
+          linkWrap.innerHTML = `<p><b>Link:</b> <a href="${link}" target="_blank">${link}</a></p>`;
+        } else {
+          linkWrap.innerHTML = `<p class="muted"><b>Link:</b> (sin link)</p>`;
+        }
+
+        document.getElementById("desc").value = o.descripcion || "(sin descripción)";
+
+        document.getElementById("btnEditar").href = "/editar.html?index=" + index;
+      })
+      .catch(() => {
+        alert("Error cargando oportunidad");
+        location.href = "/dashboard.html";
+      });
+  </script>
+</body>
+</html>

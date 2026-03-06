@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar IA - EQUIPO BUZZACCHI</title>
+
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --card:#ffffff;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --b:#e5e7eb;
+      --azul:#0984e3;
+      --ok:#27ae60;
+      --rojo:#e74c3c;
+      --amarillo:#f59e0b;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      display:flex;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg, var(--verde1), var(--verde2));
+      color:#fff;
+      padding:18px 16px;
+      overflow:auto;
+    }
+
+    .logo-buzzacchi{
+      text-align:center;
+      margin-bottom:12px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+
+    .logo-buzzacchi img{
+      max-width:130px;
+      height:auto;
+      display:block;
+      margin:0 auto 6px;
+    }
+
+    .logo-frase{
+      font-size:11px;
+      line-height:1.3;
+      opacity:.95;
+    }
+
+    .side-top{
+      margin-top:12px;
+      margin-bottom:10px;
+    }
+
+    .side-search{
+      position:relative;
+    }
+
+    .side-search input{
+      width:100%;
+      padding:10px 12px 10px 36px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.10);
+      color:#fff;
+      outline:none;
+      font-size:13px;
+    }
+
+    .side-search input::placeholder{ color:rgba(255,255,255,0.75); }
+
+    .side-search .icon{
+      position:absolute;
+      left:10px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:14px;
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .side-empty{
+      font-size:12px;
+      opacity:.85;
+      margin:8px 2px 0;
+      display:none;
+    }
+
+    .sidebar nav a{
+      display:block;
+      color:white;
+      text-decoration:none;
+      padding:10px 10px;
+      margin:7px 0;
+      border-radius:10px;
+      font-size:14px;
+      position:relative;
+    }
+
+    .sidebar nav a:hover{background: rgba(255,255,255,0.16);}
+
+    .sidebar nav a.active{
+      background: rgba(255,255,255,0.22);
+      font-weight:800;
+    }
+
+    .sidebar nav a.active::before{
+      content:"";
+      position:absolute;
+      left:-6px;
+      top:8px;
+      bottom:8px;
+      width:4px;
+      border-radius:999px;
+      background:#fff;
+      opacity:.95;
+    }
+
+    .content{
+      flex:1;
+      padding:24px;
+      overflow:auto;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .topbar h1{
+      margin:0;
+      font-size:24px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.4;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+      margin-top:18px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid #eef2f7;
+      border-radius:14px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      padding:16px;
+    }
+
+    .card h3{
+      margin:0 0 10px;
+      font-size:16px;
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:6px;
+      color:#374151;
+    }
+
+    textarea, input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      background:#fff;
+      outline:none;
+    }
+
+    textarea{
+      min-height:180px;
+      resize:vertical;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .btn-primary{ background:var(--verde1); }
+    .btn-blue{ background:var(--azul); }
+    .btn-wa{ background:#25D366; }
+    .btn-dark{ background:#111827; }
+    .btn-ghost{ background:#6b7280; }
+
+    .btn:hover{ opacity:.94; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      margin-right:8px;
+      margin-bottom:8px;
+    }
+
+    .pill-demanda{ background:#dbeafe; color:#1d4ed8; }
+    .pill-oferta{ background:#dcfce7; color:#166534; }
+    .pill-ambigua{ background:#fef3c7; color:#92400e; }
+
+    .kv{
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:8px;
+      font-size:13px;
+      margin:8px 0;
+      align-items:start;
+    }
+
+    .kv .k{
+      color:#6b7280;
+      font-weight:700;
+    }
+
+    .estado{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:10px;
+      min-height:18px;
+    }
+
+    .result-box{
+      background:#f8fafc;
+      border:1px dashed #cbd5e1;
+      border-radius:14px;
+      padding:14px;
+      min-height:280px;
+    }
+
+    .msg-preview{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      font-size:13px;
+      white-space:pre-wrap;
+      line-height:1.45;
+      color:#374151;
+      margin-top:12px;
+    }
+
+    .warn{
+      color:#92400e;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:12px;
+      margin-top:12px;
+    }
+
+    @media(max-width:900px){
+      body{flex-direction:column;}
+      .sidebar{width:100%;height:auto;}
+      .grid{grid-template-columns:1fr;}
+      .content{padding:14px;}
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+    </div>
+
+    <div class="side-top">
+      <div class="side-search">
+        <span class="icon">🔎</span>
+        <input type="text" id="menuSearch" placeholder="Buscar en menú..." autocomplete="off" />
+      </div>
+      <div class="side-empty" id="menuEmpty">Sin resultados.</div>
+    </div>
+
+    <nav id="menuLinks">
+      <a href="dashboard.html" data-fixed="1">Dashboard</a>
+      <a href="/radar.html">📡 Radar Calle</a>
+      <a href="/radar-ia.html" class="active">🧠 Radar IA</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="form.html">Nuevo Inmueble</a>
+      <a href="compradores.html">Compradores</a>
+      <a href="/demandas.html">📌 Demandas</a>
+      <a href="filtros.html">Filtros y Búsqueda</a>
+      <a href="marketing.html">Panel Marketing</a>
+      <a href="/logout" data-fixed="1">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <h1>🧠 Radar IA</h1>
+        <div class="sub">
+          Pegá una publicación, descripción o mensaje. La IA detecta si es oportunidad o demanda,
+          extrae datos y te deja listo el contacto o la creación automática.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h3>Publicación / mensaje detectado</h3>
+
+        <label for="textoPublicacion">Texto</label>
+        <textarea id="textoPublicacion" placeholder="Ej:
+Vendo casa en Banda Norte
+3 dormitorios
+Patio con asador
+USD 85.000
+WhatsApp 358..."></textarea>
+
+        <div class="row">
+          <button class="btn btn-primary" id="btnAnalizar">Analizar con IA</button>
+          <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+        </div>
+
+        <div class="estado" id="estadoAnalisis"></div>
+
+        <div class="warn">
+          Tip: empezá con textos de Marketplace, estados, grupos o publicaciones que veas en Facebook / WhatsApp.
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Resultado del análisis</h3>
+
+        <div class="result-box" id="resultado">
+          <div style="color:#6b7280;font-size:13px;">Todavía no analizaste ninguna publicación.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // ==========================
+    // MENU buscador
+    // ==========================
+    (function(){
+      const search = document.getElementById("menuSearch");
+      const empty = document.getElementById("menuEmpty");
+      const links = Array.from(document.querySelectorAll("#menuLinks a"));
+
+      function norm(s){
+        return (s || "")
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
+
+      function aplicarFiltro(){
+        const filtro = norm(search.value);
+        let visibles = 0;
+
+        links.forEach(a => {
+          if (a.dataset.fixed === "1") {
+            a.style.display = "block";
+            visibles++;
+            return;
+          }
+          const texto = norm(a.textContent);
+          const ok = (filtro === "" || texto.includes(filtro));
+          a.style.display = ok ? "block" : "none";
+          if (ok) visibles++;
+        });
+
+        empty.style.display = (visibles === 0) ? "block" : "none";
+      }
+
+      search.addEventListener("input", aplicarFiltro);
+      aplicarFiltro();
+    })();
+
+    const textoPublicacion = document.getElementById("textoPublicacion");
+    const btnAnalizar = document.getElementById("btnAnalizar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const estadoAnalisis = document.getElementById("estadoAnalisis");
+    const resultado = document.getElementById("resultado");
+
+    function money(moneda, valor){
+      const n = Number(valor || 0);
+      if (!n) return "No detectado";
+      return `${(moneda || "ARS").toUpperCase()} ${n.toLocaleString("es-AR")}`;
+    }
+
+    function buildWhatsappText(data, textoOriginal){
+      const campos = data.campos || {};
+      const zona = campos.zona ? ` en ${campos.zona}` : "";
+      const tipo = campos.tipoPropiedad ? ` de ${campos.tipoPropiedad}` : "";
+      return `Hola, ¿cómo estás?
+
+Vi tu publicación${tipo}${zona}.
+Trabajo con compradores activos en Río Cuarto.
+
+¿La propiedad sigue disponible?`;
+    }
+
+    function buildOportunidadUrl(data, textoOriginal){
+      const campos = data.campos || {};
+      const p = new URLSearchParams();
+
+      p.set("origen", "radar ia");
+      if (campos.tipoOperacion) p.set("tipoOperacion", campos.tipoOperacion);
+      if (campos.tipoPropiedad) p.set("tipoPropiedad", campos.tipoPropiedad);
+      if (campos.zona) p.set("zona", campos.zona);
+      if (campos.precio) p.set("precio", campos.precio);
+      if (campos.moneda) p.set("moneda", campos.moneda);
+      p.set("descripcion", textoOriginal);
+
+      return "/oportunidad.html?" + p.toString();
+    }
+
+    function buildDemandaUrl(data, textoOriginal){
+      const campos = data.campos || {};
+      const p = new URLSearchParams();
+
+      if (campos.tipoOperacion) p.set("tipoOperacion", campos.tipoOperacion);
+      if (campos.tipoPropiedad) p.set("tipoPropiedad", campos.tipoPropiedad);
+      if (campos.zona) p.set("zona", campos.zona);
+      if (campos.precio) p.set("presupuestoMax", campos.precio);
+      if (campos.moneda) p.set("moneda", campos.moneda);
+      if (campos.dormitoriosMin) p.set("dormitoriosMin", campos.dormitoriosMin);
+      if (campos.margenAbajo) p.set("margenAbajo", campos.margenAbajo);
+      if (campos.margenArriba) p.set("margenArriba", campos.margenArriba);
+      if (campos.permitirSinPrecio) p.set("permitirSinPrecio", campos.permitirSinPrecio);
+      if (campos.monedaEstricta) p.set("monedaEstricta", campos.monedaEstricta);
+      if (campos.toleranteTipo) p.set("toleranteTipo", campos.toleranteTipo);
+      p.set("notas", textoOriginal);
+
+      return "/demandas.html?" + p.toString();
+    }
+
+    function copiarTexto(txt){
+      if (!navigator.clipboard) {
+        alert("Tu navegador no permite copiar automáticamente.");
+        return;
+      }
+      navigator.clipboard.writeText(txt)
+        .then(() => alert("Mensaje copiado"))
+        .catch(() => alert("No se pudo copiar"));
+    }
+
+    function renderResultado(data, textoOriginal){
+      const tipo = (data.tipo || "ambigua").toLowerCase();
+      const campos = data.campos || {};
+      const confianza = Number(data.confianza || 0);
+      const sugerencia = data.sugerencia || "";
+
+      let pillClass = "pill-ambigua";
+      let pillText = "AMBIGUA";
+
+      if (tipo === "oferta") {
+        pillClass = "pill-oferta";
+        pillText = "OFERTA";
+      } else if (tipo === "demanda") {
+        pillClass = "pill-demanda";
+        pillText = "DEMANDA";
+      }
+
+      const msg = buildWhatsappText(data, textoOriginal);
+      const waUrl = "https://wa.me/?text=" + encodeURIComponent(msg);
+      const urlOpor = buildOportunidadUrl(data, textoOriginal);
+      const urlDem = buildDemandaUrl(data, textoOriginal);
+
+      let botones = `
+        <div class="row">
+          <button class="btn btn-dark" id="btnCopiarMsg">Copiar mensaje</button>
+          <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar por WhatsApp</a>
+        </div>
+      `;
+
+      if (tipo === "oferta" || sugerencia === "crear_oportunidad") {
+        botones += `
+          <div class="row">
+            <a class="btn btn-blue" href="${urlOpor}">Crear Oportunidad</a>
+          </div>
+        `;
+      }
+
+      if (tipo === "demanda" || sugerencia === "crear_demanda") {
+        botones += `
+          <div class="row">
+            <a class="btn btn-primary" href="${urlDem}">Crear Demanda</a>
+          </div>
+        `;
+      }
+
+      resultado.innerHTML = `
+        <div>
+          <span class="pill ${pillClass}">${pillText}</span>
+          <span class="pill" style="background:#eef2ff;color:#4338ca;">Confianza ${confianza}%</span>
+        </div>
+
+        <div class="kv"><div class="k">Operación</div><div>${campos.tipoOperacion || "No detectada"}</div></div>
+        <div class="kv"><div class="k">Tipo propiedad</div><div>${campos.tipoPropiedad || "No detectado"}</div></div>
+        <div class="kv"><div class="k">Zona</div><div>${campos.zona || "No detectada"}</div></div>
+        <div class="kv"><div class="k">Precio</div><div>${money(campos.moneda, campos.precio)}</div></div>
+        <div class="kv"><div class="k">Dormitorios</div><div>${campos.dormitoriosMin || "No detectado"}</div></div>
+        <div class="kv"><div class="k">Sugerencia IA</div><div>${sugerencia || "Sin sugerencia"}</div></div>
+
+        ${botones}
+
+        <div class="msg-preview" id="msgPreview">${msg}</div>
+      `;
+
+      const btnCopiar = document.getElementById("btnCopiarMsg");
+      if (btnCopiar) {
+        btnCopiar.addEventListener("click", () => copiarTexto(msg));
+      }
+    }
+
+    async function analizar(){
+      const texto = (textoPublicacion.value || "").trim();
+
+      if (!texto) {
+        estadoAnalisis.textContent = "Pegá una publicación primero.";
+        return;
+      }
+
+      estadoAnalisis.textContent = "Analizando...";
+      resultado.innerHTML = `<div style="color:#6b7280;font-size:13px;">Procesando publicación...</div>`;
+
+      try {
+        const r = await fetch("/api/analizar-mensaje", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto })
+        });
+
+        const data = await r.json();
+
+// guardar en historial
+await fetch("/api/radar-ia/guardar", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    textoOriginal: texto,
+    tipo: data.tipo || "",
+    tipoOperacion: data.campos?.tipoOperacion || "",
+    tipoPropiedad: data.campos?.tipoPropiedad || "",
+    zona: data.campos?.zona || "",
+    precio: data.campos?.precio || 0,
+    moneda: data.campos?.moneda || "ARS",
+    dormitoriosMin: data.campos?.dormitoriosMin || 0,
+    confianza: data.confianza || 0,
+    sugerencia: data.sugerencia || ""
+  })
+});
+
+estadoAnalisis.textContent = "Análisis completado y guardado ✅";
+renderResultado(data, texto);
+    });
+  </script>
+</body>
+</html>

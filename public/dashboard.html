@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Inmobiliario - EQUIPO BUZZACCHI</title>
+
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --card:#ffffff;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --b:#e5e7eb;
+      --azul:#0984e3;
+      --ok:#27ae60;
+      --rojo:#e74c3c;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      display:flex;
+      background:var(--bg);
+      height:100vh;
+      color:var(--txt);
+    }
+
+    /* SIDEBAR */
+    .sidebar{
+      width:260px;
+      background: linear-gradient(180deg, var(--verde1), var(--verde2));
+      color:white;
+      height:100vh;
+      padding:18px 16px;
+      overflow:auto;
+    }
+
+    .logo-buzzacchi{
+      text-align:center;
+      margin-bottom:12px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+    .logo-buzzacchi img{
+      max-width:130px;
+      height:auto;
+      display:block;
+      margin:0 auto 6px;
+    }
+    .logo-frase{font-size:11px; line-height:1.3; opacity:.95;}
+
+    /* Sidebar search */
+    .side-top{
+      margin-top:12px;
+      margin-bottom:10px;
+    }
+    .side-search{
+      position:relative;
+    }
+    .side-search input{
+      width:100%;
+      padding:10px 12px 10px 36px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.10);
+      color:#fff;
+      outline:none;
+      font-size:13px;
+    }
+    .side-search input::placeholder{ color:rgba(255,255,255,0.75); }
+    .side-search .icon{
+      position:absolute;
+      left:10px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:14px;
+      opacity:.9;
+      pointer-events:none;
+    }
+    .side-empty{
+      font-size:12px;
+      opacity:.85;
+      margin:8px 2px 0;
+      display:none;
+    }
+
+    /* Menu links */
+    .sidebar nav a{
+      display:block;
+      color:white;
+      text-decoration:none;
+      padding:10px 10px;
+      margin:7px 0;
+      border-radius:10px;
+      font-size:14px;
+      position:relative;
+    }
+    .sidebar nav a:hover{background: rgba(255,255,255,0.16);}
+
+    /* Cursor / activo */
+    .sidebar nav a.active{
+      background: rgba(255,255,255,0.22);
+      font-weight:800;
+    }
+    .sidebar nav a.active::before{
+      content:"";
+      position:absolute;
+      left:-6px;
+      top:8px;
+      bottom:8px;
+      width:4px;
+      border-radius:999px;
+      background:#fff;
+      opacity:.95;
+    }
+
+    /* CONTENT */
+    .content{
+      flex:1;
+      padding:24px;
+      overflow:auto;
+      position:relative;
+    }
+
+    /* TOP BAR */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .topbar h1{margin:0; font-size:22px;}
+    .topbar-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    /* Bell */
+    .bell{
+      position:relative;
+      width:40px;height:40px;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid var(--b);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,0,0,0.06);
+      user-select:none;
+    }
+    .bell:hover{filter:brightness(.98);}
+    .bell-badge{
+      position:absolute;
+      top:-6px; right:-6px;
+      background:var(--rojo);
+      color:#fff;
+      border-radius:999px;
+      min-width:20px;
+      height:20px;
+      padding:0 6px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:bold;
+      border:2px solid #fff;
+      display:none;
+    }
+    .bell-dot{
+      position:absolute;
+      bottom:-6px; left:-6px;
+      background:#f59e0b;
+      color:#111;
+      border-radius:999px;
+      padding:2px 6px;
+      font-size:10px;
+      border:2px solid #fff;
+      display:none;
+    }
+
+    /* Cards */
+    .cards{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px;}
+    .card{
+      background:var(--card);
+      padding:16px;
+      border-radius:12px;
+      width:240px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.06);
+      border:1px solid #eef2f7;
+    }
+    .card h3{margin:0; font-size:28px;}
+    .card p{margin:6px 0 0; color:var(--muted); font-size:13px;}
+
+    /* Table */
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      margin-top:18px;
+    }
+    th, td{
+      padding:10px;
+      border-bottom:1px solid #eee;
+      text-align:left;
+      font-size:13px;
+      vertical-align:top;
+    }
+    thead{background:#f0f0f5;}
+    .link-ver{
+      font-size:12px;
+      color:var(--azul);
+      text-decoration:none;
+      margin-right:10px;
+    }
+    .link-ver:hover{text-decoration:underline;}
+
+    .btn{
+      border:none;
+      padding:5px 8px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:12px;
+      color:#fff;
+    }
+    .btn-del{background:var(--rojo);}
+    .btn-ok{background:var(--ok);}
+    .btn-az{background:#2980b9;}
+    .btn:hover{opacity:.92;}
+
+    /* Title + thumbnail preview */
+    .titulo-cell{ position:relative; max-width:360px; }
+    .titulo-text{ font-weight:600; display:inline-block; cursor:pointer; line-height:1.25; }
+    .badge-op{
+      display:inline-block;
+      font-size:11px;
+      background:#FEF3C7;
+      color:#92400E;
+      padding:2px 8px;
+      border-radius:999px;
+      margin-left:6px;
+      border:1px solid rgba(146,64,14,.25);
+    }
+    .thumb-pop{
+      position:absolute;
+      left:0;
+      top:26px;
+      width:240px;
+      background:#fff;
+      border:1px solid var(--b);
+      border-radius:12px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.14);
+      padding:8px;
+      display:none;
+      z-index:20;
+    }
+    .thumb-pop img{
+      width:100%;
+      height:150px;
+      object-fit:cover;
+      border-radius:10px;
+      display:block;
+      background:#f3f4f6;
+    }
+    .thumb-pop .meta{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    /* Toast container */
+    .toast-wrap{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      z-index:9999;
+      pointer-events:none;
+    }
+    .toast{
+      width:min(380px, calc(100vw - 32px));
+      background:#111827;
+      color:#fff;
+      border-radius:16px;
+      padding:12px 12px;
+      box-shadow:0 16px 40px rgba(0,0,0,0.25);
+      border:1px solid rgba(255,255,255,0.12);
+      transform: translateY(20px);
+      opacity:0;
+      animation: toastIn .35s ease forwards;
+      pointer-events:auto;
+    }
+    .toast .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .toast .ttl{ font-weight:800; font-size:13px; letter-spacing:.2px; }
+    .toast .desc{
+      margin-top:6px;
+      color:rgba(255,255,255,0.86);
+      font-size:12px;
+      line-height:1.35;
+      white-space:pre-line;
+    }
+    .toast .actions{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .toast a{
+      background:rgba(255,255,255,0.10);
+      color:#fff;
+      text-decoration:none;
+      padding:7px 10px;
+      border-radius:12px;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,0.14);
+    }
+    .toast a:hover{filter:brightness(1.08);}
+    .toast .x{
+      background:transparent;
+      border:none;
+      color:#fff;
+      cursor:pointer;
+      font-size:18px;
+      line-height:1;
+      opacity:.85;
+    }
+    .toast .x:hover{opacity:1;}
+
+    @keyframes toastIn{ to{ transform: translateY(0); opacity:1;} }
+    @keyframes bellShake{
+      0%,100%{transform:rotate(0deg)}
+      20%{transform:rotate(-10deg)}
+      40%{transform:rotate(10deg)}
+      60%{transform:rotate(-8deg)}
+      80%{transform:rotate(8deg)}
+    }
+    .shake{animation: bellShake .55s ease;}
+
+    @media (max-width: 768px){
+      body{flex-direction:column;height:auto;}
+      .sidebar{
+        width:100%;
+        height:auto;
+        padding:12px 14px;
+      }
+      .content{padding:14px;}
+      table{display:block; overflow-x:auto; white-space:nowrap;}
+      .thumb-pop{
+        position:fixed;
+        left:16px; right:16px;
+        top:110px;
+        width:auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+    </div>
+
+    <div class="side-top">
+      <div class="side-search">
+        <span class="icon">🔎</span>
+        <input type="text" id="menuSearch" placeholder="Buscar en menú..." autocomplete="off" />
+      </div>
+      <div class="side-empty" id="menuEmpty">Sin resultados.</div>
+    </div>
+
+    <nav id="menuLinks">
+      <a href="dashboard.html" data-fixed="1">Dashboard</a>
+      <a href="/radar.html">📡 Radar Calle</a>
+      <a href="/radar-ia.html">🧠 Radar IA</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="form.html">Nuevo Inmueble</a>
+      <a href="compradores.html">Compradores</a>
+      <a href="/demandas.html">📌 Demandas</a>
+      <a href="filtros.html">Filtros y Búsqueda</a>
+      <a href="marketing.html">Panel Marketing</a>
+      <a href="/logout" data-fixed="1">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+    <div class="topbar">
+      <h1>Dashboard</h1>
+      <div class="topbar-right">
+        <div class="bell" id="bellBtn" title="Notificaciones internas">
+          🔔
+          <div class="bell-badge" id="bellCount">0</div>
+          <div class="bell-dot" id="bellDot">nuevo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card"><h3 id="totalInmuebles">0</h3><p>Total Inmuebles</p></div>
+      <div class="card"><h3 id="valorTotal">$0</h3><p>Valor Total</p></div>
+      <div class="card"><h3 id="precioPromedio">$0</h3><p>Precio Promedio</p></div>
+      <div class="card"><h3 id="totalLeads">0</h3><p>Total interesados</p></div>
+      <div class="card"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
+    </div>
+
+    <h2 style="margin-top:18px;">Listado de inmuebles</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Operación</th>
+          <th>Precio</th>
+          <th>Creado por</th>
+          <th>Interesados</th>
+          <th>Estado</th>
+          <th>Veces publicada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody"></tbody>
+    </table>
+  </main>
+
+  <!-- Sonido -->
+  <audio id="notifSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+  </audio>
+
+  <!-- Toast container -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    // ==========================
+    // MENU: activo + buscador
+    // ==========================
+    (function(){
+      const search = document.getElementById("menuSearch");
+      const empty = document.getElementById("menuEmpty");
+      const links = Array.from(document.querySelectorAll("#menuLinks a"));
+
+      function norm(s){
+        return (s || "")
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
+
+      const path = (location.pathname || "").split("/").pop() || "dashboard.html";
+
+      links.forEach(a => {
+        const href = (a.getAttribute("href") || "").split("/").pop();
+        if (href === path) a.classList.add("active");
+      });
+
+      function aplicarFiltro(){
+        const filtro = norm(search.value);
+        let visibles = 0;
+
+        links.forEach(a => {
+          if (a.dataset.fixed === "1") {
+            a.style.display = "block";
+            visibles++;
+            return;
+          }
+          const texto = norm(a.textContent);
+          const ok = (filtro === "" || texto.includes(filtro));
+          a.style.display = ok ? "block" : "none";
+          if (ok) visibles++;
+        });
+
+        empty.style.display = (visibles === 0) ? "block" : "none";
+      }
+
+      search.addEventListener("input", aplicarFiltro);
+      aplicarFiltro();
+    })();
+
+    // ==========================
+    // NOTIFICACIONES (polling)
+    // ==========================
+    const LS_KEY_LAST_TS = "buzz_last_notif_ts";
+    const bellBtn    = document.getElementById("bellBtn");
+    const bellCount  = document.getElementById("bellCount");
+    const bellDot    = document.getElementById("bellDot");
+    const toastWrap  = document.getElementById("toastWrap");
+    const notifSound = document.getElementById("notifSound");
+
+    let lastTs = Number(localStorage.getItem(LS_KEY_LAST_TS) || 0);
+    let unseen = 0;
+
+    function safePlaySound(){
+      notifSound.currentTime = 0;
+      notifSound.play().catch(()=>{});
+    }
+
+    function renderBell(){
+      if (unseen > 0){
+        bellCount.style.display = "flex";
+        bellCount.textContent = String(unseen);
+        bellDot.style.display = "block";
+
+        bellBtn.classList.remove("shake");
+        void bellBtn.offsetWidth;
+        bellBtn.classList.add("shake");
+      } else {
+        bellCount.style.display = "none";
+        bellDot.style.display = "none";
+      }
+    }
+
+    function tipoTitulo(n){
+      const t = (n.tipo || "").toLowerCase();
+      if (t === "nuevo_inmueble") return "NUEVO INMUEBLE CARGADO";
+      if (t === "nuevo_inmueble_dueno") return "DUEÑO CARGÓ UNA PROPIEDAD";
+      if (t === "inmueble_lista") return "INMUEBLE MARCADO LISTA";
+      if (t === "inmueble_publicada") return "INMUEBLE MARCADO PUBLICADA";
+      if (t === "nueva_oportunidad") return "NUEVA OPORTUNIDAD CARGADA";
+      if (t === "nueva_demanda") return "NUEVA DEMANDA CARGADA";
+      if (t === "nuevo_radar") return "NUEVO RADAR CALLE";
+      if (t === "nuevo_radar_ia") return "PUBLICACIÓN DETECTADA POR RADAR IA";
+      return "ACTUALIZACIÓN";
+
+    }
+
+    function toastNotif(n){
+      const ttl = tipoTitulo(n);
+      const precio = (Number(n.precio)||0)
+        ? ((n.moneda||"USD") + " " + Number(n.precio).toLocaleString("es-AR"))
+        : "Consultar";
+
+      const desc = [
+        (n.titulo ? `• ${n.titulo}` : ""),
+        (n.zona ? `• Zona: ${n.zona}` : ""),
+        (n.origen ? `• Origen: ${String(n.origen).toUpperCase()}` : ""),
+        `• Precio: ${precio}`
+      ].filter(Boolean).join("\n");
+
+      const t = document.createElement("div");
+      t.className = "toast";
+
+      const isOpor = String(n.estadoPublicacion || "").toLowerCase() === "oportunidad"
+        || String(n.tipo || "").toLowerCase() === "nueva_oportunidad";
+
+      const linkVer = (typeof n.indexInmueble === "number")
+        ? (isOpor ? `/oportunidad-ver.html?index=${n.indexInmueble}` : `/ver.html?index=${n.indexInmueble}`)
+        : null;
+
+      t.innerHTML = `
+        <div class="top">
+          <div>
+            <div class="ttl">🔔 ${ttl}</div>
+            <div class="desc">${desc}</div>
+          </div>
+          <button class="x" aria-label="Cerrar">×</button>
+        </div>
+        <div class="actions">
+          ${linkVer ? `<a href="${linkVer}">Ver</a>` : ""}
+          <a href="/marketing.html">Ir a Marketing</a>
+        </div>
+      `;
+
+      t.querySelector(".x").addEventListener("click", () => t.remove());
+      toastWrap.appendChild(t);
+      setTimeout(() => { if (t.parentNode) t.remove(); }, 12000);
+    }
+
+    function pollNotifs(){
+      fetch(`/api/notificaciones?since=${lastTs}`)
+        .then(r => r.json())
+        .then(data => {
+          const items = (data && data.items) ? data.items : [];
+          if (items.length === 0) return;
+
+          const maxTs = Math.max(...items.map(x => Number(x.ts||0)));
+          if (maxTs > lastTs){
+            lastTs = maxTs;
+            localStorage.setItem(LS_KEY_LAST_TS, String(lastTs));
+          }
+
+          unseen += items.length;
+          renderBell();
+
+          safePlaySound();
+          items.slice(-3).forEach(toastNotif);
+        })
+        .catch(()=>{});
+    }
+
+    bellBtn.addEventListener("click", () => {
+      safePlaySound();
+      unseen = 0;
+      renderBell();
+    });
+
+    setInterval(pollNotifs, 5000);
+    setTimeout(pollNotifs, 1200);
+
+    // ==========================
+    // DASHBOARD DATA + tabla
+    // ==========================
+    async function fetchJson(url){
+      const r = await fetch(url);
+      const txt = await r.text();
+      if (!txt) return null;
+      try { return JSON.parse(txt); } catch { return null; }
+    }
+
+    async function actualizarDashboard(){
+      const inmuebles = await fetchJson("/api/inmuebles");
+      const compradores = await fetchJson("/api/compradores");
+
+      if (!Array.isArray(inmuebles)) {
+        console.warn("API /api/inmuebles no respondió JSON válido. Revisar server.js.");
+      }
+      if (!Array.isArray(compradores)) {
+        console.warn("API /api/compradores no respondió JSON válido. Revisar server.js.");
+      }
+
+      const inm = Array.isArray(inmuebles) ? inmuebles : [];
+      const comp = Array.isArray(compradores) ? compradores : [];
+
+      const total = inm.length;
+      let valorTotal = 0;
+      let totalLeads = 0;
+
+      inm.forEach(i => {
+        valorTotal += Number(i.precio) || 0;
+        if (Array.isArray(i.leads)) totalLeads += i.leads.length;
+      });
+
+      const promedio = total > 0 ? (valorTotal / total) : 0;
+
+      document.getElementById("totalInmuebles").innerText = total;
+      document.getElementById("valorTotal").innerText = "$" + valorTotal.toFixed(0);
+      document.getElementById("precioPromedio").innerText = "$" + promedio.toFixed(0);
+      document.getElementById("totalLeads").innerText = totalLeads;
+      document.getElementById("totalCompradores").innerText = comp.length;
+
+      const tbody = document.getElementById("tablaBody");
+      tbody.innerHTML = "";
+
+      inm.forEach((i, index) => {
+        const tr = document.createElement("tr");
+
+        const precioNum = Number(i.precio || 0);
+        const precioTexto = (precioNum > 0)
+          ? ((i.moneda || "USD") + " " + precioNum.toLocaleString("es-AR"))
+          : "Consultar";
+
+        const cantLeads = Array.isArray(i.leads) ? i.leads.length : 0;
+        const estado = i.estadoPublicacion || "borrador";
+        const vecesPub = typeof i.cantidadPublicificaciones === "number" ? i.cantidadPublicificaciones : 0;
+
+        const thumb = (Array.isArray(i.imagenes) && i.imagenes.length)
+          ? ("/uploads/" + i.imagenes[0])
+          : "";
+
+        const esOportunidad = String(estado).toLowerCase() === "oportunidad";
+
+        const verLink = esOportunidad
+          ? `/oportunidad-ver.html?index=${index}`
+          : `/ver.html?index=${index}`;
+
+        const tituloHtml = esOportunidad
+          ? `🟡 ${(i.titulo || "").toString()} <span class="badge-op">OPORTUNIDAD · ${String(i.origen || "").toUpperCase()}</span>`
+          : (i.titulo || "");
+
+        tr.innerHTML = `
+          <td class="titulo-cell">
+            <span class="titulo-text">${tituloHtml}</span>
+            <div class="thumb-pop">
+              ${thumb
+                ? `<img src="${thumb}" alt="Miniatura">`
+                : `<div style="padding:10px;color:#666;font-size:12px;">Sin fotos</div>`
+              }
+              <div class="meta">
+                <span>${estado}</span>
+                <span>${precioTexto}</span>
+              </div>
+            </div>
+          </td>
+          <td>${(i.tipoOperacion || "").toUpperCase()}</td>
+          <td>${precioTexto}</td>
+          <td>${i.creadoPor || "-"}</td>
+          <td>${cantLeads}</td>
+          <td>${estado}</td>
+          <td>${vecesPub}</td>
+          <td>
+            <a href="${verLink}" class="link-ver">Ver</a>
+            <a href="/editar.html?index=${index}" class="link-ver">Editar</a>
+
+            <form action="/publicar/${index}" method="POST" style="display:inline; margin-left:4px;">
+              <button class="btn btn-ok" type="submit">Marcar lista</button>
+            </form>
+
+            <form action="/publicada/${index}" method="POST" style="display:inline; margin-left:4px;">
+              <button class="btn btn-az" type="submit">Marcar publicada</button>
+            </form>
+
+            <form action="/eliminar/${index}" method="POST" style="display:inline; margin-left:4px;">
+              <button class="btn btn-del" type="submit">Eliminar</button>
+            </form>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+
+        const cell = tr.querySelector(".titulo-cell");
+        const pop  = tr.querySelector(".thumb-pop");
+        const tit  = tr.querySelector(".titulo-text");
+
+        cell.addEventListener("mouseenter", () => { if(pop) pop.style.display="block"; });
+        cell.addEventListener("mouseleave", () => { if(pop) pop.style.display="none"; });
+
+        tit.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (!pop) return;
+          pop.style.display = (pop.style.display === "block") ? "none" : "block";
+        });
+      });
+    }
+
+    document.addEventListener("click", (ev) => {
+      document.querySelectorAll(".thumb-pop").forEach(pop => {
+        const cell = pop.closest(".titulo-cell");
+        if (cell && !cell.contains(ev.target)) pop.style.display = "none";
+      });
+    });
+
+    window.addEventListener("load", actualizarDashboard);
+  </script>
+</body>
+</html>

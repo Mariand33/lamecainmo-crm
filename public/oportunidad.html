@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nueva Oportunidad - EQUIPO BUZZACCHI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;padding:16px;}
+    .wrap{max-width:900px;margin:0 auto;background:#fff;border-radius:14px;padding:18px;box-shadow:0 6px 22px rgba(0,0,0,.10);}
+    h1{margin:0 0 8px 0;font-size:22px;}
+    .muted{color:#6b7280;font-size:13px;margin:0 0 12px 0;line-height:1.35;}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;}
+    label{font-size:12px;font-weight:700;display:block;margin-bottom:5px;color:#374151;}
+    input,select,textarea{width:100%;padding:8px 10px;border-radius:10px;border:1px solid #d1d5db;font-size:13px;background:#fff;}
+    textarea{min-height:90px;resize:vertical;}
+    .full{grid-column:1/-1;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .btn{
+      border:none;border-radius:12px;padding:10px 14px;font-size:13px;cursor:pointer;
+      background:#0e6b4d;color:#fff;font-weight:700;
+    }
+    .btn:hover{opacity:.95;}
+    .btn-sec{background:#111827;}
+    .preview{
+      margin-top:12px;border:1px dashed #cbd5e1;border-radius:14px;padding:12px;background:#f8fafc;
+      display:flex;gap:12px;align-items:flex-start;
+    }
+    .preview img{width:140px;height:92px;border-radius:12px;object-fit:cover;background:#e5e7eb;display:none;}
+    .preview .txt{font-size:13px;color:#111827;line-height:1.35;}
+    .pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;background:#e0f2fe;color:#075985;font-size:11px;font-weight:700;}
+    .hint{font-size:12px;color:#6b7280;margin-top:6px;line-height:1.35;}
+    @media(max-width:720px){.grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Nueva Oportunidad</h1>
+    <p class="muted">
+      Cargá rápido publicaciones externas (Marketplace / IG / LinkedIn / Grupos) para que entren al motor de match.
+      <br>Tip: podés subir <b>1 foto</b> (captura) para reconocerla sin bajar 20 imágenes.
+    </p>
+
+    <!-- IMPORTANTE:
+         - Dejamos enctype="multipart/form-data" porque hay upload de "thumb".
+         - Agregamos "titulo" (ANTES te rompía por "reading 'titulo'"). -->
+    <form id="formOportunidad" action="/oportunidad" method="POST" enctype="multipart/form-data">
+      <div class="grid">
+
+        <div class="full">
+          <label>Título (obligatorio)</label>
+          <input type="text" name="titulo" id="titulo" placeholder="Ej: Duplex Banda Norte / Casa 3 dorm Centro" required />
+          <div class="hint">Tip: si completás Tipo + Zona, te lo arma solo (podés editarlo).</div>
+        </div>
+
+        <div>
+          <label>Fuente</label>
+          <select name="origen" id="origen">
+            <option value="marketplace">Marketplace</option>
+            <option value="instagram">Instagram</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="grupo">Grupo</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Link publicación</label>
+          <!-- este name debe coincidir con el server: req.body.linkPublicacion -->
+          <input type="url" name="linkPublicacion" id="linkPublicacion" placeholder="https://..." />
+        </div>
+
+        <div>
+          <label>Operación</label>
+          <select name="tipoOperacion" id="tipoOperacion">
+            <option value="venta">Venta</option>
+            <option value="alquiler">Alquiler</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Tipo (casa/depto/terreno/local)</label>
+          <input type="text" name="tipoPropiedad" id="tipoPropiedad" placeholder="Casa / Depto / Terreno..." />
+        </div>
+
+        <div>
+          <label>Zona / Barrio</label>
+          <input type="text" name="zona" id="zona" placeholder="Banda Norte, Centro, etc." />
+        </div>
+
+        <div>
+          <label>Dirección (si la conocés)</label>
+          <input type="text" name="direccion" id="direccion" placeholder="Calle 123..." />
+        </div>
+
+        <div>
+          <label>Precio</label>
+          <input type="number" name="precio" id="precio" placeholder="67000" />
+        </div>
+
+        <div>
+          <label>Moneda</label>
+          <select name="moneda" id="moneda">
+            <option value="USD">USD</option>
+            <option value="ARS">ARS</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Dormitorios</label>
+          <input type="number" name="dormitorios" id="dormitorios" placeholder="2" />
+        </div>
+
+        <div>
+          <label>Baños</label>
+          <input type="number" name="banos" id="banos" placeholder="1" />
+        </div>
+
+        <div class="full">
+          <label>Descripción / Texto copiado (opcional)</label>
+          <textarea name="descripcion" id="descripcion" placeholder="Pegá el texto del post acá..."></textarea>
+        </div>
+
+        <div class="full">
+          <label>Foto principal (opcional, 1 imagen/captura)</label>
+          <!-- este name debe coincidir con multer.single("thumb") en el server -->
+          <input type="file" name="thumb" accept="image/*" id="thumb" />
+        </div>
+
+        <div class="full row" style="justify-content:space-between;">
+          <button class="btn" type="submit">Guardar oportunidad</button>
+          <a class="btn btn-sec" href="/dashboard.html" style="text-decoration:none;display:inline-flex;align-items:center;">Volver</a>
+        </div>
+      </div>
+
+      <div class="preview" id="previewBox">
+        <img id="previewImg" alt="Preview" />
+        <div class="txt">
+          <div style="margin-bottom:6px;">
+            <span class="pill">Preview</span>
+          </div>
+          <div id="previewText">Cargá un link y/o una foto para reconocer rápido la oportunidad.</div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  const link  = document.getElementById("linkPublicacion");
+  const thumb = document.getElementById("thumb");
+  const img   = document.getElementById("previewImg");
+  const txt   = document.getElementById("previewText");
+
+  const titulo   = document.getElementById("titulo");
+  const tipoProp = document.getElementById("tipoPropiedad");
+  const zona     = document.getElementById("zona");
+  const oper     = document.getElementById("tipoOperacion");
+
+  // Autogenera título si está vacío
+  function sugerirTitulo(){
+    if ((titulo.value || "").trim()) return; // si ya escribió, no pisamos
+    const t = (tipoProp.value || "").trim();
+    const z = (zona.value || "").trim();
+    const o = (oper.value || "").trim();
+    const opTxt = o ? (o === "alquiler" ? "Alquiler" : "Venta") : "";
+    const parts = [];
+    if (t) parts.push(t);
+    if (z) parts.push(z);
+    let base = parts.join(" · ");
+    if (!base) base = "Oportunidad";
+    if (opTxt) base = base + " (" + opTxt + ")";
+    titulo.value = base;
+  }
+
+  tipoProp.addEventListener("input", sugerirTitulo);
+  zona.addEventListener("input", sugerirTitulo);
+  oper.addEventListener("change", sugerirTitulo);
+
+  link.addEventListener("input", () => {
+    const v = (link.value || "").trim();
+    if (v) txt.textContent = "Link: " + v;
+    else txt.textContent = "Cargá un link y/o una foto para reconocer rápido la oportunidad.";
+  });
+
+  thumb.addEventListener("change", () => {
+    const f = thumb.files && thumb.files[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    img.src = url;
+    img.style.display = "block";
+    if (!txt.textContent || txt.textContent.includes("Cargá un link")) {
+      txt.textContent = "Foto cargada (captura).";
+    }
+  });
+
+  // Antes de enviar: aseguramos título
+  const form = document.getElementById("formOportunidad");
+  if (form) {
+    form.addEventListener("submit", () => {
+      if (!(titulo.value || "").trim()) {
+        sugerirTitulo();
+      }
+    });
+  }
+
+  // Precarga desde querystring (?zona=...&precio=...)
+  (function(){
+    const p = new URLSearchParams(location.search);
+
+    const set = (idOrName, val) => {
+      let el = document.getElementById(idOrName);
+      if (!el) el = document.querySelector(`[name="${idOrName}"]`);
+      if (!el) return;
+      if (val === null || val === undefined) return;
+      const s = String(val).trim();
+      if (!s) return;
+      el.value = s;
+    };
+
+    set("origen", p.get("origen"));
+    set("linkPublicacion", p.get("linkPublicacion"));
+    set("tipoOperacion", p.get("tipoOperacion"));
+    set("tipoPropiedad", p.get("tipoPropiedad"));
+    set("zona", p.get("zona"));
+    set("direccion", p.get("direccion"));
+    set("precio", p.get("precio"));
+    set("moneda", p.get("moneda"));
+    set("descripcion", p.get("descripcion"));
+
+    // si precargó campos, sugerimos título
+    sugerirTitulo();
+
+    // actualiza preview si vino link
+    const v = (link.value || "").trim();
+    if (v) txt.textContent = "Link: " + v;
+  })();
+</script>
+</body>
+</html>

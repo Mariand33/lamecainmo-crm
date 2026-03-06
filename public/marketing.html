@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel Marketing - EQUIPO BUZZACCHI</title>
+  <style>
+<style>
+  /* ===== Sidebar Search + Cursor ===== */
+  .side-top{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:14px;
+    margin-bottom:10px;
+  }
+
+  .side-search{
+    position:relative;
+  }
+
+  .side-search input{
+    width:100%;
+    padding:10px 12px 10px 36px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.10);
+    color:#fff;
+    outline:none;
+    font-size:13px;
+  }
+  .side-search input::placeholder{ color:rgba(255,255,255,0.75); }
+
+  .side-search .icon{
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:14px;
+    opacity:.9;
+    pointer-events:none;
+  }
+
+  .side-search .hint{
+    margin-top:6px;
+    font-size:11px;
+    opacity:.85;
+  }
+
+  /* Cursor / item activo */
+  .sidebar a{
+    position:relative;
+  }
+
+  .sidebar a.active{
+    background: rgba(255,255,255,0.22);
+    font-weight:800;
+  }
+
+  .sidebar a.active::before{
+    content:"";
+    position:absolute;
+    left:-8px;
+    top:8px;
+    bottom:8px;
+    width:4px;
+    border-radius:999px;
+    background:#fff;
+    opacity:.95;
+  }
+
+  /* “sin resultados” */
+  .side-empty{
+    font-size:12px;
+    opacity:.85;
+    margin:6px 2px 0;
+    display:none;
+  }
+
+    :root{
+      --m:#4b3ca7;
+      --m2:#2f256e;
+      --bg:#f4f6f9;
+      --b:#e5e7eb;
+      --ok:#27ae60;
+      --az:#0984e3;
+      --rojo:#e74c3c;
+      --txt:#111827;
+      --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);display:flex;min-height:100vh;color:var(--txt)}
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg,var(--m),var(--m2));
+      color:#fff;padding:18px;display:flex;flex-direction:column
+    }
+    .logo{ text-align:center; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.2); margin-bottom:12px;}
+    .logo img{width:130px;height:auto;display:block;margin:0 auto 8px}
+    .sidebar a{color:#fff;text-decoration:none;padding:10px 12px;border-radius:8px;margin:6px 0;font-size:14px}
+    .sidebar a:hover{background:rgba(255,255,255,0.16)}
+    .content{flex:1;padding:18px;position:relative}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    h1{margin:0;font-size:22px}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    .bell{
+      position:relative;
+      width:40px;height:40px;border-radius:12px;
+      background:#fff;border:1px solid var(--b);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.06);
+      user-select:none;
+    }
+    .bell-badge{
+      position:absolute;top:-6px;right:-6px;
+      background:var(--rojo);color:#fff;border-radius:999px;
+      min-width:20px;height:20px;padding:0 6px;
+      display:none;align-items:center;justify-content:center;
+      font-size:11px;font-weight:700;border:2px solid #fff;
+    }
+
+    .wrap{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+    .card{
+      background:#fff;border:1px solid #eef2f7;border-radius:14px;
+      padding:14px;box-shadow:0 4px 12px rgba(0,0,0,0.06)
+    }
+
+    table{width:100%;border-collapse:collapse;border-radius:12px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:13px;vertical-align:top}
+    thead{background:#f0f0f5}
+    .pill{
+      display:inline-flex;align-items:center;
+      padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700
+    }
+    .pill-lista{background:rgba(39,174,96,0.12);color:var(--ok)}
+    .pill-pub{background:rgba(9,132,227,0.12);color:var(--az)}
+    .btn{
+      border:none;border-radius:8px;padding:6px 10px;cursor:pointer;
+      font-size:12px;color:#fff
+    }
+    .btn-az{background:var(--az)}
+    .btn-ok{background:var(--ok)}
+    .btn-rojo{background:var(--rojo)}
+    .btn:hover{opacity:.92}
+    a.link{color:var(--az);text-decoration:none;font-size:12px;margin-right:10px}
+    a.link:hover{text-decoration:underline}
+
+    /* Toast */
+    .toast-wrap{
+      position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:9999;pointer-events:none;
+    }
+    .toast{
+      width:min(380px, calc(100vw - 32px));
+      background:#0b1220;color:#fff;border-radius:16px;padding:12px;
+      box-shadow:0 16px 40px rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);
+      transform: translateY(20px);opacity:0;animation:toastIn .35s ease forwards;pointer-events:auto;
+    }
+    .toast .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .toast .ttl{font-weight:800;font-size:13px}
+    .toast .desc{margin-top:6px;color:rgba(255,255,255,0.86);font-size:12px;white-space:pre-line;line-height:1.35}
+    .toast .actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .toast a{background:rgba(255,255,255,0.10);color:#fff;text-decoration:none;padding:7px 10px;border-radius:12px;font-size:12px;border:1px solid rgba(255,255,255,0.14)}
+    .toast .x{background:transparent;border:none;color:#fff;cursor:pointer;font-size:18px;opacity:.85}
+    .toast .x:hover{opacity:1}
+    @keyframes toastIn{to{transform:translateY(0);opacity:1}}
+
+    @media (max-width: 900px){
+      body{flex-direction:column}
+      .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}
+      .logo{border-bottom:none;margin-bottom:0;padding-bottom:0}
+      .logo img{width:110px}
+      .content{padding:14px}
+      table{display:block;overflow-x:auto;white-space:nowrap}
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <img src="/logo.png" alt="Buzzacchi">
+      <div style="font-size:11px;opacity:.9;">Panel interno de marketing</div>
+    </div>
+    <a href="/dashboard.html">Dashboard</a>
+    <a href="/form.html">Nuevo Inmueble</a>
+    <a href="/compradores.html">Compradores</a>
+    <a href="/marketing.html">Panel Marketing</a>
+    <a href="/logout">Cerrar sesión</a>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div>
+        <h1>Marketing</h1>
+        <div class="sub">Acá se trabajan propiedades listas y publicadas.</div>
+      </div>
+      <div class="bell" id="bellBtn" title="Notificaciones internas">
+        🔔
+        <div class="bell-badge" id="bellCount">0</div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="card">
+        <h2 style="margin:0 0 10px 0;font-size:16px;">Inmuebles (lista / publicada)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Estado</th>
+              <th>Precio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tb"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <audio id="notifSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+  </audio>
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <script>
+    // ------------------------------
+    // NOTIFICACIONES
+    // ------------------------------
+    const LS_KEY_LAST_TS = "buzz_last_notif_ts";
+    const bellBtn = document.getElementById("bellBtn");
+    const bellCount = document.getElementById("bellCount");
+    const toastWrap = document.getElementById("toastWrap");
+    const notifSound = document.getElementById("notifSound");
+
+    let lastTs = Number(localStorage.getItem(LS_KEY_LAST_TS) || 0);
+    let unseen = 0;
+
+    function safePlaySound(){
+      notifSound.currentTime = 0;
+      notifSound.play().catch(()=>{});
+    }
+
+    function renderBell(){
+      if (unseen > 0){
+        bellCount.style.display = "flex";
+        bellCount.textContent = String(unseen);
+      } else {
+        bellCount.style.display = "none";
+      }
+    }
+
+    function tipoTitulo(n){
+      const t = (n.tipo||"").toLowerCase();
+      if (t === "nuevo_inmueble") return "NUEVO INMUEBLE";
+      if (t === "nuevo_inmueble_dueno") return "DUEÑO CARGÓ PROPIEDAD";
+      if (t === "inmueble_lista") return "MARCADO LISTA";
+      if (t === "inmueble_publicada") return "MARCADO PUBLICADA";
+      return "ACTUALIZACIÓN";
+    }
+
+    function toastNotif(n){
+      const precio = (Number(n.precio)||0)
+        ? ((n.moneda||"USD")+" "+Number(n.precio).toLocaleString("es-AR"))
+        : "Consultar";
+
+      const desc = [
+        (n.titulo ? `• ${n.titulo}` : ""),
+        (n.zona ? `• Zona: ${n.zona}` : ""),
+        (n.operacion ? `• Operación: ${String(n.operacion).toUpperCase()}` : ""),
+        `• Precio: ${precio}`
+      ].filter(Boolean).join("\n");
+
+      const linkVer = (typeof n.indexInmueble === "number") ? `/ver.html?index=${n.indexInmueble}` : null;
+
+      const t = document.createElement("div");
+      t.className = "toast";
+      t.innerHTML = `
+        <div class="top">
+          <div>
+            <div class="ttl">🔔 ${tipoTitulo(n)}</div>
+            <div class="desc">${desc}</div>
+          </div>
+          <button class="x">×</button>
+        </div>
+        <div class="actions">
+          ${linkVer ? `<a href="${linkVer}">Ver propiedad</a>` : ""}
+          <a href="/dashboard.html">Ir a Dashboard</a>
+        </div>
+      `;
+      t.querySelector(".x").addEventListener("click", ()=>t.remove());
+      toastWrap.appendChild(t);
+      setTimeout(()=>{ if(t.parentNode) t.remove(); }, 12000);
+    }
+
+    function pollNotifs(){
+      fetch(`/api/notificaciones?since=${lastTs}`)
+        .then(r=>r.json())
+        .then(data=>{
+          const items = (data && data.items) ? data.items : [];
+          if(items.length===0) return;
+
+          const maxTs = Math.max(...items.map(x=>Number(x.ts||0)));
+          if(maxTs > lastTs){
+            lastTs = maxTs;
+            localStorage.setItem(LS_KEY_LAST_TS, String(lastTs));
+          }
+
+          unseen += items.length;
+          renderBell();
+          safePlaySound();
+          items.slice(-3).forEach(toastNotif);
+        })
+        .catch(()=>{});
+    }
+
+    bellBtn.addEventListener("click", ()=>{
+      safePlaySound();
+      unseen = 0;
+      renderBell();
+    });
+
+    setInterval(pollNotifs, 5000);
+    setTimeout(pollNotifs, 1200);
+
+    // ------------------------------
+    // TABLA MARKETING
+    // ------------------------------
+    function cargarTabla(){
+      fetch("/api/inmuebles")
+        .then(r=>r.json())
+        .then(inmuebles=>{
+          const tb = document.getElementById("tb");
+          tb.innerHTML = "";
+
+          inmuebles.forEach((i, idx)=>{
+            const estado = i.estadoPublicacion || "borrador";
+            if(estado !== "lista" && estado !== "publicada") return;
+
+            const precioNum = Number(i.precio||0);
+            const precio = (i.moneda||"USD") + " " + (isNaN(precioNum) ? 0 : precioNum.toFixed(0));
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${i.titulo || ""}<div style="color:#6b7280;font-size:12px;margin-top:2px;">${i.zona || ""}</div></td>
+              <td>
+                ${estado === "lista"
+                  ? `<span class="pill pill-lista">LISTA</span>`
+                  : `<span class="pill pill-pub">PUBLICADA</span>`}
+              </td>
+              <td>${precio}</td>
+              <td>
+                <a class="link" href="/ver.html?index=${idx}">Ver</a>
+                <a class="link" href="/editar.html?index=${idx}">Editar</a>
+
+                <a class="link" href="/marketing/zip/${idx}">ZIP fotos</a>
+
+                <form action="/publicada/${idx}" method="POST" style="display:inline;">
+                  <button class="btn btn-az" type="submit">Marcar publicada</button>
+                </form>
+              </td>
+            `;
+            tb.appendChild(tr);
+          });
+
+          if(tb.innerHTML.trim()===""){
+            tb.innerHTML = `<tr><td colspan="4" style="color:#6b7280;">No hay inmuebles marcados LISTA o PUBLICADA todavía.</td></tr>`;
+          }
+        })
+        .catch(()=>{});
+    }
+
+    window.addEventListener("load", cargarTabla);
+    // refresco suave
+    setInterval(cargarTabla, 15000);
+  </script>
+</body>
+</html>

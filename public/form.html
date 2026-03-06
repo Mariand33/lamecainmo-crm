@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nuevo inmueble - EQUIPO BUZZACCHI</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      background: #f4f6f9;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(180deg, #6a5acd, #4b3ca7);
+      color: white;
+      padding: 20px;
+    }
+
+    .logo-buzzacchi {
+      text-align: center;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .logo-buzzacchi img {
+      max-width: 130px;
+      height: auto;
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    .logo-frase {
+      font-size: 11px;
+      line-height: 1.3;
+      opacity: 0.95;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    .content {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .card-form {
+      background: white;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 24px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .fila {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .col {
+      flex: 1;
+      min-width: 230px;
+    }
+
+    .grupo {
+      margin-bottom: 10px;
+    }
+
+    .ayuda {
+      font-size: 11px;
+      color: #777;
+      margin-top: -6px;
+      margin-bottom: 8px;
+    }
+
+    button {
+      background: #6c5ce7;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">
+        Confianza, trayectoria y resultados en Río Cuarto
+      </div>
+    </div>
+
+    <a href="dashboard.html">Dashboard</a>
+    <a href="form.html">Nuevo Inmueble</a>
+    <a href="compradores.html">Compradores</a>
+    <a href="filtros.html">Filtros y Búsqueda</a>
+    <a href="/logout">Cerrar sesión</a>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="content">
+    <div class="card-form">
+      <h1>Nuevo inmueble</h1>
+
+      <form action="/guardar" method="POST" enctype="multipart/form-data">
+        <!-- Título + operación -->
+        <div class="fila">
+          <div class="col">
+            <div class="grupo">
+              <label for="titulo">Título / dirección corta</label>
+              <input type="text" id="titulo" name="titulo" placeholder="Ej: Casa en Bolivia 900">
+            </div>
+          </div>
+          <div class="col">
+            <div class="grupo">
+              <label for="tipoOperacion">Tipo de operación</label>
+              <select id="tipoOperacion" name="tipoOperacion">
+                <option value="venta">Venta</option>
+                <option value="alquiler">Alquiler</option>
+                <option value="temporal">Alquiler temporal</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zona + dirección -->
+        <div class="grupo">
+          <label for="zona">Zona / barrio</label>
+          <input type="text" id="zona" name="zona" placeholder="Ej: Banda Norte">
+        </div>
+
+        <div class="grupo">
+          <label for="direccion">Dirección completa</label>
+          <input type="text" id="direccion" name="direccion" placeholder="Calle, número, piso...">
+        </div>
+
+        <!-- Precio + moneda -->
+        <div class="fila">
+          <div class="col">
+            <div class="grupo">
+              <label for="precio">Precio</label>
+              <input type="number" id="precio" name="precio" placeholder="Ej: 150000" step="0.01">
+            </div>
+          </div>
+          <div class="col">
+            <div class="grupo">
+              <label for="moneda">Moneda</label>
+              <select id="moneda" name="moneda">
+                <option value="USD">USD</option>
+                <option value="ARS">ARS</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Superficies y ambientes -->
+        <div class="fila">
+          <div class="col">
+            <div class="grupo">
+              <label for="m2Totales">m² totales</label>
+              <input type="number" id="m2Totales" name="m2Totales" placeholder="Ej: 250">
+            </div>
+          </div>
+          <div class="col">
+            <div class="grupo">
+              <label for="m2Cubiertos">m² cubiertos</label>
+              <input type="number" id="m2Cubiertos" name="m2Cubiertos" placeholder="Ej: 180">
+            </div>
+          </div>
+        </div>
+
+        <div class="fila">
+          <div class="col">
+            <div class="grupo">
+              <label for="dormitorios">Dormitorios</label>
+              <input type="number" id="dormitorios" name="dormitorios" placeholder="Ej: 3">
+            </div>
+          </div>
+          <div class="col">
+            <div class="grupo">
+              <label for="banos">Baños</label>
+              <input type="number" id="banos" name="banos" placeholder="Ej: 2">
+            </div>
+          </div>
+        </div>
+
+        <!-- Descripción comercial -->
+        <div class="grupo">
+          <label for="descripcion">Descripción comercial</label>
+          <textarea id="descripcion" name="descripcion" placeholder="Texto para publicar, puntos fuertes, etc."></textarea>
+        </div>
+
+        <!-- Datos del propietario (interno) -->
+        <div class="fila">
+          <div class="col">
+            <div class="grupo">
+              <label for="propietario">Propietario (uso interno)</label>
+              <input type="text" id="propietario" name="propietario" placeholder="Nombre propietario">
+            </div>
+          </div>
+          <div class="col">
+            <div class="grupo">
+              <label for="telefonoPropietario">Teléfono propietario</label>
+              <input type="text" id="telefonoPropietario" name="telefonoPropietario" placeholder="Ej: 358xxxxxxx">
+            </div>
+          </div>
+        </div>
+
+        <!-- Guion de venta interno -->
+        <div class="grupo">
+          <label for="scriptVenta">Guion de venta interno / notas</label>
+          <textarea id="scriptVenta" name="scriptVenta" placeholder="Argumentos, objeciones, detalles para el equipo."></textarea>
+        </div>
+
+        <!-- Google Maps y multimedia externa -->
+        <div class="grupo">
+          <label for="mapsUrl">URL Google Maps</label>
+          <input type="text" id="mapsUrl" name="mapsUrl" placeholder="Pegá aquí el enlace de Google Maps">
+        </div>
+
+        <div class="grupo">
+          <label for="mediaUrls">Links a videos / tours virtuales (uno por línea)</label>
+          <textarea id="mediaUrls" name="mediaUrls" placeholder="Ej: enlace a YouTube, Matterport, etc."></textarea>
+        </div>
+
+        <!-- Imágenes -->
+        <div class="grupo">
+          <label for="imagenes">Imágenes (podés seleccionar varias)</label>
+          <input type="file" id="imagenes" name="imagenes" multiple>
+<label>Video de la propiedad (opcional)</label>
+<input type="file" name="video" accept="video/*">
+          
+<div class="ayuda">Las imágenes se guardan en la carpeta /uploads.</div>
+        </div>
+
+        <button type="submit">Guardar inmueble</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

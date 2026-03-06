@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiero vender mi propiedad - Vanina Buzzacchi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: white;
+      width: 100%;
+      max-width: 480px;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .logo img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .fila {
+      display: flex;
+      gap: 8px;
+    }
+
+    .col {
+      flex: 1;
+    }
+
+    button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 999px;
+      background: #004b3b;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.95;
+    }
+
+    .legal {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #777;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="logo">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+    </div>
+
+    <h1>Quiero vender mi propiedad</h1>
+
+    <div class="sub">
+      Cargá los datos y fotos de tu propiedad. Un asesor del Equipo Buzzacchi te va a contactar para avanzar con la valuación y la venta.
+    </div>
+
+    <!-- IMPORTANTE: enctype para subir fotos -->
+    <form action="/inmuebles/lead-publico" method="POST" enctype="multipart/form-data">
+
+      <label>Tu nombre y apellido</label>
+      <input type="text" name="nombreDueno" required>
+
+      <label>WhatsApp de contacto</label>
+      <input type="tel" name="telefonoDueno" required>
+
+      <label>Email (opcional)</label>
+      <input type="email" name="emailDueno">
+
+      <div class="fila">
+        <div class="col">
+          <label>Operación</label>
+          <select name="tipoOperacion">
+            <option value="venta">Venta</option>
+            <option value="permuta">Venta con permuta</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label>Tipo de propiedad</label>
+          <select name="tipoPropiedad">
+            <option value="casa">Casa</option>
+            <option value="departamento">Departamento</option>
+            <option value="duplex">Dúplex</option>
+            <option value="terreno">Terreno</option>
+            <option value="local">Local comercial</option>
+            <option value="">Otro / No sé</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Dirección (calle y número / barrio)</label>
+      <input type="text" name="direccion" required>
+
+      <label>Zona / barrio</label>
+      <input type="text" name="zona" placeholder="Ej: Banda Norte, Centro, etc.">
+
+      <div class="fila">
+        <div class="col">
+          <label>Precio estimado</label>
+          <input type="number" name="precio">
+        </div>
+        <div class="col">
+          <label>Moneda</label>
+          <select name="moneda">
+            <option value="USD">USD</option>
+            <option value="ARS">ARS</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fila">
+        <div class="col">
+          <label>m² totales (aprox.)</label>
+          <input type="number" name="m2Totales">
+        </div>
+        <div class="col">
+          <label>Dormitorios</label>
+          <input type="number" name="dormitorios">
+        </div>
+      </div>
+
+      <label>Descripción / detalles importantes</label>
+      <textarea name="descripcion" placeholder="Estado general, cochera, patio, mejoras, etc."></textarea>
+
+      <label>Fotos de la propiedad (hasta 20)</label>
+      <input type="file" name="imagenes" accept="image/*" multiple>
+
+      <input type="hidden" name="origen" value="formulario-dueno">
+      <input type="hidden" name="canal" value="web-publica">
+
+      <button type="submit">Enviar propiedad al Equipo Buzzacchi</button>
+
+      <div class="legal">
+        Tus datos son confidenciales. Sólo los usamos para contactarte por esta propiedad.
+      </div>
+
+    </form>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiero más información</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 420px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 4px;
+      color: #333;
+    }
+    .sub {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 14px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #4b3ca7;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .ok {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #27ae60;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="tituloProp">Propiedad</h1>
+    <div class="sub" id="subProp">Quiero más información sobre esta propiedad.</div>
+
+    <form id="formLead" method="POST">
+      <label>Tu nombre</label>
+      <input type="text" name="nombre" required>
+
+      <label>Teléfono (WhatsApp)</label>
+      <input type="tel" name="telefono" required>
+
+      <label>Email (opcional)</label>
+      <input type="email" name="email">
+
+      <label>Interés</label>
+      <select name="estado">
+        <option value="nuevo">Quiero más info</option>
+        <option value="visita">Quiero coordinar visita</option>
+        <option value="oferta">Estoy evaluando oferta</option>
+      </select>
+
+      <label>Mensaje</label>
+      <textarea name="notas" placeholder="Ej: Me interesa saber forma de pago, financiación, etc."></textarea>
+
+      <button type="submit">Enviar consulta</button>
+      <div class="ok" id="okMsg">¡Gracias! Recibimos tu consulta. Te vamos a contactar.</div>
+    </form>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const index = params.get("index");
+
+    if (!index) {
+      alert("No se indicó qué propiedad es.");
+    } else {
+      // Muestro título de la propiedad
+      fetch("/api/inmuebles")
+        .then(r => r.json())
+        .then(data => {
+          const inm = data[index];
+          if (!inm) return;
+          document.getElementById("tituloProp").innerText = inm.titulo || "Propiedad";
+          document.getElementById("subProp").innerText =
+            (inm.zona ? "Zona " + inm.zona + " · " : "") +
+            "Completá tus datos y te contactamos.";
+        });
+
+      // Configuro la acción del form para ese índice
+      const form = document.getElementById("formLead");
+      form.action = "/leads-public/" + index;
+    }
+
+    // Mensaje de OK sin salir de la página (opcional)
+    const form = document.getElementById("formLead");
+    form.addEventListener("submit", () => {
+      // dejemos que el servidor redireccione; si más adelante queremos AJAX, se cambia
+    });
+  </script>
+</body>
+</html>
