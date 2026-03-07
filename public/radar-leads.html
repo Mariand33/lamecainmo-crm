@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar Leads - EQUIPO BUZZACCHI</title>
+
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --card:#ffffff;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --b:#e5e7eb;
+      --azul:#0984e3;
+      --ok:#27ae60;
+      --rojo:#e74c3c;
+      --amarillo:#f59e0b;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      display:flex;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg, var(--verde1), var(--verde2));
+      color:#fff;
+      padding:18px 16px;
+      overflow:auto;
+    }
+
+    .logo-buzzacchi{
+      text-align:center;
+      margin-bottom:12px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+
+    .logo-buzzacchi img{
+      max-width:130px;
+      height:auto;
+      display:block;
+      margin:0 auto 6px;
+    }
+
+    .logo-frase{
+      font-size:11px;
+      line-height:1.3;
+      opacity:.95;
+    }
+
+    .sidebar nav a{
+      display:block;
+      color:white;
+      text-decoration:none;
+      padding:10px 10px;
+      margin:7px 0;
+      border-radius:10px;
+      font-size:14px;
+    }
+
+    .sidebar nav a:hover{ background:rgba(255,255,255,0.16); }
+
+    .sidebar nav a.active{
+      background:rgba(255,255,255,0.22);
+      font-weight:800;
+    }
+
+    .content{
+      flex:1;
+      padding:24px;
+      overflow:auto;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:26px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:18px;
+      line-height:1.4;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid #eef2f7;
+      border-radius:14px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      padding:16px;
+    }
+
+    .card h3{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+
+    label{
+      display:block;
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:6px;
+      color:#374151;
+    }
+
+    input, select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      background:#fff;
+      outline:none;
+      margin-bottom:12px;
+    }
+
+    textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .btn-primary{ background:var(--verde1); }
+    .btn-blue{ background:var(--azul); }
+    .btn-wa{ background:#25D366; }
+    .btn-dark{ background:#111827; }
+    .btn-ghost{ background:#6b7280; }
+
+    .estado{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      min-height:18px;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .item{
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      background:#fafafa;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      margin-right:8px;
+      margin-bottom:8px;
+    }
+
+    .pill-premium{ background:#ede9fe; color:#6d28d9; }
+    .pill-activo{ background:#dcfce7; color:#166534; }
+    .pill-tibio{ background:#fef3c7; color:#92400e; }
+    .pill-frio{ background:#e5e7eb; color:#374151; }
+
+    .kv{
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:8px;
+      font-size:13px;
+      margin:6px 0;
+      align-items:start;
+    }
+
+    .kv .k{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .texto{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:10px;
+      white-space:pre-wrap;
+      font-size:13px;
+      line-height:1.45;
+      margin-top:10px;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:13px;
+      padding:10px;
+    }
+
+    @media(max-width:900px){
+      body{flex-direction:column;}
+      .sidebar{width:100%;}
+      .content{padding:14px;}
+      .grid{grid-template-columns:1fr;}
+      .kv{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+    </div>
+
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="/radar.html">📡 Radar Calle</a>
+      <a href="/radar-ia.html">🧠 Radar IA</a>
+      <a href="/radar-historial.html">📚 Historial Radar</a>
+      <a href="/radar-leads.html" class="active">🎯 Radar Leads</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="form.html">Nuevo Inmueble</a>
+      <a href="compradores.html">Compradores</a>
+      <a href="/demandas.html">📌 Demandas</a>
+      <a href="filtros.html">Filtros y Búsqueda</a>
+      <a href="marketing.html">Panel Marketing</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <h1>🎯 Radar Leads</h1>
+    <div class="sub">
+      Cargá manualmente leads detectados en Instagram, Marketplace o WhatsApp y buscá propiedades compatibles al instante.
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h3>Nuevo lead</h3>
+
+        <label for="nombre">Nombre / perfil</label>
+        <input type="text" id="nombre" placeholder="Ej: Juan Pérez / @perfil" />
+
+        <label for="telefono">WhatsApp</label>
+        <input type="text" id="telefono" placeholder="Ej: 358..." />
+
+        <label for="instagram">Instagram / link perfil</label>
+        <input type="text" id="instagram" placeholder="Ej: @usuario o https://instagram.com/..." />
+
+        <label for="origen">Origen</label>
+        <select id="origen">
+          <option value="instagram">Instagram</option>
+          <option value="marketplace">Marketplace</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="referido">Referido</option>
+          <option value="otro">Otro</option>
+        </select>
+
+        <label for="tipoPropiedad">Tipo de propiedad buscada</label>
+        <select id="tipoPropiedad">
+          <option value="">No definido</option>
+          <option value="casa">Casa</option>
+          <option value="depto">Depto</option>
+          <option value="terreno">Terreno</option>
+          <option value="local">Local</option>
+          <option value="quinta">Quinta</option>
+        </select>
+
+        <label for="tipoOperacion">Operación</label>
+        <select id="tipoOperacion">
+          <option value="">No definida</option>
+          <option value="venta">Venta</option>
+          <option value="alquiler">Alquiler</option>
+        </select>
+
+        <label for="zona">Zona de interés</label>
+        <input type="text" id="zona" placeholder="Ej: Banda Norte / Centro / Alberdi" />
+
+        <label for="presupuesto">Presupuesto máximo</label>
+        <input type="number" id="presupuesto" placeholder="Ej: 90000" />
+
+        <label for="moneda">Moneda</label>
+        <select id="moneda">
+          <option value="USD">USD</option>
+          <option value="ARS">ARS</option>
+        </select>
+
+        <label for="dormitorios">Dormitorios mínimos</label>
+        <input type="number" id="dormitorios" placeholder="Ej: 3" />
+
+        <label for="nivel">Nivel del lead</label>
+        <select id="nivel">
+          <option value="activo">Activo</option>
+          <option value="premium">Premium</option>
+          <option value="tibio">Tibio</option>
+          <option value="frio">Frío</option>
+        </select>
+
+        <label for="notas">Notas</label>
+        <textarea id="notas" placeholder="Qué preguntó, qué busca, perfil profesional, señales de poder adquisitivo, etc."></textarea>
+
+        <div class="row">
+          <button class="btn btn-primary" id="btnGuardar">Guardar lead</button>
+          <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+        </div>
+
+        <div class="estado" id="estado"></div>
+      </section>
+
+      <section class="card">
+        <h3>Leads cargados</h3>
+        <div id="listaLeads" class="list">
+          <div class="empty">Cargando leads...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const nombre = document.getElementById("nombre");
+    const telefono = document.getElementById("telefono");
+    const instagram = document.getElementById("instagram");
+    const origen = document.getElementById("origen");
+    const tipoPropiedad = document.getElementById("tipoPropiedad");
+    const tipoOperacion = document.getElementById("tipoOperacion");
+    const zona = document.getElementById("zona");
+    const presupuesto = document.getElementById("presupuesto");
+    const moneda = document.getElementById("moneda");
+    const dormitorios = document.getElementById("dormitorios");
+    const nivel = document.getElementById("nivel");
+    const notas = document.getElementById("notas");
+
+    const btnGuardar = document.getElementById("btnGuardar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const estado = document.getElementById("estado");
+    const listaLeads = document.getElementById("listaLeads");
+
+    function pillNivel(n){
+      const v = (n || "").toLowerCase();
+      if (v === "premium") return "pill-premium";
+      if (v === "activo") return "pill-activo";
+      if (v === "tibio") return "pill-tibio";
+      return "pill-frio";
+    }
+
+    function money(mon, val){
+      const n = Number(val || 0);
+      if (!n) return "No definido";
+      return `${(mon || "USD").toUpperCase()} ${n.toLocaleString("es-AR")}`;
+    }
+
+    function formatearFecha(fechaIso){
+      if (!fechaIso) return "Sin fecha";
+      const d = new Date(fechaIso);
+      if (isNaN(d.getTime())) return fechaIso;
+      return d.toLocaleString("es-AR");
+    }
+
+    function buildWhatsappLead(lead){
+      const zonaTxt = lead.zona ? ` en ${lead.zona}` : "";
+      return `Hola, ¿cómo estás?
+
+Te escribo porque ingresó una propiedad que puede encajar con lo que estás buscando${zonaTxt}.
+
+Si querés te paso info y coordinamos visita.`;
+    }
+
+    function renderLeads(items){
+      if (!items.length){
+        listaLeads.innerHTML = `<div class="empty">Todavía no hay leads cargados.</div>`;
+        return;
+      }
+
+      listaLeads.innerHTML = items.map((lead, index) => {
+        const waText = buildWhatsappLead(lead);
+        const waUrl = "https://wa.me/?text=" + encodeURIComponent(waText);
+
+        return `
+          <article class="item">
+            <div>
+              <span class="pill ${pillNivel(lead.nivel)}">${(lead.nivel || "frio").toUpperCase()}</span>
+              <span class="pill pill-activo">${(lead.origen || "otro").toUpperCase()}</span>
+            </div>
+
+            <div class="kv"><div class="k">Nombre / perfil</div><div>${lead.nombre || "-"}</div></div>
+            <div class="kv"><div class="k">WhatsApp</div><div>${lead.telefono || "-"}</div></div>
+            <div class="kv"><div class="k">Instagram</div><div>${lead.instagram || "-"}</div></div>
+            <div class="kv"><div class="k">Operación</div><div>${lead.tipoOperacion || "-"}</div></div>
+            <div class="kv"><div class="k">Tipo propiedad</div><div>${lead.tipoPropiedad || "-"}</div></div>
+            <div class="kv"><div class="k">Zona</div><div>${lead.zona || "-"}</div></div>
+            <div class="kv"><div class="k">Presupuesto</div><div>${money(lead.moneda, lead.presupuestoMax)}</div></div>
+            <div class="kv"><div class="k">Dormitorios</div><div>${lead.dormitoriosMin || "-"}</div></div>
+            <div class="kv"><div class="k">Fecha</div><div>${formatearFecha(lead.fecha)}</div></div>
+
+<div class="texto">${lead.notas || "Sin notas"}</div>
+
+<div class="row">
+  <button class="btn btn-dark" onclick='buscarMatchesLead(${index})'>Buscar matches</button>
+  <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+</div>
+
+<div id="matches-${index}" style="margin-top:12px;"></div> 
+</script>
+</body>
+</html>

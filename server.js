@@ -31,6 +31,7 @@ let demandas = [];
 let notificaciones = [];
 let radarIA = [];
 let vendedoresDetectados = [];
+let radarLeads = [];
 // =========================
 // PATHS (DATA)
 // =========================
@@ -41,6 +42,7 @@ const DEM_FILE = path.join(DATA_DIR, "demandas.json");
 const NOTIF_FILE = path.join(DATA_DIR, "notificaciones.json");
 const RADAR_IA_FILE = path.join(DATA_DIR, "radar_ia.json");
 const VENDEDORES_FILE = path.join(DATA_DIR, "vendedores_detectados.json");
+const RADAR_LEADS_FILE = path.join(DATA_DIR, "radar_leads.json");
 // =========================
 // CREAR DATA + UPLOADS SI NO EXISTE
 // =========================
@@ -966,6 +968,46 @@ app.post("/api/radar-ia/guardar", (req, res) => {
 
   res.json({ ok: true, total: radarIA.length });
 });
+// =========================
+// GUARDAR VENDEDOR DETECTADO
+// =========================
+app.post("/api/vendedores-detectados/guardar", (req, res) => {
+  const body = req.body || {};
+
+  const telefono = String(body.telefono || "").trim();
+  if (!telefono) {
+    return res.status(400).json({ ok: false, error: "Telefono requerido" });
+  }
+
+  const existe = vendedoresDetectados.find(v => String(v.telefono || "").trim() === telefono);
+  if (existe) {
+    return res.json({ ok: true, duplicado: true, total: vendedoresDetectados.length });
+  }
+
+  const nuevo = {
+    nombre: String(body.nombre || "Vendedor detectado").trim(),
+    telefono,
+    zona: String(body.zona || "").trim(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
+    tipoOperacion: String(body.tipoOperacion || "").trim(),
+    precio: Number(body.precio || 0),
+    moneda: String(body.moneda || "ARS").trim().toUpperCase(),
+    textoOriginal: String(body.textoOriginal || "").trim(),
+    origen: "radar ia",
+    estado: "nuevo",
+    fecha: new Date().toISOString()
+  };
+
+  vendedoresDetectados.unshift(nuevo);
+
+  if (vendedoresDetectados.length > 1000) {
+    vendedoresDetectados = vendedoresDetectados.slice(0, 1000);
+  }
+
+  guardarVendedoresDetectados();
+
+  res.json({ ok: true, total: vendedoresDetectados.length });
+});
 
 // =========================
 // RADAR IA - LISTADO
@@ -974,6 +1016,17 @@ app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
 
+
+
+app.post("/api/radar-ia/guardar", (req, res) => {
+  ...
+});
+// =========================
+// LISTAR VENDEDORES DETECTADOS
+// =========================
+app.get("/api/vendedores-detectados", (req, res) => {
+  res.json(vendedoresDetectados);
+});
 // =========================
 // SERVER
 // =========================
