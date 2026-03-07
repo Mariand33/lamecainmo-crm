@@ -30,7 +30,7 @@ let compradores = [];
 let demandas = [];
 let notificaciones = [];
 let radarIA = [];
-
+let vendedoresDetectados = [];
 // =========================
 // PATHS (DATA)
 // =========================
@@ -40,7 +40,7 @@ const COMPR_FILE = path.join(DATA_DIR, "compradores.json");
 const DEM_FILE = path.join(DATA_DIR, "demandas.json");
 const NOTIF_FILE = path.join(DATA_DIR, "notificaciones.json");
 const RADAR_IA_FILE = path.join(DATA_DIR, "radar_ia.json");
-
+const VENDEDORES_FILE = path.join(DATA_DIR, "vendedores_detectados.json");
 // =========================
 // CREAR DATA + UPLOADS SI NO EXISTE
 // =========================
@@ -73,6 +73,7 @@ function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
 function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
 function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
+function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
 
 // =========================
 // CARGAR DATOS
@@ -82,7 +83,7 @@ cargarJSON(COMPR_FILE, compradores);
 cargarJSON(DEM_FILE, demandas);
 cargarJSON(NOTIF_FILE, notificaciones);
 cargarJSON(RADAR_IA_FILE, radarIA);
-
+cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
 // =========================
 // PUSH NOTIFICACION
 // =========================
