@@ -427,14 +427,131 @@ Si querés te paso info y coordinamos visita.`;
             <div class="kv"><div class="k">Dormitorios</div><div>${lead.dormitoriosMin || "-"}</div></div>
             <div class="kv"><div class="k">Fecha</div><div>${formatearFecha(lead.fecha)}</div></div>
 
-<div class="texto">${lead.notas || "Sin notas"}</div>
+            <div class="texto">${lead.notas || "Sin notas"}</div>
 
-<div class="row">
-  <button class="btn btn-dark" onclick='buscarMatchesLead(${index})'>Buscar matches</button>
-  <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
-</div>
+            <div class="row">
+              <button class="btn btn-dark" onclick='buscarMatchesLead(${index})'>Buscar matches</button>
+              <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+            </div>
 
-<div id="matches-${index}" style="margin-top:12px;"></div> 
-</script>
+            <div id="matches-${index}" style="margin-top:12px;"></div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function cargarLeads(){
+      try {
+        const r = await fetch("/api/radar-leads");
+        const data = await r.json();
+        renderLeads(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error(e);
+        listaLeads.innerHTML = `<div class="empty">No se pudieron cargar los leads.</div>`;
+      }
+    }
+
+    async function guardarLead(){
+      const body = {
+        nombre: (nombre.value || "").trim(),
+        telefono: (telefono.value || "").trim(),
+        instagram: (instagram.value || "").trim(),
+        origen: (origen.value || "").trim(),
+        tipoPropiedad: (tipoPropiedad.value || "").trim(),
+        tipoOperacion: (tipoOperacion.value || "").trim(),
+        zona: (zona.value || "").trim(),
+        presupuestoMax: Number(presupuesto.value || 0),
+        moneda: (moneda.value || "USD").trim(),
+        dormitoriosMin: Number(dormitorios.value || 0),
+        nivel: (nivel.value || "activo").trim(),
+        notas: (notas.value || "").trim()
+      };
+
+      if (!body.nombre && !body.telefono && !body.instagram) {
+        estado.textContent = "Cargá al menos nombre, WhatsApp o Instagram.";
+        return;
+      }
+
+      estado.textContent = "Guardando lead...";
+
+      try {
+        const r = await fetch("/api/radar-leads/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await r.json();
+
+        if (!r.ok || !data.ok) {
+          estado.textContent = "No se pudo guardar el lead.";
+          return;
+        }
+
+        estado.textContent = "Lead guardado correctamente ✅";
+        limpiarFormulario();
+        cargarLeads();
+
+      } catch (e) {
+        console.error(e);
+        estado.textContent = "Error al guardar el lead.";
+      }
+    }
+
+    function limpiarFormulario(){
+      nombre.value = "";
+      telefono.value = "";
+      instagram.value = "";
+      origen.value = "instagram";
+      tipoPropiedad.value = "";
+      tipoOperacion.value = "";
+      zona.value = "";
+      presupuesto.value = "";
+      moneda.value = "USD";
+      dormitorios.value = "";
+      nivel.value = "activo";
+      notas.value = "";
+    }
+
+    window.buscarMatchesLead = async function(index){
+      const cont = document.getElementById("matches-" + index);
+      if (!cont) return;
+
+      cont.innerHTML = `<div class="empty">Buscando propiedades compatibles...</div>`;
+
+      try {
+        const r = await fetch("/api/radar-leads/match/" + index);
+        const data = await r.json();
+
+        if (!data.matches || data.matches.length === 0) {
+          cont.innerHTML = `<div class="empty">No se encontraron propiedades compatibles.</div>`;
+          return;
+        }
+
+        cont.innerHTML = data.matches.map(m => `
+          <div class="item" style="margin-top:10px;">
+            <div class="kv"><div class="k">Propiedad</div><div>${m.inmueble.titulo || "-"}</div></div>
+            <div class="kv"><div class="k">Zona</div><div>${m.inmueble.zona || "-"}</div></div>
+            <div class="kv"><div class="k">Precio</div><div>${money(m.inmueble.moneda, m.inmueble.precio)}</div></div>
+            <div class="kv"><div class="k">Score</div><div>${m.score}</div></div>
+            <div class="row">
+              <a class="btn btn-blue" href="/ver.html?index=${m.indexInmueble}" target="_blank">Ver propiedad</a>
+            </div>
+          </div>
+        `).join("");
+      } catch (e) {
+        console.error(e);
+        cont.innerHTML = `<div class="empty">Error al buscar matches.</div>`;
+      }
+    };
+
+    btnGuardar.addEventListener("click", guardarLead);
+    btnLimpiar.addEventListener("click", () => {
+      limpiarFormulario();
+      estado.textContent = "";
+    });
+
+    cargarLeads();
+  </script>
 </body>
 </html>
