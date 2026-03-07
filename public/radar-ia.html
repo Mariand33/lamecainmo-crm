@@ -574,27 +574,42 @@ Trabajo con compradores activos en Río Cuarto.
 
         const data = await r.json();
 
-// guardar en historial
-await fetch("/api/radar-ia/guardar", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    textoOriginal: texto,
-    tipo: data.tipo || "",
-    tipoOperacion: data.campos?.tipoOperacion || "",
-    tipoPropiedad: data.campos?.tipoPropiedad || "",
-    zona: data.campos?.zona || "",
-    precio: data.campos?.precio || 0,
-    moneda: data.campos?.moneda || "ARS",
-    dormitoriosMin: data.campos?.dormitoriosMin || 0,
-    confianza: data.confianza || 0,
-    sugerencia: data.sugerencia || ""
-  })
-});
+        // guardar en historial
+        await fetch("/api/radar-ia/guardar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            textoOriginal: texto,
+            tipo: data.tipo || "",
+            tipoOperacion: data.campos?.tipoOperacion || "",
+            tipoPropiedad: data.campos?.tipoPropiedad || "",
+            zona: data.campos?.zona || "",
+            precio: data.campos?.precio || 0,
+            moneda: data.campos?.moneda || "ARS",
+            dormitoriosMin: data.campos?.dormitoriosMin || 0,
+            confianza: data.confianza || 0,
+            sugerencia: data.sugerencia || ""
+          })
+        });
 
-estadoAnalisis.textContent = "Análisis completado y guardado ✅";
-renderResultado(data, texto);
+        estadoAnalisis.textContent = "Análisis completado y guardado ✅";
+        renderResultado(data, texto);
+
+      } catch (e) {
+        console.error(e);
+        estadoAnalisis.textContent = "Error al analizar.";
+        resultado.innerHTML = `<div style="color:#b91c1c;font-size:13px;">No se pudo analizar la publicación.</div>`;
+      }
+    }
+
+    btnAnalizar.addEventListener("click", analizar);
+
+    btnLimpiar.addEventListener("click", () => {
+      textoPublicacion.value = "";
+      estadoAnalisis.textContent = "";
+      resultado.innerHTML = `<div style="color:#6b7280;font-size:13px;">Todavía no analizaste ninguna publicación.</div>`;
     });
   </script>
 </body>
 </html>
+
