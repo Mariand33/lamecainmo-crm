@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar Historial - EQUIPO BUZZACCHI</title>
+
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --card:#ffffff;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --b:#e5e7eb;
+      --azul:#0984e3;
+      --ok:#27ae60;
+      --rojo:#e74c3c;
+      --amarillo:#f59e0b;
+    }
+
+    *{box-sizing:border-box;}
+
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      display:flex;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg, var(--verde1), var(--verde2));
+      color:#fff;
+      padding:18px 16px;
+      overflow:auto;
+    }
+
+    .logo-buzzacchi{
+      text-align:center;
+      margin-bottom:12px;
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,0.18);
+    }
+
+    .logo-buzzacchi img{
+      max-width:130px;
+      height:auto;
+      display:block;
+      margin:0 auto 6px;
+    }
+
+    .logo-frase{
+      font-size:11px;
+      line-height:1.3;
+      opacity:.95;
+    }
+
+    .sidebar nav a{
+      display:block;
+      color:white;
+      text-decoration:none;
+      padding:10px 10px;
+      margin:7px 0;
+      border-radius:10px;
+      font-size:14px;
+    }
+
+    .sidebar nav a:hover{ background:rgba(255,255,255,0.16); }
+
+    .sidebar nav a.active{
+      background:rgba(255,255,255,0.22);
+      font-weight:800;
+    }
+
+    .content{
+      flex:1;
+      padding:24px;
+      overflow:auto;
+    }
+
+    h1{
+      margin:0 0 6px;
+      font-size:26px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:18px;
+    }
+
+    .toolbar{
+      background:#fff;
+      border:1px solid #eef2f7;
+      border-radius:14px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      padding:14px;
+      display:grid;
+      grid-template-columns:1.2fr .8fr .8fr .8fr;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    input, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid #d1d5db;
+      font-size:14px;
+      background:#fff;
+      outline:none;
+    }
+
+    .list{
+      display:grid;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid #eef2f7;
+      border-radius:14px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      padding:16px;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      margin-right:8px;
+      margin-bottom:8px;
+    }
+
+    .pill-demanda{ background:#dbeafe; color:#1d4ed8; }
+    .pill-oferta{ background:#dcfce7; color:#166534; }
+    .pill-ambigua{ background:#fef3c7; color:#92400e; }
+    .pill-estado{ background:#eef2ff; color:#4338ca; }
+
+    .kv{
+      display:grid;
+      grid-template-columns:150px 1fr;
+      gap:8px;
+      font-size:13px;
+      margin:6px 0;
+      align-items:start;
+    }
+
+    .kv .k{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .texto{
+      margin-top:12px;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #e5e7eb;
+      background:#fafafa;
+      font-size:13px;
+      white-space:pre-wrap;
+      color:#374151;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .btn-primary{ background:var(--verde1); }
+    .btn-blue{ background:var(--azul); }
+    .btn-wa{ background:#25D366; }
+    .btn-dark{ background:#111827; }
+    .btn-ghost{ background:#6b7280; }
+
+    .empty{
+      background:#fff;
+      border:1px dashed #cbd5e1;
+      border-radius:14px;
+      padding:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    @media(max-width:900px){
+      body{ flex-direction:column; }
+      .sidebar{ width:100%; }
+      .content{ padding:14px; }
+      .toolbar{ grid-template-columns:1fr; }
+      .kv{ grid-template-columns:1fr; gap:4px; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo-buzzacchi">
+      <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
+      <div class="logo-frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+    </div>
+
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="/radar.html">📡 Radar Calle</a>
+      <a href="/radar-ia.html">🧠 Radar IA</a>
+      <a href="/radar-historial.html" class="active">📚 Historial Radar</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="form.html">Nuevo Inmueble</a>
+      <a href="compradores.html">Compradores</a>
+      <a href="/demandas.html">📌 Demandas</a>
+      <a href="filtros.html">Filtros y Búsqueda</a>
+      <a href="marketing.html">Panel Marketing</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <h1>📚 Historial Radar IA</h1>
+    <div class="sub">
+      Acá ves todas las publicaciones analizadas por Radar IA, para contactar, convertir en oportunidad o revisar después.
+    </div>
+
+    <section class="toolbar">
+      <input type="text" id="filtroTexto" placeholder="Buscar por zona, tipo, texto o contacto..." />
+      <select id="filtroTipo">
+        <option value="">Todos los tipos</option>
+        <option value="oferta">Oferta</option>
+        <option value="demanda">Demanda</option>
+        <option value="ambigua">Ambigua</option>
+      </select>
+      <select id="filtroOperacion">
+        <option value="">Todas las operaciones</option>
+        <option value="venta">Venta</option>
+        <option value="alquiler">Alquiler</option>
+      </select>
+      <select id="filtroEstado">
+        <option value="">Todos los estados</option>
+        <option value="nuevo">Nuevo</option>
+        <option value="contactado">Contactado</option>
+        <option value="descartado">Descartado</option>
+      </select>
+    </section>
+
+    <section id="lista" class="list">
+      <div class="empty">Cargando historial...</div>
+    </section>
+  </main>
+
+  <script>
+    const lista = document.getElementById("lista");
+    const filtroTexto = document.getElementById("filtroTexto");
+    const filtroTipo = document.getElementById("filtroTipo");
+    const filtroOperacion = document.getElementById("filtroOperacion");
+    const filtroEstado = document.getElementById("filtroEstado");
+
+    let radarItems = [];
+
+    function formatoFecha(fechaIso){
+      if (!fechaIso) return "Sin fecha";
+      const d = new Date(fechaIso);
+      if (isNaN(d.getTime())) return fechaIso;
+      return d.toLocaleString("es-AR");
+    }
+
+    function money(moneda, valor){
+      const n = Number(valor || 0);
+      if (!n) return "No detectado";
+      return `${(moneda || "ARS").toUpperCase()} ${n.toLocaleString("es-AR")}`;
+    }
+
+    function buildWhatsappText(item){
+      const zona = item.zona ? ` en ${item.zona}` : "";
+      const tipo = item.tipoPropiedad ? ` de ${item.tipoPropiedad}` : "";
+      return `Hola, ¿cómo estás?
+
+Vi tu publicación${tipo}${zona}.
+Trabajo con compradores activos en Río Cuarto.
+
+¿La propiedad sigue disponible?`;
+    }
+
+    function buildOportunidadUrl(item){
+      const p = new URLSearchParams();
+
+      p.set("origen", "radar ia");
+      if (item.tipoOperacion) p.set("tipoOperacion", item.tipoOperacion);
+      if (item.tipoPropiedad) p.set("tipoPropiedad", item.tipoPropiedad);
+      if (item.zona) p.set("zona", item.zona);
+      if (item.precio) p.set("precio", item.precio);
+      if (item.moneda) p.set("moneda", item.moneda);
+      if (item.textoOriginal) p.set("descripcion", item.textoOriginal);
+
+      return "/oportunidad.html?" + p.toString();
+    }
+
+    function buildDemandaUrl(item){
+      const p = new URLSearchParams();
+
+      if (item.tipoOperacion) p.set("tipoOperacion", item.tipoOperacion);
+      if (item.tipoPropiedad) p.set("tipoPropiedad", item.tipoPropiedad);
+      if (item.zona) p.set("zona", item.zona);
+      if (item.precio) p.set("presupuestoMax", item.precio);
+      if (item.moneda) p.set("moneda", item.moneda);
+      if (item.dormitoriosMin) p.set("dormitoriosMin", item.dormitoriosMin);
+      if (item.textoOriginal) p.set("notas", item.textoOriginal);
+
+      return "/demandas.html?" + p.toString();
+    }
+
+    function getTipoClass(tipo){
+      const t = (tipo || "").toLowerCase();
+      if (t === "oferta") return "pill-oferta";
+      if (t === "demanda") return "pill-demanda";
+      return "pill-ambigua";
+    }
+
+    function copiarTexto(txt){
+      navigator.clipboard.writeText(txt)
+        .then(() => alert("Mensaje copiado"))
+        .catch(() => alert("No se pudo copiar"));
+    }
+
+    function renderLista(items){
+      if (!items.length) {
+        lista.innerHTML = `<div class="empty">No hay registros para mostrar.</div>`;
+        return;
+      }
+
+      lista.innerHTML = items.map((item, i) => {
+        const tipo = item.tipo || "ambigua";
+        const waText = buildWhatsappText(item);
+        const waUrl = "https://wa.me/?text=" + encodeURIComponent(waText);
+        const oportunidadUrl = buildOportunidadUrl(item);
+        const demandaUrl = buildDemandaUrl(item);
+
+        let acciones = `
+          <button class="btn btn-dark" onclick='copiarTextoGlobal(${JSON.stringify(waText)})'>Copiar mensaje</button>
+          <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+        `;
+
+        if (tipo === "oferta") {
+          acciones += `<a class="btn btn-blue" href="${oportunidadUrl}">Crear oportunidad</a>`;
+        }
+
+        if (tipo === "demanda") {
+          acciones += `<a class="btn btn-primary" href="${demandaUrl}">Crear demanda</a>`;
+        }
+
+        return `
+          <article class="card">
+            <div class="top">
+              <div>
+                <span class="pill ${getTipoClass(tipo)}">${(tipo || "ambigua").toUpperCase()}</span>
+                <span class="pill pill-estado">Estado: ${(item.estado || "nuevo").toUpperCase()}</span>
+                <span class="pill pill-estado">Confianza: ${Number(item.confianza || 0)}%</span>
+              </div>
+              <div style="color:#6b7280;font-size:12px;">${formatoFecha(item.fecha)}</div>
+            </div>
+
+            <div class="kv"><div class="k">Operación</div><div>${item.tipoOperacion || "No detectada"}</div></div>
+            <div class="kv"><div class="k">Tipo propiedad</div><div>${item.tipoPropiedad || "No detectado"}</div></div>
+            <div class="kv"><div class="k">Zona</div><div>${item.zona || "No detectada"}</div></div>
+            <div class="kv"><div class="k">Precio</div><div>${money(item.moneda, item.precio)}</div></div>
+            <div class="kv"><div class="k">Dormitorios</div><div>${item.dormitoriosMin || "No detectado"}</div></div>
+            <div class="kv"><div class="k">Contacto</div><div>${item.contacto || "No detectado"}</div></div>
+            <div class="kv"><div class="k">Sugerencia IA</div><div>${item.sugerencia || "Sin sugerencia"}</div></div>
+
+            <div class="texto">${item.textoOriginal || "Sin texto original"}</div>
+
+            <div class="row">
+              ${acciones}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function aplicarFiltros(){
+      const txt = (filtroTexto.value || "").trim().toLowerCase();
+      const tipo = (filtroTipo.value || "").trim().toLowerCase();
+      const operacion = (filtroOperacion.value || "").trim().toLowerCase();
+      const estado = (filtroEstado.value || "").trim().toLowerCase();
+
+      const filtrados = radarItems.filter(item => {
+        const textoCompleto = [
+          item.textoOriginal,
+          item.zona,
+          item.tipoPropiedad,
+          item.tipoOperacion,
+          item.contacto,
+          item.estado
+        ].join(" ").toLowerCase();
+
+        const okTexto = !txt || textoCompleto.includes(txt);
+        const okTipo = !tipo || (item.tipo || "").toLowerCase() === tipo;
+        const okOperacion = !operacion || (item.tipoOperacion || "").toLowerCase() === operacion;
+        const okEstado = !estado || (item.estado || "").toLowerCase() === estado;
+
+        return okTexto && okTipo && okOperacion && okEstado;
+      });
+
+      renderLista(filtrados);
+    }
+
+    async function cargarHistorial(){
+      lista.innerHTML = `<div class="empty">Cargando historial...</div>`;
+
+      try {
+        const r = await fetch("/api/radar-ia");
+        const data = await r.json();
+
+        radarItems = Array.isArray(data) ? data : [];
+        aplicarFiltros();
+      } catch (e) {
+        console.error(e);
+        lista.innerHTML = `<div class="empty">No se pudo cargar el historial de Radar IA.</div>`;
+      }
+    }
+
+    window.copiarTextoGlobal = copiarTexto;
+
+    filtroTexto.addEventListener("input", aplicarFiltros);
+    filtroTipo.addEventListener("change", aplicarFiltros);
+    filtroOperacion.addEventListener("change", aplicarFiltros);
+    filtroEstado.addEventListener("change", aplicarFiltros);
+
+    cargarHistorial();
+  </script>
+</body>
+</html>
