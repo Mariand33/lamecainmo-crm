@@ -76,7 +76,7 @@ function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
 function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
 function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
-
+function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
 // =========================
 // CARGAR DATOS
 // =========================
@@ -86,6 +86,7 @@ cargarJSON(DEM_FILE, demandas);
 cargarJSON(NOTIF_FILE, notificaciones);
 cargarJSON(RADAR_IA_FILE, radarIA);
 cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
+cargarJSON(RADAR_LEADS_FILE, radarLeads);
 // =========================
 // PUSH NOTIFICACION
 // =========================
