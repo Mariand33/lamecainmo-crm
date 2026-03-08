@@ -1023,6 +1023,39 @@ app.get("/api/radar-ia", (req, res) => {
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
+// ================================
+// RADAR LEADS - LISTAR
+// ================================
+app.get("/api/radar-leads", (req, res) => {
+  res.json(radarLeads);
+});
+
+// ================================
+// RADAR LEADS - GUARDAR
+// ================================
+app.post("/api/radar-leads/guardar", (req, res) => {
+
+  const body = req.body || {};
+
+  const nuevo = {
+    nombre: body.nombre || "",
+    whatsapp: body.whatsapp || "",
+    instagram: body.instagram || "",
+    origen: body.origen || "",
+    tipoPropiedad: body.tipoPropiedad || "",
+    operacion: body.operacion || "",
+    zona: body.zona || "",
+    presupuesto: body.presupuesto || "",
+    dormitorios: body.dormitorios || "",
+    fecha: new Date().toISOString()
+  };
+
+  radarLeads.unshift(nuevo);
+
+  guardarRadarLeads();
+
+  res.json({ ok: true });
+});
 // =========================
 // SERVER
 // =========================
