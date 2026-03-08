@@ -1028,7 +1028,9 @@ app.get("/api/vendedores-detectados", (req, res) => {
 // =========================
 
 const PORT = process.env.PORT || 3000;
-
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
 app.listen(PORT, () => {
   console.log("Servidor corriendo en puerto " + PORT);
 });
