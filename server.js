@@ -1034,28 +1034,93 @@ app.get("/api/radar-leads", (req, res) => {
 // RADAR LEADS - GUARDAR
 // ================================
 app.post("/api/radar-leads/guardar", (req, res) => {
-
   const body = req.body || {};
 
   const nuevo = {
-    nombre: body.nombre || "",
-    whatsapp: body.whatsapp || "",
-    instagram: body.instagram || "",
-    origen: body.origen || "",
-    tipoPropiedad: body.tipoPropiedad || "",
-    operacion: body.operacion || "",
-    zona: body.zona || "",
-    presupuesto: body.presupuesto || "",
-    dormitorios: body.dormitorios || "",
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    instagram: String(body.instagram || "").trim(),
+    origen: String(body.origen || "instagram").trim().toLowerCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
+    zona: String(body.zona || "").trim(),
+    presupuestoMax: Number(body.presupuestoMax || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    dormitoriosMin: Number(body.dormitoriosMin || 0),
+    nivel: String(body.nivel || "activo").trim().toLowerCase(),
+    notas: String(body.notas || "").trim(),
     fecha: new Date().toISOString()
   };
 
   radarLeads.unshift(nuevo);
 
+  if (radarLeads.length > 1000) {
+    radarLeads = radarLeads.slice(0, 1000);
+  }
+
   guardarRadarLeads();
 
-  res.json({ ok: true });
+  res.json({ ok: true, total: radarLeads.length });
 });
+
+// ================================
+// RADAR LEADS - MATCH
+// ================================
+app.get("/api/radar-leads/match/:index", (req, res) => {
+  const idx = Number(req.params.index);
+
+  if (isNaN(idx) || !radarLeads[idx]) {
+    return res.json({ totalMatches: 0, matches: [] });
+  }
+
+  const lead = radarLeads[idx];
+  const zonaL = (lead.zona || "").toLowerCase();
+  const opL = (lead.tipoOperacion || "").toLowerCase();
+  const tipoL = (lead.tipoPropiedad || "").toLowerCase();
+  const presL = Number(lead.presupuestoMax || 0);
+  const dormL = Number(lead.dormitoriosMin || 0);
+
+  const matches = [];
+
+  inmuebles.forEach((inm, i) => {
+    let score = 0;
+
+    const zonaI = (inm.zona || "").toLowerCase();
+    const opI = (inm.tipoOperacion || "").toLowerCase();
+    const tipoI = (
+      (inm.tipoPropiedad || "") + " " +
+      (inm.titulo || "") + " " +
+      (inm.descripcion || "")
+    ).toLowerCase();
+    const precioI = Number(inm.precio || 0);
+    const dormI = Number(inm.dormitorios || 0);
+
+    if (opL && opI && opL === opI) score += 25;
+    if (zonaL && zonaI && zonaI.includes(zonaL)) score += 25;
+    if (tipoL && tipoI.includes(tipoL)) score += 20;
+    if (presL > 0 && precioI > 0 && precioI <= presL * 1.15) score += 20;
+    if (dormL > 0 && dormI >= dormL) score += 10;
+
+    if (score >= 30) {
+      matches.push({
+        indexInmueble: i,
+        score,
+        inmueble: {
+          titulo: inm.titulo || "Sin título",
+          zona: inm.zona || "",
+          precio: inm.precio || 0,
+          moneda: inm.moneda || "USD"
+        }
+      });
+    }
+  });
+
+  matches.sort((a, b) => b.score - a.score);
+
+  res.json({
+    totalMatches: matches.length,
+    matches
+  });
 // =========================
 // SERVER
 // =========================
