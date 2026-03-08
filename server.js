@@ -926,7 +926,38 @@ app.post("/compradores/nuevo", (req, res) => {
 
   res.redirect("/compradores.html");
 });
+// =========================
+// EDITAR COMPRADOR
+// =========================
+app.post("/compradores/editar/:index", (req, res) => {
+  const idx = Number(req.params.index);
 
+  if (isNaN(idx) || !compradores[idx]) {
+    return res.redirect("/compradores.html");
+  }
+
+  compradores[idx] = {
+    ...compradores[idx],
+    nombre: (req.body.nombre || "Sin nombre").trim(),
+    telefono: (req.body.telefono || "").trim(),
+    email: (req.body.email || "").trim(),
+
+    tipoOperacionBuscada: (req.body.tipoOperacionBuscada || "").trim(),
+    tipoPropiedad: (req.body.tipoPropiedad || "").trim(),
+    zonaPreferida: (req.body.zonaPreferida || "").trim(),
+
+    presupuestoMax: Number(req.body.presupuestoMax || 0),
+    moneda: (req.body.moneda || "USD").trim(),
+    dormitoriosMin: Number(req.body.dormitoriosMin || 0),
+
+    estado: (req.body.estado || "tibio").trim(),
+    notas: (req.body.notas || "").trim()
+  };
+
+  guardarCompradores();
+
+  res.redirect("/compradores.html");
+});
 // =========================
 // RADAR IA - GUARDAR DETECCION
 // =========================
