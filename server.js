@@ -1062,6 +1062,7 @@ app.post("/api/radar-leads/guardar", (req, res) => {
   guardarRadarLeads();
 
   res.json({ ok: true, total: radarLeads.length });
+});
 
 // =========================
 // SERVER
