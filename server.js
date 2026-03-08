@@ -74,7 +74,7 @@ function guardarInmuebles() { guardarJSON(INM_FILE, inmuebles); }
 function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
 function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
-function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
+function guardarRadarIA() { guardarJSON(ARCHIVO_RADAR_IA, radarIA); }
 function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
 function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
 // =========================
