@@ -1017,10 +1017,6 @@ app.get("/api/radar-ia", (req, res) => {
 });
 
 
-
-app.post("/api/radar-ia/guardar", (req, res) => {
-  ...
-});
 // =========================
 // LISTAR VENDEDORES DETECTADOS
 // =========================
@@ -1030,6 +1026,7 @@ app.get("/api/vendedores-detectados", (req, res) => {
 // =========================
 // SERVER
 // =========================
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
