@@ -1090,7 +1090,7 @@ app.get("/api/radar-leads", (req, res) => {
 // ================================
 // RADAR LEADS - GUARDAR
 // ================================
-app.post("/api/radar-leads/guardar", (req, res) => {
+app.post("/api/radar-leads/guardar", async (req, res) => {
   const body = req.body || {};
  27e9d42700f54aa7bebf98467a751699329141dc
 
@@ -1109,7 +1109,32 @@ app.post("/api/radar-leads/guardar", (req, res) => {
     notas: String(body.notas || "").trim(),
     fecha: new Date().toISOString()
   };
+const { error } = await supabase
+  .from("leads")
+  .insert([
+    {
+      nombre: nuevo.nombre,
+      telefono: nuevo.telefono,
+      instagram: nuevo.instagram,
+      origen: nuevo.origen,
+     tipoLead: String(body.tipoLead || "indefinido").trim().toLowerCase(),
+      tipo_operacion: nuevo.tipoOperacion,
+      tipo_propiedad: nuevo.tipoPropiedad,
+      zona: nuevo.zona,
+      presupuesto_max: nuevo.presupuestoMax,
+      moneda: nuevo.moneda,
+      dormitorios_min: nuevo.dormitoriosMin,
+      nivel: nuevo.nivel,
+      estado: "nuevo",
+      notas: nuevo.notas,
+      link_fuente: nuevo.instagram || ""
+    }
+  ]);
 
+if (error) {
+  console.error("Error guardando lead en Supabase:", error);
+  return res.status(500).json({ ok: false, error: "Error al guardar lead en base de datos" });
+}
   radarLeads.unshift(nuevo);
 
   if (radarLeads.length > 1000) {
