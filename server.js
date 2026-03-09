@@ -1083,10 +1083,41 @@ app.get("/api/radar-leads", (req, res) => {
 });
 
  HEAD
-// =========================
-// RADAR LEADS - GUARDAR
-// =========================
+// ================================
+// RADAR LEADS - EDITAR
+// ================================
+app.post("/api/radar-leads/editar/:index", (req, res) => {
 
+  const idx = Number(req.params.index);
+  const body = req.body || {};
+
+  if (isNaN(idx) || !radarLeads[idx]) {
+    return res.status(400).json({ ok: false });
+  }
+
+  radarLeads[idx].nombre = String(body.nombre || "").trim();
+  radarLeads[idx].telefono = String(body.telefono || "").trim();
+  radarLeads[idx].instagram = String(body.instagram || "").trim();
+
+  radarLeads[idx].tipoPropiedad = String(body.tipoPropiedad || "").trim().toLowerCase();
+  radarLeads[idx].tipoOperacion = String(body.tipoOperacion || "").trim().toLowerCase();
+
+  radarLeads[idx].zona = String(body.zona || "").trim();
+
+  radarLeads[idx].presupuestoMax = Number(body.presupuestoMax || 0);
+  radarLeads[idx].moneda = String(body.moneda || "USD").trim().toUpperCase();
+
+  radarLeads[idx].dormitoriosMin = Number(body.dormitoriosMin || 0);
+
+  radarLeads[idx].nivel = String(body.nivel || "activo").trim().toLowerCase();
+
+  radarLeads[idx].notas = String(body.notas || "").trim();
+
+  guardarRadarLeads();
+
+  res.json({ ok: true });
+
+});
 // ================================
 // RADAR LEADS - GUARDAR
 // ================================
