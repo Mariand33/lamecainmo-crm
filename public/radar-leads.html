@@ -401,6 +401,7 @@ Si querés te paso info y coordinamos visita.`;
     }
 
     function renderLeads(items){
+window._leadsCache = items;
       if (!items.length){
         listaLeads.innerHTML = `<div class="empty">Todavía no hay leads cargados.</div>`;
         return;
@@ -432,6 +433,7 @@ Si querés te paso info y coordinamos visita.`;
             <div class="row">
               <button class="btn btn-dark" onclick='buscarMatchesLead(${index})'>Buscar matches</button>
               <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+<button class="btn btn-blue" onclick='editarLead(${index})'>Editar</button>
             </div>
 
             <div id="matches-${index}" style="margin-top:12px;"></div>
@@ -475,7 +477,12 @@ Si querés te paso info y coordinamos visita.`;
       estado.textContent = "Guardando lead...";
 
       try {
-        const r = await fetch("/api/radar-leads/guardar", {
+   const editIndex = btnGuardar.dataset.editIndex;
+
+const url = editIndex !== undefined && editIndex !== ""
+  ? "/api/radar-leads/editar/" + editIndex
+  : "/api/radar-leads/guardar";
+``    const r = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
@@ -552,6 +559,29 @@ Si querés te paso info y coordinamos visita.`;
     });
 
     cargarLeads();
+window.editarLead = function(index){
+  const lead = window._leadsCache && window._leadsCache[index];
+  if (!lead) {
+    estado.textContent = "No se pudo abrir el lead para editar.";
+    return;
+  }
+
+  nombre.value = lead.nombre || "";
+  telefono.value = lead.telefono || "";
+  instagram.value = lead.instagram || "";
+  origen.value = lead.origen || "instagram";
+  tipoPropiedad.value = lead.tipoPropiedad || "";
+  tipoOperacion.value = lead.tipoOperacion || "";
+  zona.value = lead.zona || "";
+  presupuesto.value = lead.presupuestoMax || "";
+  moneda.value = lead.moneda || "USD";
+  dormitorios.value = lead.dormitoriosMin || "";
+  nivel.value = lead.nivel || "activo";
+  notas.value = lead.notas || "";
+
+  btnGuardar.dataset.editIndex = index;
+  estado.textContent = "Editando lead #" + index;
+};
   </script>
 </body>
 </html>
