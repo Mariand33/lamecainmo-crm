@@ -76,10 +76,12 @@ function guardarInmuebles() { guardarJSON(INM_FILE, inmuebles); }
 function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
 function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
-function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
+function guardarRadarIA() { guardarJSON(ARCHIVO_RADAR_IA, radarIA); }
 function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
 function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
+<<<<<<< HEAD
 
+27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // CARGAR DATOS
 // =========================
@@ -90,7 +92,10 @@ cargarJSON(NOTIF_FILE, notificaciones);
 cargarJSON(RADAR_IA_FILE, radarIA);
 cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
 cargarJSON(RADAR_LEADS_FILE, radarLeads);
+HEAD
 
+
+ 27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // PUSH NOTIFICACION
 // =========================
@@ -930,7 +935,38 @@ app.post("/compradores/nuevo", (req, res) => {
 
   res.redirect("/compradores.html");
 });
+// =========================
+// EDITAR COMPRADOR
+// =========================
+app.post("/compradores/editar/:index", (req, res) => {
+  const idx = Number(req.params.index);
 
+  if (isNaN(idx) || !compradores[idx]) {
+    return res.redirect("/compradores.html");
+  }
+
+  compradores[idx] = {
+    ...compradores[idx],
+    nombre: (req.body.nombre || "Sin nombre").trim(),
+    telefono: (req.body.telefono || "").trim(),
+    email: (req.body.email || "").trim(),
+
+    tipoOperacionBuscada: (req.body.tipoOperacionBuscada || "").trim(),
+    tipoPropiedad: (req.body.tipoPropiedad || "").trim(),
+    zonaPreferida: (req.body.zonaPreferida || "").trim(),
+
+    presupuestoMax: Number(req.body.presupuestoMax || 0),
+    moneda: (req.body.moneda || "USD").trim(),
+    dormitoriosMin: Number(req.body.dormitoriosMin || 0),
+
+    estado: (req.body.estado || "tibio").trim(),
+    notas: (req.body.notas || "").trim()
+  };
+
+  guardarCompradores();
+
+  res.redirect("/compradores.html");
+});
 // =========================
 // RADAR IA - GUARDAR DETECCION
 // =========================
@@ -1022,23 +1058,41 @@ app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
 
+ HEAD
+
+
+ 27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // LISTAR VENDEDORES DETECTADOS
 // =========================
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
+ HEAD
 
 // =========================
 // RADAR LEADS - LISTAR
 // =========================
+=======
+// ================================
+// RADAR LEADS - LISTAR
+// ================================
+>>>>>>> 27e9d42700f54aa7bebf98467a751699329141dc
 app.get("/api/radar-leads", (req, res) => {
   res.json(radarLeads);
 });
 
+ HEAD
 // =========================
 // RADAR LEADS - GUARDAR
 // =========================
+
+// ================================
+// RADAR LEADS - GUARDAR
+// ================================
+app.post("/api/radar-leads/guardar", (req, res) => {
+  const body = req.body || {};
+ 27e9d42700f54aa7bebf98467a751699329141dc
 
   const nuevo = {
     nombre: String(body.nombre || "").trim(),
@@ -1067,6 +1121,7 @@ app.get("/api/radar-leads", (req, res) => {
   res.json({ ok: true, total: radarLeads.length });
 });
 
+ HEAD
 // =========================
 // RADAR LEADS - MATCH
 // =========================
@@ -1135,5 +1190,16 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
 const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, "0.0.0.0", () => {
+
+// =========================
+// SERVER
+// =========================
+
+const PORT = process.env.PORT || 3000;
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+app.listen(PORT, () => {
+
   console.log("Servidor corriendo en puerto " + PORT);
 });
