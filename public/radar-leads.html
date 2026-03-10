@@ -437,6 +437,7 @@ Si querés te paso info y coordinamos visita.`;
   <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
 <button class="btn btn-primary" onclick='pasarAComprador(${index})'>
 Pasar a comprador
+<button class="btn btn-ghost" onclick='generarPost(${index})'>📣 Generar post</button>
 </button>
 </div>
 
@@ -603,6 +604,53 @@ window.pasarAComprador = async function(index){
   }else{
     alert("No se pudo convertir el lead");
   }
+
+};
+window.generarPost = function(index){
+
+  const lead = window._leadsCache[index];
+
+  if(!lead){
+    alert("No se pudo generar el post");
+    return;
+  }
+
+  const zona = lead.zona || "Río Cuarto";
+  const tipo = lead.tipoPropiedad || "propiedad";
+  const precio = lead.presupuestoMax
+      ? `${lead.moneda || "USD"} ${lead.presupuestoMax}`
+      : "precio razonable";
+
+  const dorm = lead.dormitoriosMin
+      ? `${lead.dormitoriosMin} dormitorios`
+      : "";
+
+  const post1 =
+`Busco ${tipo} en ${zona} para comprar.
+Hasta ${precio}.
+${dorm ? dorm + "." : ""}
+
+Si alguien sabe de alguna me escribe por privado.`;
+
+  const post2 =
+`Consulta real:
+
+¿Se consigue ${tipo} en ${zona} por hasta ${precio}?
+
+Si alguien conoce alguna opción me puede escribir.`;
+
+  const post3 =
+`Estoy buscando ${tipo} en ${zona}.
+Presupuesto hasta ${precio}.
+${dorm ? dorm + "." : ""}
+
+Si sos propietario o conocés alguna, avisame por privado.`;
+
+  const texto = post1 + "\n\n------------------\n\n" + post2 + "\n\n------------------\n\n" + post3;
+
+  navigator.clipboard.writeText(texto);
+
+  alert("Post generado y copiado ✔\nPegalo directo en Facebook.");
 
 };
   </script>
