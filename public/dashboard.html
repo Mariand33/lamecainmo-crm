@@ -396,7 +396,8 @@
       <a href="/radar.html">📡 Radar Calle</a>
       <a href="/radar-ia.html">🧠 Radar IA</a>
       <a href="/radar-leads.html">🎯 Radar Leads</a>
-      <a href="/oportunidad.html">Nueva Oportunidad</a>
+   <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
+   <a href="/oportunidad.html">Nueva Oportunidad</a>
       <a href="/radar-historial.html">📚 Historial Radar</a>
       <a href="form.html">Nuevo Inmueble</a>
       <a href="compradores.html">Compradores</a>
@@ -456,9 +457,9 @@
   <div class="toast-wrap" id="toastWrap"></div>
 
   <script>
-    // ==========================
+
     // MENU: activo + buscador
-    // ==========================
+   
     (function(){
       const search = document.getElementById("menuSearch");
       const empty = document.getElementById("menuEmpty");
@@ -503,9 +504,8 @@
       aplicarFiltro();
     })();
 
-    // ==========================
     // NOTIFICACIONES (polling)
-    // ==========================
+    
     const LS_KEY_LAST_TS = "buzz_last_notif_ts";
     const bellBtn    = document.getElementById("bellBtn");
     const bellCount  = document.getElementById("bellCount");
@@ -623,9 +623,9 @@
     setInterval(pollNotifs, 5000);
     setTimeout(pollNotifs, 1200);
 
-    // ==========================
+
     // DASHBOARD DATA + tabla
-    // ==========================
+  
     async function fetchJson(url){
       const r = await fetch(url);
       const txt = await r.text();
