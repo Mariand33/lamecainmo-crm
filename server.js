@@ -1056,7 +1056,7 @@ app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
 
- LISTAR VENDEDORES DETECTADOS
+//LISTAR VENDEDORES DETECTADOS
 
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
