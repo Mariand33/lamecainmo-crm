@@ -1062,17 +1062,20 @@ app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
 
+// RADAR LEADS - LISTAR
 
- //RADAR LEADS - LISTAR
 
 app.get("/api/radar-leads", (req, res) => {
   res.json(radarLeads);
 });
 
 
- //RADAR LEADS - EDITAR
+
+// RADAR LEADS - EDITAR
+
 
 app.post("/api/radar-leads/editar/:index", (req, res) => {
+
   const idx = Number(req.params.index);
   const body = req.body || {};
 
@@ -1098,13 +1101,21 @@ app.post("/api/radar-leads/editar/:index", (req, res) => {
   };
 
   guardarRadarLeads();
-  res.json({ ok: true, lead: radarLeads[idx] });
+
+  res.json({
+    ok: true,
+    lead: radarLeads[idx]
+  });
+
 });
 
 
- //RADAR LEADS - GUARDAR
+
+// RADAR LEADS - GUARDAR
+
 
 app.post("/api/radar-leads/guardar", async (req, res) => {
+
   const body = req.body || {};
 
   const nuevo = {
@@ -1124,32 +1135,47 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
     fecha: new Date().toISOString()
   };
 
-  const { error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        nombre: nuevo.nombre,
-        telefono: nuevo.telefono,
-        instagram: nuevo.instagram,
-        origen: nuevo.origen,
-        tipo_lead: nuevo.tipoLead,
-        tipo_operacion: nuevo.tipoOperacion,
-        tipo_propiedad: nuevo.tipoPropiedad,
-        zona: nuevo.zona,
-        presupuesto_max: nuevo.presupuestoMax,
-        moneda: nuevo.moneda,
-        dormitorios_min: nuevo.dormitoriosMin,
-        nivel: nuevo.nivel,
-        estado: "nuevo",
-        notas: nuevo.notas,
-        link_fuente: nuevo.instagram || ""
-      }
-    ]);
 
-  if (error) {
-    console.error("Error guardando lead en Supabase:", error);
-    return res.status(500).json({ ok: false, error: "Error al guardar lead en base de datos" });
+  // INTENTAR GUARDAR EN SUPABASE
+  
+
+  try {
+
+    const { error } = await supabase
+      .from("leads")
+      .insert([
+        {
+          nombre: nuevo.nombre,
+          telefono: nuevo.telefono,
+          instagram: nuevo.instagram,
+          origen: nuevo.origen,
+          tipo_lead: nuevo.tipoLead,
+          tipo_operacion: nuevo.tipoOperacion,
+          tipo_propiedad: nuevo.tipoPropiedad,
+          zona: nuevo.zona,
+          presupuesto_max: nuevo.presupuestoMax,
+          moneda: nuevo.moneda,
+          dormitorios_min: nuevo.dormitoriosMin,
+          nivel: nuevo.nivel,
+          estado: "nuevo",
+          notas: nuevo.notas,
+          link_fuente: nuevo.instagram || ""
+        }
+      ]);
+
+    if (error) {
+      console.error("Error Supabase guardando lead:", error);
+    }
+
+  } catch (err) {
+
+    console.error("Error inesperado Supabase:", err);
+
   }
+
+
+  // GUARDAR EN SISTEMA LOCAL
+  
 
   radarLeads.unshift(nuevo);
 
@@ -1159,9 +1185,12 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
 
   guardarRadarLeads();
 
-  res.json({ ok: true, total: radarLeads.length });
-});
+  res.json({
+    ok: true,
+    total: radarLeads.length
+  });
 
+});
 
 //RADAR LEADS - MATCH
 
