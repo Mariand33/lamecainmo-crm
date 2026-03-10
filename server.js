@@ -1054,6 +1054,73 @@ app.post("/api/radar-ia/guardar", (req, res) => {
   res.json({ ok: true, total: radarIA.length });
 });
 
+// RADAR VENDEDORES - LISTAR
+
+app.get("/api/radar-vendedores", (req, res) => {
+  res.json(vendedoresDetectados);
+});
+
+
+// RADAR VENDEDORES - GUARDAR
+
+app.post("/api/radar-vendedores/guardar", (req, res) => {
+  const body = req.body || {};
+
+  const nuevo = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    direccion: String(body.direccion || "").trim(),
+    zona: String(body.zona || "").trim(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    precio: Number(body.precio || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    origen: String(body.origen || "facebook").trim().toLowerCase(),
+    nivel: String(body.nivel || "posible").trim().toLowerCase(),
+    notas: String(body.notas || "").trim(),
+    fecha: new Date().toISOString()
+  };
+
+  vendedoresDetectados.unshift(nuevo);
+
+  if (vendedoresDetectados.length > 1000) {
+    vendedoresDetectados = vendedoresDetectados.slice(0, 1000);
+  }
+
+  guardarVendedoresDetectados();
+
+  res.json({ ok: true, total: vendedoresDetectados.length });
+});
+
+
+// RADAR VENDEDORES - EDITAR
+
+app.post("/api/radar-vendedores/editar/:index", (req, res) => {
+  const idx = Number(req.params.index);
+  const body = req.body || {};
+
+  if (isNaN(idx) || !vendedoresDetectados[idx]) {
+    return res.status(400).json({ ok: false, error: "Vendedor no encontrado" });
+  }
+
+  vendedoresDetectados[idx] = {
+    ...vendedoresDetectados[idx],
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    direccion: String(body.direccion || "").trim(),
+    zona: String(body.zona || "").trim(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    precio: Number(body.precio || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    origen: String(body.origen || "facebook").trim().toLowerCase(),
+    nivel: String(body.nivel || "posible").trim().toLowerCase(),
+    notas: String(body.notas || "").trim(),
+    fechaActualizacion: new Date().toISOString()
+  };
+
+  guardarVendedoresDetectados();
+
+  res.json({ ok: true, vendedor: vendedoresDetectados[idx] });
+});
 
  //GUARDAR VENDEDOR DETECTADO
 
