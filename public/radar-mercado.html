@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radar Mercado</title>
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --azul:#0984e3;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh;}
+    .sidebar{width:260px;background:linear-gradient(180deg,var(--verde1),var(--verde2));color:#fff;padding:18px 16px;overflow:auto;}
+    .sidebar nav a{display:block;color:#fff;text-decoration:none;padding:10px;margin:7px 0;border-radius:10px;font-size:14px;}
+    .sidebar nav a:hover,.sidebar nav a.active{background:rgba(255,255,255,.18);}
+    .content{flex:1;padding:24px;}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 4px 10px rgba(0,0,0,.05);}
+    label{display:block;font-size:12px;font-weight:700;margin-bottom:6px;}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:12px;margin-bottom:12px;}
+    textarea{min-height:120px;resize:vertical;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .btn{border:none;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;text-decoration:none;}
+    .btn-primary{background:var(--verde1);}
+    .btn-blue{background:var(--azul);}
+    .btn-wa{background:#25D366;}
+    .btn-ghost{background:#6b7280;}
+    .estado{margin-top:8px;color:var(--muted);font-size:13px;min-height:18px;}
+    .list{display:grid;gap:12px;}
+    .item{border:1px solid #e5e7eb;border-radius:12px;padding:12px;background:#fafafa;}
+    .kv{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:13px;margin:6px 0;}
+    .k{color:var(--muted);font-weight:700;}
+    .texto{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px;white-space:pre-wrap;font-size:13px;line-height:1.45;margin-top:10px;}
+    @media(max-width:900px){
+      body{flex-direction:column;}
+      .sidebar{width:100%;}
+      .grid{grid-template-columns:1fr;}
+      .kv{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <nav>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/radar-leads.html">🎯 Radar Leads</a>
+      <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
+      <a href="/radar-mercado.html" class="active">🤝 Radar Mercado</a>
+      <a href="/compradores.html">Compradores</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <h1>🤝 Radar Mercado</h1>
+    <p style="color:#6b7280;">Guardá búsquedas y ofertas de colegas para contacto rápido y seguimiento.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h3>Nuevo registro de mercado</h3>
+
+        <label>Nombre colega</label>
+        <input id="nombre" type="text" placeholder="Ej: Fer Guaschino" />
+
+        <label>Teléfono</label>
+        <input id="telefono" type="text" placeholder="Ej: 358..." />
+
+        <label>Inmobiliaria</label>
+        <input id="inmobiliaria" type="text" placeholder="Ej: Inmob X" />
+
+        <label>Tipo</label>
+        <select id="tipo">
+          <option value="demanda">Demanda</option>
+          <option value="oferta">Oferta</option>
+          <option value="dato_mercado">Dato de mercado</option>
+        </select>
+
+        <label>Operación</label>
+        <select id="tipoOperacion">
+          <option value="">No definida</option>
+          <option value="venta">Venta</option>
+          <option value="alquiler">Alquiler</option>
+        </select>
+
+        <label>Tipo propiedad</label>
+        <select id="tipoPropiedad">
+          <option value="">No definido</option>
+          <option value="casa">Casa</option>
+          <option value="depto">Depto</option>
+          <option value="terreno">Terreno</option>
+          <option value="local">Local</option>
+          <option value="quinta">Quinta</option>
+        </select>
+
+        <label>Zona</label>
+        <input id="zona" type="text" placeholder="Ej: Banda Norte / Centro" />
+
+        <label>Presupuesto / precio</label>
+        <input id="presupuesto" type="number" placeholder="Ej: 80000" />
+
+        <label>Moneda</label>
+        <select id="moneda">
+          <option value="USD">USD</option>
+          <option value="ARS">ARS</option>
+        </select>
+
+        <label>Texto original</label>
+        <textarea id="textoOriginal" placeholder="Pegá acá el mensaje del grupo"></textarea>
+
+        <div class="row">
+          <button class="btn btn-primary" id="btnGuardar">Guardar</button>
+          <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+        </div>
+
+        <div class="estado" id="estado"></div>
+      </section>
+
+      <section class="card">
+        <h3>Mensajes guardados</h3>
+        <div id="lista" class="list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const nombre = document.getElementById("nombre");
+    const telefono = document.getElementById("telefono");
+    const inmobiliaria = document.getElementById("inmobiliaria");
+    const tipo = document.getElementById("tipo");
+    const tipoOperacion = document.getElementById("tipoOperacion");
+    const tipoPropiedad = document.getElementById("tipoPropiedad");
+    const zona = document.getElementById("zona");
+    const presupuesto = document.getElementById("presupuesto");
+    const moneda = document.getElementById("moneda");
+    const textoOriginal = document.getElementById("textoOriginal");
+
+    const btnGuardar = document.getElementById("btnGuardar");
+    const btnLimpiar = document.getElementById("btnLimpiar");
+    const estado = document.getElementById("estado");
+    const lista = document.getElementById("lista");
+
+    function limpiarFormulario(){
+      nombre.value = "";
+      telefono.value = "";
+      inmobiliaria.value = "";
+      tipo.value = "demanda";
+      tipoOperacion.value = "";
+      tipoPropiedad.value = "";
+      zona.value = "";
+      presupuesto.value = "";
+      moneda.value = "USD";
+      textoOriginal.value = "";
+      delete btnGuardar.dataset.editIndex;
+    }
+
+    function money(mon, val){
+      const n = Number(val || 0);
+      if (!n) return "No definido";
+      return `${(mon || "USD").toUpperCase()} ${n.toLocaleString("es-AR")}`;
+    }
+
+    function buildWhatsapp(item){
+      const tipoTxt = item.tipoPropiedad || "propiedad";
+      const zonaTxt = item.zona || "Río Cuarto";
+      const presTxt = item.presupuesto ? `${item.moneda || "USD"} ${Number(item.presupuesto).toLocaleString("es-AR")}` : "valor conversable";
+
+      return `Hola, ¿cómo estás?
+
+Vi en el grupo que estabas buscando ${tipoTxt} en ${zonaTxt}${item.tipo === "demanda" ? ` hasta ${presTxt}` : ""}.
+
+Soy Mariano. Tengo una opción que podría encajar con lo que mencionaste.
+
+Si querés te paso info.`;
+    }
+
+    function renderItems(items){
+      window._mercadoCache = items;
+
+      if (!items.length){
+        lista.innerHTML = `<div style="color:#6b7280;">Todavía no hay mensajes cargados.</div>`;
+        return;
+      }
+
+      lista.innerHTML = items.map((item, index) => {
+        const waText = buildWhatsapp(item);
+        const tel = String(item.telefono || "").replace(/\D/g, "");
+        const waUrl = tel ? `https://wa.me/54${tel}?text=${encodeURIComponent(waText)}` : `https://wa.me/?text=${encodeURIComponent(waText)}`;
+
+        return `
+          <article class="item">
+            <div class="kv"><div class="k">Nombre</div><div>${item.nombre || "-"}</div></div>
+            <div class="kv"><div class="k">Teléfono</div><div>${item.telefono || "-"}</div></div>
+            <div class="kv"><div class="k">Inmobiliaria</div><div>${item.inmobiliaria || "-"}</div></div>
+            <div class="kv"><div class="k">Tipo</div><div>${item.tipo || "-"}</div></div>
+            <div class="kv"><div class="k">Operación</div><div>${item.tipoOperacion || "-"}</div></div>
+            <div class="kv"><div class="k">Propiedad</div><div>${item.tipoPropiedad || "-"}</div></div>
+            <div class="kv"><div class="k">Zona</div><div>${item.zona || "-"}</div></div>
+            <div class="kv"><div class="k">Presupuesto</div><div>${money(item.moneda, item.presupuesto)}</div></div>
+            <div class="texto">${item.textoOriginal || "Sin texto original"}</div>
+            <div class="row" style="margin-top:10px;">
+              <button class="btn btn-blue" onclick='editarMercado(${index})'>Editar</button>
+              <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function cargarItems(){
+      try {
+        const r = await fetch("/api/radar-mercado");
+        const data = await r.json();
+        renderItems(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error(e);
+        lista.innerHTML = `<div style="color:#6b7280;">No se pudieron cargar los mensajes.</div>`;
+      }
+    }
+
+    async function guardarItem(){
+      const body = {
+        nombre: (nombre.value || "").trim(),
+        telefono: (telefono.value || "").trim(),
+        inmobiliaria: (inmobiliaria.value || "").trim(),
+        tipo: (tipo.value || "demanda").trim(),
+        tipoOperacion: (tipoOperacion.value || "").trim(),
+        tipoPropiedad: (tipoPropiedad.value || "").trim(),
+        zona: (zona.value || "").trim(),
+        presupuesto: Number(presupuesto.value || 0),
+        moneda: (moneda.value || "USD").trim(),
+        textoOriginal: (textoOriginal.value || "").trim()
+      };
+
+      if (!body.nombre && !body.telefono && !body.textoOriginal) {
+        estado.textContent = "Cargá al menos nombre, teléfono o texto original.";
+        return;
+      }
+
+      estado.textContent = "Guardando...";
+
+      const editIndex = btnGuardar.dataset.editIndex;
+      const url = editIndex !== undefined && editIndex !== ""
+        ? "/api/radar-mercado/editar/" + editIndex
+        : "/api/radar-mercado/guardar";
+
+      try {
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await r.json();
+
+        if (!r.ok || !data.ok) {
+          estado.textContent = "No se pudo guardar.";
+          return;
+        }
+
+        estado.textContent = "Guardado correctamente ✅";
+        limpiarFormulario();
+        cargarItems();
+      } catch (e) {
+        console.error(e);
+        estado.textContent = "Error al guardar.";
+      }
+    }
+
+    window.editarMercado = function(index){
+      const item = window._mercadoCache && window._mercadoCache[index];
+      if (!item) {
+        estado.textContent = "No se pudo abrir para editar.";
+        return;
+      }
+
+      nombre.value = item.nombre || "";
+      telefono.value = item.telefono || "";
+      inmobiliaria.value = item.inmobiliaria || "";
+      tipo.value = item.tipo || "demanda";
+      tipoOperacion.value = item.tipoOperacion || "";
+      tipoPropiedad.value = item.tipoPropiedad || "";
+      zona.value = item.zona || "";
+      presupuesto.value = item.presupuesto || "";
+      moneda.value = item.moneda || "USD";
+      textoOriginal.value = item.textoOriginal || "";
+
+      btnGuardar.dataset.editIndex = index;
+      estado.textContent = "Editando registro #" + index;
+    };
+
+    btnGuardar.addEventListener("click", guardarItem);
+    btnLimpiar.addEventListener("click", () => {
+      limpiarFormulario();
+      estado.textContent = "";
+    });
+
+    cargarItems();
+  </script>
+</body>
+</html>

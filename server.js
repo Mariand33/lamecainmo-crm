@@ -1,7 +1,5 @@
-
- //SERVER.JS (COMPLETO)
- //EQUIPO BUZZACCHI
-
+// SERVER.JS (COMPLETO)
+// EQUIPO BUZZACCHI
 
 const express = require("express");
 const multer = require("multer");
@@ -19,8 +17,8 @@ const supabase = createClient(
 );
 
 
- //USUARIOS
-
+// USUARIOS
+/
 const usuarios = [
   { email: "mariano@inmo.com", password: "1234", rol: "admin" },
   { email: "vanina@inmo.com", password: "1234", rol: "admin" },
@@ -28,8 +26,8 @@ const usuarios = [
   { email: "market@inmo.com", password: "1234", rol: "marketing" }
 ];
 
-
- //ARRAYS (MEMORIA)
+/
+// ARRAYS (MEMORIA)
 
 let inmuebles = [];
 let compradores = [];
@@ -39,7 +37,8 @@ let radarIA = [];
 let vendedoresDetectados = [];
 let radarLeads = [];
 
- //PATHS (DATA)
+
+// PATHS (DATA)
 
 const DATA_DIR = path.join(__dirname, "data");
 const INM_FILE = path.join(DATA_DIR, "inmuebles.json");
@@ -51,16 +50,14 @@ const VENDEDORES_FILE = path.join(DATA_DIR, "vendedores_detectados.json");
 const RADAR_LEADS_FILE = path.join(DATA_DIR, "radar_leads.json");
 
 
- 
- //CREAR DATA + UPLOADS SI NO EXISTE
+// CREAR DATA + UPLOADS SI NO EXISTE
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const UPLOADS_DIR = path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-
-//HELPERS: CARGAR/GUARDAR JSON
+// HELPERS: CARGAR / GUARDAR JSON
 
 function cargarJSON(file, arr) {
   if (!fs.existsSync(file)) return;
@@ -78,16 +75,30 @@ function guardarJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
-function guardarInmuebles() { guardarJSON(INM_FILE, inmuebles); }
-function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
-function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
-function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
-function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
-function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
-function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
+function guardarInmuebles() {
+  guardarJSON(INM_FILE, inmuebles);
+}
+function guardarCompradores() {
+  guardarJSON(COMPR_FILE, compradores);
+}
+function guardarDemandas() {
+  guardarJSON(DEM_FILE, demandas);
+}
+function guardarNotificaciones() {
+  guardarJSON(NOTIF_FILE, notificaciones);
+}
+function guardarRadarIA() {
+  guardarJSON(RADAR_IA_FILE, radarIA);
+}
+function guardarVendedoresDetectados() {
+  guardarJSON(VENDEDORES_FILE, vendedoresDetectados);
+}
+function guardarRadarLeads() {
+  guardarJSON(RADAR_LEADS_FILE, radarLeads);
+}
 
 
- //CARGAR DATOS
+// CARGAR DATOS
 
 cargarJSON(INM_FILE, inmuebles);
 cargarJSON(COMPR_FILE, compradores);
@@ -97,7 +108,8 @@ cargarJSON(RADAR_IA_FILE, radarIA);
 cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
 cargarJSON(RADAR_LEADS_FILE, radarLeads);
 
- //PUSH NOTIFICACION
+
+// PUSH NOTIFICACION
 
 function pushNotif(n) {
   const notif = { id: Date.now(), ts: Date.now(), ...n };
@@ -110,15 +122,14 @@ function pushNotif(n) {
   guardarNotificaciones();
 }
 
-
- //STATIC + PARSERS
+/
+// STATIC + PARSERS
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
- //SESION
+// SESION
 
 app.use(
   session({
@@ -129,7 +140,7 @@ app.use(
 );
 
 
- //MULTER (UPLOADS)
+// MULTER (UPLOADS)
 
 const storage = multer.diskStorage({
   destination: UPLOADS_DIR,
@@ -140,10 +151,11 @@ const storage = multer.diskStorage({
     );
   }
 });
+
 const upload = multer({ storage });
 
 
- //LOGIN / LOGOUT
+// LOGIN / LOGOUT
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -153,8 +165,11 @@ app.post("/login", (req, res) => {
 
   req.session.user = user;
 
-  if (user.rol === "marketing") res.redirect("/marketing.html");
-  else res.redirect("/dashboard.html");
+  if (user.rol === "marketing") {
+    return res.redirect("/marketing.html");
+  }
+
+  return res.redirect("/dashboard.html");
 });
 
 app.get("/logout", (req, res) => {
@@ -162,7 +177,22 @@ app.get("/logout", (req, res) => {
 });
 
 
- //GUARDAR INMUEBLE (con fotos + video opcional)
+// RUTAS DE PAGINAS IMPORTANTES
+
+app.get("/radar-vendedores", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "radar-vendedores.html"));
+});
+
+app.get("/radar-leads", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "radar-leads.html"));
+});
+
+app.get("/radar-ia", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "radar-ia.html"));
+});
+
+
+// GUARDAR INMUEBLE (con fotos + video opcional)
 
 app.post(
   "/guardar",
@@ -225,8 +255,7 @@ app.post(
   }
 );
 
-
-//GUARDAR OPORTUNIDAD
+// GUARDAR OPORTUNIDAD
 
 app.post("/oportunidad", upload.single("thumb"), (req, res) => {
   const body = req.body || {};
@@ -269,7 +298,7 @@ app.post("/oportunidad", upload.single("thumb"), (req, res) => {
 });
 
 
-//RADAR CALLE
+// RADAR CALLE
 
 app.post("/radar", upload.single("thumb"), (req, res) => {
   const body = req.body || {};
@@ -316,8 +345,64 @@ app.post("/radar", upload.single("thumb"), (req, res) => {
   res.redirect("/dashboard.html");
 });
 
+// RADAR MERCADO - LISTAR
 
- //EDITAR INMUEBLE
+app.get("/api/radar-mercado", (req, res) => {
+  if (!Array.isArray(global.radarMercado)) global.radarMercado = [];
+  res.json(global.radarMercado);
+});
+
+// RADAR MERCADO - GUARDAR
+
+app.post("/api/radar-mercado/guardar", (req, res) => {
+  if (!Array.isArray(global.radarMercado)) global.radarMercado = [];
+
+  const body = req.body || {};
+
+  const nuevo = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    inmobiliaria: String(body.inmobiliaria || "").trim(),
+    tipo: String(body.tipo || "demanda").trim().toLowerCase(),
+    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    zona: String(body.zona || "").trim(),
+    presupuesto: Number(body.presupuesto || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    textoOriginal: String(body.textoOriginal || "").trim(),
+    fecha: new Date().toISOString()
+  };
+
+  global.radarMercado.unshift(nuevo);
+
+  if (global.radarMercado.length > 1000) {
+    global.radarMercado = global.radarMercado.slice(0, 1000);
+  }
+
+  res.json({ ok: true, total: global.radarMercado.length });
+});
+
+
+// RADAR MERCADO - EDITAR
+
+app.post("/api/radar-mercado/editar/:index", (req, res) => {
+  if (!Array.isArray(global.radarMercado)) global.radarMercado = [];
+
+  const idx = Number(req.params.index);
+  const body = req.body || {};
+
+  if (isNaN(idx) || !global.radarMercado[idx]) {
+    return res.status(400).json({ ok: false, error: "Registro no encontrado" });
+  }
+
+  global.radarMercado[idx] = {
+    ...global.radarMercado[idx],
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    inmobiliaria: String(body.inmobiliaria || "").trim(),
+    tipo: String(body.tipo || "demanda").trim().toLowerCase(),
+
+// EDITAR INMUEBLE
 
 app.post("/editar/:index", upload.array("imagenes", 20), (req, res) => {
   const idx = Number(req.params.index);
@@ -372,7 +457,8 @@ app.post("/editar/:index", upload.array("imagenes", 20), (req, res) => {
   res.redirect("/ver.html?index=" + idx);
 });
 
- //ELIMINAR FOTO (AJAX)
+
+// ELIMINAR FOTO (AJAX)
 
 app.post("/editar/:index/fotos/eliminar", (req, res) => {
   const idx = Number(req.params.index);
@@ -406,14 +492,14 @@ app.post("/editar/:index/fotos/eliminar", (req, res) => {
 });
 
 
- //API BASICAS
+// API BASICAS
 
 app.get("/api/inmuebles", (req, res) => res.json(inmuebles));
 app.get("/api/compradores", (req, res) => res.json(compradores));
 app.get("/api/demandas", (req, res) => res.json(demandas));
 
 
- //ANALIZAR MENSAJE
+// ANALIZAR MENSAJE
 
 app.post("/api/analizar-mensaje", (req, res) => {
   const textoOriginal = String((req.body && req.body.texto) || "").trim();
@@ -443,12 +529,15 @@ app.post("/api/analizar-mensaje", (req, res) => {
   const levenshtein = (a, b) => {
     a = a || "";
     b = b || "";
-    const m = a.length, n = b.length;
+    const m = a.length;
+    const n = b.length;
     if (!m) return n;
     if (!n) return m;
+
     const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
     for (let i = 0; i <= m; i++) dp[i][0] = i;
     for (let j = 0; j <= n; j++) dp[0][j] = j;
+
     for (let i = 1; i <= m; i++) {
       for (let j = 1; j <= n; j++) {
         const cost = a[i - 1] === b[j - 1] ? 0 : 1;
@@ -459,6 +548,7 @@ app.post("/api/analizar-mensaje", (req, res) => {
         );
       }
     }
+
     return dp[m][n];
   };
 
@@ -468,10 +558,12 @@ app.post("/api/analizar-mensaje", (req, res) => {
 
     options.forEach((opt) => {
       const o = stripAccents(opt).toLowerCase();
+
       if (stripAccents(text).includes(o)) {
         best = { value: opt, score: Math.max(best.score, 95) };
         return;
       }
+
       words.forEach((w) => {
         const dist = levenshtein(w, o);
         const maxLen = Math.max(w.length, o.length);
@@ -486,7 +578,9 @@ app.post("/api/analizar-mensaje", (req, res) => {
 
   let tipoOperacion = "";
   if (has(/(alquil|alquiler|arriendo|renta)/)) tipoOperacion = "alquiler";
-  if (!tipoOperacion && has(/(vendo|venta|vend[eé]|compra|comprar|inversion|u\$s|usd)/)) tipoOperacion = "venta";
+  if (!tipoOperacion && has(/(vendo|venta|vend[eé]|compra|comprar|inversion|u\$s|usd)/)) {
+    tipoOperacion = "venta";
+  }
 
   let tipoPropiedad = "";
   if (has(/(depto|departamento|dpto)/)) tipoPropiedad = "depto";
@@ -505,10 +599,26 @@ app.post("/api/analizar-mensaje", (req, res) => {
   const dormitoriosMin = dormRaw ? Number(dormRaw) : 0;
 
   const BARRIOS_RIO_CUARTO = [
-    "Centro", "Macrocentro", "Banda Norte", "Alberdi", "Las Quintas", "Las Delicias",
-    "Fénix", "Pizarro", "San Martín", "Bimaco", "Jardín", "Barrio Universidad",
-    "Golf", "Las Ferias", "Ameghino", "Abilene", "Industrial", "El Rosal",
-    "Intendente Mestre", "Villa Dalcar"
+    "Centro",
+    "Macrocentro",
+    "Banda Norte",
+    "Alberdi",
+    "Las Quintas",
+    "Las Delicias",
+    "Fénix",
+    "Pizarro",
+    "San Martín",
+    "Bimaco",
+    "Jardín",
+    "Barrio Universidad",
+    "Golf",
+    "Las Ferias",
+    "Ameghino",
+    "Abilene",
+    "Industrial",
+    "El Rosal",
+    "Intendente Mestre",
+    "Villa Dalcar"
   ];
 
   let zonaTxt = pick(/(?:\ben\b|\bzona\b|\bbarrio\b)\s+([a-z0-9ñ\s]{3,50})/);
@@ -540,6 +650,7 @@ app.post("/api/analizar-mensaje", (req, res) => {
   let toleranteTipo = "si";
 
   if (!precio) permitirSinPrecio = "si";
+
   if (tieneHasta) {
     margenArriba = 5;
     margenAbajo = 25;
@@ -599,7 +710,8 @@ app.post("/api/analizar-mensaje", (req, res) => {
   });
 });
 
- //NUEVA DEMANDA
+
+// NUEVA DEMANDA
 
 app.post("/demandas/nuevo", (req, res) => {
   const nueva = {
@@ -639,7 +751,7 @@ app.post("/demandas/nuevo", (req, res) => {
 });
 
 
- //MATCH DEMANDA -> INMUEBLES
+// MATCH DEMANDA -> INMUEBLES
 
 app.get("/api/match-demanda/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -715,7 +827,7 @@ app.get("/api/match-demanda/:index", (req, res) => {
 
     if (presD > 0 && precioI > 0) {
       const diff = Math.abs(precioI - presD);
-      const span = Math.max(1, (presD * (mUp / 100)) + (presD * (mDown / 100)));
+      const span = Math.max(1, presD * (mUp / 100) + presD * (mDown / 100));
       const closeness = 1 - Math.min(1, diff / span);
       score += Math.round(5 + closeness * 20);
     } else if (presD === 0) {
@@ -752,7 +864,8 @@ app.get("/api/match-demanda/:index", (req, res) => {
   res.json({ totalMatches: matches.length, matches });
 });
 
-//ELIMINAR DEMANDA
+
+// ELIMINAR DEMANDA
 
 app.post("/demandas/eliminar/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -764,7 +877,7 @@ app.post("/demandas/eliminar/:index", (req, res) => {
 });
 
 
- //MATCH INMUEBLE -> COMPRADORES
+// MATCH INMUEBLE -> COMPRADORES
 
 app.get("/api/match-inmueble/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -827,7 +940,7 @@ app.get("/api/match-inmueble/:index", (req, res) => {
 });
 
 
- //API NOTIFICACIONES
+// API NOTIFICACIONES
 
 app.get("/api/notificaciones", (req, res) => {
   const since = Number(req.query.since || 0);
@@ -836,7 +949,7 @@ app.get("/api/notificaciones", (req, res) => {
 });
 
 
-//MARCAR LISTA
+// MARCAR LISTA
 
 app.post("/publicar/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -869,7 +982,7 @@ app.post("/publicada/:index", (req, res) => {
 });
 
 
- //ELIMINAR INMUEBLE
+// ELIMINAR INMUEBLE
 
 app.post("/eliminar/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -881,7 +994,7 @@ app.post("/eliminar/:index", (req, res) => {
 });
 
 
- //ZIP DE FOTOS
+// ZIP DE FOTOS
 
 app.get("/marketing/zip/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -904,7 +1017,7 @@ app.get("/marketing/zip/:index", (req, res) => {
 });
 
 
- //NUEVO COMPRADOR
+// NUEVO COMPRADOR
 
 app.post("/compradores/nuevo", (req, res) => {
   const nuevo = {
@@ -934,21 +1047,18 @@ app.post("/compradores/nuevo", (req, res) => {
 });
 
 
-// RADAR LEADS → PASAR A COMPRADOR
-
+// RADAR LEADS -> PASAR A COMPRADOR
 
 app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
-
   const idx = Number(req.params.index);
 
   if (isNaN(idx) || !radarLeads[idx]) {
-    return res.status(400).json({ ok:false, error:"Lead no encontrado" });
+    return res.status(400).json({ ok: false, error: "Lead no encontrado" });
   }
 
   const lead = radarLeads[idx];
 
   const nuevoComprador = {
-
     nombre: lead.nombre || "Sin nombre",
     telefono: lead.telefono || "",
     email: "",
@@ -966,21 +1076,19 @@ app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
 
     creadoPor: req.session.user ? req.session.user.email : "radar",
     fechaAlta: new Date().toLocaleString()
-
   };
 
   compradores.push(nuevoComprador);
-
   guardarCompradores();
 
   res.json({
-    ok:true,
-    comprador:nuevoComprador
+    ok: true,
+    comprador: nuevoComprador
   });
-
 });
 
- //EDITAR COMPRADOR
+
+// EDITAR COMPRADOR
 
 app.post("/compradores/editar/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -1008,11 +1116,11 @@ app.post("/compradores/editar/:index", (req, res) => {
   };
 
   guardarCompradores();
-
   res.redirect("/compradores.html");
 });
 
- //RADAR IA - GUARDAR DETECCION
+
+// RADAR IA - GUARDAR DETECCION
 
 app.post("/api/radar-ia/guardar", (req, res) => {
   const body = req.body || {};
@@ -1054,14 +1162,19 @@ app.post("/api/radar-ia/guardar", (req, res) => {
   res.json({ ok: true, total: radarIA.length });
 });
 
-// RADAR VENDEDORES - LISTAR
+
+// RADAR IA - LISTADO
+
+app.get("/api/radar-ia", (req, res) => {
+  res.json(radarIA);
+});
+
+/
+// RADAR VENDEDORES - PAGINA + API
 
 app.get("/api/radar-vendedores", (req, res) => {
   res.json(vendedoresDetectados);
 });
-
-
-// RADAR VENDEDORES - GUARDAR
 
 app.post("/api/radar-vendedores/guardar", (req, res) => {
   const body = req.body || {};
@@ -1091,9 +1204,6 @@ app.post("/api/radar-vendedores/guardar", (req, res) => {
   res.json({ ok: true, total: vendedoresDetectados.length });
 });
 
-
-// RADAR VENDEDORES - EDITAR
-
 app.post("/api/radar-vendedores/editar/:index", (req, res) => {
   const idx = Number(req.params.index);
   const body = req.body || {};
@@ -1122,7 +1232,8 @@ app.post("/api/radar-vendedores/editar/:index", (req, res) => {
   res.json({ ok: true, vendedor: vendedoresDetectados[idx] });
 });
 
- //GUARDAR VENDEDOR DETECTADO
+
+// VENDEDORES DETECTADOS
 
 app.post("/api/vendedores-detectados/guardar", (req, res) => {
   const body = req.body || {};
@@ -1132,7 +1243,10 @@ app.post("/api/vendedores-detectados/guardar", (req, res) => {
     return res.status(400).json({ ok: false, error: "Telefono requerido" });
   }
 
-  const existe = vendedoresDetectados.find((v) => String(v.telefono || "").trim() === telefono);
+  const existe = vendedoresDetectados.find(
+    (v) => String(v.telefono || "").trim() === telefono
+  );
+
   if (existe) {
     return res.json({ ok: true, duplicado: true, total: vendedoresDetectados.length });
   }
@@ -1162,33 +1276,18 @@ app.post("/api/vendedores-detectados/guardar", (req, res) => {
   res.json({ ok: true, total: vendedoresDetectados.length });
 });
 
-
- //RADAR IA - LISTADO
-
-app.get("/api/radar-ia", (req, res) => {
-  res.json(radarIA);
-});
-
-//LISTAR VENDEDORES DETECTADOS
-
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
 
-// RADAR LEADS - LISTAR
 
+// RADAR LEADS - LISTAR / EDITAR / GUARDAR
 
 app.get("/api/radar-leads", (req, res) => {
   res.json(radarLeads);
 });
 
-
-
-// RADAR LEADS - EDITAR
-
-
 app.post("/api/radar-leads/editar/:index", (req, res) => {
-
   const idx = Number(req.params.index);
   const body = req.body || {};
 
@@ -1219,16 +1318,9 @@ app.post("/api/radar-leads/editar/:index", (req, res) => {
     ok: true,
     lead: radarLeads[idx]
   });
-
 });
 
-
-
-// RADAR LEADS - GUARDAR
-
-
 app.post("/api/radar-leads/guardar", async (req, res) => {
-
   const body = req.body || {};
 
   const nuevo = {
@@ -1248,47 +1340,33 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
     fecha: new Date().toISOString()
   };
 
-
-  // INTENTAR GUARDAR EN SUPABASE
-  
-
   try {
-
-    const { error } = await supabase
-      .from("leads")
-      .insert([
-        {
-          nombre: nuevo.nombre,
-          telefono: nuevo.telefono,
-          instagram: nuevo.instagram,
-          origen: nuevo.origen,
-          tipo_lead: nuevo.tipoLead,
-          tipo_operacion: nuevo.tipoOperacion,
-          tipo_propiedad: nuevo.tipoPropiedad,
-          zona: nuevo.zona,
-          presupuesto_max: nuevo.presupuestoMax,
-          moneda: nuevo.moneda,
-          dormitorios_min: nuevo.dormitoriosMin,
-          nivel: nuevo.nivel,
-          estado: "nuevo",
-          notas: nuevo.notas,
-          link_fuente: nuevo.instagram || ""
-        }
-      ]);
+    const { error } = await supabase.from("leads").insert([
+      {
+        nombre: nuevo.nombre,
+        telefono: nuevo.telefono,
+        instagram: nuevo.instagram,
+        origen: nuevo.origen,
+        tipo_lead: nuevo.tipoLead,
+        tipo_operacion: nuevo.tipoOperacion,
+        tipo_propiedad: nuevo.tipoPropiedad,
+        zona: nuevo.zona,
+        presupuesto_max: nuevo.presupuestoMax,
+        moneda: nuevo.moneda,
+        dormitorios_min: nuevo.dormitoriosMin,
+        nivel: nuevo.nivel,
+        estado: "nuevo",
+        notas: nuevo.notas,
+        link_fuente: nuevo.instagram || ""
+      }
+    ]);
 
     if (error) {
       console.error("Error Supabase guardando lead:", error);
     }
-
   } catch (err) {
-
     console.error("Error inesperado Supabase:", err);
-
   }
-
-
-  // GUARDAR EN SISTEMA LOCAL
-  
 
   radarLeads.unshift(nuevo);
 
@@ -1302,10 +1380,10 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
     ok: true,
     total: radarLeads.length
   });
-
 });
 
-//RADAR LEADS - MATCH
+
+// RADAR LEADS - MATCH
 
 app.get("/api/radar-leads/match/:index", (req, res) => {
   const idx = Number(req.params.index);
@@ -1366,7 +1444,8 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
   });
 });
 
- //SERVER
+
+// SERVER
 
 const PORT = process.env.PORT || 10000;
 
