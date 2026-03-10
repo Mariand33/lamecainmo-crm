@@ -9,8 +9,14 @@ const path = require("path");
 const fs = require("fs");
 const session = require("express-session");
 const archiver = require("archiver");
+const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY
+);
 
 // =========================
 // USUARIOS
@@ -76,12 +82,10 @@ function guardarInmuebles() { guardarJSON(INM_FILE, inmuebles); }
 function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
 function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
-function guardarRadarIA() { guardarJSON(ARCHIVO_RADAR_IA, radarIA); }
+function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
 function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
 function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
-<<<<<<< HEAD
 
-27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // CARGAR DATOS
 // =========================
@@ -92,10 +96,7 @@ cargarJSON(NOTIF_FILE, notificaciones);
 cargarJSON(RADAR_IA_FILE, radarIA);
 cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
 cargarJSON(RADAR_LEADS_FILE, radarLeads);
-HEAD
 
-
- 27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // PUSH NOTIFICACION
 // =========================
@@ -935,6 +936,7 @@ app.post("/compradores/nuevo", (req, res) => {
 
   res.redirect("/compradores.html");
 });
+
 // =========================
 // EDITAR COMPRADOR
 // =========================
@@ -967,6 +969,7 @@ app.post("/compradores/editar/:index", (req, res) => {
 
   res.redirect("/compradores.html");
 });
+
 // =========================
 // RADAR IA - GUARDAR DETECCION
 // =========================
@@ -1058,73 +1061,33 @@ app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
 
- HEAD
-
-
- 27e9d42700f54aa7bebf98467a751699329141dc
 // =========================
 // LISTAR VENDEDORES DETECTADOS
 // =========================
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
- HEAD
 
-// =========================
-// RADAR LEADS - LISTAR
-// =========================
 // ================================
 // RADAR LEADS - LISTAR
 // ================================
- 27e9d42700f54aa7bebf98467a751699329141dc
 app.get("/api/radar-leads", (req, res) => {
   res.json(radarLeads);
 });
 
- HEAD
 // ================================
 // RADAR LEADS - EDITAR
 // ================================
 app.post("/api/radar-leads/editar/:index", (req, res) => {
-
   const idx = Number(req.params.index);
   const body = req.body || {};
 
   if (isNaN(idx) || !radarLeads[idx]) {
-    return res.status(400).json({ ok: false });
+    return res.status(400).json({ ok: false, error: "Lead no encontrado" });
   }
 
-  radarLeads[idx].nombre = String(body.nombre || "").trim();
-  radarLeads[idx].telefono = String(body.telefono || "").trim();
-  radarLeads[idx].instagram = String(body.instagram || "").trim();
-
-  radarLeads[idx].tipoPropiedad = String(body.tipoPropiedad || "").trim().toLowerCase();
-  radarLeads[idx].tipoOperacion = String(body.tipoOperacion || "").trim().toLowerCase();
-
-  radarLeads[idx].zona = String(body.zona || "").trim();
-
-  radarLeads[idx].presupuestoMax = Number(body.presupuestoMax || 0);
-  radarLeads[idx].moneda = String(body.moneda || "USD").trim().toUpperCase();
-
-  radarLeads[idx].dormitoriosMin = Number(body.dormitoriosMin || 0);
-
-  radarLeads[idx].nivel = String(body.nivel || "activo").trim().toLowerCase();
-
-  radarLeads[idx].notas = String(body.notas || "").trim();
-
-  guardarRadarLeads();
-
-  res.json({ ok: true });
-
-});
-// ================================
-// RADAR LEADS - GUARDAR
-// ================================
-app.post("/api/radar-leads/guardar", async (req, res) => {
-  const body = req.body || {};
- 27e9d42700f54aa7bebf98467a751699329141dc
-
-  const nuevo = {
+  radarLeads[idx] = {
+    ...radarLeads[idx],
     nombre: String(body.nombre || "").trim(),
     telefono: String(body.telefono || "").trim(),
     instagram: String(body.instagram || "").trim(),
@@ -1137,34 +1100,63 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
     dormitoriosMin: Number(body.dormitoriosMin || 0),
     nivel: String(body.nivel || "activo").trim().toLowerCase(),
     notas: String(body.notas || "").trim(),
+    fechaActualizacion: new Date().toISOString()
+  };
+
+  guardarRadarLeads();
+  res.json({ ok: true, lead: radarLeads[idx] });
+});
+
+// ================================
+// RADAR LEADS - GUARDAR
+// ================================
+app.post("/api/radar-leads/guardar", async (req, res) => {
+  const body = req.body || {};
+
+  const nuevo = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    instagram: String(body.instagram || "").trim(),
+    origen: String(body.origen || "instagram").trim().toLowerCase(),
+    tipoLead: String(body.tipoLead || "indefinido").trim().toLowerCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
+    zona: String(body.zona || "").trim(),
+    presupuestoMax: Number(body.presupuestoMax || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    dormitoriosMin: Number(body.dormitoriosMin || 0),
+    nivel: String(body.nivel || "activo").trim().toLowerCase(),
+    notas: String(body.notas || "").trim(),
     fecha: new Date().toISOString()
   };
-const { error } = await supabase
-  .from("leads")
-  .insert([
-    {
-      nombre: nuevo.nombre,
-      telefono: nuevo.telefono,
-      instagram: nuevo.instagram,
-      origen: nuevo.origen,
-     tipoLead: String(body.tipoLead || "indefinido").trim().toLowerCase(),
-      tipo_operacion: nuevo.tipoOperacion,
-      tipo_propiedad: nuevo.tipoPropiedad,
-      zona: nuevo.zona,
-      presupuesto_max: nuevo.presupuestoMax,
-      moneda: nuevo.moneda,
-      dormitorios_min: nuevo.dormitoriosMin,
-      nivel: nuevo.nivel,
-      estado: "nuevo",
-      notas: nuevo.notas,
-      link_fuente: nuevo.instagram || ""
-    }
-  ]);
 
-if (error) {
-  console.error("Error guardando lead en Supabase:", error);
-  return res.status(500).json({ ok: false, error: "Error al guardar lead en base de datos" });
-}
+  const { error } = await supabase
+    .from("leads")
+    .insert([
+      {
+        nombre: nuevo.nombre,
+        telefono: nuevo.telefono,
+        instagram: nuevo.instagram,
+        origen: nuevo.origen,
+        tipo_lead: nuevo.tipoLead,
+        tipo_operacion: nuevo.tipoOperacion,
+        tipo_propiedad: nuevo.tipoPropiedad,
+        zona: nuevo.zona,
+        presupuesto_max: nuevo.presupuestoMax,
+        moneda: nuevo.moneda,
+        dormitorios_min: nuevo.dormitoriosMin,
+        nivel: nuevo.nivel,
+        estado: "nuevo",
+        notas: nuevo.notas,
+        link_fuente: nuevo.instagram || ""
+      }
+    ]);
+
+  if (error) {
+    console.error("Error guardando lead en Supabase:", error);
+    return res.status(500).json({ ok: false, error: "Error al guardar lead en base de datos" });
+  }
+
   radarLeads.unshift(nuevo);
 
   if (radarLeads.length > 1000) {
@@ -1176,7 +1168,6 @@ if (error) {
   res.json({ ok: true, total: radarLeads.length });
 });
 
- HEAD
 // =========================
 // RADAR LEADS - MATCH
 // =========================
@@ -1244,17 +1235,10 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
 // =========================
 const PORT = process.env.PORT || 10000;
 
-app.listen(PORT, "0.0.0.0", () => {
-
-// =========================
-// SERVER
-// =========================
-
-const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
-app.listen(PORT, () => {
 
+app.listen(PORT, "0.0.0.0", () => {
   console.log("Servidor corriendo en puerto " + PORT);
 });
