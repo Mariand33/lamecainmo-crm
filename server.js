@@ -18,7 +18,7 @@ const supabase = createClient(
 
 
 // USUARIOS
-/
+
 const usuarios = [
   { email: "mariano@inmo.com", password: "1234", rol: "admin" },
   { email: "vanina@inmo.com", password: "1234", rol: "admin" },
@@ -26,7 +26,7 @@ const usuarios = [
   { email: "market@inmo.com", password: "1234", rol: "marketing" }
 ];
 
-/
+
 // ARRAYS (MEMORIA)
 
 let inmuebles = [];
