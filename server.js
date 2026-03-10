@@ -86,7 +86,7 @@ function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedores
 function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
 
 
-CARGAR DATOS
+ CARGAR DATOS
 
 cargarJSON(INM_FILE, inmuebles);
 cargarJSON(COMPR_FILE, compradores);
