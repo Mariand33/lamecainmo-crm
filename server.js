@@ -69,7 +69,7 @@ function cargarJSON(file, arr) {
   } catch (e) {
     console.log("Error cargando", file, e.message);
   }
-}
+
 
 function guardarJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
@@ -122,7 +122,6 @@ function pushNotif(n) {
   guardarNotificaciones();
 }
 
-/
 // STATIC + PARSERS
 
 app.use(express.static(path.join(__dirname, "public")));
