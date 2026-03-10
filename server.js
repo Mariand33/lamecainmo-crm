@@ -934,6 +934,52 @@ app.post("/compradores/nuevo", (req, res) => {
 });
 
 
+// RADAR LEADS → PASAR A COMPRADOR
+
+
+app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
+
+  const idx = Number(req.params.index);
+
+  if (isNaN(idx) || !radarLeads[idx]) {
+    return res.status(400).json({ ok:false, error:"Lead no encontrado" });
+  }
+
+  const lead = radarLeads[idx];
+
+  const nuevoComprador = {
+
+    nombre: lead.nombre || "Sin nombre",
+    telefono: lead.telefono || "",
+    email: "",
+
+    tipoOperacionBuscada: lead.tipoOperacion || "",
+    tipoPropiedad: lead.tipoPropiedad || "",
+    zonaPreferida: lead.zona || "",
+
+    presupuestoMax: Number(lead.presupuestoMax || 0),
+    moneda: lead.moneda || "USD",
+    dormitoriosMin: Number(lead.dormitoriosMin || 0),
+
+    estado: "nuevo",
+    notas: lead.notas || "",
+
+    creadoPor: req.session.user ? req.session.user.email : "radar",
+    fechaAlta: new Date().toLocaleString()
+
+  };
+
+  compradores.push(nuevoComprador);
+
+  guardarCompradores();
+
+  res.json({
+    ok:true,
+    comprador:nuevoComprador
+  });
+
+});
+
  //EDITAR COMPRADOR
 
 app.post("/compradores/editar/:index", (req, res) => {

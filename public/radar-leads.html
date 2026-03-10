@@ -435,6 +435,9 @@ Si querés te paso info y coordinamos visita.`;
   <button class="btn btn-blue" onclick='editarLead(${index})'>Editar</button>
   <button class="btn btn-dark" onclick='buscarMatchesLead(${index})'>Buscar matches</button>
   <a class="btn btn-wa" href="${waUrl}" target="_blank">Contactar</a>
+<button class="btn btn-primary" onclick='pasarAComprador(${index})'>
+Pasar a comprador
+</button>
 </div>
 
             <div id="matches-${index}" style="margin-top:12px;"></div>
@@ -587,6 +590,21 @@ Si querés te paso info y coordinamos visita.`;
     });
 
     cargarLeads();
+window.pasarAComprador = async function(index){
+
+  const r = await fetch("/api/radar-leads/pasar-comprador/" + index,{
+    method:"POST"
+  });
+
+  const data = await r.json();
+
+  if(data.ok){
+    alert("Lead convertido en comprador ✔");
+  }else{
+    alert("No se pudo convertir el lead");
+  }
+
+};
   </script>
 </body>
 </html>
