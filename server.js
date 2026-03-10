@@ -1073,11 +1073,10 @@ app.get("/api/vendedores-detectados", (req, res) => {
 // =========================
 // RADAR LEADS - LISTAR
 // =========================
-=======
 // ================================
 // RADAR LEADS - LISTAR
 // ================================
->>>>>>> 27e9d42700f54aa7bebf98467a751699329141dc
+ 27e9d42700f54aa7bebf98467a751699329141dc
 app.get("/api/radar-leads", (req, res) => {
   res.json(radarLeads);
 });
