@@ -16,7 +16,6 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 );
 
-
 // USUARIOS
 
 const usuarios = [
@@ -25,7 +24,6 @@ const usuarios = [
   { email: "cata@inmo.com", password: "1688", rol: "admin" },
   { email: "market@inmo.com", password: "1234", rol: "marketing" }
 ];
-
 
 // ARRAYS (MEMORIA)
 
@@ -37,7 +35,6 @@ let radarIA = [];
 let vendedoresDetectados = [];
 let radarLeads = [];
 
-
 // PATHS (DATA)
 
 const DATA_DIR = path.join(__dirname, "data");
@@ -48,7 +45,6 @@ const NOTIF_FILE = path.join(DATA_DIR, "notificaciones.json");
 const RADAR_IA_FILE = path.join(DATA_DIR, "radar_ia.json");
 const VENDEDORES_FILE = path.join(DATA_DIR, "vendedores_detectados.json");
 const RADAR_LEADS_FILE = path.join(DATA_DIR, "radar_leads.json");
-
 
 // CREAR DATA + UPLOADS SI NO EXISTE
 
@@ -69,7 +65,7 @@ function cargarJSON(file, arr) {
   } catch (e) {
     console.log("Error cargando", file, e.message);
   }
-
+}
 
 function guardarJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
@@ -97,7 +93,6 @@ function guardarRadarLeads() {
   guardarJSON(RADAR_LEADS_FILE, radarLeads);
 }
 
-
 // CARGAR DATOS
 
 cargarJSON(INM_FILE, inmuebles);
@@ -107,7 +102,6 @@ cargarJSON(NOTIF_FILE, notificaciones);
 cargarJSON(RADAR_IA_FILE, radarIA);
 cargarJSON(VENDEDORES_FILE, vendedoresDetectados);
 cargarJSON(RADAR_LEADS_FILE, radarLeads);
-
 
 // PUSH NOTIFICACION
 
@@ -138,7 +132,6 @@ app.use(
   })
 );
 
-
 // MULTER (UPLOADS)
 
 const storage = multer.diskStorage({
@@ -152,7 +145,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
 
 // LOGIN / LOGOUT
 
@@ -175,7 +167,6 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/login.html"));
 });
 
-
 // RUTAS DE PAGINAS IMPORTANTES
 
 app.get("/radar-vendedores", (req, res) => {
@@ -189,7 +180,6 @@ app.get("/radar-leads", (req, res) => {
 app.get("/radar-ia", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "radar-ia.html"));
 });
-
 
 // GUARDAR INMUEBLE (con fotos + video opcional)
 
@@ -296,7 +286,6 @@ app.post("/oportunidad", upload.single("thumb"), (req, res) => {
   res.redirect("/dashboard.html");
 });
 
-
 // RADAR CALLE
 
 app.post("/radar", upload.single("thumb"), (req, res) => {
@@ -381,7 +370,6 @@ app.post("/api/radar-mercado/guardar", (req, res) => {
   res.json({ ok: true, total: global.radarMercado.length });
 });
 
-
 // RADAR MERCADO - EDITAR
 
 app.post("/api/radar-mercado/editar/:index", (req, res) => {
@@ -399,8 +387,18 @@ app.post("/api/radar-mercado/editar/:index", (req, res) => {
     nombre: String(body.nombre || "").trim(),
     telefono: String(body.telefono || "").trim(),
     inmobiliaria: String(body.inmobiliaria || "").trim(),
-    tipo: String(body.tipo || "demanda").trim().toLowerCase()
-};
+    tipo: String(body.tipo || "demanda").trim().toLowerCase(),
+    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    zona: String(body.zona || "").trim(),
+    presupuesto: Number(body.presupuesto || 0),
+    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    textoOriginal: String(body.textoOriginal || "").trim(),
+    fechaActualizacion: new Date().toISOString()
+  };
+
+  res.json({ ok: true, item: global.radarMercado[idx] });
+});
 
 // EDITAR INMUEBLE
 
@@ -490,13 +488,11 @@ app.post("/editar/:index/fotos/eliminar", (req, res) => {
   res.json({ ok: true });
 });
 
-
 // API BASICAS
 
 app.get("/api/inmuebles", (req, res) => res.json(inmuebles));
 app.get("/api/compradores", (req, res) => res.json(compradores));
 app.get("/api/demandas", (req, res) => res.json(demandas));
-
 
 // ANALIZAR MENSAJE
 
@@ -709,7 +705,6 @@ app.post("/api/analizar-mensaje", (req, res) => {
   });
 });
 
-
 // NUEVA DEMANDA
 
 app.post("/demandas/nuevo", (req, res) => {
@@ -748,7 +743,6 @@ app.post("/demandas/nuevo", (req, res) => {
 
   res.redirect("/demandas.html");
 });
-
 
 // MATCH DEMANDA -> INMUEBLES
 
@@ -863,7 +857,6 @@ app.get("/api/match-demanda/:index", (req, res) => {
   res.json({ totalMatches: matches.length, matches });
 });
 
-
 // ELIMINAR DEMANDA
 
 app.post("/demandas/eliminar/:index", (req, res) => {
@@ -874,7 +867,6 @@ app.post("/demandas/eliminar/:index", (req, res) => {
   }
   res.redirect("/demandas.html");
 });
-
 
 // MATCH INMUEBLE -> COMPRADORES
 
@@ -938,7 +930,6 @@ app.get("/api/match-inmueble/:index", (req, res) => {
   res.json({ totalMatches: matches.length, matches });
 });
 
-
 // API NOTIFICACIONES
 
 app.get("/api/notificaciones", (req, res) => {
@@ -946,7 +937,6 @@ app.get("/api/notificaciones", (req, res) => {
   const nuevas = notificaciones.filter((n) => Number(n.ts || 0) > since);
   res.json({ items: nuevas });
 });
-
 
 // MARCAR LISTA
 
@@ -964,7 +954,6 @@ app.post("/publicar/:index", (req, res) => {
   res.redirect("/dashboard.html");
 });
 
-
 // MARCAR PUBLICADA
 
 app.post("/publicada/:index", (req, res) => {
@@ -980,7 +969,6 @@ app.post("/publicada/:index", (req, res) => {
   res.redirect("/marketing.html");
 });
 
-
 // ELIMINAR INMUEBLE
 
 app.post("/eliminar/:index", (req, res) => {
@@ -991,7 +979,6 @@ app.post("/eliminar/:index", (req, res) => {
   }
   res.redirect("/dashboard.html");
 });
-
 
 // ZIP DE FOTOS
 
@@ -1014,7 +1001,6 @@ app.get("/marketing/zip/:index", (req, res) => {
 
   archive.finalize();
 });
-
 
 // NUEVO COMPRADOR
 
@@ -1044,7 +1030,6 @@ app.post("/compradores/nuevo", (req, res) => {
 
   res.redirect("/compradores.html");
 });
-
 
 // RADAR LEADS -> PASAR A COMPRADOR
 
@@ -1086,7 +1071,6 @@ app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
   });
 });
 
-
 // EDITAR COMPRADOR
 
 app.post("/compradores/editar/:index", (req, res) => {
@@ -1117,7 +1101,6 @@ app.post("/compradores/editar/:index", (req, res) => {
   guardarCompradores();
   res.redirect("/compradores.html");
 });
-
 
 // RADAR IA - GUARDAR DETECCION
 
@@ -1161,13 +1144,11 @@ app.post("/api/radar-ia/guardar", (req, res) => {
   res.json({ ok: true, total: radarIA.length });
 });
 
-
 // RADAR IA - LISTADO
 
 app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
-
 
 // RADAR VENDEDORES - PAGINA + API
 
@@ -1231,7 +1212,6 @@ app.post("/api/radar-vendedores/editar/:index", (req, res) => {
   res.json({ ok: true, vendedor: vendedoresDetectados[idx] });
 });
 
-
 // VENDEDORES DETECTADOS
 
 app.post("/api/vendedores-detectados/guardar", (req, res) => {
@@ -1278,7 +1258,6 @@ app.post("/api/vendedores-detectados/guardar", (req, res) => {
 app.get("/api/vendedores-detectados", (req, res) => {
   res.json(vendedoresDetectados);
 });
-
 
 // RADAR LEADS - LISTAR / EDITAR / GUARDAR
 
@@ -1381,7 +1360,6 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
   });
 });
 
-
 // RADAR LEADS - MATCH
 
 app.get("/api/radar-leads/match/:index", (req, res) => {
@@ -1442,7 +1420,6 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
     matches
   });
 });
-
 
 // SERVER
 
