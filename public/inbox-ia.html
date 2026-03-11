@@ -177,69 +177,16 @@ Subir y transcribir
   </main>
 
   <script>
-    const texto = document.getElementById("texto");
-    const estado = document.getElementById("estado");
-    const resultado = document.getElementById("resultado");
-    const respuesta = document.getElementById("respuesta");
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const texto = document.getElementById("texto");
+  const estado = document.getElementById("estado");
+  const btnAnalizar = document.getElementById("btnAnalizar");
+  const audioFile = document.getElementById("audioFile");
+  const btnSubirAudio = document.getElementById("btnSubirAudio");
 
-    const btnEscuchar = document.getElementById("btnEscuchar");
-    const btnDetener = document.getElementById("btnDetener");
-    const btnAnalizar = document.getElementById("btnAnalizar");
-    const btnCopiar = document.getElementById("btnCopiar");
-
-    let recognition = null;
-
-    function renderResultado(data){
-      const campos = data.campos || {};
-      resultado.innerHTML = `
-        <div>
-          <span class="pill">Tipo: ${data.tipo || "-"}</span>
-          <span class="pill">Confianza: ${data.confianza || 0}</span>
-        </div>
-        <div class="box">
-Tipo operación: ${campos.tipoOperacion || "-"}
-Tipo propiedad: ${campos.tipoPropiedad || "-"}
-Zona: ${campos.zona || "-"}
-Precio: ${campos.precio || "-"} ${campos.moneda || ""}
-Dormitorios: ${campos.dormitoriosMin || "-"}
-Contacto: ${campos.contacto || "-"}
-Sugerencia del sistema: ${data.sugerencia || "-"}
-        </div>
-      `;
-    }
-
-    function generarRespuesta(data){
-      const campos = data.campos || {};
-      const tipo = data.tipo || "";
-      const operacion = campos.tipoOperacion || "operación";
-      const propiedad = campos.tipoPropiedad || "propiedad";
-      const zona = campos.zona || "la zona que mencionaste";
-      const precio = campos.precio ? `${campos.moneda || "USD"} ${Number(campos.precio).toLocaleString("es-AR")}` : "el presupuesto indicado";
-
-      if (tipo === "demanda") {
-        return `Hola, gracias por tu mensaje.
-
-Entendí que estás buscando ${propiedad} para ${operacion} en ${zona}, dentro de ${precio}.
-
-Tengo opciones que podrían encajar con eso. Si querés, te paso una primera selección y avanzamos.`;
-      }
-
-      if (tipo === "oferta") {
-        return `Hola, gracias por tu mensaje.
-
-Entendí que estás ofreciendo ${propiedad} en ${zona}.
-
-Si querés, pasame más detalles, fotos y precio final, y veo cómo lo trabajamos o con qué perfil de cliente podría encajar.`;
-      }
-
-      return `Hola, gracias por tu mensaje.
-
-Estuve revisando lo que comentaste y ya tengo una idea bastante clara de tu necesidad.
-
-Si querés, te respondo con opciones concretas o avanzamos con más detalle según lo que buscás.`;
-    }
-
-    async function analizarTexto(){
+  if (btnAnalizar) {
+    btnAnalizar.addEventListener("click", async () => {
       const t = (texto.value || "").trim();
       if (!t) {
         estado.textContent = "No hay texto para analizar.";
@@ -247,6 +194,7 @@ Si querés, te respondo con opciones concretas o avanzamos con más detalle seg�
       }
 
       estado.textContent = "Analizando...";
+
       try {
         const r = await fetch("/api/analizar-mensaje", {
           method: "POST",
@@ -255,117 +203,52 @@ Si querés, te respondo con opciones concretas o avanzamos con más detalle seg�
         });
 
         const data = await r.json();
-        renderResultado(data);
-        respuesta.value = generarRespuesta(data);
         estado.textContent = "Análisis listo ✅";
+        console.log(data);
+        alert("Analizar respondió");
       } catch (e) {
         console.error(e);
         estado.textContent = "Error al analizar.";
       }
-    }
+    });
+  }
 
-    function iniciarReconocimiento(){
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        estado.textContent = "Este navegador no soporta reconocimiento de voz.";
+  if (btnSubirAudio) {
+    btnSubirAudio.addEventListener("click", async () => {
+      if (!audioFile || !audioFile.files.length) {
+        estado.textContent = "Seleccioná un audio primero";
         return;
       }
 
-      recognition = new SpeechRecognition();
-      recognition.lang = "es-AR";
-      recognition.continuous = true;
-      recognition.interimResults = true;
+      const formData = new FormData();
+      formData.append("audio", audioFile.files[0]);
 
-      recognition.onstart = () => {
-        estado.textContent = "Escuchando...";
-      };
+      estado.textContent = "Subiendo audio...";
 
-      recognition.onresult = (event) => {
-        let finalText = "";
-        for (let i = 0; i < event.results.length; i++) {
-          finalText += event.results[i][0].transcript + " ";
-        }
-        texto.value = finalText.trim();
-      };
-
-      recognition.onerror = (event) => {
-        estado.textContent = "Error de audio: " + event.error;
-      };
-
-      recognition.onend = () => {
-        estado.textContent = "Escucha finalizada.";
-      };
-
-      recognition.start();
-    }
-
-    function detenerReconocimiento(){
-      if (recognition) {
-        recognition.stop();
-      }
-    }
-
-    btnEscuchar.addEventListener("click", iniciarReconocimiento);
-    btnDetener.addEventListener("click", detenerReconocimiento);
-    btnAnalizar.addEventListener("click", analizarTexto);
-
-    btnCopiar.addEventListener("click", async () => {
       try {
-        await navigator.clipboard.writeText(respuesta.value || "");
-        estado.textContent = "Respuesta copiada ✅";
+        const r = await fetch("/api/transcribir-audio", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await r.json();
+        console.log(data);
+
+        if (data.texto) {
+          texto.value = data.texto;
+          estado.textContent = "Audio transcripto ✅";
+          alert("Subida OK");
+        } else {
+          estado.textContent = "No volvió texto.";
+        }
       } catch (e) {
-        estado.textContent = "No se pudo copiar.";
+        console.error(e);
+        estado.textContent = "Error subiendo audio";
       }
-
-  const audioFile = document.getElementById("audioFile");
-const btnSubirAudio = document.getElementById("btnSubirAudio");
-const texto = document.getElementById("texto");
-const estado = document.getElementById("estado");
-
-btnSubirAudio.addEventListener("click", async () => {
-  if (!audioFile.files.length) {
-    estado.textContent = "Seleccioná un audio primero";
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("audio", audioFile.files[0]);
-
-  estado.textContent = "Subiendo audio...";
-
-  try {
-    const r = await fetch("/api/transcribir-audio", {
-      method: "POST",
-      body: formData
     });
-
-    const data = await r.json();
-    console.log("Respuesta audio:", data);
-
-    if (!r.ok) {
-      estado.textContent = "Error del servidor";
-      return;
-    }
-
-    if (data.error) {
-      estado.textContent = "Error: " + data.error;
-      return;
-    }
-
-    if (data.texto) {
-      texto.value = data.texto;
-      estado.textContent = "Audio transcripto ✅";
-      await analizarTexto();
-      return;
-    }
-
-    estado.textContent = "No volvió texto desde el servidor.";
-  } catch (e) {
-    console.error(e);
-    estado.textContent = "Error subiendo audio";
   }
 });
-  </script>
+</script>
+ 
 </body>
 </html>
