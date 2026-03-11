@@ -1419,6 +1419,8 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
     totalMatches: matches.length,
     matches
   });
+});
+
 app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
 
   if(!req.file){
