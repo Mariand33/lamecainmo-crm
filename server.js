@@ -399,7 +399,8 @@ app.post("/api/radar-mercado/editar/:index", (req, res) => {
     nombre: String(body.nombre || "").trim(),
     telefono: String(body.telefono || "").trim(),
     inmobiliaria: String(body.inmobiliaria || "").trim(),
-    tipo: String(body.tipo || "demanda").trim().toLowerCase(),
+    tipo: String(body.tipo || "demanda").trim().toLowerCase()
+};
 
 // EDITAR INMUEBLE
 
