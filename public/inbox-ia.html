@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inbox IA</title>
+  <style>
+    :root{
+      --verde1:#0e6b4d;
+      --verde2:#094634;
+      --bg:#f4f6f9;
+      --txt:#1f2937;
+      --muted:#6b7280;
+      --azul:#0984e3;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:var(--bg);
+      color:var(--txt);
+      display:flex;
+      min-height:100vh;
+    }
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg,var(--verde1),var(--verde2));
+      color:#fff;
+      padding:18px 16px;
+      overflow:auto;
+    }
+    .sidebar nav a{
+      display:block;
+      color:#fff;
+      text-decoration:none;
+      padding:10px;
+      margin:7px 0;
+      border-radius:10px;
+      font-size:14px;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active{
+      background:rgba(255,255,255,.18);
+    }
+    .content{
+      flex:1;
+      padding:24px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+    .card{
+      background:#fff;
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 4px 10px rgba(0,0,0,.05);
+    }
+    textarea, input{
+      width:100%;
+      padding:12px;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      margin-bottom:12px;
+      font-size:14px;
+    }
+    textarea{
+      min-height:180px;
+      resize:vertical;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:700;
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn-primary{ background:var(--verde1); }
+    .btn-blue{ background:var(--azul); }
+    .btn-ghost{ background:#6b7280; }
+    .estado{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+      min-height:18px;
+    }
+    .box{
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      margin-top:10px;
+      white-space:pre-wrap;
+      line-height:1.45;
+      font-size:14px;
+    }
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      background:#e5e7eb;
+      margin-right:8px;
+      margin-bottom:8px;
+    }
+    @media(max-width:900px){
+      body{flex-direction:column;}
+      .sidebar{width:100%;}
+      .grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <nav>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/radar-leads.html">🎯 Radar Leads</a>
+      <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
+      <a href="/radar-mercado.html">🤝 Radar Mercado</a>
+      <a href="/inbox-ia.html" class="active">🎙 Inbox IA</a>
+      <a href="/compradores.html">Compradores</a>
+      <a href="/oportunidad.html">Nueva Oportunidad</a>
+      <a href="/logout">Cerrar sesión</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <h1>🎙 Inbox IA</h1>
+    <p style="color:#6b7280;">Escuchá, transcribí y analizá audios o mensajes para responder más rápido.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h3>Audio / transcripción</h3>
+
+        <div class="row">
+          <button class="btn btn-primary" id="btnEscuchar">🎙 Escuchar</button>
+          <button class="btn btn-ghost" id="btnDetener">⏹ Detener</button>
+          <button class="btn btn-blue" id="btnAnalizar">🧠 Analizar</button>
+        </div>
+
+        <div class="estado" id="estado">Listo para escuchar.</div>
+
+        <label style="font-size:12px;font-weight:700;">Transcripción</label>
+        <textarea id="texto" placeholder="Acá aparecerá la transcripción o podés pegar un mensaje manualmente..."></textarea>
+      </section>
+
+      <section class="card">
+        <h3>Interpretación inteligente</h3>
+
+        <div id="resultado">
+          <div class="box">Todavía no se analizó ningún audio o texto.</div>
+        </div>
+
+        <h3 style="margin-top:16px;">Respuesta sugerida</h3>
+        <textarea id="respuesta" placeholder="La respuesta inteligente aparecerá acá..."></textarea>
+
+        <div class="row">
+          <button class="btn btn-primary" id="btnCopiar">Copiar respuesta</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const texto = document.getElementById("texto");
+    const estado = document.getElementById("estado");
+    const resultado = document.getElementById("resultado");
+    const respuesta = document.getElementById("respuesta");
+
+    const btnEscuchar = document.getElementById("btnEscuchar");
+    const btnDetener = document.getElementById("btnDetener");
+    const btnAnalizar = document.getElementById("btnAnalizar");
+    const btnCopiar = document.getElementById("btnCopiar");
+
+    let recognition = null;
+
+    function renderResultado(data){
+      const campos = data.campos || {};
+      resultado.innerHTML = `
+        <div>
+          <span class="pill">Tipo: ${data.tipo || "-"}</span>
+          <span class="pill">Confianza: ${data.confianza || 0}</span>
+        </div>
+        <div class="box">
+Tipo operación: ${campos.tipoOperacion || "-"}
+Tipo propiedad: ${campos.tipoPropiedad || "-"}
+Zona: ${campos.zona || "-"}
+Precio: ${campos.precio || "-"} ${campos.moneda || ""}
+Dormitorios: ${campos.dormitoriosMin || "-"}
+Contacto: ${campos.contacto || "-"}
+Sugerencia del sistema: ${data.sugerencia || "-"}
+        </div>
+      `;
+    }
+
+    function generarRespuesta(data){
+      const campos = data.campos || {};
+      const tipo = data.tipo || "";
+      const operacion = campos.tipoOperacion || "operación";
+      const propiedad = campos.tipoPropiedad || "propiedad";
+      const zona = campos.zona || "la zona que mencionaste";
+      const precio = campos.precio ? `${campos.moneda || "USD"} ${Number(campos.precio).toLocaleString("es-AR")}` : "el presupuesto indicado";
+
+      if (tipo === "demanda") {
+        return `Hola, gracias por tu mensaje.
+
+Entendí que estás buscando ${propiedad} para ${operacion} en ${zona}, dentro de ${precio}.
+
+Tengo opciones que podrían encajar con eso. Si querés, te paso una primera selección y avanzamos.`;
+      }
+
+      if (tipo === "oferta") {
+        return `Hola, gracias por tu mensaje.
+
+Entendí que estás ofreciendo ${propiedad} en ${zona}.
+
+Si querés, pasame más detalles, fotos y precio final, y veo cómo lo trabajamos o con qué perfil de cliente podría encajar.`;
+      }
+
+      return `Hola, gracias por tu mensaje.
+
+Estuve revisando lo que comentaste y ya tengo una idea bastante clara de tu necesidad.
+
+Si querés, te respondo con opciones concretas o avanzamos con más detalle según lo que buscás.`;
+    }
+
+    async function analizarTexto(){
+      const t = (texto.value || "").trim();
+      if (!t) {
+        estado.textContent = "No hay texto para analizar.";
+        return;
+      }
+
+      estado.textContent = "Analizando...";
+      try {
+        const r = await fetch("/api/analizar-mensaje", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ texto: t })
+        });
+
+        const data = await r.json();
+        renderResultado(data);
+        respuesta.value = generarRespuesta(data);
+        estado.textContent = "Análisis listo ✅";
+      } catch (e) {
+        console.error(e);
+        estado.textContent = "Error al analizar.";
+      }
+    }
+
+    function iniciarReconocimiento(){
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        estado.textContent = "Este navegador no soporta reconocimiento de voz.";
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "es-AR";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        estado.textContent = "Escuchando...";
+      };
+
+      recognition.onresult = (event) => {
+        let finalText = "";
+        for (let i = 0; i < event.results.length; i++) {
+          finalText += event.results[i][0].transcript + " ";
+        }
+        texto.value = finalText.trim();
+      };
+
+      recognition.onerror = (event) => {
+        estado.textContent = "Error de audio: " + event.error;
+      };
+
+      recognition.onend = () => {
+        estado.textContent = "Escucha finalizada.";
+      };
+
+      recognition.start();
+    }
+
+    function detenerReconocimiento(){
+      if (recognition) {
+        recognition.stop();
+      }
+    }
+
+    btnEscuchar.addEventListener("click", iniciarReconocimiento);
+    btnDetener.addEventListener("click", detenerReconocimiento);
+    btnAnalizar.addEventListener("click", analizarTexto);
+
+    btnCopiar.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(respuesta.value || "");
+        estado.textContent = "Respuesta copiada ✅";
+      } catch (e) {
+        estado.textContent = "No se pudo copiar.";
+      }
+    });
+  </script>
+</body>
+</html>
