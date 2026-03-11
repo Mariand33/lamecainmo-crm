@@ -456,7 +456,6 @@ app.post("/editar/:index", upload.array("imagenes", 20), (req, res) => {
   res.redirect("/ver.html?index=" + idx);
 });
 
-
 // ELIMINAR FOTO (AJAX)
 
 app.post("/editar/:index/fotos/eliminar", (req, res) => {
