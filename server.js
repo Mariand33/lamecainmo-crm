@@ -1434,6 +1434,47 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
   });
 
 });
+btnSubirAudio.addEventListener("click", async () => {
+  if (!audioFile.files.length) {
+    estado.textContent = "Seleccioná un audio primero";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("audio", audioFile.files[0]);
+
+  estado.textContent = "Subiendo audio...";
+
+  try {
+    const r = await fetch("/api/transcribir-audio", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await r.json();
+    console.log("Respuesta audio:", data);
+
+    if (data.error) {
+      estado.textContent = "Error: " + data.error;
+      return;
+    }
+
+    if (data.texto) {
+      texto.value = data.texto;
+      estado.textContent = "Audio transcripto ✅";
+      await analizarTexto();
+      return;
+    }
+
+    estado.textContent = "No volvió texto desde el servidor.";
+  } catch (e) {
+    console.error(e);
+    estado.textContent = "Error subiendo audio";
+  }
+});
+
+
+
 
 // SERVER
 
