@@ -140,6 +140,12 @@
     <div class="grid">
       <section class="card">
         <h3>Audio / transcripción</h3>
+<label>Subir audio</label>
+<input type="file" id="audioFile" accept="audio/*">
+
+<button class="btn btn-primary" id="btnSubirAudio">
+Subir y transcribir
+</button>
 
         <div class="row">
           <button class="btn btn-primary" id="btnEscuchar">🎙 Escuchar</button>
@@ -311,7 +317,41 @@ Si querés, te respondo con opciones concretas o avanzamos con más detalle seg�
       } catch (e) {
         estado.textContent = "No se pudo copiar.";
       }
+   const audioFile = document.getElementById("audioFile");
+const btnSubirAudio = document.getElementById("btnSubirAudio");
+
+btnSubirAudio.addEventListener("click", async () => {
+
+  if(!audioFile.files.length){
+    estado.textContent="Seleccioná un audio primero";
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("audio", audioFile.files[0]);
+
+  estado.textContent="Subiendo audio...";
+
+  try{
+
+    const r = await fetch("/api/transcribir-audio",{
+      method:"POST",
+      body:formData
     });
+
+    const data = await r.json();
+
+    if(data.texto){
+      texto.value=data.texto;
+      estado.textContent="Audio transcripto";
+      analizarTexto();
+    }
+
+  }catch(e){
+    estado.textContent="Error subiendo audio";
+  }
+
+});
   </script>
 </body>
 </html>

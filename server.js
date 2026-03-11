@@ -1419,6 +1419,19 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
     totalMatches: matches.length,
     matches
   });
+app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
+
+  if(!req.file){
+    return res.json({error:"no audio"});
+  }
+
+  // simulación básica
+  // después podemos integrar Whisper
+
+  res.json({
+    texto:"Audio recibido. Próxima fase: transcripción automática."
+  });
+
 });
 
 // SERVER
