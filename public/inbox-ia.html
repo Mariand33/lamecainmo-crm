@@ -317,40 +317,54 @@ Si querés, te respondo con opciones concretas o avanzamos con más detalle seg�
       } catch (e) {
         estado.textContent = "No se pudo copiar.";
       }
-   const audioFile = document.getElementById("audioFile");
+
+  const audioFile = document.getElementById("audioFile");
 const btnSubirAudio = document.getElementById("btnSubirAudio");
+const texto = document.getElementById("texto");
+const estado = document.getElementById("estado");
 
 btnSubirAudio.addEventListener("click", async () => {
-
-  if(!audioFile.files.length){
-    estado.textContent="Seleccioná un audio primero";
+  if (!audioFile.files.length) {
+    estado.textContent = "Seleccioná un audio primero";
     return;
   }
 
   const formData = new FormData();
   formData.append("audio", audioFile.files[0]);
 
-  estado.textContent="Subiendo audio...";
+  estado.textContent = "Subiendo audio...";
 
-  try{
-
-    const r = await fetch("/api/transcribir-audio",{
-      method:"POST",
-      body:formData
+  try {
+    const r = await fetch("/api/transcribir-audio", {
+      method: "POST",
+      body: formData
     });
 
     const data = await r.json();
+    console.log("Respuesta audio:", data);
 
-    if(data.texto){
-      texto.value=data.texto;
-      estado.textContent="Audio transcripto";
-      analizarTexto();
+    if (!r.ok) {
+      estado.textContent = "Error del servidor";
+      return;
     }
 
-  }catch(e){
-    estado.textContent="Error subiendo audio";
-  }
+    if (data.error) {
+      estado.textContent = "Error: " + data.error;
+      return;
+    }
 
+    if (data.texto) {
+      texto.value = data.texto;
+      estado.textContent = "Audio transcripto ✅";
+      await analizarTexto();
+      return;
+    }
+
+    estado.textContent = "No volvió texto desde el servidor.";
+  } catch (e) {
+    console.error(e);
+    estado.textContent = "Error subiendo audio";
+  }
 });
   </script>
 </body>
