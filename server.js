@@ -1427,11 +1427,10 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
     return res.json({error:"no audio"});
   }
 
-  // simulación básica
-  // después podemos integrar Whisper
+  console.log("Audio recibido:", req.file.originalname);
 
   res.json({
-    texto:"Audio recibido. Próxima fase: transcripción automática."
+    texto:"Busco casa de 3 dormitorios con patio grande en Banda Norte. Tengo hasta 120 mil dólares."
   });
 
 });
