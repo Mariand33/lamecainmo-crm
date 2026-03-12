@@ -8,6 +8,7 @@ const fs = require("fs");
 const session = require("express-session");
 const archiver = require("archiver");
 const { createClient } = require("@supabase/supabase-js");
+const OpenAI = require("openai");
 
 const app = express();
 
@@ -15,6 +16,10 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 );
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 // USUARIOS
 
@@ -1413,26 +1418,44 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
     }
   });
 
-matches.sort((a, b) => b.score - a.score);
-
-res.json({
-  totalMatches: matches.length,
-  matches
-});
-});
-
-app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
-
-  if(!req.file){
-    return res.json({error:"no audio"});
-  }
-
-  console.log("Audio recibido:", req.file.originalname);
+  matches.sort((a, b) => b.score - a.score);
 
   res.json({
-    texto:"Busco casa de 3 dormitorios con patio grande en Banda Norte. Tengo hasta 120 mil dólares."
+    totalMatches: matches.length,
+    matches
   });
+});
 
+// TRANSCRIBIR AUDIO REAL CON OPENAI
+
+app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "no audio" });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: "falta OPENAI_API_KEY en Render" });
+    }
+
+    console.log("Audio recibido:", req.file.originalname);
+
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(req.file.path),
+      model: "whisper-1"
+    });
+
+    const texto = (transcription.text || "").trim();
+
+    console.log("Transcripción:", texto);
+
+    return res.json({ texto });
+  } catch (err) {
+    console.error("Error transcribiendo audio:", err);
+    return res.status(500).json({
+      error: "no se pudo transcribir el audio"
+    });
+  }
 });
 
 // SERVER
