@@ -514,14 +514,10 @@ app.post("/api/analizar-mensaje", (req, res) => {
   const t = stripAccents(t0);
 
   const has = (re) => re.test(t);
-  const pick = (re) => {
-    const m = t.match(re);
-    return m ? (m[1] || "").trim() : "";
-  };
 
   const parseNumero = (s) => {
     if (!s) return 0;
-    const clean = String(s).replace(/[.\s]/g, "");
+    const clean = String(s).replace(/[.\s]/g, "").replace(/,/g, ".");
     const n = Number(clean);
     return Number.isFinite(n) ? n : 0;
   };
@@ -576,28 +572,6 @@ app.post("/api/analizar-mensaje", (req, res) => {
     return best;
   };
 
-  let tipoOperacion = "";
-  if (has(/(alquil|alquiler|arriendo|renta)/)) tipoOperacion = "alquiler";
-  if (!tipoOperacion && has(/(vendo|venta|vend[eé]|compra|comprar|inversion|u\$s|usd)/)) {
-    tipoOperacion = "venta";
-  }
-
-  let tipoPropiedad = "";
-  if (has(/(depto|departamento|dpto)/)) tipoPropiedad = "depto";
-  else if (has(/\bcasa\b/)) tipoPropiedad = "casa";
-  else if (has(/(terreno|lote|loteo)/)) tipoPropiedad = "terreno";
-  else if (has(/(local|comercial|galpon|deposito)/)) tipoPropiedad = "local";
-
-  let moneda = "ARS";
-  if (has(/(usd|u\$s|dolar|dolares)/)) moneda = "USD";
-  if (has(/\bars\b|\bpesos\b/)) moneda = "ARS";
-
-  const nRaw = pick(/(\d{1,3}(?:[.\s]\d{3})+|\d{4,})/);
-  let precio = parseNumero(nRaw);
-
-  const dormRaw = pick(/(\d+)\s*(dorm|dormitorio|habit|hab)/);
-  const dormitoriosMin = dormRaw ? Number(dormRaw) : 0;
-
   const BARRIOS_RIO_CUARTO = [
     "Centro",
     "Macrocentro",
@@ -621,8 +595,67 @@ app.post("/api/analizar-mensaje", (req, res) => {
     "Villa Dalcar"
   ];
 
-  let zonaTxt = pick(/(?:\ben\b|\bzona\b|\bbarrio\b)\s+([a-z0-9ñ\s]{3,50})/);
-  zonaTxt = (zonaTxt || "").replace(/(hasta|max|aprox|cerca|con|sin|de|por).*/g, "").trim();
+  let tipoOperacion = "";
+  if (has(/(alquil|alquiler|arriendo|renta)/)) tipoOperacion = "alquiler";
+  if (!tipoOperacion && has(/(compra|comprar|vendo|venta|vend[eé]|usd|u\$s|dolar|dolares|inversion)/)) {
+    tipoOperacion = "venta";
+  }
+
+  let tipoPropiedad = "";
+  if (has(/(depto|departamento|dpto)/)) tipoPropiedad = "depto";
+  else if (has(/\bcasa\b/)) tipoPropiedad = "casa";
+  else if (has(/(terreno|lote|loteo)/)) tipoPropiedad = "terreno";
+  else if (has(/(local|comercial|galpon|deposito)/)) tipoPropiedad = "local";
+
+  let moneda = "ARS";
+  if (has(/(usd|u\$s|dolar|dolares)/)) moneda = "USD";
+  if (has(/\bars\b|\bpesos\b/)) moneda = "ARS";
+
+  let precio = 0;
+
+  // entre X y Y
+  const rango = t.match(/entre\s+(\d{1,3}(?:[.\s]\d{3})+|\d+)\s+y\s+(\d{1,3}(?:[.\s]\d{3})+|\d+)/);
+  if (rango && rango[2]) {
+    precio = parseNumero(rango[2]);
+  }
+
+  // hasta X
+  if (!precio) {
+    const hasta = t.match(/(?:hasta|maximo|max|tope|no pase de|no supere|tengo hasta)\s+(\d{1,3}(?:[.\s]\d{3})+|\d+)/);
+    if (hasta && hasta[1]) {
+      precio = parseNumero(hasta[1]);
+    }
+  }
+
+  // 120 mil / 200 mil
+  if (!precio) {
+    const mil = t.match(/(\d+)\s*mil/);
+    if (mil && mil[1]) {
+      precio = Number(mil[1]) * 1000;
+    }
+  }
+
+  // número suelto grande
+  if (!precio) {
+    const suelto = t.match(/(\d{1,3}(?:[.\s]\d{3})+|\d{4,})/);
+    if (suelto && suelto[1]) {
+      precio = parseNumero(suelto[1]);
+    }
+  }
+
+  let dormitoriosMin = 0;
+  const dormRaw = t.match(/(\d+)\s*(dorm|dormitorio|dormitorios|habit|hab)/);
+  if (dormRaw && dormRaw[1]) {
+    dormitoriosMin = Number(dormRaw[1]);
+  }
+
+  let zonaTxt = "";
+  const zonaMatch = t.match(/(?:\ben\b|\bzona\b|\bbarrio\b)\s+([a-z0-9ñ\s]{3,60})/);
+  if (zonaMatch && zonaMatch[1]) {
+    zonaTxt = zonaMatch[1]
+      .replace(/(hasta|max|aprox|cerca|con|sin|de|por).*/g, "")
+      .trim();
+  }
 
   let zona = "";
   let zonaScore = 0;
@@ -632,16 +665,16 @@ app.post("/api/analizar-mensaje", (req, res) => {
     zonaScore = best.score || 55;
   }
 
-  const esDemanda = has(/(busco|necesito|se solicita|alguien tiene|quien tiene|requiero|anda buscando)/);
+  const esDemanda = has(/(busco|necesito|se solicita|alguien tiene|quien tiene|requiero|anda buscando|estoy buscando)/);
   const esOferta = has(/(tengo|ofrezco|disponible|vendo|alquilo|en alquiler|se vende)/);
 
   let tipo = "ambigua";
   if (esDemanda && !esOferta) tipo = "demanda";
   else if (esOferta && !esDemanda) tipo = "oferta";
+  else if (esDemanda) tipo = "demanda";
 
-  const tieneHasta = has(/(hasta|maximo|max|tope|no pase de|no supere)/);
+  const tieneHasta = has(/(hasta|maximo|max|tope|no pase de|no supere|tengo hasta)/);
   const tieneAprox = has(/(aprox|aproximad|alrededor|cerca de|mas o menos|m[aá]s\/?menos)/);
-  const rangoA = pick(/entre\s+(\d{1,3}(?:[.\s]\d{3})+|\d{4,})\s+y\s+(\d{1,3}(?:[.\s]\d{3})+|\d{4,})/);
 
   let margenAbajo = 30;
   let margenArriba = 20;
@@ -659,20 +692,6 @@ app.post("/api/analizar-mensaje", (req, res) => {
     margenAbajo = 30;
   }
 
-  if (rangoA) {
-    const m = t.match(/entre\s+(\d{1,3}(?:[.\s]\d{3})+|\d{4,})\s+y\s+(\d{1,3}(?:[.\s]\d{3})+|\d{4,})/);
-    if (m && m[1] && m[2]) {
-      const lo = parseNumero(m[1]);
-      const hi = parseNumero(m[2]);
-      if (hi > 0) precio = hi;
-      if (lo > 0 && hi > 0 && hi >= lo) {
-        const drop = Math.round(((hi - lo) / hi) * 100);
-        margenAbajo = Math.max(10, Math.min(60, drop));
-        margenArriba = 10;
-      }
-    }
-  }
-
   if (has(/(usd|u\$s|dolar)/) && has(/(ars|pesos)/)) monedaEstricta = "si";
   if (has(/(solo|excluyente|si o si)\s+(depto|departamento|casa|terreno|local)/)) toleranteTipo = "no";
 
@@ -683,10 +702,13 @@ app.post("/api/analizar-mensaje", (req, res) => {
   if (precio) confianza += 10;
   if (zonaTxt) confianza += 5;
   if (zonaScore >= 80) confianza += 5;
-  confianza = Math.min(confianza, 95);
+  if (dormitoriosMin > 0) confianza += 5;
+  confianza = Math.min(confianza, 98);
 
   const sugerencia = tipo === "oferta" ? "crear_oportunidad" : "crear_demanda";
-  const tel = pick(/(\+?\d[\d\s-]{6,})/);
+
+  const telMatch = t.match(/(\+?\d[\d\s-]{6,})/);
+  const tel = telMatch ? telMatch[1].trim() : "";
 
   res.json({
     tipo,
@@ -709,7 +731,6 @@ app.post("/api/analizar-mensaje", (req, res) => {
     sugerencia
   });
 });
-
 // NUEVA DEMANDA
 
 app.post("/demandas/nuevo", (req, res) => {
@@ -748,6 +769,7 @@ app.post("/demandas/nuevo", (req, res) => {
 
   res.redirect("/demandas.html");
 });
+
 
 // MATCH DEMANDA -> INMUEBLES
 
@@ -1428,17 +1450,16 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
 
 // TRANSCRIBIR AUDIO REAL CON OPENAI
 
-const OpenAI = require("openai");
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
 
-app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
+  try {
 
-  try{
+    if (!req.file) {
+      return res.json({ error: "no audio" });
+    }
 
-    if(!req.file){
-      return res.json({error:"no audio"});
+    if (!process.env.OPENAI_API_KEY) {
+      return res.json({ error: "falta OPENAI_API_KEY" });
     }
 
     const pathAudio = req.file.path;
@@ -1449,20 +1470,23 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
     });
 
     res.json({
-      texto: transcripcion.text
+      texto: transcripcion.text || ""
     });
 
-  }catch(err){
+  } catch (err) {
 
     console.log("Error transcribiendo:", err);
 
     res.json({
-      error:"error transcripcion"
+      error: "error transcripcion"
     });
 
   }
 
 });
+
+
+
 // SERVER
 
 const PORT = process.env.PORT || 10000;
