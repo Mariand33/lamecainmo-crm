@@ -1428,36 +1428,41 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
 
 // TRANSCRIBIR AUDIO REAL CON OPENAI
 
-app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: "no audio" });
+const OpenAI = require("openai");
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+app.post("/api/transcribir-audio", upload.single("audio"), async (req,res)=>{
+
+  try{
+
+    if(!req.file){
+      return res.json({error:"no audio"});
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: "falta OPENAI_API_KEY en Render" });
-    }
+    const pathAudio = req.file.path;
 
-    console.log("Audio recibido:", req.file.originalname);
-
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(req.file.path),
+    const transcripcion = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(pathAudio),
       model: "whisper-1"
     });
 
-    const texto = (transcription.text || "").trim();
-
-    console.log("Transcripción:", texto);
-
-    return res.json({ texto });
-  } catch (err) {
-    console.error("Error transcribiendo audio:", err);
-    return res.status(500).json({
-      error: "no se pudo transcribir el audio"
+    res.json({
+      texto: transcripcion.text
     });
-  }
-});
 
+  }catch(err){
+
+    console.log("Error transcribiendo:", err);
+
+    res.json({
+      error:"error transcripcion"
+    });
+
+  }
+
+});
 // SERVER
 
 const PORT = process.env.PORT || 10000;
