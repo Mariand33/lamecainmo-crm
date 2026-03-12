@@ -12,110 +12,211 @@
       --txt:#1f2937;
       --muted:#6b7280;
       --azul:#0984e3;
+      --gris:#e5e7eb;
+      --blanco:#ffffff;
     }
-    *{box-sizing:border-box;}
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
       font-family:Arial,sans-serif;
       background:var(--bg);
       color:var(--txt);
-      display:flex;
       min-height:100vh;
+      display:flex;
     }
+
     .sidebar{
       width:260px;
       background:linear-gradient(180deg,var(--verde1),var(--verde2));
-      color:#fff;
+      color:white;
       padding:18px 16px;
       overflow:auto;
     }
+
     .sidebar nav a{
       display:block;
-      color:#fff;
+      color:white;
       text-decoration:none;
       padding:10px;
       margin:7px 0;
       border-radius:10px;
       font-size:14px;
     }
+
     .sidebar nav a:hover,
     .sidebar nav a.active{
       background:rgba(255,255,255,.18);
     }
+
     .content{
       flex:1;
-      padding:24px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-    }
-    .card{
-      background:#fff;
-      border-radius:14px;
-      padding:16px;
-      box-shadow:0 4px 10px rgba(0,0,0,.05);
-    }
-    textarea, input{
+      padding:18px;
+      max-width:1000px;
       width:100%;
-      padding:12px;
+      margin:0 auto;
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size:28px;
+    }
+
+    .sub{
+      color:var(--muted);
+      margin-bottom:16px;
+      line-height:1.4;
+    }
+
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--blanco);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 4px 12px rgba(0,0,0,.05);
+    }
+
+    .card h3{
+      margin:0 0 12px 0;
+      font-size:18px;
+    }
+
+    label{
+      display:block;
+      margin-bottom:6px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--muted);
+    }
+
+    textarea,
+    input[type="file"]{
+      width:100%;
       border:1px solid #d1d5db;
       border-radius:12px;
-      margin-bottom:12px;
+      padding:12px;
       font-size:14px;
+      margin-bottom:12px;
+      background:#fff;
     }
+
     textarea{
-      min-height:180px;
+      min-height:130px;
       resize:vertical;
     }
+
     .row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
     }
+
     .btn{
       border:none;
       border-radius:12px;
-      padding:10px 14px;
-      font-size:13px;
+      padding:12px 14px;
+      font-size:14px;
       font-weight:700;
-      color:#fff;
+      color:white;
       cursor:pointer;
+      min-height:44px;
     }
+
     .btn-primary{ background:var(--verde1); }
     .btn-blue{ background:var(--azul); }
     .btn-ghost{ background:#6b7280; }
+    .btn-light{
+      background:#f3f4f6;
+      color:#111827;
+      border:1px solid #d1d5db;
+    }
+
     .estado{
       margin-top:8px;
       color:var(--muted);
       font-size:13px;
       min-height:18px;
     }
+
+    .pill-wrap{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      background:#eef2f7;
+      color:#334155;
+    }
+
     .box{
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
+      border:1px solid var(--gris);
       border-radius:12px;
       padding:12px;
-      margin-top:10px;
+      background:#fafafa;
       white-space:pre-wrap;
       line-height:1.45;
       font-size:14px;
     }
-    .pill{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
+
+    .section-title{
+      font-size:13px;
       font-weight:700;
-      background:#e5e7eb;
-      margin-right:8px;
-      margin-bottom:8px;
+      color:var(--muted);
+      margin:12px 0 8px 0;
     }
+
+    .respuesta{
+      min-height:150px;
+    }
+
+    .acciones-finales{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
     @media(max-width:900px){
-      body{flex-direction:column;}
-      .sidebar{width:100%;}
-      .grid{grid-template-columns:1fr;}
+      body{
+        flex-direction:column;
+      }
+
+      .sidebar{
+        width:100%;
+      }
+
+      .content{
+        padding:14px;
+      }
+
+      h1{
+        font-size:24px;
+      }
+
+      .btn{
+        width:100%;
+      }
+
+      .row{
+        flex-direction:column;
+      }
+
+      .acciones-finales{
+        flex-direction:column;
+      }
     }
   </style>
 </head>
@@ -135,120 +236,327 @@
 
   <main class="content">
     <h1>🎙 Inbox IA</h1>
-    <p style="color:#6b7280;">Escuchá, transcribí y analizá audios o mensajes para responder más rápido.</p>
+    <div class="sub">
+      Copiá, transcribí y respondé rápido. Pensado para Facebook, Instagram y WhatsApp.
+    </div>
 
-    <div class="grid">
+    <div class="stack">
+
       <section class="card">
-        <h3>Audio / transcripción</h3>
-<label>Subir audio</label>
-<input type="file" id="audioFile" accept="audio/*">
+        <h3>1. Entrada</h3>
 
-<button class="btn btn-primary" id="btnSubirAudio">
-Subir y transcribir
-</button>
+        <label for="audioFile">Subir audio</label>
+        <input type="file" id="audioFile" accept="audio/*">
 
         <div class="row">
-          <button class="btn btn-primary" id="btnEscuchar">🎙 Escuchar</button>
-          <button class="btn btn-ghost" id="btnDetener">⏹ Detener</button>
-          <button class="btn btn-blue" id="btnAnalizar">🧠 Analizar</button>
+          <button class="btn btn-primary" id="btnSubirAudio" type="button">Subir y transcribir</button>
+          <button class="btn btn-light" id="btnEscuchar" type="button">🎙 Escuchar</button>
+          <button class="btn btn-light" id="btnDetener" type="button">⏹ Detener</button>
         </div>
 
-        <div class="estado" id="estado">Listo para escuchar.</div>
+        <div class="estado" id="estado">Listo.</div>
 
-        <label style="font-size:12px;font-weight:700;">Transcripción</label>
-        <textarea id="texto" placeholder="Acá aparecerá la transcripción o podés pegar un mensaje manualmente..."></textarea>
+        <label for="texto">Texto / transcripción</label>
+        <textarea id="texto" placeholder="Pegá acá un mensaje de Facebook, Instagram o WhatsApp. También puede aparecer la transcripción del audio."></textarea>
+
+        <div class="row">
+          <button class="btn btn-blue" id="btnAnalizar" type="button">🧠 Analizar y responder</button>
+        </div>
       </section>
 
       <section class="card">
-        <h3>Interpretación inteligente</h3>
+        <h3>2. Lectura rápida</h3>
 
-        <div id="resultado">
-          <div class="box">Todavía no se analizó ningún audio o texto.</div>
+        <div class="pill-wrap" id="pillWrap">
+          <span class="pill">Tipo: -</span>
+          <span class="pill">Operación: -</span>
+          <span class="pill">Propiedad: -</span>
         </div>
 
-        <h3 style="margin-top:16px;">Respuesta sugerida</h3>
-        <textarea id="respuesta" placeholder="La respuesta inteligente aparecerá acá..."></textarea>
+        <div class="box" id="lecturaBox">Todavía no se analizó nada.</div>
+      </section>
 
-        <div class="row">
-          <button class="btn btn-primary" id="btnCopiar">Copiar respuesta</button>
+      <section class="card">
+        <h3>3. Estrategia</h3>
+        <div class="box" id="estrategiaBox">Acá va a aparecer qué conviene hacer con este mensaje.</div>
+      </section>
+
+      <section class="card">
+        <h3>4. Respuesta lista</h3>
+        <textarea class="respuesta" id="respuesta" placeholder="La respuesta inteligente aparecerá acá..."></textarea>
+
+        <div class="acciones-finales">
+          <button class="btn btn-primary" id="btnCopiar" type="button">Copiar respuesta</button>
+          <button class="btn btn-ghost" id="btnLimpiar" type="button">Limpiar</button>
         </div>
       </section>
+
     </div>
   </main>
 
   <script>
-   <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const texto = document.getElementById("texto");
-  const estado = document.getElementById("estado");
-  const btnAnalizar = document.getElementById("btnAnalizar");
-  const audioFile = document.getElementById("audioFile");
-  const btnSubirAudio = document.getElementById("btnSubirAudio");
+    document.addEventListener("DOMContentLoaded", () => {
+      const texto = document.getElementById("texto");
+      const estado = document.getElementById("estado");
+      const respuesta = document.getElementById("respuesta");
 
-  if (btnAnalizar) {
-    btnAnalizar.addEventListener("click", async () => {
-      const t = (texto.value || "").trim();
-      if (!t) {
-        estado.textContent = "No hay texto para analizar.";
-        return;
+      const btnAnalizar = document.getElementById("btnAnalizar");
+      const btnCopiar = document.getElementById("btnCopiar");
+      const btnLimpiar = document.getElementById("btnLimpiar");
+
+      const btnEscuchar = document.getElementById("btnEscuchar");
+      const btnDetener = document.getElementById("btnDetener");
+
+      const audioFile = document.getElementById("audioFile");
+      const btnSubirAudio = document.getElementById("btnSubirAudio");
+
+      const pillWrap = document.getElementById("pillWrap");
+      const lecturaBox = document.getElementById("lecturaBox");
+      const estrategiaBox = document.getElementById("estrategiaBox");
+
+      let recognition = null;
+
+      function capitalizar(s) {
+        if (!s) return "-";
+        return s.charAt(0).toUpperCase() + s.slice(1);
       }
 
-      estado.textContent = "Analizando...";
+      function renderLectura(data) {
+        const campos = data.campos || {};
 
-      try {
-        const r = await fetch("/api/analizar-mensaje", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ texto: t })
-        });
+        pillWrap.innerHTML = `
+          <span class="pill">Tipo: ${capitalizar(data.tipo || "-")}</span>
+          <span class="pill">Operación: ${capitalizar(campos.tipoOperacion || "-")}</span>
+          <span class="pill">Propiedad: ${capitalizar(campos.tipoPropiedad || "-")}</span>
+          <span class="pill">Zona: ${campos.zona || "-"}</span>
+        `;
 
-        const data = await r.json();
-        estado.textContent = "Análisis listo ✅";
-        console.log(data);
-        alert("Analizar respondió");
-      } catch (e) {
-        console.error(e);
-        estado.textContent = "Error al analizar.";
-      }
-    });
-  }
-
-  if (btnSubirAudio) {
-    btnSubirAudio.addEventListener("click", async () => {
-      if (!audioFile || !audioFile.files.length) {
-        estado.textContent = "Seleccioná un audio primero";
-        return;
+        lecturaBox.textContent =
+`Cliente detectado: ${data.tipo || "-"}
+Operación: ${campos.tipoOperacion || "-"}
+Propiedad: ${campos.tipoPropiedad || "-"}
+Zona: ${campos.zona || "-"}
+Precio / presupuesto: ${campos.precio || "-"} ${campos.moneda || ""}
+Dormitorios: ${campos.dormitoriosMin || "-"}
+Contacto detectado: ${campos.contacto || "-"}
+Confianza: ${data.confianza || 0}`;
       }
 
-      const formData = new FormData();
-      formData.append("audio", audioFile.files[0]);
+      function generarEstrategia(data) {
+        const campos = data.campos || {};
+        const tipo = data.tipo || "";
+        const operacion = campos.tipoOperacion || "";
+        const propiedad = campos.tipoPropiedad || "";
+        const zona = campos.zona || "";
+        const precio = campos.precio || 0;
 
-      estado.textContent = "Subiendo audio...";
-
-      try {
-        const r = await fetch("/api/transcribir-audio", {
-          method: "POST",
-          body: formData
-        });
-
-        const data = await r.json();
-        console.log(data);
-
-        if (data.texto) {
-          texto.value = data.texto;
-          estado.textContent = "Audio transcripto ✅";
-          alert("Subida OK");
-        } else {
-          estado.textContent = "No volvió texto.";
+        if (tipo === "demanda") {
+          return `Estrategia sugerida:
+- Validar la búsqueda.
+- Confirmar ${operacion || "la operación"}.
+- Buscar ${propiedad || "propiedades"} en ${zona || "la zona indicada"}.
+- Si no hay match exacto, ofrecer opciones cercanas.
+- Llevar la conversación a un siguiente paso concreto.`;
         }
-      } catch (e) {
-        console.error(e);
-        estado.textContent = "Error subiendo audio";
+
+        if (tipo === "oferta") {
+          return `Estrategia sugerida:
+- Confirmar si es dueño directo o colega.
+- Pedir fotos, ubicación y precio final.
+- Evaluar si sirve como oportunidad o captación.
+- Guardarlo si tiene potencial, aunque hoy no haya cliente exacto.`;
+        }
+
+        if (!operacion) {
+          return `Estrategia sugerida:
+- Primero aclarar si busca comprar o alquilar.
+- No mezclar venta con alquiler.
+- Pedir un solo dato faltante para no frenar la conversación.`;
+        }
+
+        if (precio > 0) {
+          return `Estrategia sugerida:
+- Usar el presupuesto como filtro principal.
+- Responder corto, claro y humano.
+- Proponer avance sin presión.`;
+        }
+
+        return `Estrategia sugerida:
+- Ordenar lo que dijo.
+- Detectar intención principal.
+- Responder con claridad y siguiente paso.`;
       }
+
+      function generarRespuesta(data) {
+        const campos = data.campos || {};
+        const tipo = data.tipo || "";
+        const operacion = campos.tipoOperacion || "operación";
+        const propiedad = campos.tipoPropiedad || "propiedad";
+        const zona = campos.zona || "la zona que mencionaste";
+        const precio = campos.precio
+          ? `${campos.moneda || "USD"} ${Number(campos.precio).toLocaleString("es-AR")}`
+          : "el presupuesto indicado";
+
+        if (tipo === "demanda") {
+          return `Hola, gracias por tu mensaje.
+
+Entendí que estás buscando ${propiedad} para ${operacion} en ${zona}, dentro de ${precio}.
+
+Voy a revisar opciones que puedan encajar con eso y te paso una primera selección para avanzar.`;
+        }
+
+        if (tipo === "oferta") {
+          return `Hola, gracias por tu mensaje.
+
+Entendí que estás ofreciendo ${propiedad} en ${zona}.
+
+Si querés, pasame más detalles, fotos y precio final, y veo cómo trabajarlo o con qué perfil de cliente puede encajar.`;
+        }
+
+        return `Hola, gracias por tu mensaje.
+
+Estuve revisando lo que comentaste y ya tengo una idea bastante clara de tu búsqueda.
+
+Si querés, seguimos con un dato más para orientarte mejor y avanzar con opciones concretas.`;
+      }
+
+      async function analizarTexto() {
+        const t = (texto.value || "").trim();
+
+        if (!t) {
+          estado.textContent = "No hay texto para analizar.";
+          return;
+        }
+
+        estado.textContent = "Analizando...";
+
+        try {
+          const r = await fetch("/api/analizar-mensaje", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto: t })
+          });
+
+          const data = await r.json();
+
+          renderLectura(data);
+          estrategiaBox.textContent = generarEstrategia(data);
+          respuesta.value = generarRespuesta(data);
+
+          estado.textContent = "Análisis listo ✅";
+        } catch (e) {
+          console.error(e);
+          estado.textContent = "Error al analizar.";
+        }
+      }
+
+      async function subirAudio() {
+        if (!audioFile.files.length) {
+          estado.textContent = "Seleccioná un audio primero";
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("audio", audioFile.files[0]);
+
+        estado.textContent = "Subiendo audio...";
+
+        try {
+          const r = await fetch("/api/transcribir-audio", {
+            method: "POST",
+            body: formData
+          });
+
+          const data = await r.json();
+
+          if (data.error) {
+            estado.textContent = "Error: " + data.error;
+            return;
+          }
+
+          if (data.texto) {
+            texto.value = data.texto;
+            estado.textContent = "Audio transcripto ✅";
+            await analizarTexto();
+            return;
+          }
+
+          estado.textContent = "No volvió texto desde el servidor.";
+        } catch (e) {
+          console.error(e);
+          estado.textContent = "Error subiendo audio";
+        }
+      }
+
+      function iniciarReconocimiento() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          estado.textContent = "Este navegador no soporta reconocimiento de voz.";
+          return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = "es-AR";
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+          estado.textContent = "Escuchando...";
+        };
+
+        recognition.onresult = (event) => {
+          let finalText = "";
+          for (let i = 0; i < event.results.length; i++) {
+            finalText += event.results[i][0].transcript + " ";
+          }
+          texto.value = finalText.trim();
+        };
+
+        recognition.onerror = (event) => {
+          estado.textContent = "Error de audio: " + event.error;
+        };
+
+        recognition.onend = () => {
+          estado.textContent = "Escucha finalizada.";
+        };
+
+        recognition.start();
+      }
+
+      function detenerReconocimiento() {
+        if (recognition) {
+          recognition.stop();
+        }
+      }
+
+      btnAnalizar?.addEventListener("click", analizarTexto);
+      btnSubirAudio?.addEventListener("click", subirAudio);
+      btnEscuchar?.addEventListener("click", iniciarReconocimiento);
+      btnDetener?.addEventListener("click", detenerReconocimiento);
+
+      btnCopiar?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(respuesta.value || "");
+          estado.textContent = "Respuesta copiada ✅";
+        } catch (e) {
+          estado.textContent = "No se pudo copiar.";
+        }
+      });
+
+      btnLimpiar?.addEventListener("click", () => {
+        texto.value = "";
+        respuesta.value = "";
+        pillWrap.innerHTML = `
+          <span class="pill">Tipo: -</span>
+          <span class="pill">Operación: -</span>
+          <span class="pill">Propiedad: -</span>
+        `;
+        lecturaBox.textContent = "Todavía no se analizó nada.";
+        estrategiaBox.textContent = "Acá va a aparecer qué conviene hacer con este mensaje.";
+        estado.textContent = "Listo.";
+      });
     });
-  }
-});
-</script>
- 
+  </script>
 </body>
 </html>
