@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,210 +13,221 @@
       --azul:#0984e3;
       --gris:#e5e7eb;
       --blanco:#ffffff;
-    }
+    }*{ box-sizing:border-box; }
 
-    *{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  min-height:100vh;
+  display:flex;
+}
 
-    body{
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:var(--bg);
-      color:var(--txt);
-      min-height:100vh;
-      display:flex;
-    }
+.sidebar{
+  width:260px;
+  background:linear-gradient(180deg,var(--verde1),var(--verde2));
+  color:white;
+  padding:18px 16px;
+  overflow:auto;
+}
 
-    .sidebar{
-      width:260px;
-      background:linear-gradient(180deg,var(--verde1),var(--verde2));
-      color:white;
-      padding:18px 16px;
-      overflow:auto;
-    }
+.sidebar nav a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  padding:10px;
+  margin:7px 0;
+  border-radius:10px;
+  font-size:14px;
+}
 
-    .sidebar nav a{
-      display:block;
-      color:white;
-      text-decoration:none;
-      padding:10px;
-      margin:7px 0;
-      border-radius:10px;
-      font-size:14px;
-    }
+.sidebar nav a:hover,
+.sidebar nav a.active{
+  background:rgba(255,255,255,.18);
+}
 
-    .sidebar nav a:hover,
-    .sidebar nav a.active{
-      background:rgba(255,255,255,.18);
-    }
+.content{
+  flex:1;
+  padding:18px;
+  max-width:1000px;
+  width:100%;
+  margin:0 auto;
+}
 
-    .content{
-      flex:1;
-      padding:18px;
-      max-width:1000px;
-      width:100%;
-      margin:0 auto;
-    }
+h1{
+  margin:0 0 8px 0;
+  font-size:28px;
+}
 
-    h1{
-      margin:0 0 8px 0;
-      font-size:28px;
-    }
+.sub{
+  color:var(--muted);
+  margin-bottom:16px;
+  line-height:1.4;
+}
 
-    .sub{
-      color:var(--muted);
-      margin-bottom:16px;
-      line-height:1.4;
-    }
+.stack{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
 
-    .stack{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
+.card{
+  background:var(--blanco);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
 
-    .card{
-      background:var(--blanco);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 4px 12px rgba(0,0,0,.05);
-    }
+.card h3{
+  margin:0 0 12px 0;
+  font-size:18px;
+}
 
-    .card h3{
-      margin:0 0 12px 0;
-      font-size:18px;
-    }
+label{
+  display:block;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+}
 
-    label{
-      display:block;
-      margin-bottom:6px;
-      font-size:12px;
-      font-weight:700;
-      color:var(--muted);
-    }
+textarea,
+input[type="file"]{
+  width:100%;
+  border:1px solid #d1d5db;
+  border-radius:12px;
+  padding:12px;
+  font-size:14px;
+  margin-bottom:12px;
+  background:#fff;
+}
 
-    textarea,
-    input[type="file"]{
-      width:100%;
-      border:1px solid #d1d5db;
-      border-radius:12px;
-      padding:12px;
-      font-size:14px;
-      margin-bottom:12px;
-      background:#fff;
-    }
+textarea{
+  min-height:130px;
+  resize:vertical;
+}
 
-    textarea{
-      min-height:130px;
-      resize:vertical;
-    }
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:12px 14px;
+  font-size:14px;
+  font-weight:700;
+  color:white;
+  cursor:pointer;
+  min-height:44px;
+}
 
-    .btn{
-      border:none;
-      border-radius:12px;
-      padding:12px 14px;
-      font-size:14px;
-      font-weight:700;
-      color:white;
-      cursor:pointer;
-      min-height:44px;
-    }
+.btn-primary{ background:var(--verde1); }
+.btn-blue{ background:var(--azul); }
+.btn-ghost{ background:#6b7280; }
+.btn-light{
+  background:#f3f4f6;
+  color:#111827;
+  border:1px solid #d1d5db;
+}
 
-    .btn-primary{ background:var(--verde1); }
-    .btn-blue{ background:var(--azul); }
-    .btn-ghost{ background:#6b7280; }
-    .btn-light{
-      background:#f3f4f6;
-      color:#111827;
-      border:1px solid #d1d5db;
-    }
+.estado{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+  min-height:18px;
+}
 
-    .estado{
-      margin-top:8px;
-      color:var(--muted);
-      font-size:13px;
-      min-height:18px;
-    }
+.pill-wrap{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
 
-    .pill-wrap{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-    }
+.pill{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#eef2f7;
+  color:#334155;
+}
 
-    .pill{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-      background:#eef2f7;
-      color:#334155;
-    }
+.box{
+  border:1px solid var(--gris);
+  border-radius:12px;
+  padding:12px;
+  background:#fafafa;
+  white-space:pre-wrap;
+  line-height:1.45;
+  font-size:14px;
+}
 
-    .box{
-      border:1px solid var(--gris);
-      border-radius:12px;
-      padding:12px;
-      background:#fafafa;
-      white-space:pre-wrap;
-      line-height:1.45;
-      font-size:14px;
-    }
+.respuesta{
+  min-height:150px;
+}
 
-    .section-title{
-      font-size:13px;
-      font-weight:700;
-      color:var(--muted);
-      margin:12px 0 8px 0;
-    }
+.acciones-finales{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
 
-    .respuesta{
-      min-height:150px;
-    }
+.match-item{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:10px;
+  background:#fff;
+  margin-bottom:8px;
+}
 
-    .acciones-finales{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
+.match-title{
+  font-weight:700;
+  margin-bottom:4px;
+}
 
-    @media(max-width:900px){
-      body{
-        flex-direction:column;
-      }
+.match-meta{
+  font-size:13px;
+  color:#6b7280;
+  line-height:1.4;
+}
 
-      .sidebar{
-        width:100%;
-      }
+@media(max-width:900px){
+  body{
+    flex-direction:column;
+  }
 
-      .content{
-        padding:14px;
-      }
+  .sidebar{
+    width:100%;
+  }
 
-      h1{
-        font-size:24px;
-      }
+  .content{
+    padding:14px;
+  }
 
-      .btn{
-        width:100%;
-      }
+  h1{
+    font-size:24px;
+  }
 
-      .row{
-        flex-direction:column;
-      }
+  .btn{
+    width:100%;
+  }
 
-      .acciones-finales{
-        flex-direction:column;
-      }
-    }
+  .row{
+    flex-direction:column;
+  }
+
+  .acciones-finales{
+    flex-direction:column;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -232,69 +242,75 @@
       <a href="/oportunidad.html">Nueva Oportunidad</a>
       <a href="/logout">Cerrar sesión</a>
     </nav>
-  </aside>
-
-  <main class="content">
+  </aside>  <main class="content">
     <h1>🎙 Inbox IA</h1>
     <div class="sub">
-      Copiá, transcribí y respondé rápido. Pensado para Facebook, Instagram y WhatsApp.
+      Copiá, transcribí y respondé rápido. Pensado para Facebook, Instagram, Marketplace y WhatsApp.
+    </div><div class="stack">
+
+  <section class="card">
+    <h3>1. Entrada</h3>
+
+    <label for="audioFile">Subir audio</label>
+    <input type="file" id="audioFile" accept="audio/*">
+
+    <div class="row">
+      <button class="btn btn-primary" id="btnSubirAudio" type="button">Subir y transcribir</button>
+      <button class="btn btn-light" id="btnEscuchar" type="button">🎙 Escuchar</button>
+      <button class="btn btn-light" id="btnDetener" type="button">⏹ Detener</button>
     </div>
 
-    <div class="stack">
+    <div class="estado" id="estado">Listo.</div>
 
-      <section class="card">
-        <h3>1. Entrada</h3>
+    <label for="texto">Texto / transcripción</label>
+    <textarea id="texto" placeholder="Pegá acá un mensaje o publicación. También puede aparecer la transcripción del audio."></textarea>
 
-        <label for="audioFile">Subir audio</label>
-        <input type="file" id="audioFile" accept="audio/*">
-
-        <div class="row">
-          <button class="btn btn-primary" id="btnSubirAudio" type="button">Subir y transcribir</button>
-          <button class="btn btn-light" id="btnEscuchar" type="button">🎙 Escuchar</button>
-          <button class="btn btn-light" id="btnDetener" type="button">⏹ Detener</button>
-        </div>
-
-        <div class="estado" id="estado">Listo.</div>
-
-        <label for="texto">Texto / transcripción</label>
-        <textarea id="texto" placeholder="Pegá acá un mensaje de Facebook, Instagram o WhatsApp. También puede aparecer la transcripción del audio."></textarea>
-
-        <div class="row">
-          <button class="btn btn-blue" id="btnAnalizar" type="button">🧠 Analizar y responder</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>2. Lectura rápida</h3>
-
-        <div class="pill-wrap" id="pillWrap">
-          <span class="pill">Tipo: -</span>
-          <span class="pill">Operación: -</span>
-          <span class="pill">Propiedad: -</span>
-        </div>
-
-        <div class="box" id="lecturaBox">Todavía no se analizó nada.</div>
-      </section>
-
-      <section class="card">
-        <h3>3. Estrategia</h3>
-        <div class="box" id="estrategiaBox">Acá va a aparecer qué conviene hacer con este mensaje.</div>
-      </section>
-
-      <section class="card">
-        <h3>4. Respuesta lista</h3>
-        <textarea class="respuesta" id="respuesta" placeholder="La respuesta inteligente aparecerá acá..."></textarea>
-
-        <div class="acciones-finales">
-          <button class="btn btn-primary" id="btnCopiar" type="button">Copiar respuesta</button>
-          <button class="btn btn-ghost" id="btnLimpiar" type="button">Limpiar</button>
-        </div>
-      </section>
-
+    <div class="row">
+      <button class="btn btn-blue" id="btnAnalizar" type="button">🧠 Analizar y responder</button>
     </div>
-  </main>
+  </section>
 
-  <script>
+  <section class="card">
+    <h3>2. Lectura rápida</h3>
+
+    <div class="pill-wrap" id="pillWrap">
+      <span class="pill">Tipo: -</span>
+      <span class="pill">Operación: -</span>
+      <span class="pill">Propiedad: -</span>
+    </div>
+
+    <div class="box" id="lecturaBox">Todavía no se analizó nada.</div>
+  </section>
+
+  <section class="card">
+    <h3>3. Estrategia</h3>
+    <div class="box" id="estrategiaBox">Acá va a aparecer qué conviene hacer con este mensaje.</div>
+  </section>
+
+  <section class="card">
+    <h3>4. Respuesta lista</h3>
+    <textarea class="respuesta" id="respuesta" placeholder="La respuesta inteligente aparecerá acá..."></textarea>
+
+    <div class="acciones-finales">
+      <button class="btn btn-primary" id="btnCopiar" type="button">Copiar respuesta</button>
+      <button class="btn btn-ghost" id="btnLimpiar" type="button">Limpiar</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>5. Guardado y match</h3>
+
+    <div class="acciones-finales" style="margin-top:0;margin-bottom:12px;">
+      <button class="btn btn-primary" id="btnGuardarDemanda" type="button">Guardar como demanda y matchear</button>
+      <button class="btn btn-light" id="btnGuardarLead" type="button">Guardar como lead</button>
+    </div>
+
+    <div class="box" id="matchBox">Todavía no se buscaron matches.</div>
+  </section>
+
+</div>
+
+  </main>  <script>
     document.addEventListener("DOMContentLoaded", () => {
       const texto = document.getElementById("texto");
       const estado = document.getElementById("estado");
@@ -310,15 +326,26 @@
       const audioFile = document.getElementById("audioFile");
       const btnSubirAudio = document.getElementById("btnSubirAudio");
 
+      const btnGuardarDemanda = document.getElementById("btnGuardarDemanda");
+      const btnGuardarLead = document.getElementById("btnGuardarLead");
+
       const pillWrap = document.getElementById("pillWrap");
       const lecturaBox = document.getElementById("lecturaBox");
       const estrategiaBox = document.getElementById("estrategiaBox");
+      const matchBox = document.getElementById("matchBox");
 
       let recognition = null;
+      let ultimoAnalisis = null;
 
       function capitalizar(s) {
         if (!s) return "-";
         return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+
+      function formatearPrecio(precio, moneda) {
+        const n = Number(precio || 0);
+        if (!n) return "Consultar";
+        return `${moneda || "USD"} ${n.toLocaleString("es-AR")}`;
       }
 
       function renderLectura(data) {
@@ -351,40 +378,22 @@ Confianza: ${data.confianza || 0}`;
         const precio = campos.precio || 0;
 
         if (tipo === "demanda") {
-          return `Estrategia sugerida:
-- Validar la búsqueda.
-- Confirmar ${operacion || "la operación"}.
-- Buscar ${propiedad || "propiedades"} en ${zona || "la zona indicada"}.
-- Si no hay match exacto, ofrecer opciones cercanas.
-- Llevar la conversación a un siguiente paso concreto.`;
+          return `Estrategia sugerida:\n- Validar la búsqueda.\n- Confirmar ${operacion || "la operación"}.\n- Buscar ${propiedad || "propiedades"} en ${zona || "la zona indicada"}.\n- Si no hay match exacto, ofrecer opciones cercanas.\n- Llevar la conversación a un siguiente paso concreto.`;
         }
 
         if (tipo === "oferta") {
-          return `Estrategia sugerida:
-- Confirmar si es dueño directo o colega.
-- Pedir fotos, ubicación y precio final.
-- Evaluar si sirve como oportunidad o captación.
-- Guardarlo si tiene potencial, aunque hoy no haya cliente exacto.`;
+          return `Estrategia sugerida:\n- Confirmar si es dueño directo o colega.\n- Pedir fotos, ubicación y precio final.\n- Evaluar si sirve como oportunidad o captación.\n- Guardarlo si tiene potencial, aunque hoy no haya cliente exacto.`;
         }
 
         if (!operacion) {
-          return `Estrategia sugerida:
-- Primero aclarar si busca comprar o alquilar.
-- No mezclar venta con alquiler.
-- Pedir un solo dato faltante para no frenar la conversación.`;
+          return `Estrategia sugerida:\n- Primero aclarar si busca comprar o alquilar.\n- No mezclar venta con alquiler.\n- Pedir un solo dato faltante para no frenar la conversación.`;
         }
 
         if (precio > 0) {
-          return `Estrategia sugerida:
-- Usar el presupuesto como filtro principal.
-- Responder corto, claro y humano.
-- Proponer avance sin presión.`;
+          return `Estrategia sugerida:\n- Usar el presupuesto como filtro principal.\n- Responder corto, claro y humano.\n- Proponer avance sin presión.`;
         }
 
-        return `Estrategia sugerida:
-- Ordenar lo que dijo.
-- Detectar intención principal.
-- Responder con claridad y siguiente paso.`;
+        return `Estrategia sugerida:\n- Ordenar lo que dijo.\n- Detectar intención principal.\n- Responder con claridad y siguiente paso.`;
       }
 
       function generarRespuesta(data) {
@@ -398,26 +407,14 @@ Confianza: ${data.confianza || 0}`;
           : "el presupuesto indicado";
 
         if (tipo === "demanda") {
-          return `Hola, gracias por tu mensaje.
-
-Entendí que estás buscando ${propiedad} para ${operacion} en ${zona}, dentro de ${precio}.
-
-Voy a revisar opciones que puedan encajar con eso y te paso una primera selección para avanzar.`;
+          return `Hola, gracias por tu mensaje.\n\nEntendí que estás buscando ${propiedad} para ${operacion} en ${zona}, dentro de ${precio}.\n\nVoy a revisar opciones que puedan encajar con eso y te paso una primera selección para avanzar.`;
         }
 
         if (tipo === "oferta") {
-          return `Hola, gracias por tu mensaje.
-
-Entendí que estás ofreciendo ${propiedad} en ${zona}.
-
-Si querés, pasame más detalles, fotos y precio final, y veo cómo trabajarlo o con qué perfil de cliente puede encajar.`;
+          return `Hola, gracias por tu mensaje.\n\nEntendí que estás ofreciendo ${propiedad} en ${zona}.\n\nSi querés, pasame más detalles, fotos y precio final, y veo cómo trabajarlo o con qué perfil de cliente puede encajar.`;
         }
 
-        return `Hola, gracias por tu mensaje.
-
-Estuve revisando lo que comentaste y ya tengo una idea bastante clara de tu búsqueda.
-
-Si querés, seguimos con un dato más para orientarte mejor y avanzar con opciones concretas.`;
+        return `Hola, gracias por tu mensaje.\n\nEstuve revisando lo que comentaste y ya tengo una idea bastante clara de tu búsqueda.\n\nSi querés, seguimos con un dato más para orientarte mejor y avanzar con opciones concretas.`;
       }
 
       async function analizarTexto() {
@@ -439,6 +436,7 @@ Si querés, seguimos con un dato más para orientarte mejor y avanzar con opcion
 
           const data = await r.json();
 
+          ultimoAnalisis = data;
           renderLectura(data);
           estrategiaBox.textContent = generarEstrategia(data);
           respuesta.value = generarRespuesta(data);
@@ -530,10 +528,141 @@ Si querés, seguimos con un dato más para orientarte mejor y avanzar con opcion
         }
       }
 
+      function renderMatches(data) {
+        if (!data || !Array.isArray(data.matches) || data.matches.length === 0) {
+          matchBox.textContent = "No se encontraron matches fuertes.";
+          return;
+        }
+
+        matchBox.innerHTML = data.matches.map((m, i) => {
+          const inm = m.inmueble || {};
+          const precio = formatearPrecio(inm.precio, inm.moneda);
+          const link = typeof m.indexInmueble === "number"
+            ? `/ver.html?index=${m.indexInmueble}`
+            : "#";
+
+          return `
+            <div class="match-item">
+              <div class="match-title">${i + 1}. ${inm.titulo || "Sin título"}</div>
+              <div class="match-meta">
+                Zona: ${inm.zona || "-"}<br>
+                Precio: ${precio}<br>
+                Estado: ${inm.estadoPublicacion || "-"}<br>
+                Origen: ${inm.origen || "-"}<br>
+                Score: ${m.score || 0}
+              </div>
+              ${link !== "#" ? `<div style="margin-top:8px;"><a href="${link}" target="_blank">Ver propiedad</a></div>` : ""}
+            </div>
+          `;
+        }).join("");
+      }
+
+      async function guardarComoDemandaYMatchear() {
+        if (!ultimoAnalisis) {
+          estado.textContent = "Primero analizá el mensaje.";
+          return;
+        }
+
+        const campos = ultimoAnalisis.campos || {};
+        const operacion = String(campos.tipoOperacion || "").trim().toLowerCase();
+
+        if (!operacion) {
+          estado.textContent = "Falta detectar si es venta o alquiler.";
+          return;
+        }
+
+        try {
+          const antes = await fetch("/api/demandas");
+          const demandasAntes = await antes.json();
+          const indexNuevo = Array.isArray(demandasAntes) ? demandasAntes.length : 0;
+
+          const formData = new URLSearchParams();
+          formData.append("tipoOperacion", operacion);
+          formData.append("tipoPropiedad", campos.tipoPropiedad || "");
+          formData.append("zona", campos.zona || "");
+          formData.append("presupuestoMax", campos.precio || 0);
+          formData.append("moneda", campos.moneda || "USD");
+          formData.append("dormitoriosMin", campos.dormitoriosMin || 0);
+          formData.append("notas", texto.value || "");
+          formData.append("contacto", campos.contacto || "");
+          formData.append("margenAbajo", campos.margenAbajo || 30);
+          formData.append("margenArriba", campos.margenArriba || 20);
+          formData.append("monedaEstricta", campos.monedaEstricta || "no");
+          formData.append("permitirSinPrecio", campos.permitirSinPrecio || "no");
+          formData.append("toleranteTipo", campos.toleranteTipo || "si");
+
+          estado.textContent = "Guardando demanda...";
+
+          await fetch("/demandas/nuevo", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData.toString()
+          });
+
+          estado.textContent = "Demanda guardada. Buscando matches...";
+
+          const r = await fetch(`/api/match-demanda/${indexNuevo}`);
+          const data = await r.json();
+
+          renderMatches(data);
+          estado.textContent = "Matches cargados ✅";
+        } catch (e) {
+          console.error(e);
+          estado.textContent = "Error guardando demanda o buscando matches.";
+        }
+      }
+
+      async function guardarComoLead() {
+        if (!ultimoAnalisis) {
+          estado.textContent = "Primero analizá el mensaje.";
+          return;
+        }
+
+        const campos = ultimoAnalisis.campos || {};
+
+        estado.textContent = "Guardando lead...";
+
+        try {
+          const r = await fetch("/api/radar-leads/guardar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nombre: "",
+              telefono: campos.contacto || "",
+              instagram: "",
+              origen: "inbox ia",
+              tipoLead: ultimoAnalisis.tipo || "indefinido",
+              tipoPropiedad: campos.tipoPropiedad || "",
+              tipoOperacion: campos.tipoOperacion || "",
+              zona: campos.zona || "",
+              presupuestoMax: campos.precio || 0,
+              moneda: campos.moneda || "USD",
+              dormitoriosMin: campos.dormitoriosMin || 0,
+              nivel: "activo",
+              notas: texto.value || ""
+            })
+          });
+
+          const data = await r.json();
+
+          if (data.ok) {
+            estado.textContent = "Lead guardado ✅";
+          } else {
+            estado.textContent = "No se pudo guardar el lead.";
+          }
+        } catch (e) {
+          console.error(e);
+          estado.textContent = "Error guardando lead.";
+        }
+      }
+
       btnAnalizar?.addEventListener("click", analizarTexto);
       btnSubirAudio?.addEventListener("click", subirAudio);
       btnEscuchar?.addEventListener("click", iniciarReconocimiento);
       btnDetener?.addEventListener("click", detenerReconocimiento);
+
+      btnGuardarDemanda?.addEventListener("click", guardarComoDemandaYMatchear);
+      btnGuardarLead?.addEventListener("click", guardarComoLead);
 
       btnCopiar?.addEventListener("click", async () => {
         try {
@@ -547,16 +676,19 @@ Si querés, seguimos con un dato más para orientarte mejor y avanzar con opcion
       btnLimpiar?.addEventListener("click", () => {
         texto.value = "";
         respuesta.value = "";
+        ultimoAnalisis = null;
+
         pillWrap.innerHTML = `
           <span class="pill">Tipo: -</span>
           <span class="pill">Operación: -</span>
           <span class="pill">Propiedad: -</span>
         `;
+
         lecturaBox.textContent = "Todavía no se analizó nada.";
         estrategiaBox.textContent = "Acá va a aparecer qué conviene hacer con este mensaje.";
+        matchBox.textContent = "Todavía no se buscaron matches.";
         estado.textContent = "Listo.";
       });
     });
-  </script>
-</body>
+  </script></body>
 </html>
