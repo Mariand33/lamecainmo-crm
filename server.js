@@ -1,6 +1,7 @@
 // SERVER.JS (COMPLETO)
 // EQUIPO BUZZACCHI
 
+app.use(express.static("public"));
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
