@@ -122,10 +122,17 @@ function pushNotif(n) {
 }
 
 // STATIC + PARSERS
+app.get("/demandas", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "demandas.html"));
+});
 
+app.get("/demandas.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "demandas.html"));
+});
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 
 // SESION
 
@@ -184,6 +191,9 @@ app.get("/radar-leads", (req, res) => {
 
 app.get("/radar-ia", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "radar-ia.html"));
+});
+app.get("/demandas", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "demandas.html"));
 });
 
 // GUARDAR INMUEBLE (con fotos + video opcional)
