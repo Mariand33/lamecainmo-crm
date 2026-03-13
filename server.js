@@ -1,7 +1,7 @@
 // SERVER.JS (COMPLETO)
 // EQUIPO BUZZACCHI
 
-app.use(express.static("public"));
+
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
@@ -12,6 +12,7 @@ const { createClient } = require("@supabase/supabase-js");
 const OpenAI = require("openai");
 
 const app = express();
+app.use(express.static("public"));
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
