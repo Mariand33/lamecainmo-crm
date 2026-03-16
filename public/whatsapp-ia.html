@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>WhatsApp IA</title>
+
+<style>
+body{
+font-family: Arial;
+background:#f4f6f8;
+padding:40px;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+h1{
+color:#25D366;
+}
+
+textarea{
+width:100%;
+height:80px;
+padding:10px;
+font-size:16px;
+}
+
+button{
+background:#25D366;
+color:white;
+border:none;
+padding:12px 20px;
+margin-top:10px;
+font-size:16px;
+cursor:pointer;
+border-radius:5px;
+}
+
+.result{
+margin-top:30px;
+background:#f9f9f9;
+padding:20px;
+border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>WhatsApp IA</h1>
+
+<p>Simulador de consulta de cliente</p>
+
+<textarea id="mensajeCliente" placeholder="Ej: Busco casa en Banda Norte de 3 dormitorios hasta 150000"></textarea>
+
+<button onclick="analizarMensaje()">Analizar búsqueda</button>
+
+<div class="result" id="resultado"></div>
+
+</div>
+
+<script src="whatsapp-ia.js"></script>
+
+</body>
+</html>
