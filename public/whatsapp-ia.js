@@ -41,7 +41,25 @@ html += "Precio máximo: "+precio+"<br><br>"
 
 html += "<h3>Buscando propiedades...</h3>"
 
-let inmuebles = JSON.parse(localStorage.getItem("inmuebles")) || []
+fetch("/api/inmuebles")
+.then(res => res.json())
+.then(inmuebles => {
+
+let coincidencias = inmuebles.filter(i => {
+
+return (
+(!tipo || i.tipo==tipo) &&
+(!zona || i.zona.toLowerCase().includes(zona)) &&
+(!dormitorios || i.dormitorios>=dormitorios) &&
+(!precio || i.precio<=precio)
+
+)
+
+})
+
+mostrarCoincidencias(coincidencias)
+
+})
 
 let coincidencias = inmuebles.filter(i => {
 
@@ -77,5 +95,34 @@ USD ${p.precio}
 }
 
 document.getElementById("resultado").innerHTML = html
+
+}
+function mostrarCoincidencias(coincidencias){
+
+let html=""
+
+if(coincidencias.length==0){
+
+html+="No encontré propiedades exactas.<br>"
+html+="Podemos guardar la búsqueda del cliente."
+
+}else{
+
+coincidencias.forEach(p=>{
+
+html+=`
+<div style="border:1px solid #ddd;padding:10px;margin:10px 0">
+<b>${p.titulo}</b><br>
+${p.zona}<br>
+${p.dormitorios} dormitorios<br>
+USD ${p.precio}
+</div>
+`
+
+})
+
+}
+
+document.getElementById("resultado").innerHTML=html
 
 }
