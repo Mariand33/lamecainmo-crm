@@ -403,7 +403,7 @@
       <a href="/radar-historial.html">📚 Historial Radar</a>
       <a href="form.html">Nuevo Inmueble</a>
       <a href="compradores.html">Compradores</a>
-      <a href="/demandas.html">📌 Demandas</a>
+    
       <a href="filtros.html">Filtros y Búsqueda</a>
       <a href="marketing.html">Panel Marketing</a>
       <a href="/logout" data-fixed="1">Cerrar sesión</a>
@@ -727,8 +727,9 @@
               <button class="btn btn-az" type="submit">Marcar publicada</button>
             </form>
 
-            <form action="/eliminar/${index}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-del" type="submit">Eliminar</button>
+           <form action="/eliminar/${i.id}" method="POST">
+<button>Eliminar</button>
+</form>
             </form>
           </td>
         `;

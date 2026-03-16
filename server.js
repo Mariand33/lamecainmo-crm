@@ -1010,13 +1010,16 @@ app.post("/publicada/:index", (req, res) => {
 
 // ELIMINAR INMUEBLE
 
-app.post("/eliminar/:index", (req, res) => {
-  const idx = Number(req.params.index);
-  if (inmuebles[idx]) {
-    inmuebles.splice(idx, 1);
-    guardarInmuebles();
-  }
+app.post("/eliminar/:id", (req, res) => {
+
+  const id = Number(req.params.id);
+
+  inmuebles = inmuebles.filter(i => i.id !== id);
+
+  guardarInmuebles();
+
   res.redirect("/dashboard.html");
+
 });
 
 // ZIP DE FOTOS
