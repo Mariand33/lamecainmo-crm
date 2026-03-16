@@ -717,20 +717,20 @@
           <td>${vecesPub}</td>
           <td>
             <a href="${verLink}" class="link-ver">Ver</a>
-            <a href="/editar.html?index=${index}" class="link-ver">Editar</a>
+<a href="/editar.html?index=${index}" class="link-ver">Editar</a>
 
-            <form action="/publicar/${index}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-ok" type="submit">Marcar lista</button>
-            </form>
-
-            <form action="/publicada/${index}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-az" type="submit">Marcar publicada</button>
-            </form>
-
-           <form action="/eliminar/${i.id}" method="POST">
-<button>Eliminar</button>
+<form action="/publicar/${index}" method="POST" style="display:inline; margin-left:4px;">
+<button class="btn btn-ok" type="submit">Marcar lista</button>
 </form>
-            </form>
+
+<form action="/publicada/${index}" method="POST" style="display:inline; margin-left:4px;">
+<button class="btn btn-az" type="submit">Marcar publicada</button>
+</form>
+
+<form action="/eliminar/${i.id}" method="POST" style="display:inline; margin-left:4px;">
+<button type="submit">Eliminar</button>
+</form>
+           
           </td>
         `;
 
