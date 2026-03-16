@@ -86,7 +86,10 @@ function mostrarCoincidencias(coincidencias, busqueda) {
   if (coincidencias.length === 0) {
     html += `
       <b>No encontré propiedades exactas.</b><br>
-      Podemos guardar la búsqueda del cliente para seguimiento.
+      Podemos guardar la búsqueda del cliente para seguimiento.<br><br>
+      <button type="button" onclick='guardarLead(${JSON.stringify(busqueda)})'>
+        Guardar búsqueda como lead
+      </button>
     `;
   } else {
     html += `<h3>Propiedades encontradas:</h3>`;
@@ -104,30 +107,35 @@ function mostrarCoincidencias(coincidencias, busqueda) {
       `;
     });
 
+    html += `
+      <br><button type="button" onclick='guardarLead(${JSON.stringify(busqueda)})'>
+        Guardar búsqueda como lead
+      </button>
+    `;
+
     window.coincidenciasActuales = coincidencias;
   }
 
   document.getElementById("resultado").innerHTML = html;
 }
-
-function copiarRespuesta(index) {
-  const p = window.coincidenciasActuales[index];
-  if (!p) return;
-
-  const texto = `Hola 👋
-
-Te comparto esta propiedad que puede interesarte:
-
-${p.titulo}
-Operación: ${p.tipoOperacion || "-"}
-Zona: ${p.zona || "-"}
-Dormitorios: ${p.dormitorios || "-"}
-Precio: USD ${p.precio || "-"}
-
-Si querés, te envío más información o coordinamos visita.
-Equipo Buzzacchi.`;
-
-  navigator.clipboard.writeText(texto).then(() => {
-    alert("Respuesta copiada para WhatsApp.");
-  });
+function guardarLead(busqueda) {
+  fetch("/api/leads", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(busqueda)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.ok) {
+        alert("Búsqueda guardada como lead.");
+      } else {
+        alert("No se pudo guardar el lead.");
+      }
+    })
+    .catch(error => {
+      console.error("Error guardando lead:", error);
+      alert("Error guardando lead.");
+    });
 }
