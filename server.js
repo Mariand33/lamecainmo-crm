@@ -1011,17 +1011,18 @@ app.post("/publicada/:index", (req, res) => {
 // ELIMINAR INMUEBLE
 
 app.post("/eliminar/:id", (req, res) => {
-
   const id = Number(req.params.id);
 
-  inmuebles = inmuebles.filter(i => i.id !== id);
+  console.log("ELIMINAR ID:", id);
+
+  inmuebles = inmuebles.filter(i => Number(i.id) !== id);
 
   guardarInmuebles();
 
+  console.log("TOTAL DESPUÉS DE ELIMINAR:", inmuebles.length);
+
   res.redirect("/dashboard.html");
-
 });
-
 // ZIP DE FOTOS
 
 app.get("/marketing/zip/:index", (req, res) => {
