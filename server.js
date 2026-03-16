@@ -1010,16 +1010,38 @@ app.post("/publicada/:index", (req, res) => {
 
 // ELIMINAR INMUEBLE
 
-app.post("/eliminar/:id", (req, res) => {
-  const id = Number(req.params.id);
+app.post("/eliminar/:index", (req, res) => {
+  const idx = Number(req.params.index);
 
-  console.log("ELIMINAR ID:", id);
+  console.log("INDEX RECIBIDO:", idx);
+  console.log("ANTES:", inmuebles.length);
 
-  inmuebles = inmuebles.filter(i => Number(i.id) !== id);
+  if (!Number.isNaN(idx) && idx >= 0 && idx < inmuebles.length) {
+    inmuebles.splice(idx, 1);
+    guardarInmuebles();
+    console.log("BORRADO OK");
+  } else {
+    console.log("INDEX INVALIDO");
+  }
 
-  guardarInmuebles();
+  console.log("DESPUES:", inmuebles.length);
 
-  console.log("TOTAL DESPUÉS DE ELIMINAR:", inmuebles.length);
+  res.redirect("/dashboard.html");
+});app.post("/eliminar/:index", (req, res) => {
+  const idx = Number(req.params.index);
+
+  console.log("INDEX RECIBIDO:", idx);
+  console.log("ANTES:", inmuebles.length);
+
+  if (!Number.isNaN(idx) && idx >= 0 && idx < inmuebles.length) {
+    inmuebles.splice(idx, 1);
+    guardarInmuebles();
+    console.log("BORRADO OK");
+  } else {
+    console.log("INDEX INVALIDO");
+  }
+
+  console.log("DESPUES:", inmuebles.length);
 
   res.redirect("/dashboard.html");
 });
