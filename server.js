@@ -3,6 +3,8 @@
 
 
 const express = require("express");
+
+app.use(express.json());
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -11,7 +13,7 @@ const archiver = require("archiver");
 const { createClient } = require("@supabase/supabase-js");
 const OpenAI = require("openai");
 
-const app = express();
+
 app.use(express.static("public"));
 
 const supabase = createClient(
@@ -261,6 +263,32 @@ app.post(
   }
 );
 
+
+
+const path = require("path");
+const fs = require("fs");
+
+const leadsFile = path.join(__dirname, "data", "leads.json");
+
+function leerLeads() {
+  try {
+    if (!fs.existsSync(leadsFile)) {
+      fs.writeFileSync(leadsFile, "[]", "utf8");
+    }
+    return JSON.parse(fs.readFileSync(leadsFile, "utf8") || "[]");
+  } catch (error) {
+    console.error("Error leyendo leads:", error);
+    return [];
+  }
+}
+
+function guardarLeads(leads) {
+  try {
+    fs.writeFileSync(leadsFile, JSON.stringify(leads, null, 2), "utf8");
+  } catch (error) {
+    console.error("Error guardando leads:", error);
+  }
+}
 // GUARDAR OPORTUNIDAD
 
 app.post("/oportunidad", upload.single("thumb"), (req, res) => {
@@ -1422,8 +1450,13 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
   res.json({
     ok: true,
     total: radarLeads.length
+tipoLead: req.body.tipoLead || "comprador",
+
   });
 });
+
+
+
 
 // RADAR LEADS - MATCH
 
@@ -1523,7 +1556,33 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
 
 });
 
+app.get("/api/leads", (req, res) => {
+  const leads = leerLeads();
+  res.json(leads);
+});
 
+app.post("/api/leads", express.json(), (req, res) => {
+  const leads = leerLeads();
+
+ const nuevoLead = {
+  id: Date.now(),
+  mensajeOriginal: req.body.mensajeOriginal || "",
+  tipoLead: req.body.tipoLead || "comprador",
+  operacion: req.body.operacion || "",
+  tipo: req.body.tipo || "",
+  zona: req.body.zona || "",
+  dormitorios: req.body.dormitorios || "",
+  precio: req.body.precio || "",
+  estado: "nuevo",
+  origen: "whatsapp-ia",
+  fecha: new Date().toISOString()
+};
+
+  leads.push(nuevoLead);
+  guardarLeads(leads);
+
+  res.json({ ok: true, lead: nuevoLead });
+});
 
 // SERVER
 

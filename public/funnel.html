@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propiedades | Equipo Buzzacchi</title>
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#f4f6f8;
+      color:#222;
+    }
+    .topbar{
+      background:#111827;
+      color:#fff;
+      padding:14px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .topbar h1{
+      margin:0;
+      font-size:20px;
+    }
+    .topbar p{
+      margin:4px 0 0;
+      font-size:13px;
+      color:#d1d5db;
+    }
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px;
+    }
+    .hero{
+      background:#fff;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom:20px;
+    }
+    .hero h2{
+      margin-top:0;
+    }
+    .filters{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+    .filters input,
+    .filters select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d1d5db;
+      border-radius:8px;
+      font-size:14px;
+      box-sizing:border-box;
+    }
+    .filters button{
+      padding:10px 14px;
+      border:none;
+      border-radius:8px;
+      background:#25D366;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .actions-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .actions-row button{
+      padding:10px 14px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .btn-primary{ background:#111827; color:#fff; }
+    .btn-secondary{ background:#e5e7eb; color:#111827; }
+
+    .lead-box{
+      background:#fff;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom:20px;
+    }
+    .lead-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+    .lead-grid input,
+    .lead-grid select{
+      width:100%;
+      padding:10px;
+      border:1px solid #d1d5db;
+      border-radius:8px;
+      box-sizing:border-box;
+    }
+
+    .results-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:16px;
+    }
+    .card{
+      background:#fff;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      display:flex;
+      flex-direction:column;
+    }
+    .card img{
+      width:100%;
+      height:210px;
+      object-fit:cover;
+      background:#e5e7eb;
+    }
+    .card-body{
+      padding:16px;
+    }
+    .card-body h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .meta{
+      font-size:14px;
+      color:#555;
+      line-height:1.6;
+      margin-bottom:10px;
+    }
+    .price{
+      font-size:20px;
+      font-weight:bold;
+      color:#16a34a;
+      margin-bottom:12px;
+    }
+    .card-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .card-actions button,
+    .card-actions a{
+      text-decoration:none;
+      padding:10px 12px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:14px;
+      display:inline-block;
+    }
+    .btn-wa{
+      background:#25D366;
+      color:#fff;
+    }
+    .btn-view{
+      background:#111827;
+      color:#fff;
+    }
+    .empty{
+      background:#fff;
+      padding:24px;
+      border-radius:12px;
+      text-align:center;
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+    .small{
+      font-size:12px;
+      color:#666;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <h1>Equipo Buzzacchi</h1>
+      <p>Funnel de propiedades · catálogo conversacional</p>
+    </div>
+    <div class="small">Link ideal para WhatsApp, Instagram y anuncios</div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h2>Encontrá tu próxima propiedad</h2>
+      <p>Filtrá opciones disponibles y consultá directo por WhatsApp.</p>
+
+      <div class="filters">
+        <select id="fOperacion">
+          <option value="">Operación</option>
+          <option value="venta">Venta</option>
+          <option value="alquiler">Alquiler</option>
+        </select>
+
+        <select id="fTipo">
+          <option value="">Tipo</option>
+          <option value="casa">Casa</option>
+          <option value="departamento">Departamento</option>
+          <option value="lote">Lote / Terreno</option>
+          <option value="local">Local</option>
+        </select>
+
+        <input id="fZona" type="text" placeholder="Zona / Barrio">
+
+        <select id="fDormitorios">
+          <option value="">Dormitorios</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+        </select>
+
+        <input id="fPrecio" type="number" placeholder="Precio máximo">
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" onclick="aplicarFiltros()">Buscar</button>
+        <button class="btn-secondary" onclick="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+    </div>
+
+    <div class="lead-box">
+      <h3>Dejanos tu búsqueda</h3>
+      <p class="small">Si no encontrás una coincidencia exacta, registramos tu demanda y te contactamos.</p>
+
+      <div class="lead-grid">
+        <input id="leadNombre" type="text" placeholder="Nombre">
+        <input id="leadTelefono" type="text" placeholder="WhatsApp / Teléfono">
+        <select id="leadAsesor">
+          <option value="">Asesor</option>
+          <option value="Mariano">Mariano</option>
+          <option value="Vanina">Vanina</option>
+          <option value="Catalina">Catalina</option>
+        </select>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn-primary" onclick="guardarBusquedaLead()">Guardar búsqueda como lead</button>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <h3 id="resultadosTitulo">Propiedades disponibles</h3>
+      <div class="small" id="contadorResultados">0 resultados</div>
+    </div>
+
+    <div id="cards" class="cards"></div>
+  </div>
+
+  <script>
+    let inmueblesOriginales = [];
+    let inmueblesFiltrados = [];
+
+    async function cargarInmuebles() {
+      try {
+        const res = await fetch("/api/inmuebles");
+        const data = await res.json();
+        inmueblesOriginales = Array.isArray(data) ? data : [];
+        inmueblesFiltrados = [...inmueblesOriginales];
+        renderCards(inmueblesFiltrados);
+      } catch (error) {
+        console.error("Error cargando inmuebles:", error);
+        document.getElementById("cards").innerHTML = '<div class="empty">No se pudieron cargar los inmuebles.</div>';
+      }
+    }
+
+    function aplicarFiltros() {
+      const operacion = document.getElementById("fOperacion").value.toLowerCase().trim();
+      const tipo = document.getElementById("fTipo").value.toLowerCase().trim();
+      const zona = document.getElementById("fZona").value.toLowerCase().trim();
+      const dormitorios = Number(document.getElementById("fDormitorios").value || 0);
+      const precio = Number(document.getElementById("fPrecio").value || 0);
+
+      inmueblesFiltrados = inmueblesOriginales.filter(i => {
+        return (
+          (!operacion || String(i.tipoOperacion || "").toLowerCase() === operacion) &&
+          (!tipo || String(i.tipo || "").toLowerCase() === tipo) &&
+          (!zona || String(i.zona || "").toLowerCase().includes(zona) || String(i.direccion || "").toLowerCase().includes(zona)) &&
+          (!dormitorios || Number(i.dormitorios || 0) >= dormitorios) &&
+          (!precio || Number(i.precio || 0) <= precio)
+        );
+      });
+
+      renderCards(inmueblesFiltrados);
+    }
+
+    function limpiarFiltros() {
+      document.getElementById("fOperacion").value = "";
+      document.getElementById("fTipo").value = "";
+      document.getElementById("fZona").value = "";
+      document.getElementById("fDormitorios").value = "";
+      document.getElementById("fPrecio").value = "";
+      inmueblesFiltrados = [...inmueblesOriginales];
+      renderCards(inmueblesFiltrados);
+    }
+
+    function renderCards(lista) {
+      const cards = document.getElementById("cards");
+      const contador = document.getElementById("contadorResultados");
+      contador.textContent = `${lista.length} resultados`;
+
+      if (!lista.length) {
+        cards.innerHTML = `
+          <div class="empty">
+            <h3>No encontramos coincidencias exactas</h3>
+            <p>Podés guardar tu búsqueda y te contactamos con nuevas oportunidades.</p>
+          </div>
+        `;
+        return;
+      }
+
+      cards.innerHTML = lista.map((p, index) => {
+        const imagen = p.imagenes && p.imagenes.length
+          ? `/uploads/${p.imagenes[0]}`
+          : "https://via.placeholder.com/600x400?text=Propiedad";
+
+        const textoWhatsapp = encodeURIComponent(
+`Hola 👋
+
+Te consulto por esta propiedad:
+
+${p.titulo || "Propiedad"}
+Operación: ${p.tipoOperacion || "-"}
+Tipo: ${p.tipo || "-"}
+Zona: ${p.zona || "-"}
+Dormitorios: ${p.dormitorios || "-"}
+Precio: USD ${p.precio || "-"}
+
+¿Podrían enviarme más información?
+Equipo Buzzacchi.`
+        );
+
+        return `
+          <div class="card">
+            <img src="${imagen}" alt="${p.titulo || "Propiedad"}">
+            <div class="card-body">
+              <h3>${p.titulo || "Propiedad sin título"}</h3>
+              <div class="meta">
+                Operación: ${p.tipoOperacion || "-"}<br>
+                Tipo: ${p.tipo || "-"}<br>
+                Zona: ${p.zona || "-"}<br>
+                Dormitorios: ${p.dormitorios || "-"}
+              </div>
+              <div class="price">USD ${p.precio || "-"}</div>
+              <div class="card-actions">
+                <a class="btn-view" href="/ver.html?index=${index}">Ver ficha</a>
+                <a class="btn-wa" href="https://wa.me/?text=${textoWhatsapp}" target="_blank">Consultar por WhatsApp</a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function guardarBusquedaLead() {
+      const nombre = document.getElementById("leadNombre").value.trim();
+      const telefono = document.getElementById("leadTelefono").value.trim();
+      const asesor = document.getElementById("leadAsesor").value.trim();
+
+      const busqueda = {
+        mensajeOriginal: "Lead desde funnel inmobiliario",
+        tipoLead: "comprador",
+        operacion: document.getElementById("fOperacion").value || "",
+        tipo: document.getElementById("fTipo").value || "",
+        zona: document.getElementById("fZona").value || "",
+        dormitorios: document.getElementById("fDormitorios").value || "",
+        precio: document.getElementById("fPrecio").value || "",
+        estado: "nuevo",
+        origen: "funnel",
+        nombre,
+        telefono,
+        asesor
+      };
+
+      try {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(busqueda)
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          alert("Búsqueda guardada como lead.");
+          document.getElementById("leadNombre").value = "";
+          document.getElementById("leadTelefono").value = "";
+          document.getElementById("leadAsesor").value = "";
+        } else {
+          alert("No se pudo guardar el lead.");
+        }
+      } catch (error) {
+        console.error("Error guardando lead:", error);
+        alert("Error guardando lead.");
+      }
+    }
+
+    cargarInmuebles();
+  </script>
+</body>
+</html>
