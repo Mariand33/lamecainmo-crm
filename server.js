@@ -265,8 +265,6 @@ app.post(
 
 
 
-const path = require("path");
-const fs = require("fs");
 
 const leadsFile = path.join(__dirname, "data", "leads.json");
 
