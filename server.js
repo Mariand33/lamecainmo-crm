@@ -907,6 +907,40 @@ app.post("/api/leads", (req, res) => {
   guardarLeads(leads);
   res.json({ ok: true, lead: nuevoLead });
 });
+// FUNNEL PÚBLICO - PROPIEDADES LISTA
+app.get("/api/propiedades-publicas", (req, res) => {
+  const publicas = inmuebles
+    .map((inm, i) => ({ ...inm, index: i }))
+    .filter(inm => (inm.estadoPublicacion || inm.estado || "") === "lista")
+    .map(inm => ({
+      id: inm.index,
+      titulo: inm.titulo || "",
+      operacion: inm.tipoOperacion || "",
+      tipo: inm.tipoPropiedad || "",
+      zona: inm.zona || "",
+      precio: inm.precio || 0,
+      moneda: inm.moneda || "USD",
+      dormitorios: inm.dormitorios || 0,
+      banos: inm.banos || 0,
+      descripcion: inm.descripcion || "",
+      fotos: (inm.imagenes || []).map(f => "/uploads/" + f),
+      estado: "lista"
+    }));
+  res.json(publicas);
+});
+
+// RATING FUNNEL PÚBLICO
+app.post("/api/rating", (req, res) => {
+  const { propiedad_id, rating } = req.body;
+  const idx = Number(propiedad_id);
+  if (!isNaN(idx) && inmuebles[idx]) {
+    inmuebles[idx].rating = Number(rating);
+    guardarInmuebles();
+  }
+  res.json({ ok: true });
+});
+
+
 
 // SERVER
 const PORT = process.env.PORT || 10000;
