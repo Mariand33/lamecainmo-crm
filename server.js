@@ -961,31 +961,82 @@ app.get("/api/propiedades-publicas", (req, res) => {
   res.json(mapeadas);
 });
 
-// FICHA PDF
-const PDFDocument = require("pdfkit");
-
 app.get("/api/ficha-pdf/:id", (req, res) => {
   const id = Number(req.params.id);
   const p = inmuebles[id];
-
   if (!p) return res.status(404).send("Propiedad no encontrada");
 
-  const doc = new PDFDocument({ margin: 50 });
+  // Limpiar emojis y caracteres especiales
+  const limpiar = (str) => (str || "").replace(/[^\x00-\x7FáéíóúÁÉÍÓÚñÑüÜ¿¡.,;:()\-\s\/°²³]/g, "").trim();
+
+  const doc = new PDFDocument({ margin: 50, size: "A4" });
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", `inline; filename="ficha-${id}.pdf"`);
   doc.pipe(res);
 
-  doc.fontSize(22).text(p.titulo || "Propiedad", { align: "center" });
-  doc.moveDown();
-  doc.fontSize(13).text(`Operación: ${p.tipoOperacion || "-"}`);
-  doc.text(`Tipo: ${p.tipoPropiedad || "-"}`);
-  doc.text(`Zona: ${p.zona || "-"}`);
-  doc.text(`Dirección: ${p.direccion || "-"}`);
-  doc.text(`Precio: ${p.moneda || "USD"} ${Number(p.precio || 0).toLocaleString("es-AR")}`);
-  if (p.dormitorios) doc.text(`Dormitorios: ${p.dormitorios}`);
-  if (p.banos) doc.text(`Baños: ${p.banos}`);
-  doc.moveDown();
-  doc.fontSize(12).text(p.descripcion || "");
+  const VERDE = "#1a3a2a";
+  const DORADO = "#c9a96e";
+  const GRIS = "#f5f5f5";
+  const W = 595 - 100; // ancho útil
+
+  // ── ENCABEZADO ──
+  doc.rect(0, 0, 595, 80).fill(VERDE);
+  doc.fillColor("white")
+     .fontSize(22)
+     .font("Helvetica-Bold")
+     .text("Vanina Buzzacchi", 50, 20, { width: W });
+  doc.fontSize(11).font("Helvetica")
+     .text("Negocios Inmobiliarios · Río Cuarto, Córdoba", 50, 48);
+
+  // ── TÍTULO PROPIEDAD ──
+  doc.moveDown(3);
+  doc.fillColor(VERDE).fontSize(18).font("Helvetica-Bold")
+     .text(limpiar(p.titulo), 50, 100, { width: W });
+
+  // línea dorada
+  doc.moveTo(50, 125).lineTo(545, 125).strokeColor(DORADO).lineWidth(2).stroke();
+
+  // ── DATOS PRINCIPALES ──
+  let y = 140;
+  const fila = (label, valor) => {
+    if (!valor || valor === "-") return;
+    doc.fillColor("#555").fontSize(10).font("Helvetica-Bold").text(label, 50, y);
+    doc.fillColor("#111").fontSize(10).font("Helvetica").text(limpiar(String(valor)), 180, y);
+    y += 20;
+  };
+
+  const badge = p.tipoOperacion === "venta" ? "VENTA" : "ALQUILER";
+  doc.roundedRect(50, y, 70, 20, 4).fill(DORADO);
+  doc.fillColor(VERDE).fontSize(10).font("Helvetica-Bold")
+     .text(badge, 50, y + 4, { width: 70, align: "center" });
+  y += 32;
+
+  fila("Tipo de propiedad:", p.tipoPropiedad || "-");
+  fila("Zona:", p.zona);
+  fila("Dirección:", p.direccion);
+  fila("Precio:", `${p.moneda || "USD"} ${Number(p.precio || 0).toLocaleString("es-AR")}`);
+  fila("Dormitorios:", p.dormitorios || null);
+  fila("Baños:", p.banos || null);
+
+  // línea separadora
+  y += 8;
+  doc.moveTo(50, y).lineTo(545, y).strokeColor("#ddd").lineWidth(1).stroke();
+  y += 16;
+
+  // ── DESCRIPCIÓN ──
+  doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Descripción", 50, y);
+  y += 18;
+  doc.fillColor("#333").fontSize(10).font("Helvetica")
+     .text(limpiar(p.descripcion || "Sin descripción disponible."), 50, y, {
+       width: W, lineGap: 4
+     });
+
+  // ── PIE DE PÁGINA ──
+  doc.rect(0, 780, 595, 62).fill(GRIS);
+  doc.fillColor("#888").fontSize(9).font("Helvetica")
+     .text("Este documento es de carácter informativo. Precios sujetos a modificación.", 50, 790, { width: W, align: "center" });
+  doc.fillColor(VERDE).fontSize(9).font("Helvetica-Bold")
+     .text("Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto, Córdoba", 50, 806, { width: W, align: "center" });
 
   doc.end();
 });
