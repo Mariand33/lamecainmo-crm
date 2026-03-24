@@ -940,7 +940,55 @@ app.post("/api/rating", (req, res) => {
   res.json({ ok: true });
 });
 
+// PROPIEDADES PUBLICAS (para el funnel)
+app.get("/api/propiedades-publicas", (req, res) => {
+  const publicas = inmuebles.filter(i => {
+    const estado = String(i.estadoPublicacion || "").toLowerCase();
+    return estado === "publicada" || estado === "lista";
+  });
+  const mapeadas = publicas.map((p, i) => ({
+    id: inmuebles.indexOf(p), // ← el índice real en el array
+    titulo: p.titulo || "",
+    operacion: p.tipoOperacion || "",
+    tipo: p.tipoPropiedad || "",
+    zona: p.zona || "",
+    precio: p.precio || 0,
+    moneda: p.moneda || "USD",
+    descripcion: p.descripcion || "",
+    fotos: (p.imagenes || []).map(f => `/uploads/${f}`),
+    estado: p.estadoPublicacion || ""
+  }));
+  res.json(mapeadas);
+});
 
+// FICHA PDF
+const PDFDocument = require("pdfkit");
+
+app.get("/api/ficha-pdf/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const p = inmuebles[id];
+
+  if (!p) return res.status(404).send("Propiedad no encontrada");
+
+  const doc = new PDFDocument({ margin: 50 });
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", `inline; filename="ficha-${id}.pdf"`);
+  doc.pipe(res);
+
+  doc.fontSize(22).text(p.titulo || "Propiedad", { align: "center" });
+  doc.moveDown();
+  doc.fontSize(13).text(`Operación: ${p.tipoOperacion || "-"}`);
+  doc.text(`Tipo: ${p.tipoPropiedad || "-"}`);
+  doc.text(`Zona: ${p.zona || "-"}`);
+  doc.text(`Dirección: ${p.direccion || "-"}`);
+  doc.text(`Precio: ${p.moneda || "USD"} ${Number(p.precio || 0).toLocaleString("es-AR")}`);
+  if (p.dormitorios) doc.text(`Dormitorios: ${p.dormitorios}`);
+  if (p.banos) doc.text(`Baños: ${p.banos}`);
+  doc.moveDown();
+  doc.fontSize(12).text(p.descripcion || "");
+
+  doc.end();
+});
 
 // SERVER
 const PORT = process.env.PORT || 10000;
