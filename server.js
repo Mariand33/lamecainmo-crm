@@ -946,12 +946,16 @@ app.post("/api/rating", (req, res) => {
 });
 
 // FICHA PDF
-app.get("/api/ficha-pdf/:id", (req, res) => {
+app.get("/api/ficha-pdf/:id", async (req, res) => {
   const id = Number(req.params.id);
   const p = inmuebles[id];
   if (!p) return res.status(404).send("Propiedad no encontrada");
 
-  const limpiar = (str) => (str || "").replace(/[^\x00-\x7FáéíóúÁÉÍÓÚñÑüÜ¿¡.,;:()\-\s\/°²³]/g, "").trim();
+  // Limpiar texto: saca emojis y caracteres raros, respeta saltos de línea
+  const limpiar = (str) => (str || "")
+    .replace(/[^\x00-\x7FáéíóúÁÉÍÓÚñÑüÜ¿¡.,;:()\-\s\/°²³\n]/g, "")
+    .replace(/\r/g, "")
+    .trim();
 
   const doc = new PDFDocument({ margin: 50, size: "A4" });
   res.setHeader("Content-Type", "application/pdf");
@@ -960,9 +964,94 @@ app.get("/api/ficha-pdf/:id", (req, res) => {
 
   const VERDE = "#1a3a2a";
   const DORADO = "#c9a96e";
-  const GRIS = "#f5f5f5";
-  const W = 595 - 100;
+  const W = 495;
 
+  // ── ENCABEZADO ──
+  doc.rect(0, 0, 595, 80).fill(VERDE);
+  doc.fillColor("white").fontSize(22).font("Helvetica-Bold")
+     .text("Vanina Buzzacchi", 50, 20, { width: W });
+  doc.fontSize(11).font("Helvetica")
+     .text("Negocios Inmobiliarios · Río Cuarto, Córdoba", 50, 48);
+
+  // ── TÍTULO ──
+  doc.fillColor(VERDE).fontSize(18).font("Helvetica-Bold")
+     .text(limpiar(p.titulo), 50, 100, { width: W });
+  doc.moveTo(50, 125).lineTo(545, 125).strokeColor(DORADO).lineWidth(2).stroke();
+
+  // ── BADGE + DATOS ──
+  let y = 140;
+  const badge = p.tipoOperacion === "venta" ? "VENTA" : "ALQUILER";
+  doc.roundedRect(50, y, 70, 20, 4).fill(DORADO);
+  doc.fillColor(VERDE).fontSize(10).font("Helvetica-Bold")
+     .text(badge, 50, y + 4, { width: 70, align: "center" });
+  y += 32;
+
+  const fila = (label, valor) => {
+    if (!valor || valor === "-" || valor === "0") return;
+    doc.fillColor("#555").fontSize(10).font("Helvetica-Bold").text(label, 50, y);
+    doc.fillColor("#111").fontSize(10).font("Helvetica").text(limpiar(String(valor)), 180, y);
+    y += 20;
+  };
+
+  fila("Tipo:", p.tipoPropiedad || "-");
+  fila("Zona:", p.zona);
+  fila("Dirección:", p.direccion);
+  fila("Precio:", `${p.moneda || "USD"} ${Number(p.precio || 0).toLocaleString("es-AR")}`);
+  fila("Dormitorios:", p.dormitorios ? String(p.dormitorios) : null);
+  fila("Baños:", p.banos ? String(p.banos) : null);
+
+  y += 8;
+  doc.moveTo(50, y).lineTo(545, y).strokeColor("#ddd").lineWidth(1).stroke();
+  y += 16;
+
+  // ── FOTOS ──
+  const imagenes = (p.imagenes || []).slice(0, 4); // máximo 4 fotos
+  if (imagenes.length > 0) {
+    doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Fotos", 50, y);
+    y += 14;
+
+    const fotoW = 220;
+    const fotoH = 150;
+    const gap = 15;
+
+    for (let i = 0; i < imagenes.length; i++) {
+      const fotoPath = path.join(__dirname, "public", "uploads", imagenes[i]);
+      const x = i % 2 === 0 ? 50 : 50 + fotoW + gap;
+      if (i % 2 === 0 && i > 0) y += fotoH + gap;
+
+      if (fs.existsSync(fotoPath)) {
+        try {
+          doc.image(fotoPath, x, y, { width: fotoW, height: fotoH, cover: [fotoW, fotoH] });
+        } catch(e) {
+          doc.rect(x, y, fotoW, fotoH).fill("#eee");
+        }
+      } else {
+        doc.rect(x, y, fotoW, fotoH).fill("#eee");
+      }
+    }
+
+    y += fotoH + gap + 8;
+  }
+
+  // ── DESCRIPCIÓN ──
+  doc.moveTo(50, y).lineTo(545, y).strokeColor("#ddd").lineWidth(1).stroke();
+  y += 14;
+  doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Descripción", 50, y);
+  y += 18;
+
+  const descLimpia = limpiar(p.descripcion || "Sin descripción disponible.")
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
+    .join("\n");
+
+  doc.fillColor("#333").fontSize(10).font("Helvetica")
+     .text(descLimpia, 50, y, { width: W, lineGap: 3 });
+
+  // ── PIE ──
+  const pageH = doc.page.height;
+  doc.rect(0, pageH - 50, 595, 50).fill("#f5f5f5");
+  doc.fillColo
   // ENCABEZADO
   doc.rect(0, 0, 595, 80).fill(VERDE);
   doc.fillColor("white").fontSize(22).font("Helvetica-Bold")
