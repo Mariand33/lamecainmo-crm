@@ -9,6 +9,7 @@ const session = require("express-session");
 const archiver = require("archiver");
 const { createClient } = require("@supabase/supabase-js");
 const OpenAI = require("openai");
+const PDFDocument = require("pdfkit"); // ← AGREGADO
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -907,13 +908,17 @@ app.post("/api/leads", (req, res) => {
   guardarLeads(leads);
   res.json({ ok: true, lead: nuevoLead });
 });
-// FUNNEL PÚBLICO - PROPIEDADES LISTA
+
+// FUNNEL PÚBLICO - PROPIEDADES LISTA (única definición, sin duplicado)
 app.get("/api/propiedades-publicas", (req, res) => {
   const publicas = inmuebles
-    .map((inm, i) => ({ ...inm, index: i }))
-    .filter(inm => (inm.estadoPublicacion || inm.estado || "") === "lista")
+    .map((inm, i) => ({ ...inm, _index: i }))
+    .filter(inm => {
+      const estado = String(inm.estadoPublicacion || inm.estado || "").toLowerCase();
+      return estado === "lista" || estado === "publicada";
+    })
     .map(inm => ({
-      id: inm.index,
+      id: inm._index,
       titulo: inm.titulo || "",
       operacion: inm.tipoOperacion || "",
       tipo: inm.tipoPropiedad || "",
@@ -924,7 +929,7 @@ app.get("/api/propiedades-publicas", (req, res) => {
       banos: inm.banos || 0,
       descripcion: inm.descripcion || "",
       fotos: (inm.imagenes || []).map(f => "/uploads/" + f),
-      estado: "lista"
+      estado: inm.estadoPublicacion || ""
     }));
   res.json(publicas);
 });
@@ -940,33 +945,12 @@ app.post("/api/rating", (req, res) => {
   res.json({ ok: true });
 });
 
-// PROPIEDADES PUBLICAS (para el funnel)
-app.get("/api/propiedades-publicas", (req, res) => {
-  const publicas = inmuebles.filter(i => {
-    const estado = String(i.estadoPublicacion || "").toLowerCase();
-    return estado === "publicada" || estado === "lista";
-  });
-  const mapeadas = publicas.map((p, i) => ({
-    id: inmuebles.indexOf(p), // ← el índice real en el array
-    titulo: p.titulo || "",
-    operacion: p.tipoOperacion || "",
-    tipo: p.tipoPropiedad || "",
-    zona: p.zona || "",
-    precio: p.precio || 0,
-    moneda: p.moneda || "USD",
-    descripcion: p.descripcion || "",
-    fotos: (p.imagenes || []).map(f => `/uploads/${f}`),
-    estado: p.estadoPublicacion || ""
-  }));
-  res.json(mapeadas);
-});
-
+// FICHA PDF
 app.get("/api/ficha-pdf/:id", (req, res) => {
   const id = Number(req.params.id);
   const p = inmuebles[id];
   if (!p) return res.status(404).send("Propiedad no encontrada");
 
-  // Limpiar emojis y caracteres especiales
   const limpiar = (str) => (str || "").replace(/[^\x00-\x7FáéíóúÁÉÍÓÚñÑüÜ¿¡.,;:()\-\s\/°²³]/g, "").trim();
 
   const doc = new PDFDocument({ margin: 50, size: "A4" });
@@ -977,26 +961,21 @@ app.get("/api/ficha-pdf/:id", (req, res) => {
   const VERDE = "#1a3a2a";
   const DORADO = "#c9a96e";
   const GRIS = "#f5f5f5";
-  const W = 595 - 100; // ancho útil
+  const W = 595 - 100;
 
-  // ── ENCABEZADO ──
+  // ENCABEZADO
   doc.rect(0, 0, 595, 80).fill(VERDE);
-  doc.fillColor("white")
-     .fontSize(22)
-     .font("Helvetica-Bold")
+  doc.fillColor("white").fontSize(22).font("Helvetica-Bold")
      .text("Vanina Buzzacchi", 50, 20, { width: W });
   doc.fontSize(11).font("Helvetica")
      .text("Negocios Inmobiliarios · Río Cuarto, Córdoba", 50, 48);
 
-  // ── TÍTULO PROPIEDAD ──
-  doc.moveDown(3);
+  // TÍTULO
   doc.fillColor(VERDE).fontSize(18).font("Helvetica-Bold")
      .text(limpiar(p.titulo), 50, 100, { width: W });
-
-  // línea dorada
   doc.moveTo(50, 125).lineTo(545, 125).strokeColor(DORADO).lineWidth(2).stroke();
 
-  // ── DATOS PRINCIPALES ──
+  // DATOS
   let y = 140;
   const fila = (label, valor) => {
     if (!valor || valor === "-") return;
@@ -1018,20 +997,17 @@ app.get("/api/ficha-pdf/:id", (req, res) => {
   fila("Dormitorios:", p.dormitorios || null);
   fila("Baños:", p.banos || null);
 
-  // línea separadora
   y += 8;
   doc.moveTo(50, y).lineTo(545, y).strokeColor("#ddd").lineWidth(1).stroke();
   y += 16;
 
-  // ── DESCRIPCIÓN ──
+  // DESCRIPCIÓN
   doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Descripción", 50, y);
   y += 18;
   doc.fillColor("#333").fontSize(10).font("Helvetica")
-     .text(limpiar(p.descripcion || "Sin descripción disponible."), 50, y, {
-       width: W, lineGap: 4
-     });
+     .text(limpiar(p.descripcion || "Sin descripción disponible."), 50, y, { width: W, lineGap: 4 });
 
-  // ── PIE DE PÁGINA ──
+  // PIE
   doc.rect(0, 780, 595, 62).fill(GRIS);
   doc.fillColor("#888").fontSize(9).font("Helvetica")
      .text("Este documento es de carácter informativo. Precios sujetos a modificación.", 50, 790, { width: W, align: "center" });
