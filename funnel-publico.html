@@ -4,17 +4,536 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vanina Buzzacchi – Propiedades</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* (TODO TU CSS ORIGINAL SE MANTIENE IGUAL) */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --crema: #F5F0E8;
+    --crema-oscura: #EDE6D6;
+    --carbon: #1A1A18;
+    --carbon-suave: #2E2E2A;
+    --dorado: #B8934A;
+    --dorado-claro: #D4AC6A;
+    --dorado-pale: #F0E4C8;
+    --blanco: #FDFCFA;
+    --gris: #7A7A72;
+    --gris-claro: #C8C4B8;
+    --verde-wa: #25D366;
+    --sombra: 0 4px 24px rgba(26,26,24,0.10);
+    --sombra-hover: 0 12px 40px rgba(26,26,24,0.18);
+    --radius: 2px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--crema);
+    color: var(--carbon);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--carbon);
+    color: var(--crema);
+    padding: 0 40px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--dorado);
+  }
+
+  .header-logo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .header-logo .nombre {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--dorado-claro);
+    letter-spacing: 0.03em;
+  }
+
+  .header-logo .subtitulo {
+    font-size: 0.68rem;
+    color: var(--gris-claro);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .header-contacto {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-tel {
+    font-size: 0.82rem;
+    color: var(--gris-claro);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-header-wa {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--verde-wa);
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-header-wa:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+  }
+
+  .btn-header-wa svg { width: 16px; height: 16px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--carbon);
+    color: var(--crema);
+    padding: 64px 40px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,147,74,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '"';
+    position: absolute;
+    bottom: -30px; left: 30px;
+    font-family: 'Playfair Display', serif;
+    font-size: 22rem;
+    color: rgba(184,147,74,0.06);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hero-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dorado);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--dorado-claro);
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+    color: var(--gris-claro);
+    font-weight: 300;
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  /* ─── FILTROS ─── */
+  .filtros-section {
+    background: var(--blanco);
+    border-bottom: 1px solid var(--crema-oscura);
+    padding: 20px 40px;
+    position: sticky;
+    top: 72px;
+    z-index: 90;
+  }
+
+  .filtros-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .filtros-grupo {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filtro-btn {
+    background: transparent;
+    border: 1.5px solid var(--gris-claro);
+    color: var(--gris);
+    padding: 7px 18px;
+    border-radius: 40px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .filtro-btn:hover {
+    border-color: var(--dorado);
+    color: var(--dorado);
+  }
+
+  .filtro-btn.activo {
+    background: var(--carbon);
+    border-color: var(--carbon);
+    color: var(--dorado-claro);
+  }
+
+  .count-texto {
+    font-size: 0.78rem;
+    color: var(--gris);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── GRILLA ─── */
+  .grilla-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  .grilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+  }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--blanco);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--crema-oscura);
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-hover);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.30s; }
+
+  .card-img-wrap {
+    position: relative;
+    height: 210px;
+    overflow: hidden;
+    background: var(--crema-oscura);
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .card:hover .card-img {
+    transform: scale(1.04);
+  }
+
+  .card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--crema-oscura) 0%, var(--dorado-pale) 100%);
+    color: var(--dorado);
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: var(--carbon);
+    color: var(--dorado-claro);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 40px;
+  }
+
+  .card-body {
+    padding: 22px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+  }
+
+  .card-zona {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dorado);
+    font-weight: 500;
+  }
+
+  .card-titulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--carbon);
+    line-height: 1.3;
+  }
+
+  .card-tipo {
+    font-size: 0.78rem;
+    color: var(--gris);
+    font-weight: 300;
+  }
+
+  .card-precio {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--carbon);
+    letter-spacing: -0.01em;
+    margin-top: 4px;
+  }
+
+  .card-precio span {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--gris);
+    margin-left: 4px;
+  }
+
+  .card-divider {
+    height: 1px;
+    background: var(--crema-oscura);
+    margin: 4px 0;
+  }
+
+  .card-acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .btn-wa {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: var(--verde-wa);
+    color: white;
+    text-decoration: none;
+    padding: 11px 14px;
+    border-radius: var(--radius);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    transition: filter 0.2s, transform 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-wa:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-wa svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .btn-ficha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: 1.5px solid var(--carbon);
+    color: var(--carbon);
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .btn-ficha:hover {
+    background: var(--carbon);
+    color: var(--dorado-claro);
+  }
+
+  /* ─── LOADING / VACÍO ─── */
+  .loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--gris);
+  }
+
+  .loading-spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--crema-oscura);
+    border-top-color: var(--dorado);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--carbon-suave);
+    color: var(--gris-claro);
+    text-align: center;
+    padding: 32px 40px;
+    font-size: 0.78rem;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    border-top: 1px solid rgba(184,147,74,0.3);
+  }
+
+  footer strong {
+    color: var(--dorado-claro);
+    font-weight: 500;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    header { padding: 0 20px; }
+    .hero { padding: 44px 20px 40px; }
+    .filtros-section { padding: 14px 20px; }
+    .grilla-section { padding: 32px 20px 60px; }
+    .grilla { grid-template-columns: 1fr; gap: 20px; }
+    .header-tel { display: none; }
+  }
 </style>
 </head>
-
 <body>
 
-<!-- TODO TU HTML ORIGINAL (NO TOQUÉ NADA VISUAL) -->
+<!-- HEADER -->
+<header>
+  <div class="header-logo">
+    <span class="nombre">Vanina Buzzacchi</span>
+    <span class="subtitulo">Propiedades · Río Cuarto</span>
+  </div>
+  <div class="header-contacto">
+    <span class="header-tel">+54 9 358 570-1632</span>
+    <a class="btn-header-wa"
+       href="https://wa.me/5493585701632?text=Hola%20Vanina!%20Quisiera%20consultar%20sobre%20una%20propiedad."
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.862L.057 23.273a.75.75 0 0 0 .92.92l5.42-1.476A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.686-.498-5.228-1.37l-.374-.213-3.876 1.055 1.056-3.875-.214-.375A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Consultar
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Río Cuarto · Córdoba · Argentina</p>
+    <h1>Tu próxima <em>propiedad</em><br>te está esperando.</h1>
+    <p class="hero-sub">Casas, departamentos y locales seleccionados. Asesoramiento personalizado en cada paso.</p>
+  </div>
+</section>
+
+<!-- FILTROS -->
+<section class="filtros-section">
+  <div class="filtros-inner">
+    <div class="filtros-grupo" id="filtros">
+      <button class="filtro-btn activo" onclick="filtrar('todos', this)">Todos</button>
+      <button class="filtro-btn" onclick="filtrar('venta', this)">Venta</button>
+      <button class="filtro-btn" onclick="filtrar('alquiler', this)">Alquiler</button>
+      <button class="filtro-btn" onclick="filtrar('casa', this)">Casas</button>
+      <button class="filtro-btn" onclick="filtrar('departamento', this)">Deptos.</button>
+      <button class="filtro-btn" onclick="filtrar('local', this)">Locales</button>
+    </div>
+    <span class="count-texto" id="count">Cargando...</span>
+  </div>
+</section>
+
+<!-- GRILLA -->
+<main class="grilla-section">
+  <div class="grilla" id="grilla">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      Cargando propiedades...
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <strong>Vanina Buzzacchi</strong> · Propiedades · Río Cuarto, Córdoba<br>
+  <span style="margin-top:6px; display:inline-block;">+54 9 358 570-1632 · Todos los derechos reservados</span>
+</footer>
 
 <script>
 const CONFIG = {
@@ -24,21 +543,37 @@ const CONFIG = {
 
 let propiedadesAll = [];
 let filtroActual = 'todos';
-let ratings = JSON.parse(localStorage.getItem('ratings') || '{}');
 
 async function cargarPropiedades() {
   try {
     const res = await fetch(`${CONFIG.apiBase}/api/propiedades-publicas`);
+    if (!res.ok) throw new Error('Error API');
     const data = await res.json();
     propiedadesAll = data.filter(p => p.estado === 'lista');
     renderGrilla(propiedadesAll);
   } catch (e) {
+    // Datos de ejemplo si la API falla
     propiedadesAll = [
-      { id: 1, titulo: 'Casa 4 Dorm - Banda Norte', operacion: 'venta', tipo: 'casa', zona: 'Banda Norte', precio: 150000, moneda: 'USD', fotos: [] },
-      { id: 2, titulo: 'Local Comercial Sobremonte', operacion: 'alquiler', tipo: 'local', zona: 'Macrocentro', precio: 80000, moneda: 'ARS', fotos: [] }
+      { id: 1, titulo: 'Casa 4 Dormitorios', operacion: 'venta', tipo: 'casa', zona: 'Banda Norte', precio: 150000, moneda: 'USD', fotos: [] },
+      { id: 2, titulo: 'Local Comercial', operacion: 'alquiler', tipo: 'local', zona: 'Macrocentro', precio: 80000, moneda: 'ARS', fotos: [] },
+      { id: 3, titulo: 'Departamento 2 Amb.', operacion: 'alquiler', tipo: 'departamento', zona: 'Centro', precio: 120000, moneda: 'ARS', fotos: [] }
     ];
     renderGrilla(propiedadesAll);
   }
+}
+
+function filtrar(tipo, btn) {
+  filtroActual = tipo;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+
+  let filtradas = propiedadesAll;
+  if (tipo !== 'todos') {
+    filtradas = propiedadesAll.filter(p =>
+      p.operacion === tipo || p.tipo === tipo
+    );
+  }
+  renderGrilla(filtradas);
 }
 
 function renderGrilla(props) {
@@ -46,56 +581,58 @@ function renderGrilla(props) {
   const count = document.getElementById('count');
 
   if (!props.length) {
-    grilla.innerHTML = '<div class="loading">No hay propiedades disponibles.</div>';
+    grilla.innerHTML = '<div class="loading">No hay propiedades disponibles en esta categoría.</div>';
+    count.textContent = '0 propiedades';
     return;
   }
 
-  count.textContent = `${props.length} propiedades`;
-  grilla.innerHTML = props.map((p, i) => cardHTML(p, i)).join('');
+  count.textContent = `${props.length} propiedad${props.length !== 1 ? 'es' : ''}`;
+  grilla.innerHTML = props.map(p => cardHTML(p)).join('');
 }
 
-function cardHTML(p, i) {
-
+function cardHTML(p) {
   const mensajeWA = encodeURIComponent(
-    `Hola Catalina! Me interesa esta propiedad: ${p.titulo}. ¿Sigue disponible?`
+    `Hola Vanina! Me interesa la propiedad: *${p.titulo}*. ¿Sigue disponible?`
   );
 
-  const foto = p.fotos && p.fotos.length
-    ? `<img class="card-img" src="${p.fotos[0]}">`
+  const fotoHTML = p.fotos && p.fotos.length
+    ? `<img class="card-img" src="${p.fotos[0]}" alt="${p.titulo}" loading="lazy">`
     : `<div class="card-img-placeholder">🏠</div>`;
+
+  const badge = p.operacion
+    ? `<span class="card-badge">${p.operacion === 'venta' ? 'En Venta' : 'Alquiler'}</span>`
+    : '';
+
+  const precioFormato = Number(p.precio || 0).toLocaleString('es-AR');
+  const moneda = p.moneda || 'USD';
 
   return `
   <div class="card">
-
-    ${foto}
-
+    <div class="card-img-wrap">
+      ${fotoHTML}
+      ${badge}
+    </div>
     <div class="card-body">
-
+      ${p.zona ? `<div class="card-zona">${p.zona}</div>` : ''}
       <div class="card-titulo">${p.titulo}</div>
-
+      ${p.tipo ? `<div class="card-tipo">${p.tipo.charAt(0).toUpperCase() + p.tipo.slice(1)}</div>` : ''}
+      <div class="card-divider"></div>
       <div class="card-precio">
-        ${p.moneda || 'USD'} ${Number(p.precio || 0).toLocaleString()}
+        ${moneda} ${precioFormato}
+        ${p.operacion === 'alquiler' ? '<span>/ mes</span>' : ''}
       </div>
-
       <div class="card-acciones">
-
-        <!-- ✅ BOTÓN WHATSAPP PERFECTO -->
-        <a class="btn btn-wa"
+        <a class="btn-wa"
+           href="https://wa.me/${CONFIG.whatsapp}?text=${mensajeWA}"
            target="_blank"
-           href="https://wa.me/${CONFIG.whatsapp}?text=${mensajeWA}">
-           WhatsApp
-        </a><a class="btn btn-wa"
-target="_blank"
-href="https://wa.me/5493585701632?text=Hola%20Vanina!%20Me%20interesa%20esta%20propiedad">
-WhatsApp
-</a>
-
-        <button class="btn btn-secondary" onclick="descargarFicha(${p.id})">
-          Ficha
+           rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.862L.057 23.273a.75.75 0 0 0 .92.92l5.42-1.476A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.907 0-3.686-.498-5.228-1.37l-.374-.213-3.876 1.055 1.056-3.875-.214-.375A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+          WhatsApp
+        </a>
+        <button class="btn-ficha" onclick="descargarFicha(${p.id})">
+          Ver Ficha
         </button>
-
       </div>
-
     </div>
   </div>`;
 }
@@ -106,6 +643,5 @@ function descargarFicha(id) {
 
 cargarPropiedades();
 </script>
-
 </body>
 </html>
