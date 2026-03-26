@@ -10,6 +10,22 @@ const archiver = require("archiver");
 const { createClient } = require("@supabase/supabase-js");
 const OpenAI = require("openai");
 const PDFDocument = require("pdfkit");
+const https = require("https");
+const http = require("http");
+
+// ✅ FIX FOTOS PDF: descarga imágenes por HTTP en lugar de leer del disco
+function descargarImagen(url) {
+  return new Promise((resolve) => {
+    const cliente = url.startsWith("https") ? https : http;
+    cliente.get(url, (resp) => {
+      if (resp.statusCode !== 200) return resolve(null);
+      const chunks = [];
+      resp.on("data", c => chunks.push(c));
+      resp.on("end", () => resolve(Buffer.concat(chunks)));
+      resp.on("error", () => resolve(null));
+    }).on("error", () => resolve(null));
+  });
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -436,7 +452,7 @@ app.post("/api/leads", (req, res) => {
   leads.push(nuevoLead); guardarLeads(leads); res.json({ok:true,lead:nuevoLead});
 });
 
-// FUNNEL PÚBLICO - PROPIEDADES (única definición)
+// FUNNEL PÚBLICO - PROPIEDADES
 app.get("/api/propiedades-publicas", (req, res) => {
   const publicas = inmuebles
     .map((inm, i) => ({ ...inm, _index: i }))
@@ -468,8 +484,8 @@ app.post("/api/rating", (req, res) => {
   res.json({ ok: true });
 });
 
-// FICHA PDF (única definición, sin duplicado)
-app.get("/api/ficha-pdf/:id", (req, res) => {
+// FICHA PDF ✅ con fotos descargadas por HTTP (fix Render filesystem efímero)
+app.get("/api/ficha-pdf/:id", async (req, res) => {
   const id = Number(req.params.id);
   const p = inmuebles[id];
   if (!p) return res.status(404).send("Propiedad no encontrada");
@@ -524,18 +540,19 @@ app.get("/api/ficha-pdf/:id", (req, res) => {
   doc.moveTo(50, posY).lineTo(545, posY).strokeColor("#ddd").lineWidth(1).stroke();
   posY += 16;
 
-  // FOTOS
+  // FOTOS ✅ descargadas por HTTP
   const imagenes = (p.imagenes || []).slice(0, 4);
   if (imagenes.length > 0) {
     doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Fotos", 50, posY);
     posY += 16;
     const fotoW = 220, fotoH = 150, gap = 15;
+    const BASE = "https://inmocreador-crm.onrender.com";
     for (let fi = 0; fi < imagenes.length; fi++) {
-      const fotoPath = path.join(__dirname, "public", "uploads", imagenes[fi]);
       const fx = fi % 2 === 0 ? 50 : 50 + fotoW + gap;
       if (fi % 2 === 0 && fi > 0) posY += fotoH + gap;
-      if (fs.existsSync(fotoPath)) {
-        try { doc.image(fotoPath, fx, posY, { width: fotoW, height: fotoH, cover: [fotoW, fotoH] }); }
+      const buffer = await descargarImagen(`${BASE}/uploads/${imagenes[fi]}`);
+      if (buffer) {
+        try { doc.image(buffer, fx, posY, { width: fotoW, height: fotoH, cover: [fotoW, fotoH] }); }
         catch (e) { doc.rect(fx, posY, fotoW, fotoH).fill("#eee"); }
       } else {
         doc.rect(fx, posY, fotoW, fotoH).fill("#eee");
