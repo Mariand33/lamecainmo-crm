@@ -478,7 +478,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  <p>© 2026 Vanina Buzzacchi Negocios Inmobiliarios · <a href="https://wa.me/5493584XXXXXX">WhatsApp</a></p>
+  <p>© 2026 Vanina Buzzacchi Negocios Inmobiliarios · <a href="https://wa.me/5493585701632">WhatsApp</a></p>
 </div>
 
 <!-- BOTÓN FLOTANTE WHATSAPP -->
@@ -544,10 +544,10 @@
 </div>
 
 <script>
-  // ⚙️ CONFIGURACIÓN — cambiá estos valores
+  // ⚙️ CONFIGURACIÓN
   const CONFIG = {
     apiBase: 'https://inmocreador-crm.onrender.com',
-    whatsapp: '5493584XXXXXX', // ← reemplazá con tu número real
+    whatsapp: '5493585701632', // ✅ Número actualizado
   };
 
   let propiedadesAll = [];
@@ -649,7 +649,6 @@
     e.stopPropagation();
     ratings[id] = stars;
     localStorage.setItem('ratings', JSON.stringify(ratings));
-    // Actualizar visual
     const card = e.target.closest('.card');
     card.querySelectorAll('.star-vote').forEach((s, i) => {
       s.classList.toggle('activa', i < stars);
@@ -657,7 +656,6 @@
     card.querySelectorAll('.star-icon').forEach((s, i) => {
       s.classList.toggle('empty', i >= stars);
     });
-    // Enviar al backend
     fetch(`${CONFIG.apiBase}/api/rating`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
