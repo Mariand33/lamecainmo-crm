@@ -57,7 +57,7 @@ function renderGrilla(props) {
 function cardHTML(p, i) {
 
   const mensajeWA = encodeURIComponent(
-    `Hola Vanina! Me interesa esta propiedad: ${p.titulo}. ¿Sigue disponible?`
+    `Hola Catalina! Me interesa esta propiedad: ${p.titulo}. ¿Sigue disponible?`
   );
 
   const foto = p.fotos && p.fotos.length
@@ -84,7 +84,11 @@ function cardHTML(p, i) {
            target="_blank"
            href="https://wa.me/${CONFIG.whatsapp}?text=${mensajeWA}">
            WhatsApp
-        </a>
+        </a><a class="btn btn-wa"
+target="_blank"
+href="https://wa.me/5493585701632?text=Hola%20Vanina!%20Me%20interesa%20esta%20propiedad">
+WhatsApp
+</a>
 
         <button class="btn btn-secondary" onclick="descargarFicha(${p.id})">
           Ficha
