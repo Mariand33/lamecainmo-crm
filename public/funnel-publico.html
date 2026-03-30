@@ -421,6 +421,12 @@ const sliderIdx = {};
 function fotoUrl(nombre) {
   if (!nombre) return null;
   if (nombre.startsWith('http')) return nombre;
+
+  // 🔥 SOLUCIÓN
+  if (nombre.startsWith('/uploads')) {
+    return CONFIG.apiBase + nombre;
+  }
+
   return CONFIG.apiBase + '/uploads/' + nombre;
 }
 
