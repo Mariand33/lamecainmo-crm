@@ -288,6 +288,7 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
+    display: block;
   }
 
   .card:hover .card-img {
@@ -298,11 +299,24 @@
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    gap: 8px;
     background: linear-gradient(135deg, var(--crema-oscura) 0%, var(--dorado-pale) 100%);
     color: var(--dorado);
+  }
+
+  .card-img-placeholder svg {
+    width: 40px;
+    height: 40px;
+    opacity: 0.5;
+  }
+
+  .card-img-placeholder span {
+    font-size: 0.75rem;
+    color: var(--gris);
+    font-weight: 300;
   }
 
   .card-badge {
@@ -544,21 +558,23 @@ const CONFIG = {
 let propiedadesAll = [];
 let filtroActual = 'todos';
 
+function fotoUrl(ruta) {
+  if (!ruta) return null;
+  if (ruta.startsWith('http://') || ruta.startsWith('https://')) return ruta;
+  return CONFIG.apiBase + ruta;
+}
+
 async function cargarPropiedades() {
   try {
     const res = await fetch(`${CONFIG.apiBase}/api/propiedades-publicas`);
     if (!res.ok) throw new Error('Error API');
     const data = await res.json();
-    propiedadesAll = data.filter(p => p.estado === 'lista');
+    propiedadesAll = data.filter(p => p.estado === 'lista' || p.estado === 'publicada');
     renderGrilla(propiedadesAll);
   } catch (e) {
-    // Datos de ejemplo si la API falla
-    propiedadesAll = [
-      { id: 1, titulo: 'Casa 4 Dormitorios', operacion: 'venta', tipo: 'casa', zona: 'Banda Norte', precio: 150000, moneda: 'USD', fotos: [] },
-      { id: 2, titulo: 'Local Comercial', operacion: 'alquiler', tipo: 'local', zona: 'Macrocentro', precio: 80000, moneda: 'ARS', fotos: [] },
-      { id: 3, titulo: 'Departamento 2 Amb.', operacion: 'alquiler', tipo: 'departamento', zona: 'Centro', precio: 120000, moneda: 'ARS', fotos: [] }
-    ];
-    renderGrilla(propiedadesAll);
+    propiedadesAll = [];
+    document.getElementById('grilla').innerHTML = '<div class="loading">No se pudo conectar con el servidor. Intentá de nuevo más tarde.</div>';
+    document.getElementById('count').textContent = '0 propiedades';
   }
 }
 
@@ -595,9 +611,18 @@ function cardHTML(p) {
     `Hola Vanina! Me interesa la propiedad: *${p.titulo}*. ¿Sigue disponible?`
   );
 
-  const fotoHTML = p.fotos && p.fotos.length
-    ? `<img class="card-img" src="${p.fotos[0]}" alt="${p.titulo}" loading="lazy">`
-    : `<div class="card-img-placeholder">🏠</div>`;
+  const portada = p.fotos && p.fotos.length ? fotoUrl(p.fotos[0]) : null;
+
+  const fotoHTML = portada
+    ? `<img class="card-img" src="${portada}" alt="${p.titulo}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+       <div class="card-img-placeholder" style="display:none;">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+         <span>Sin imagen</span>
+       </div>`
+    : `<div class="card-img-placeholder">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+         <span>Sin imagen</span>
+       </div>`;
 
   const badge = p.operacion
     ? `<span class="card-badge">${p.operacion === 'venta' ? 'En Venta' : 'Alquiler'}</span>`
