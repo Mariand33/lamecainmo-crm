@@ -185,7 +185,15 @@ app.post("/radar", upload.single("thumb"), (req, res) => {
   pushNotif({ tipo: "nuevo_radar", titulo: nuevo.titulo, zona: nuevo.zona, operacion: nuevo.tipoOperacion, indexInmueble: inmuebles.length - 1 });
   res.redirect("/dashboard.html");
 });
+app.get("/api/inmuebles-publicos", (req, res) => {
+  const publicos = inmuebles.filter(i => {
+    const estado = String(i.estadoPublicacion || "").toLowerCase();
 
+    return estado === "lista" || estado === "publicada";
+  });
+
+  res.json(publicos);
+});
 app.get("/api/radar-mercado", (req, res) => { if (!Array.isArray(global.radarMercado)) global.radarMercado = []; res.json(global.radarMercado); });
 app.post("/api/radar-mercado/guardar", (req, res) => {
   if (!Array.isArray(global.radarMercado)) global.radarMercado = [];
