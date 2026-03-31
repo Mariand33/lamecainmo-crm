@@ -4,58 +4,117 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Propiedades en Río Cuarto</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin:0;
+  font-family:'Poppins', sans-serif;
+  background:#f2f2f2;
+}
+
+.container {
+  max-width:600px;
+  margin:auto;
+  padding:15px;
+}
+
+h1 {
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.card {
+  background:white;
+  border-radius:15px;
+  overflow:hidden;
+  margin-bottom:25px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+.card img {
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.content {
+  padding:15px;
+}
+
+.price {
+  font-size:22px;
+  font-weight:bold;
+  margin:10px 0;
+}
+
+.btn {
+  display:block;
+  text-align:center;
+  background:#25D366;
+  color:white;
+  padding:12px;
+  border-radius:8px;
+  text-decoration:none;
+  font-weight:500;
+  margin-top:10px;
+}
+
+.btn:hover {
+  background:#1ebe5d;
+}
+</style>
+
 </head>
 
-<body style="margin:0;font-family:Arial;background:#f5f5f5;">
+<body>
 
-<div style="max-width:600px;margin:auto;padding:15px">
+<div class="container">
 
-<h1 style="text-align:center;">🏡 Oportunidades en Río Cuarto</h1>
+<h1>🏡 Oportunidades en Río Cuarto</h1>
 
-<!-- PROPIEDAD 1 -->
-<div style="background:white;border-radius:10px;padding:15px;margin-bottom:20px">
+<!-- PROPIEDAD -->
+<div class="card">
+  <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994">
+  
+  <div class="content">
+    <h2>Casa en Banda Norte</h2>
+    
+    <p>
+    ✔ 3 dormitorios <br>
+    ✔ Patio amplio 🌿 <br>
+    ✔ Cochera <br>
+    ✔ Galería con asador 🔥
+    </p>
 
-<img src="URL-IMAGEN-1" style="width:100%;border-radius:10px;">
-<img src="URL-IMAGEN-2" style="width:100%;border-radius:10px;margin-top:10px;">
+    <div class="price">💵 USD 80.000</div>
 
-<h2>Casa en Banda Norte</h2>
-
-<p>
-✔ 3 dormitorios <br>
-✔ Patio amplio 🌿 <br>
-✔ Cochera <br>
-✔ Galería con asador 🔥
-</p>
-
-<h3>💵 USD 80.000</h3>
-
-<a href="https://wa.me/549XXXXXXXXXX" target="_blank"
-style="display:block;text-align:center;background:#25D366;color:white;padding:12px;border-radius:8px;text-decoration:none;">
-📲 Consultar por esta propiedad
-</a>
-
+    <a class="btn" href="https://wa.me/549XXXXXXXXXX?text=Hola,%20quiero%20info%20de%20la%20casa%20de%2080.000">
+      📲 Consultar ahora
+    </a>
+  </div>
 </div>
 
-<!-- PROPIEDAD 2 -->
-<div style="background:white;border-radius:10px;padding:15px;margin-bottom:20px">
+<!-- PROPIEDAD -->
+<div class="card">
+  <img src="https://images.unsplash.com/photo-1501183638710-841dd1904471">
+  
+  <div class="content">
+    <h2>Departamento céntrico</h2>
+    
+    <p>
+    ✔ 2 dormitorios <br>
+    ✔ Excelente ubicación 📍 <br>
+    ✔ Luminoso
+    </p>
 
-<img src="URL-IMAGEN-3" style="width:100%;border-radius:10px;">
+    <div class="price">💵 USD 55.000</div>
 
-<h2>Departamento céntrico</h2>
-
-<p>
-✔ 2 dormitorios <br>
-✔ Excelente ubicación 📍 <br>
-✔ Luminoso
-</p>
-
-<h3>💵 USD 55.000</h3>
-
-<a href="https://wa.me/549XXXXXXXXXX" target="_blank"
-style="display:block;text-align:center;background:#25D366;color:white;padding:12px;border-radius:8px;text-decoration:none;">
-📲 Consultar por esta propiedad
-</a>
-
+    <a class="btn" href="https://wa.me/549XXXXXXXXXX?text=Hola,%20quiero%20info%20del%20departamento%20de%2055.000">
+      📲 Consultar ahora
+    </a>
+  </div>
 </div>
 
 </div>
