@@ -435,7 +435,7 @@ async function cargar() {
   }
 
   try {
-    const res = await fetch(API + "/api/propiedades-publicas");
+  const res = await fetch(API + "/propiedades-publicas");
     const data = await res.json();
     const prop = data.find(p => String(p._id || p.id) === String(id));
 
