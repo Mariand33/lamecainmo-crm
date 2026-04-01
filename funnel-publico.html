@@ -548,9 +548,7 @@
       z-index:80;
     }
 
-    .floating-wa:hover{
-      transform:translateY(-2px);
-    }
+    .floating-wa:hover{transform:translateY(-2px)}
 
     .counter-bubble{
       position:fixed;
@@ -587,7 +585,6 @@
       .testimonials{
         grid-template-columns:1fr;
       }
-
       .searchbox input{min-width:0;width:100%}
       .topbar-inner{align-items:flex-start;flex-direction:column}
       .card-actions{grid-template-columns:1fr}
@@ -611,7 +608,6 @@
         <div class="brand-title">Vanina Buzzacchi</div>
         <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
       </div>
-
       <div class="top-actions">
         <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
         <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">💬 Consultar</a>
@@ -628,12 +624,10 @@
           Explorá casas, departamentos, locales y oportunidades reales.
           Compará opciones, abrí fichas, consultá por WhatsApp o dejá tu búsqueda para que te avisemos cuando entre una propiedad ideal para vos.
         </p>
-
         <div class="top-actions" style="justify-content:flex-start">
           <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">💬 Hablar por WhatsApp</a>
           <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
         </div>
-
         <div class="hero-badges">
           <div class="hero-badge">+2.143 personas ya exploraron propiedades</div>
           <div class="hero-badge">Consultas reales por WhatsApp</div>
@@ -645,7 +639,6 @@
         <h3>Actividad del catálogo</h3>
         <div class="metric" id="visitCounter">2.143</div>
         <p>Visitas estimadas al catálogo inmobiliario este mes. Actualización visual automática para reforzar confianza y movimiento comercial.</p>
-
         <div class="stats-mini">
           <div class="mini"><strong id="miniTotal">0</strong> propiedades visibles</div>
           <div class="mini"><strong id="miniVenta">0</strong> en venta</div>
@@ -672,7 +665,6 @@
           <button class="chip" data-filter="local">Locales</button>
           <button class="chip" data-filter="terreno">Terrenos</button>
         </div>
-
         <div class="searchbox">
           <span>🔎</span>
           <input type="text" id="searchInput" placeholder="Buscar por zona, calle, tipo o palabra clave">
@@ -700,7 +692,6 @@
         <p>
           Dejanos tu búsqueda y te contactamos cuando entre una propiedad que encaje con tu necesidad. Este formulario nos ayuda a enviarte opciones reales y evitarte perder tiempo.
         </p>
-
         <form class="lead-form" id="leadForm">
           <input type="text" id="leadNombre" placeholder="Nombre y apellido" required>
           <input type="text" id="leadTelefono" placeholder="WhatsApp" required>
@@ -721,7 +712,6 @@
           <textarea id="leadMensaje" placeholder="Contanos qué buscás: dormitorios, patio, cochera, barrio, urgencia, etc."></textarea>
           <button class="btn btn-wa full" type="submit">Enviar búsqueda</button>
         </form>
-
         <div id="leadMsg" style="margin-top:14px;font-size:15px;color:#dfeee8;"></div>
       </div>
     </div>
@@ -733,18 +723,15 @@
       <p class="section-sub">
         La confianza no se improvisa. Estas experiencias ayudan a bajar fricción, mostrar criterio y convertir visitas en conversaciones reales.
       </p>
-
       <div class="testimonials">
         <div class="testimonial">
           <p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia para mostrarnos opciones reales."</p>
           <strong>María y Diego · Compra de vivienda</strong>
         </div>
-
         <div class="testimonial">
           <p>"Necesitábamos alquilar rápido, sin vueltas y sin perder tiempo viendo opciones que no servían. Nos acompañaron bien y encontramos una alternativa concreta."</p>
           <strong>Lucía R. · Alquiler</strong>
         </div>
-
         <div class="testimonial">
           <p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir."</p>
           <strong>Fernando M. · Compra e inversión</strong>
@@ -808,15 +795,11 @@
     function propertyMatches(item, filter, search){
       const tipoOperacion = normalize(item.tipoOperacion || "");
       const tipo = detectType(item);
-
       let okFilter = true;
-
       if (filter === "venta") okFilter = tipoOperacion.includes("venta");
       if (filter === "alquiler") okFilter = tipoOperacion.includes("alquiler");
       if (["casa", "depto", "local", "terreno"].includes(filter)) okFilter = tipo === filter;
-
       if (!okFilter) return false;
-
       const bigText = normalize(`
         ${item.titulo || ""}
         ${item.zona || ""}
@@ -825,7 +808,6 @@
         ${item.tipoPropiedad || ""}
         ${item.tipoOperacion || ""}
       `);
-
       return bigText.includes(normalize(search));
     }
 
@@ -851,7 +833,6 @@
         const badge = isSale
           ? `<span class="badge badge-sale">Venta</span>`
           : `<span class="badge badge-rent">Alquiler</span>`;
-
         const badgeNew = index < 3 ? `<span class="badge badge-new">Destacada</span>` : "";
         const tipo = detectType(item);
         const dormitorios = item.dormitorios ? `${item.dormitorios} dorm.` : "Consultar";
@@ -859,12 +840,11 @@
         const shortDesc = (item.descripcion || "Propiedad disponible. Consultanos para más información.")
           .replace(/\r?\n/g, " ")
           .slice(0, 130);
-
         const waText = `Hola, vi esta propiedad en la web de Vanina Buzzacchi y quiero más información:%0A%0A${item.titulo || "Propiedad"}%0AZona: ${item.zona || "-"}%0APrecio: ${formatPrice(item)}`;
 
-        // ✅ FIX: usar _id (MongoDB) con fallback a id
+        // ✅ Ruta corregida: Público/propiedad.html
         const propId = item._id || item.id || "";
-        const urlFicha = `propiedad.html?id=${encodeURIComponent(propId)}`;
+        const urlFicha = `P%C3%BAblico/propiedad.html?id=${encodeURIComponent(propId)}`;
 
         return `
           <article class="card">
@@ -872,21 +852,17 @@
               <div class="badge-top">${badge}${badgeNew}</div>
               <img class="card-image" src="${getFirstImage(item)}" alt="${item.titulo || "Propiedad"}">
             </div>
-
             <div class="card-body">
               <div class="card-title">${item.titulo || "Propiedad disponible"}</div>
               <div class="card-price">${formatPrice(item)}</div>
               <div class="card-zone">${item.zona || "Zona a consultar"}${item.direccion ? " · " + item.direccion : ""}</div>
-
               <div class="card-meta">
                 <span class="meta-pill">${isSale ? "Venta" : "Alquiler"}</span>
                 <span class="meta-pill">${tipo || "Propiedad"}</span>
                 <span class="meta-pill">${dormitorios}</span>
                 <span class="meta-pill">${banos}</span>
               </div>
-
               <div class="card-desc">${shortDesc}...</div>
-
               <div class="card-actions">
                 <a class="btn-card btn-view" href="${urlFicha}">Ver ficha</a>
                 <a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>
@@ -906,20 +882,15 @@
     async function loadProperties(){
       const loader = document.getElementById("loader");
       const grid = document.getElementById("propertiesGrid");
-
       try{
         const res = await fetch(API_URL);
         const data = await res.json();
-
         allProperties = Array.isArray(data) ? data : [];
-
         document.getElementById("miniTotal").textContent = allProperties.length;
         document.getElementById("miniVenta").textContent =
           allProperties.filter(i => normalize(i.tipoOperacion || "").includes("venta")).length;
-
         document.getElementById("miniAlquiler").textContent =
           allProperties.filter(i => normalize(i.tipoOperacion || "").includes("alquiler")).length;
-
         loader.style.display = "none";
         grid.style.display = "grid";
         applyFilters();
@@ -937,14 +908,12 @@
           applyFilters();
         });
       });
-
       document.getElementById("searchInput").addEventListener("input", applyFilters);
     }
 
     function setupWhatsApp(){
       const genericText = "Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.";
       const href = waLink(genericText);
-
       document.getElementById("heroWhatsApp").href = href;
       document.getElementById("heroWhatsAppTop").href = href;
       document.getElementById("floatingWhatsApp").href = href;
@@ -952,24 +921,17 @@
 
     function setupCounter(){
       const el = document.getElementById("visitCounter");
-      let value = 2143;
-
-      const saved = Number(localStorage.getItem("vb_visits_visual") || 2143);
-      value = saved;
-
+      let value = Number(localStorage.getItem("vb_visits_visual") || 2143);
       value += Math.floor(Math.random() * 3) + 1;
       localStorage.setItem("vb_visits_visual", value);
-
       el.textContent = value.toLocaleString("es-AR");
     }
 
     function setupLeadForm(){
       const form = document.getElementById("leadForm");
       const msg = document.getElementById("leadMsg");
-
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const payload = {
           nombre: document.getElementById("leadNombre").value.trim(),
           telefono: document.getElementById("leadTelefono").value.trim(),
@@ -981,18 +943,14 @@
           origen: "funnel-publico",
           tipoLead: "comprador"
         };
-
         msg.textContent = "Enviando...";
-
         try{
           const res = await fetch(LEADS_URL, {
             method:"POST",
             headers:{ "Content-Type":"application/json" },
             body:JSON.stringify(payload)
           });
-
           if (!res.ok) throw new Error("Error");
-
           msg.textContent = "¡Gracias! Recibimos tu búsqueda y te vamos a contactar.";
           form.reset();
         } catch(err){
