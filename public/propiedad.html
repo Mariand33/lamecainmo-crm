@@ -8,593 +8,124 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #F5F0E8;
+  margin: 0;
+}
 
-  :root {
-    --negro: #1A1A18;
-    --dorado: #B8934A;
-    --crema: #F5F0E8;
-    --blanco: #ffffff;
-    --sombra: 0 4px 24px rgba(0,0,0,0.12);
-  }
+.detalle {
+  max-width: 800px;
+  margin: auto;
+  padding: 30px;
+}
 
-  body {
-    font-family: 'Outfit', sans-serif;
-    background: var(--crema);
-    color: var(--negro);
-    min-height: 100vh;
-  }
+.estado {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+}
 
-  /* BANNER */
-  .banner-top {
-    background: var(--dorado);
-    color: var(--negro);
-    text-align: center;
-    padding: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
+h1 {
+  font-family: 'Playfair Display', serif;
+}
 
-  /* HEADER */
-  header {
-    background: var(--negro);
-    color: white;
-    padding: 18px 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.precio {
+  color: #B8934A;
+  font-size: 24px;
+  font-weight: bold;
+}
 
-  header strong {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    letter-spacing: 0.5px;
-  }
-
-  header a {
-    background: #25D366;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  /* VOLVER */
-  .volver {
-    padding: 20px 40px 0;
-  }
-
-  .volver a {
-    color: var(--dorado);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: opacity 0.2s;
-  }
-
-  .volver a:hover { opacity: 0.75; }
-
-  /* CONTENEDOR PRINCIPAL */
-  .detalle {
-    max-width: 900px;
-    margin: 24px auto 60px;
-    padding: 0 24px;
-  }
-
-  /* GALERÍA */
-  .galeria {
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--negro);
-    aspect-ratio: 16/9;
-    box-shadow: var(--sombra);
-  }
-
-  .galeria img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    transition: opacity 0.3s;
-  }
-
-  .galeria img.activa { display: block; }
-
-  .galeria-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 14px;
-    pointer-events: none;
-  }
-
-  .galeria-nav button {
-    pointer-events: all;
-    background: rgba(26,26,24,0.7);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .galeria-nav button:hover { background: var(--dorado); }
-
-  .galeria-counter {
-    position: absolute;
-    bottom: 12px;
-    right: 16px;
-    background: rgba(26,26,24,0.65);
-    color: white;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-
-  .thumbnails {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .thumbnails img {
-    width: 70px;
-    height: 52px;
-    object-fit: cover;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    flex-shrink: 0;
-    transition: border-color 0.2s;
-  }
-
-  .thumbnails img.activa { border-color: var(--dorado); }
-
-  /* SIN IMAGEN */
-  .sin-imagen {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-size: 14px;
-  }
-
-  /* INFO */
-  .info {
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    margin-top: 24px;
-    box-shadow: var(--sombra);
-  }
-
-  .info-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .titulo {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1.3;
-    flex: 1;
-  }
-
-  .precio {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--dorado);
-    white-space: nowrap;
-  }
-
-  .badge {
-    display: inline-block;
-    background: #FFF3E0;
-    color: var(--dorado);
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-    border: 1px solid #FFDEA0;
-  }
-
-  .descripcion {
-    color: #444;
-    font-size: 15px;
-    line-height: 1.75;
-    margin-bottom: 20px;
-    white-space: pre-wrap;
-  }
-
-  /* CARACTERÍSTICAS */
-  .caracteristicas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  .carac-item {
-    background: var(--crema);
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .carac-item span { font-size: 16px; }
-
-  /* ACCIONES */
-  .acciones {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .btn-interes {
-    flex: 1;
-    min-width: 160px;
-    background: var(--negro);
-    color: white;
-    border: none;
-    padding: 14px 20px;
-    border-radius: 7px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    transition: background 0.2s;
-  }
-
-  .btn-interes:hover { background: #333; }
-
-  .btn-wa {
-    flex: 1;
-    min-width: 160px;
-    background: #25D366;
-    color: white;
-    padding: 14px 20px;
-    border-radius: 7px;
-    font-size: 15px;
-    font-weight: 600;
-    text-decoration: none;
-    text-align: center;
-    display: inline-block;
-    transition: background 0.2s;
-  }
-
-  .btn-wa:hover { background: #1EBE59; }
-
-  /* MODAL */
-  .modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 20px;
-  }
-
-  .modal.visible { display: flex; }
-
-  .modal-content {
-    background: white;
-    padding: 30px;
-    width: 100%;
-    max-width: 360px;
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-  }
-
-  .modal-content h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    margin-bottom: 6px;
-  }
-
-  .modal-content p {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 20px;
-  }
-
-  .modal-content input {
-    width: 100%;
-    border: 1.5px solid #ddd;
-    border-radius: 7px;
-    padding: 11px 14px;
-    font-size: 14px;
-    font-family: 'Outfit', sans-serif;
-    margin-bottom: 12px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .modal-content input:focus { border-color: var(--dorado); }
-
-  .modal-content button {
-    width: 100%;
-    background: var(--negro);
-    color: white;
-    border: none;
-    padding: 13px;
-    border-radius: 7px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: 'Outfit', sans-serif;
-    margin-top: 4px;
-  }
-
-  .modal-cerrar {
-    float: right;
-    background: none !important;
-    color: #999 !important;
-    font-size: 20px !important;
-    padding: 0 !important;
-    width: auto !important;
-    margin: 0 0 12px !important;
-    cursor: pointer;
-  }
-
-  /* LOADING / ERROR */
-  .estado {
-    text-align: center;
-    padding: 80px 20px;
-    color: #666;
-    font-size: 16px;
-  }
-
-  /* RESPONSIVE */
-  @media (max-width: 600px) {
-    .detalle { padding: 0 14px; }
-    .titulo { font-size: 20px; }
-    .precio { font-size: 20px; }
-    .info { padding: 20px; }
-    .volver { padding: 16px 14px 0; }
-  }
+.btn-wa {
+  display: inline-block;
+  margin-top: 20px;
+  background: #25D366;
+  color: white;
+  padding: 12px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="banner-top">🔥 NUEVAS PROPIEDADES TODAS LAS SEMANAS</div>
-
-<header>
-  <strong>Vanina Buzzacchi</strong>
-  <a href="https://wa.me/5493585701632" target="_blank">WhatsApp</a>
-</header>
-
-<div class="volver">
-  <a href="funnel-publico.html">← Volver a propiedades</a>
-</div>
-
 <div class="detalle" id="detalle">
   <div class="estado" id="estado">Cargando propiedad...</div>
 </div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
-    <h3>¿Te interesa?</h3>
-    <p>Dejanos tus datos y Vanina se contacta con vos</p>
-    <input id="nombre" placeholder="Tu nombre" />
-    <input id="tel" placeholder="Tu teléfono" type="tel" />
-    <button onclick="enviarLead()">Enviar y contactar por WhatsApp</button>
-  </div>
-</div>
-
 <script>
-const API = "https://inmocreador-crm.onrender.com";
-let propiedadActual = "";
-let imagenActual = 0;
-let imagenes = [];
 
-// Obtener ID desde la URL
+// Obtener ID desde URL
 function getParam(k) {
   return new URLSearchParams(window.location.search).get(k);
 }
 
-async function cargar() {
+// 🔥 BASE DE DATOS LOCAL (sin backend)
+const propiedades = [
+  {
+    _id: "1",
+    titulo: "Casa en Banda Norte",
+    precio: 80000,
+    descripcion: "Patio amplio 🌿, galería con asador y entrada de vehículos.",
+    metros: 120,
+    dormitorios: 2,
+    banos: 1,
+    garage: true,
+    ubicacion: "Río Cuarto"
+  },
+  {
+    _id: "2",
+    titulo: "Departamento céntrico",
+    precio: 55000,
+    descripcion: "Excelente ubicación, ideal inversión.",
+    metros: 60,
+    dormitorios: 1,
+    banos: 1,
+    garage: false,
+    ubicacion: "Centro"
+  }
+];
+
+function cargar() {
   const id = getParam("id");
-  if (!id) {
-    document.getElementById("estado").textContent = "No se especificó una propiedad.";
+
+  const prop = propiedades.find(p => String(p._id) === String(id));
+
+  if (!prop) {
+    document.getElementById("estado").textContent = "Propiedad no encontrada.";
     return;
   }
 
-  try {
-  const res = await fetch(API + "/propiedades-publicas");
-    const data = await res.json();
-    const prop = data.find(p => String(p._id || p.id) === String(id));
-
-    if (!prop) {
-      document.getElementById("estado").textContent = "Propiedad no encontrada.";
-      return;
-    }
-
-    renderPropiedad(prop);
-  } catch(e) {
-    document.getElementById("estado").textContent = "Error al cargar la propiedad.";
-  }
+  renderPropiedad(prop);
 }
 
 function renderPropiedad(p) {
-  propiedadActual = p.titulo;
-  imagenes = p.imagenes || [];
-  imagenActual = 0;
-
-  const precio = Number(p.precio || 0).toLocaleString('es-AR');
-
-  // Galería
-  let galeriaHTML = "";
-  if (imagenes.length > 0) {
-    const imgs = imagenes.map((img, i) =>
-      `<img src="${API}/uploads/${img}" class="${i === 0 ? 'activa' : ''}" alt="Foto ${i+1}">`
-    ).join("");
-
-    const thumbs = imagenes.map((img, i) =>
-      `<img src="${API}/uploads/${img}" class="${i === 0 ? 'activa' : ''}" onclick="irA(${i})" alt="Miniatura ${i+1}">`
-    ).join("");
-
-    galeriaHTML = `
-      <div class="galeria">
-        ${imgs}
-        ${imagenes.length > 1 ? `
-        <div class="galeria-nav">
-          <button onclick="anterior()">&#8592;</button>
-          <button onclick="siguiente()">&#8594;</button>
-        </div>
-        <div class="galeria-counter" id="counter">1 / ${imagenes.length}</div>
-        ` : ""}
-      </div>
-      ${imagenes.length > 1 ? `<div class="thumbnails" id="thumbs">${thumbs}</div>` : ""}
-    `;
-  } else {
-    galeriaHTML = `
-      <div class="galeria">
-        <div class="sin-imagen">Sin imágenes disponibles</div>
-      </div>
-    `;
-  }
-
-  // Características
-  const caracs = [];
-  if (p.metros || p.m2) caracs.push(`<div class="carac-item"><span>📐</span> ${p.metros || p.m2} m²</div>`);
-  if (p.dormitorios || p.habitaciones) caracs.push(`<div class="carac-item"><span>🛏</span> ${p.dormitorios || p.habitaciones} dormitorios</div>`);
-  if (p.banos || p.baños) caracs.push(`<div class="carac-item"><span>🚿</span> ${p.banos || p.baños} baños</div>`);
-  if (p.garage !== undefined) caracs.push(`<div class="carac-item"><span>🚗</span> ${p.garage ? 'Con garage' : 'Sin garage'}</div>`);
-  if (p.ubicacion || p.barrio || p.direccion) caracs.push(`<div class="carac-item"><span>📍</span> ${p.ubicacion || p.barrio || p.direccion}</div>`);
-  if (p.tipo) caracs.push(`<div class="carac-item"><span>🏠</span> ${p.tipo}</div>`);
-  if (p.aptaCredito) caracs.push(`<div class="carac-item"><span>✅</span> Apta crédito</div>`);
-
-  // WhatsApp
-  const wa = encodeURIComponent(
-`Hola Vanina 👋
-
-Estoy viendo esta propiedad:
-${p.titulo}
-
-¿Sigue disponible? Me gustaría más info`
-  );
+  const precio = Number(p.precio).toLocaleString('es-AR');
 
   const html = `
-    ${galeriaHTML}
+    <h1>${p.titulo}</h1>
+    <div class="precio">USD ${precio}</div>
 
-    <div class="info">
-      <div class="info-top">
-        <div class="titulo">${p.titulo}</div>
-        <div class="precio">USD ${precio}</div>
-      </div>
+    <p>${p.descripcion}</p>
 
-      <div class="badge">🔥 Quedan pocas consultas activas</div>
+    <p>📐 ${p.metros} m²</p>
+    <p>🛏 ${p.dormitorios} dormitorios</p>
+    <p>🚿 ${p.banos} baños</p>
+    <p>🚗 ${p.garage ? "Con garage" : "Sin garage"}</p>
+    <p>📍 ${p.ubicacion}</p>
 
-      ${caracs.length ? `<div class="caracteristicas">${caracs.join("")}</div>` : ""}
-
-      ${p.descripcion ? `<div class="descripcion">${p.descripcion}</div>` : ""}
-
-      <div class="acciones">
-        <button class="btn-interes" onclick="abrirModal()">Me interesa</button>
-        <a class="btn-wa" href="https://wa.me/5493585701632?text=${wa}" target="_blank">💬 WhatsApp</a>
-      </div>
-    </div>
+    <a class="btn-wa" href="https://wa.me/5493585701632" target="_blank">
+      Contactar por WhatsApp
+    </a>
   `;
 
   document.getElementById("detalle").innerHTML = html;
 }
 
-function siguiente() {
-  if (!imagenes.length) return;
-  imagenActual = (imagenActual + 1) % imagenes.length;
-  actualizarGaleria();
-}
-
-function anterior() {
-  if (!imagenes.length) return;
-  imagenActual = (imagenActual - 1 + imagenes.length) % imagenes.length;
-  actualizarGaleria();
-}
-
-function irA(i) {
-  imagenActual = i;
-  actualizarGaleria();
-}
-
-function actualizarGaleria() {
-  document.querySelectorAll(".galeria img").forEach((img, i) => {
-    img.classList.toggle("activa", i === imagenActual);
-  });
-  const thumbs = document.querySelectorAll(".thumbnails img");
-  thumbs.forEach((img, i) => img.classList.toggle("activa", i === imagenActual));
-  const counter = document.getElementById("counter");
-  if (counter) counter.textContent = `${imagenActual + 1} / ${imagenes.length}`;
-}
-
-function abrirModal() {
-  document.getElementById("modal").classList.add("visible");
-}
-
-function cerrarModal() {
-  document.getElementById("modal").classList.remove("visible");
-}
-
-function enviarLead() {
-  const nombre = document.getElementById("nombre").value.trim();
-  const tel = document.getElementById("tel").value.trim();
-  if (!nombre || !tel) return alert("Completá los datos");
-
-  fetch(API + "/api/lead", {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nombre, telefono: tel, propiedad: propiedadActual })
-  }).catch(() => {});
-
-  const msg = encodeURIComponent(
-`Hola Vanina 👋
-
-Me interesa:
-${propiedadActual}
-
-Nombre: ${nombre}
-Tel: ${tel}`
-  );
-
-  window.open("https://wa.me/5493585701632?text=" + msg);
-  cerrarModal();
-}
-
 cargar();
+
 </script>
+
 </body>
 </html>
