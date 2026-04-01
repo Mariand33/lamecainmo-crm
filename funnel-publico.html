@@ -736,17 +736,17 @@
 
       <div class="testimonials">
         <div class="testimonial">
-          <p>“Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia para mostrarnos opciones reales.”</p>
+          <p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia para mostrarnos opciones reales."</p>
           <strong>María y Diego · Compra de vivienda</strong>
         </div>
 
         <div class="testimonial">
-          <p>“Necesitábamos alquilar rápido, sin vueltas y sin perder tiempo viendo opciones que no servían. Nos acompañaron bien y encontramos una alternativa concreta.”</p>
+          <p>"Necesitábamos alquilar rápido, sin vueltas y sin perder tiempo viendo opciones que no servían. Nos acompañaron bien y encontramos una alternativa concreta."</p>
           <strong>Lucía R. · Alquiler</strong>
         </div>
 
         <div class="testimonial">
-          <p>“Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir.”</p>
+          <p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir."</p>
           <strong>Fernando M. · Compra e inversión</strong>
         </div>
       </div>
@@ -862,7 +862,9 @@
 
         const waText = `Hola, vi esta propiedad en la web de Vanina Buzzacchi y quiero más información:%0A%0A${item.titulo || "Propiedad"}%0AZona: ${item.zona || "-"}%0APrecio: ${formatPrice(item)}`;
 
-        const urlFicha = `propiedad.html?id=${encodeURIComponent(item.id || "")}&index=${index}`;
+        // ✅ FIX: usar _id (MongoDB) con fallback a id
+        const propId = item._id || item.id || "";
+        const urlFicha = `propiedad.html?id=${encodeURIComponent(propId)}`;
 
         return `
           <article class="card">
