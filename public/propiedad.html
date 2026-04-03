@@ -76,15 +76,27 @@ function getID() {
   return params.get("id");
 }
 
-// 🔥 CLAVE: buscar por TODOS los posibles IDs
+// 🔥 FUNCIÓN ULTRA ROBUSTA (soporta TODOS los formatos)
 function encontrarPropiedad(data, id) {
-  return data.find(p =>
-    String(p._id) === String(id) ||
-    String(p.id) === String(id)
-  );
+
+  return data.find(p => {
+
+    const posiblesIDs = [
+      p._id,
+      p.id,
+      p._id?.$oid
+    ];
+
+    return posiblesIDs.some(pid =>
+      pid && String(pid).trim() === String(id).trim()
+    );
+
+  });
+
 }
 
 async function cargar() {
+
   const id = getID();
 
   if (!id) {
@@ -93,11 +105,16 @@ async function cargar() {
   }
 
   try {
+
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    console.log("ID recibido:", id);
-    console.log("Propiedades:", data);
+    // 🧠 DEBUG PRO (te deja ver TODO si algo falla)
+    console.log("ID URL:", id);
+    console.log("IDs disponibles:", data.map(p => ({
+      _id: p._id,
+      id: p.id
+    })));
 
     const prop = encontrarPropiedad(data, id);
 
@@ -111,6 +128,7 @@ async function cargar() {
   } catch (error) {
     document.getElementById("estado").textContent = "Error cargando propiedad.";
   }
+
 }
 
 function render(p) {
@@ -140,7 +158,7 @@ function render(p) {
     <p>${p.descripcion || "Sin descripción."}</p>
 
     <a class="btn-wa"
-       href="https://wa.me/5493585701632?text=${encodeURIComponent("Hola Vanina! Me interesa esta propiedad: " + p.titulo)}"
+       href="https://wa.me/5493585701632?text=${encodeURIComponent("Hola Vanina! Me interesa esta propiedad: " + (p.titulo || ""))}"
        target="_blank">
        Consultar por WhatsApp
     </a>
