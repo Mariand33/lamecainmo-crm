@@ -896,7 +896,7 @@
         const ban      = item.banos       ? `${item.banos} baños`      : "Consultar";
         const shortDesc= (item.descripcion||"Propiedad disponible. Consultanos para más información.")
           .replace(/\r?\n/g," ").slice(0,130);
-        const propId = allProperties.indexOf(item);
+        const propId = item.__idx;
         const imgs     = getImages(item);
 
         return `
@@ -939,6 +939,7 @@
         const res  = await fetch(API_URL);
         const data = await res.json();
         allProperties = Array.isArray(data) ? data : [];
+        allProperties.forEach((p, i) => p.__idx = i);
         document.getElementById("miniTotal").textContent    = allProperties.length;
         document.getElementById("miniVenta").textContent    = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("venta")).length;
         document.getElementById("miniAlquiler").textContent = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("alquiler")).length;
