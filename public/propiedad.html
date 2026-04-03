@@ -28,33 +28,23 @@ body {
 
 h1 {
   font-family: 'Playfair Display', serif;
-  margin-bottom: 10px;
 }
 
 .precio {
   color: #B8934A;
   font-size: 26px;
   font-weight: bold;
-  margin-bottom: 20px;
 }
 
 .galeria {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 10px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
 .galeria img {
   width: 100%;
   border-radius: 10px;
-  object-fit: cover;
-}
-
-.info {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 20px;
 }
 
 .btn-wa {
@@ -78,17 +68,24 @@ h1 {
 
 <script>
 
-// 🔹 Obtener ID desde URL
-function getParam(k) {
-  return new URLSearchParams(window.location.search).get(k);
-}
-
-// 🔹 API CRM
 const API_URL = "https://inmocreador-crm.onrender.com/api/inmuebles-publicos";
 
-// 🔹 Cargar propiedad REAL desde CRM
+// 🔹 Obtener ID desde URL
+function getID() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
+}
+
+// 🔥 CLAVE: buscar por TODOS los posibles IDs
+function encontrarPropiedad(data, id) {
+  return data.find(p =>
+    String(p._id) === String(id) ||
+    String(p.id) === String(id)
+  );
+}
+
 async function cargar() {
-  const id = getParam("id");
+  const id = getID();
 
   if (!id) {
     document.getElementById("estado").textContent = "ID no encontrado.";
@@ -99,26 +96,29 @@ async function cargar() {
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    const prop = data.find(p => String(p._id) === String(id));
+    console.log("ID recibido:", id);
+    console.log("Propiedades:", data);
+
+    const prop = encontrarPropiedad(data, id);
 
     if (!prop) {
       document.getElementById("estado").textContent = "Propiedad no encontrada.";
       return;
     }
 
-    renderPropiedad(prop);
+    render(prop);
 
   } catch (error) {
     document.getElementById("estado").textContent = "Error cargando propiedad.";
   }
 }
 
-// 🔹 Render de la ficha
-function renderPropiedad(p) {
-  const precio = Number(p.precio || 0).toLocaleString('es-AR');
+function render(p) {
 
-  const imagenes = Array.isArray(p.imagenes) && p.imagenes.length > 0
-    ? p.imagenes.map(img => 
+  const precio = Number(p.precio || 0).toLocaleString("es-AR");
+
+  const imagenes = Array.isArray(p.imagenes) && p.imagenes.length
+    ? p.imagenes.map(img =>
         `<img src="https://inmocreador-crm.onrender.com/uploads/${img}">`
       ).join("")
     : `<img src="https://via.placeholder.com/900x600?text=Propiedad">`;
@@ -131,20 +131,18 @@ function renderPropiedad(p) {
       ${imagenes}
     </div>
 
-    <div class="info">
-      <p>📍 ${p.zona || "-"}</p>
-      <p>📐 ${p.metros || "-"} m²</p>
-      <p>🛏 ${p.dormitorios || "-"} dormitorios</p>
-      <p>🚿 ${p.banos || "-"} baños</p>
-      <p>🚗 ${p.garage ? "Con garage" : "Sin garage"}</p>
-    </div>
+    <p><strong>📍 Zona:</strong> ${p.zona || "-"}</p>
+    <p><strong>📐 Metros:</strong> ${p.metros || "-"}</p>
+    <p><strong>🛏 Dormitorios:</strong> ${p.dormitorios || "-"}</p>
+    <p><strong>🚿 Baños:</strong> ${p.banos || "-"}</p>
+    <p><strong>🚗 Garage:</strong> ${p.garage ? "Sí" : "No"}</p>
 
     <p>${p.descripcion || "Sin descripción."}</p>
 
     <a class="btn-wa"
-       href="https://wa.me/5493585701632?text=${encodeURIComponent(`Hola Vanina! Me interesa esta propiedad: ${p.titulo}`)}"
+       href="https://wa.me/5493585701632?text=${encodeURIComponent("Hola Vanina! Me interesa esta propiedad: " + p.titulo)}"
        target="_blank">
-      Contactar por WhatsApp
+       Consultar por WhatsApp
     </a>
   `;
 
@@ -153,11 +151,6 @@ function renderPropiedad(p) {
 
 // 🚀 Ejecutar
 cargar();
-
-</script>
-
-</body>
-</html>
 
 </script>
 
