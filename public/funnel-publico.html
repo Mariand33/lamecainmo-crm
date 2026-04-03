@@ -596,11 +596,11 @@
 
     .modal-ctas{
       display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
     }
 
-    @media(max-width:500px){ .modal-ctas{ grid-template-columns:1fr; } }
+    @media(max-width:600px){ .modal-ctas{ grid-template-columns:1fr; } }
 
     .modal-btn{
       display:flex;
@@ -619,6 +619,8 @@
     .modal-btn:hover{ transform:translateY(-1px); }
     .modal-btn-wa{ background:var(--wa); color:#fff; }
     .modal-btn-visit{ background:#111; color:#fff; }
+    .modal-btn-share{ background:#f5f1e8; color:#143d2f; border:2px solid #143d2f; }
+    .modal-btn-share:hover{ background:#143d2f; color:#fff; }
 
     @media (max-width: 980px){
       .hero-grid, .filter-bar, .lead-form, .properties-grid, .testimonials{ grid-template-columns:1fr; }
@@ -839,12 +841,13 @@
     }
 
     function getImages(item){
+      const base = "https://inmocreador-crm.onrender.com/uploads/";
       if (Array.isArray(item.imagenes) && item.imagenes.length){
         return item.imagenes.map(img =>
-          img.startsWith("http") ? img : `https://inmocreador-crm.onrender.com/uploads/${img}`
+          img.startsWith("http") ? img : base + img
         );
       }
-      return ["https://via.placeholder.com/900x620?text=Sin+imagen"];
+      return ["https://placehold.co/900x620/e8e0d0/888?text=Sin+imagen"];
     }
 
     function normalize(t){
@@ -933,21 +936,50 @@
     }
 
     // ── load ─────────────────────────────────────────────────
-    async function loadProperties(){
+    // ══════════════════════════════════════════════════════
+    // PROPIEDADES — editá este array para agregar/quitar
+    // ══════════════════════════════════════════════════════
+    const DATOS_PROPIEDADES = [{"id":0,"titulo":"Casa 4 Dorm - Banda Norte","tipoOperacion":"venta","tipoPropiedad":"casa","zona":"Banda Norte","direccion":"Bolivia al 900","precio":150000,"moneda":"USD","dormitorios":4,"banos":3,"superficie":209,"descripcion":"Hermosa casa de 2 plantas en barrio tranquilo y familiar.\n📍 Bolivia al 900\n\n✨ 4 dormitorios (2 en suite)\n✨ 3 baños completos\n✨ Cocina con barra + living comedor con ventanal al jardín\n✨ Garage, patio de luz y amplio balcón\n🌿 Jardín con galería, asador y pileta con agua caliente\n\n Terreno: 13,35 x 24,59 (328 m²) | Construidos: 209 m²\n\nAcepta casa a reciclar como parte de pago y financia.","imagenes":["1772213059707.png","1772409657418.jpeg","1771987377886.webp","1771987377779.webp","1771987379015.webp","1772409659657.jpeg","1772409494345.jpeg","1772409491878.jpeg"]},{"id":5,"titulo":"Casa Bimaco a Estrenar","tipoOperacion":"venta","tipoPropiedad":"casa","zona":"Bimaco","direccion":"Alameda 2500","precio":160000,"moneda":"USD","dormitorios":2,"banos":2,"superficie":0,"descripcion":"Ubicada en barrio Bimaco (Alameda al 2500), esta propiedad conjuga modernidad, practicidad y terminaciones de primera calidad.\n\n2 Dormitorios (uno en suite con vestidor)\n2 Baños\nCocina con equipamiento de última generación\nLiving Comedor super amplio\nGarage\n\n🌿 Patio con Asador, PISCINA ILUMINADA con fuente de agua","imagenes":["1772573270295.jpg","1772573270297.jpg","1772573270299.jpg","1772573270300.jpg","1772573270303.jpg"]},{"id":6,"titulo":"Casa Moderna - 3 Dorm · 3 Baños · Garage triple · Pileta","tipoOperacion":"venta","tipoPropiedad":"casa","zona":"Sector Universitario","direccion":"Teresa Frua al 1100","precio":150000,"moneda":"USD","dormitorios":3,"banos":3,"superficie":0,"descripcion":"Moderna, cómoda y versátil propiedad de 2 plantas.\n📍 Teresa Frua al 1100 (Sector universitario), barrio tranquilo y familiar.\n\n3 dormitorios (dos con vestidores, el principal con balcón)\nLiving Comedor · Hermosa Cocina\n3 baños completos (uno con antebaño)\n\n⭐️ Amplio quincho con cocina y baño\n👉 Garage para 3 autos con portón automático\n🍃 Patio con Pileta\n\nTodos los Servicios. Detalles Premium.","imagenes":["1772578555340.jpg","1772576086268.jpg","1772578555357.jpg","1772578866171.jpg","1772579095146.jpg","1772579147792.jpg","1772579179156.jpg","1772628736757.jpg","1772628736758.jpg"]},{"id":8,"titulo":"3 propiedades en 1 — Oportunidad de inversión","tipoOperacion":"venta","tipoPropiedad":"casa","zona":"Zona Cucú Quintitas Golf","direccion":"Río Deseado al 300","precio":120000,"moneda":"USD","dormitorios":3,"banos":2,"superficie":270,"descripcion":"Se venden 3 propiedades en 1. Ideal para inversión o familia numerosa.\n👉 Renta aproximada: $1.500.000\n\n📍 Río Deseado al 300 (Zona Cucú Quintitas Golf)\nTerreno de 300 m²\n\n🔸 Casa: 3 Dorm (uno en suite), 2 baños, patio doble, garage 2 autos (150 m²)\n🔸 Dto PB: 1 Dorm, baño, cocina-comedor integrados (50 m²)\n🔸 Dto PA tipo loft: 1 Dorm, amplia cocina-comedor, living, baño (70 m²)\n\nSe escuchan ofertas de contado. Se recibe vehículo o departamento.","imagenes":["1772640682196-912.jpg","1772640682199-972.jpg","1772640682199-1401.jpg","1772640682200-8483.jpg","1772640682200-3720.jpg","1772640682204-3860.jpg","1772640682205-5112.jpg","1772640682205-1486.jpg","1772640682205-6490.jpg"]}];
+
+    const IMG_BASE = "https://inmocreador-crm.onrender.com/uploads/";
+
+    function loadProperties(){
       const loader = document.getElementById("loader");
-      try{
-        const res  = await fetch(API_URL);
-        const data = await res.json();
-        allProperties = Array.isArray(data) ? data : [];
-        allProperties.forEach((p, i) => p.__idx = i);
-        document.getElementById("miniTotal").textContent    = allProperties.length;
-        document.getElementById("miniVenta").textContent    = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("venta")).length;
-        document.getElementById("miniAlquiler").textContent = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("alquiler")).length;
-        loader.style.display="none";
-        applyFilters();
-      } catch(e){
-        loader.innerHTML="No pudimos cargar las propiedades en este momento. Intentá nuevamente en unos instantes.";
-      }
+      // Intentar API primero, si falla usar datos locales
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000));
+      Promise.race([
+        fetch(API_URL).then(r => r.json()),
+        timeout
+      ])
+      .then(data => {
+        initProps(Array.isArray(data) && data.length ? data : DATOS_PROPIEDADES);
+      })
+      .catch(() => {
+        initProps(DATOS_PROPIEDADES);
+      })
+      .finally(() => {
+        loader.style.display = "none";
+      });
+    }
+
+    function initProps(data){
+      allProperties = data;
+      allProperties.forEach((p, i) => {
+        p.__idx = i;
+        // Normalizar dormitorios/banos que vengan en 0 desde CRM
+        if(!p.dormitorios && p.descripcion){
+          const m = p.descripcion.match(/(\d)\s*[Dd]orm/);
+          if(m) p.dormitorios = parseInt(m[1]);
+        }
+        if(!p.banos && p.descripcion){
+          const m = p.descripcion.match(/(\d)\s*[Bb]a[ñn]/);
+          if(m) p.banos = parseInt(m[1]);
+        }
+      });
+      document.getElementById("miniTotal").textContent    = allProperties.length;
+      document.getElementById("miniVenta").textContent    = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("venta")).length;
+      document.getElementById("miniAlquiler").textContent = allProperties.filter(i=>normalize(i.tipoOperacion||"").includes("alquiler")).length;
+      applyFilters();
     }
 
     // ── modal ─────────────────────────────────────────────────
@@ -1022,9 +1054,13 @@
       // CTAs
       const waConsultar = waLink(`Hola Vanina, vi la propiedad "${item.titulo||"disponible"}" en tu web y quiero más información. Precio: ${formatPrice(item)}`);
       const waVisita    = waLink(`Hola Vanina, me gustaría coordinar una visita para la propiedad "${item.titulo||""}" en ${item.zona||""}. ¿Cuándo podría ser?`);
+      const shareUrl = `https://mariand33.github.io/lamecainmo-crm/funnel-publico.html`;
+      const shareText = `🏠 *${item.titulo||"Propiedad"}*\n📍 ${item.zona||""}${item.direccion?" · "+item.direccion:""}\n💰 ${formatPrice(item)}\n\nVer más propiedades: ${shareUrl}`;
+      const waShare = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
       document.getElementById("modalCtas").innerHTML = `
-        <a class="modal-btn modal-btn-wa"   href="${waConsultar}" target="_blank">💬 Consultar por WhatsApp</a>
-        <a class="modal-btn modal-btn-visit" href="${waVisita}"    target="_blank">📅 Quiero visitarla</a>`;
+        <a class="modal-btn modal-btn-wa"    href="${waConsultar}" target="_blank">💬 Consultar</a>
+        <a class="modal-btn modal-btn-visit" href="${waVisita}"    target="_blank">📅 Quiero visitarla</a>
+        <a class="modal-btn modal-btn-share" href="${waShare}"     target="_blank">↗ Compartir</a>`;
 
       document.getElementById("modalOverlay").classList.add("open");
       document.body.style.overflow = "hidden";
