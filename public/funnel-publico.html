@@ -896,7 +896,7 @@
         const ban      = item.banos       ? `${item.banos} baños`      : "Consultar";
         const shortDesc= (item.descripcion||"Propiedad disponible. Consultanos para más información.")
           .replace(/\r?\n/g," ").slice(0,130);
-        const propId = item.id !== undefined ? item.id : item._id;
+        const propId = allProperties.indexOf(item);
         const imgs     = getImages(item);
 
         return `
@@ -954,7 +954,7 @@
     let slideTotal = 0;
 
     function openModal(id){
-      const item = allProperties.find(x => String(x.id ?? x._id) === String(id));
+      const item = allProperties[Number(id)];
       if(!item) return;
 
       const isSale = normalize(item.tipoOperacion||"").includes("venta");
