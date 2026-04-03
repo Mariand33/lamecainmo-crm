@@ -888,46 +888,141 @@
       }
       empty.style.display="none"; grid.style.display="grid";
 
-      grid.innerHTML = items.map((item, idx) => {
+      grid.innerHTML = items.map((item) => {
         const isSale = normalize(item.tipoOperacion||"").includes("venta");
         const badge  = isSale
           ? `<span class="badge badge-sale">Venta</span>`
           : `<span class="badge badge-rent">Alquiler</span>`;
-        const badgeNew = idx < 3 ? `<span class="badge badge-new">Destacada</span>` : "";
-        const tipo     = detectType(item);
-        const dorm     = item.dormitorios ? `${item.dormitorios} dorm.` : "Consultar";
-        const ban      = item.banos       ? `${item.banos} baños`      : "Consultar";
-        const shortDesc= (item.descripcion||"Propiedad disponible. Consultanos para más información.")
-          .replace(/\r?\n/g," ").slice(0,130);
-        const propId = item.__idx;
-        const imgs     = getImages(item);
+        const tipo   = detectType(item);
+        const dorm   = item.dormitorios ? `${item.dormitorios} dorm.` : "";
+        const ban    = item.banos       ? `${item.banos} baños`      : "";
+        const imgs   = getImages(item);
+        const base   = "https://inmocreador-crm.onrender.com/uploads/";
+        const cardId = "card-" + Math.random().toString(36).slice(2,9);
+
+        // Specs para la ficha
+        const specs = [
+          item.dormitorios ? `🛏 <strong>${item.dormitorios}</strong> Dorm.` : "",
+          item.banos       ? `🚿 <strong>${item.banos}</strong> Baño${item.banos>1?"s":""}` : "",
+          item.superficie  ? `📐 <strong>${item.superficie} m²</strong>` : "",
+        ].filter(Boolean).map(s=>`<div class="modal-spec">${s}</div>`).join("") ||
+          `<div class="modal-spec">Consultá para más detalles</div>`;
+
+        // Galería para la ficha
+        const slides = imgs.map((src,i)=>
+          `<div class="gallery-slide" style="min-width:100%;height:100%"><img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block"></div>`
+        ).join("");
+        const dots = imgs.length > 1 ? imgs.map((_,i)=>
+          `<span class="gallery-dot${i===0?" active":""}" onclick="goSlideInline('${cardId}',${i},${imgs.length})"></span>`
+        ).join("") : "";
+        const navBtns = imgs.length > 1 ? `
+          <button class="gallery-btn gallery-prev" onclick="goSlideInline('${cardId}',-1,${imgs.length})">‹</button>
+          <button class="gallery-btn gallery-next" onclick="goSlideInline('${cardId}',+1,${imgs.length})">›</button>` : "";
+
+        // Mapa
+        let mapaHtml = "";
+        if(item.latitud && item.longitud){
+          mapaHtml = `<iframe src="https://maps.google.com/maps?q=${item.latitud},${item.longitud}&z=15&output=embed" style="width:100%;height:200px;border:none;border-radius:14px;display:block" loading="lazy"></iframe>`;
+        } else if(item.zona||item.direccion){
+          const q = encodeURIComponent((item.direccion||item.zona||"")+" Río Cuarto Córdoba");
+          mapaHtml = `<iframe src="https://maps.google.com/maps?q=${q}&z=14&output=embed" style="width:100%;height:200px;border:none;border-radius:14px;display:block" loading="lazy"></iframe>`;
+        }
+
+        // WhatsApp links
+        const waConsultar = waLink(`Hola Vanina, vi la propiedad "${item.titulo||""}" y quiero más información. Precio: ${formatPrice(item)}`);
+        const waVisita    = waLink(`Hola Vanina, quiero coordinar una visita para "${item.titulo||""}" en ${item.zona||""}`);
+        const shareUrl    = "https://mariand33.github.io/lamecainmo-crm/funnel-publico.html";
+        const waShare     = `https://wa.me/?text=${encodeURIComponent("🏠 *"+(item.titulo||"")+"*\n📍 "+(item.zona||"")+(item.direccion?" · "+item.direccion:"")+"\n💰 "+formatPrice(item)+"\n\nVer más: "+shareUrl)}`;
+
+        const desc = (item.descripcion||"Propiedad disponible.").replace(/\r?\n/g,"<br>");
+        const shortDesc = (item.descripcion||"Propiedad disponible.").replace(/\r?\n/g," ").slice(0,130);
 
         return `
-          <article class="card">
+          <article class="card" style="display:flex;flex-direction:column">
             <div class="card-image-wrap">
-              <div class="badge-top">${badge}${badgeNew}</div>
-              <img class="card-image" src="${imgs[0]}" alt="${item.titulo||"Propiedad"}" loading="lazy">
+              <div class="badge-top">${badge}</div>
+              <img class="card-image" src="${imgs[0]}" alt="${item.titulo||""}" loading="lazy">
             </div>
             <div class="card-body">
               <div class="card-title">${item.titulo||"Propiedad disponible"}</div>
               <div class="card-price">${formatPrice(item)}</div>
-              <div class="card-zone">${item.zona||"Zona a consultar"}${item.direccion?" · "+item.direccion:""}</div>
+              <div class="card-zone">📍 ${item.zona||""}${item.direccion?" · "+item.direccion:""}</div>
               <div class="card-meta">
-                <span class="meta-pill">${isSale?"Venta":"Alquiler"}</span>
-                <span class="meta-pill">${tipo||"Propiedad"}</span>
-                <span class="meta-pill">${dorm}</span>
-                <span class="meta-pill">${ban}</span>
+                ${isSale?'<span class="meta-pill">Venta</span>':'<span class="meta-pill">Alquiler</span>'}
+                ${tipo?`<span class="meta-pill">${tipo}</span>`:""}
+                ${dorm?`<span class="meta-pill">${dorm}</span>`:""}
+                ${ban?`<span class="meta-pill">${ban}</span>`:""}
               </div>
               <div class="card-desc">${shortDesc}…</div>
               <div class="card-actions">
-                <button class="btn-card btn-view" data-id="${propId}" onclick="openModal(this.dataset.id)">Ver ficha</button>
-                <a class="btn-card btn-contact"
-                   href="${waLink("Hola, vi esta propiedad en la web de Vanina Buzzacchi: "+( item.titulo||"Propiedad")+" — Zona: "+(item.zona||"-")+" — Precio: "+formatPrice(item))}"
-                   target="_blank">Consultar</a>
+                <button class="btn-card btn-view" onclick="toggleFicha('${cardId}')">Ver ficha</button>
+                <a class="btn-card btn-contact" href="${waConsultar}" target="_blank">Consultar</a>
               </div>
+            </div>
+
+            <!-- FICHA EMBEBIDA — siempre en el DOM, show/hide con JS -->
+            <div id="${cardId}" style="display:none;padding:0 18px 22px;border-top:1px solid #eee3d0">
+
+              <!-- Galería inline -->
+              <div style="position:relative;height:280px;background:#111;border-radius:14px;overflow:hidden;margin:16px 0 14px">
+                <div id="${cardId}-track" style="display:flex;height:100%;transition:transform .38s ease">
+                  ${slides}
+                </div>
+                ${navBtns}
+                <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px">${dots}</div>
+              </div>
+
+              <!-- Specs -->
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">${specs}</div>
+
+              <!-- Descripción -->
+              <div style="font-size:14px;line-height:1.7;color:#4a4540;margin-bottom:16px">${desc}</div>
+
+              <!-- Mapa -->
+              ${mapaHtml ? `<div style="margin-bottom:16px;border-radius:14px;overflow:hidden">${mapaHtml}</div>` : ""}
+
+              <!-- CTAs -->
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                <a class="modal-btn modal-btn-wa"    href="${waConsultar}" target="_blank">💬 Consultar</a>
+                <a class="modal-btn modal-btn-visit" href="${waVisita}"    target="_blank">📅 Visitarla</a>
+                <a class="modal-btn modal-btn-share" href="${waShare}"     target="_blank">↗ Compartir</a>
+              </div>
+
+              <button onclick="toggleFicha('${cardId}')" style="margin-top:12px;width:100%;background:none;border:1px solid #ccc;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;color:#888">Cerrar ficha ↑</button>
             </div>
           </article>`;
       }).join("");
+    }
+
+    function toggleFicha(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      const isOpen = el.style.display !== "none";
+      // Cerrar todas las fichas abiertas
+      document.querySelectorAll('[id^="card-"]').forEach(f => f.style.display = "none");
+      // Si no estaba abierta, abrirla y hacer scroll
+      if(!isOpen){
+        el.style.display = "block";
+        el.closest("article").scrollIntoView({behavior:"smooth", block:"start"});
+      }
+    }
+
+    // Galería inline (navegación por índice o delta)
+    const _slideState = {};
+    function goSlideInline(cardId, val, total){
+      if(!_slideState[cardId]) _slideState[cardId] = 0;
+      let idx;
+      if(val === -1 || val === 1){
+        // delta
+        idx = ((_slideState[cardId] + val) + total) % total;
+      } else {
+        idx = val;
+      }
+      _slideState[cardId] = idx;
+      const track = document.getElementById(cardId+"-track");
+      if(track) track.style.transform = `translateX(-${idx*100}%)`;
+      document.querySelectorAll(`#${cardId} .gallery-dot`).forEach((d,i)=>
+        d.classList.toggle("active", i===idx));
     }
 
     function applyFilters(){
