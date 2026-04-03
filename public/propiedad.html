@@ -15,7 +15,7 @@ body {
 }
 
 .detalle {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
   padding: 30px;
 }
@@ -28,12 +28,33 @@ body {
 
 h1 {
   font-family: 'Playfair Display', serif;
+  margin-bottom: 10px;
 }
 
 .precio {
   color: #B8934A;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.galeria img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.info {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .btn-wa {
@@ -41,9 +62,10 @@ h1 {
   margin-top: 20px;
   background: #25D366;
   color: white;
-  padding: 12px 20px;
+  padding: 14px 22px;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -56,66 +78,72 @@ h1 {
 
 <script>
 
-// Obtener ID desde URL
+// 🔹 Obtener ID desde URL
 function getParam(k) {
   return new URLSearchParams(window.location.search).get(k);
 }
 
-// 🔥 BASE DE DATOS LOCAL (sin backend)
-const propiedades = [
-  {
-    _id: "1",
-    titulo: "Casa en Banda Norte",
-    precio: 80000,
-    descripcion: "Patio amplio 🌿, galería con asador y entrada de vehículos.",
-    metros: 120,
-    dormitorios: 2,
-    banos: 1,
-    garage: true,
-    ubicacion: "Río Cuarto"
-  },
-  {
-    _id: "2",
-    titulo: "Departamento céntrico",
-    precio: 55000,
-    descripcion: "Excelente ubicación, ideal inversión.",
-    metros: 60,
-    dormitorios: 1,
-    banos: 1,
-    garage: false,
-    ubicacion: "Centro"
-  }
-];
+// 🔹 API CRM
+const API_URL = "https://inmocreador-crm.onrender.com/api/inmuebles-publicos";
 
-function cargar() {
+// 🔹 Cargar propiedad REAL desde CRM
+async function cargar() {
   const id = getParam("id");
 
-  const prop = propiedades.find(p => String(p._id) === String(id));
-
-  if (!prop) {
-    document.getElementById("estado").textContent = "Propiedad no encontrada.";
+  if (!id) {
+    document.getElementById("estado").textContent = "ID no encontrado.";
     return;
   }
 
-  renderPropiedad(prop);
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    const prop = data.find(p => String(p._id) === String(id));
+
+    if (!prop) {
+      document.getElementById("estado").textContent = "Propiedad no encontrada.";
+      return;
+    }
+
+    renderPropiedad(prop);
+
+  } catch (error) {
+    document.getElementById("estado").textContent = "Error cargando propiedad.";
+  }
 }
 
+// 🔹 Render de la ficha
 function renderPropiedad(p) {
-  const precio = Number(p.precio).toLocaleString('es-AR');
+  const precio = Number(p.precio || 0).toLocaleString('es-AR');
+
+  const imagenes = Array.isArray(p.imagenes) && p.imagenes.length > 0
+    ? p.imagenes.map(img => 
+        `<img src="https://inmocreador-crm.onrender.com/uploads/${img}">`
+      ).join("")
+    : `<img src="https://via.placeholder.com/900x600?text=Propiedad">`;
 
   const html = `
-    <h1>${p.titulo}</h1>
-    <div class="precio">USD ${precio}</div>
+    <h1>${p.titulo || "Propiedad"}</h1>
+    <div class="precio">${p.moneda || "USD"} ${precio}</div>
 
-    <p>${p.descripcion}</p>
+    <div class="galeria">
+      ${imagenes}
+    </div>
 
-    <p>📐 ${p.metros} m²</p>
-    <p>🛏 ${p.dormitorios} dormitorios</p>
-    <p>🚿 ${p.banos} baños</p>
-    <p>🚗 ${p.garage ? "Con garage" : "Sin garage"}</p>
-    <p>📍 ${p.ubicacion}</p>
+    <div class="info">
+      <p>📍 ${p.zona || "-"}</p>
+      <p>📐 ${p.metros || "-"} m²</p>
+      <p>🛏 ${p.dormitorios || "-"} dormitorios</p>
+      <p>🚿 ${p.banos || "-"} baños</p>
+      <p>🚗 ${p.garage ? "Con garage" : "Sin garage"}</p>
+    </div>
 
-    <a class="btn-wa" href="https://wa.me/5493585701632" target="_blank">
+    <p>${p.descripcion || "Sin descripción."}</p>
+
+    <a class="btn-wa"
+       href="https://wa.me/5493585701632?text=${encodeURIComponent(`Hola Vanina! Me interesa esta propiedad: ${p.titulo}`)}"
+       target="_blank">
       Contactar por WhatsApp
     </a>
   `;
@@ -123,7 +151,13 @@ function renderPropiedad(p) {
   document.getElementById("detalle").innerHTML = html;
 }
 
+// 🚀 Ejecutar
 cargar();
+
+</script>
+
+</body>
+</html>
 
 </script>
 
