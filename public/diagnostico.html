@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Diagnóstico</title>
+</head>
+<body style="font-family:Arial;padding:20px;background:#f5f1e8">
+<h2>Diagnóstico de fichas</h2>
+<div id="resultado" style="background:#fff;padding:20px;border-radius:12px;margin-top:16px"></div>
+
+<script>
+var IMG_BASE = "https://inmocreador-crm.onrender.com/uploads/";
+
+var PROPS = [
+  {titulo:"Casa 4 Dorm - Banda Norte", imgs:["1772213059707.png"]},
+  {titulo:"Casa Bimaco a Estrenar",    imgs:["1772573270295.jpg"]},
+  {titulo:"Casa Moderna",              imgs:["1772578555340.jpg"]},
+  {titulo:"3 propiedades en 1",        imgs:["1772640682196-912.jpg"]}
+];
+
+var html = "";
+for(var i=0; i<PROPS.length; i++){
+  var p = PROPS[i];
+  html += '<article id="art'+i+'" style="border:2px solid #ccc;border-radius:12px;margin-bottom:16px;overflow:visible">';
+  html += '<div style="padding:16px"><b>'+p.titulo+'</b></div>';
+  html += '<div style="padding:0 16px 8px"><button onclick="abrirFicha(this)" style="background:#111;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer">Ver ficha</button></div>';
+  html += '<div class="ficha" style="display:none;padding:16px;background:#e8f5e9;border-top:2px solid #4caf50">';
+  html += '<b style="color:green">FICHA ABIERTA CORRECTAMENTE ✓</b><br>Propiedad: '+p.titulo;
+  html += '</div>';
+  html += '</article>';
+}
+
+document.getElementById("resultado").innerHTML = html;
+
+// Verificar cuantas fichas se generaron
+var fichas = document.querySelectorAll(".ficha");
+document.getElementById("resultado").insertAdjacentHTML("beforebegin",
+  '<div style="background:'+(fichas.length===4?'#c8e6c9':'#ffcdd2')+';padding:12px;border-radius:8px;margin-bottom:12px">'+
+  '<b>Fichas generadas: '+fichas.length+' de 4</b> — '+(fichas.length===4?"OK, el problema es otro":"ERROR: el HTML no se genera bien")+'</div>'
+);
+
+function abrirFicha(btn){
+  var article = btn.closest("article");
+  var ficha = article.querySelector(".ficha");
+  var estaba = ficha.style.display !== "none";
+  document.querySelectorAll(".ficha").forEach(function(f){f.style.display="none"});
+  if(!estaba) ficha.style.display = "block";
+}
+</script>
+</body>
+</html>
