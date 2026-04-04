@@ -56,7 +56,7 @@
     .searchbox input{border:none;outline:none;background:transparent;min-width:220px;font-size:15px;color:#222}
 
     .properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
-    .card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #eee3d0;transition:.2s;display:flex;flex-direction:column}
+    .card{background:var(--card);border-radius:22px;overflow:visible;box-shadow:var(--shadow);border:1px solid #eee3d0;transition:.2s;display:flex;flex-direction:column}
     .card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,0,0,.12)}
     .card-image-wrap{position:relative;aspect-ratio:16/11;background:#ddd;overflow:hidden}
     .card-image{width:100%;height:100%;object-fit:cover}
@@ -296,21 +296,33 @@ function norm(t){
   return (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 }
 
-// ABRIR/CERRAR FICHA — recibe el boton, sube al article, busca .ficha adentro
+// ABRIR/CERRAR FICHA
 function abrirFicha(btn){
   var article = btn.closest("article");
   if(!article) return;
   var ficha = article.querySelector(".ficha");
   if(!ficha) return;
   var estabaAbierta = ficha.classList.contains("abierta");
-  // cerrar todas
   var todas = document.querySelectorAll(".ficha");
   for(var x=0; x<todas.length; x++) todas[x].classList.remove("abierta");
-  // abrir solo si no estaba abierta
   if(!estabaAbierta){
     ficha.classList.add("abierta");
+    // Cargar mapa si no fue cargado aun
+    var mapDiv = ficha.querySelector(".ficha-map[data-q]");
+    if(mapDiv){
+      var q = mapDiv.getAttribute("data-q");
+      mapDiv.removeAttribute("data-q");
+      mapDiv.innerHTML = '<iframe src="https://maps.google.com/maps?q='+q+'&z=14&output=embed" style="width:100%;height:190px;border:none;display:block;border-radius:12px" loading="lazy"></iframe>';
+    }
     article.scrollIntoView({behavior:"smooth",block:"nearest"});
   }
+}
+function cargarMapa(placeholder){
+  var mapDiv = placeholder.closest(".ficha-map");
+  if(!mapDiv || !mapDiv.getAttribute("data-q")) return;
+  var q = mapDiv.getAttribute("data-q");
+  mapDiv.removeAttribute("data-q");
+  mapDiv.innerHTML = '<iframe src="https://maps.google.com/maps?q='+q+'&z=14&output=embed" style="width:100%;height:190px;border:none;display:block;border-radius:12px" loading="lazy"></iframe>';
 }
 
 // GALERIA — recibe el boton/dot, sube al .ficha-gallery
@@ -390,9 +402,9 @@ function render(items){
     var descHtml  = (p.desc||"").replace(/\n/g,"<br>");
     var shortDesc = (p.desc||"").replace(/\n/g," ").slice(0,130);
 
-    // Mapa
+    // Mapa - placeholder, iframe se carga al abrir la ficha
     var q    = encodeURIComponent((p.dir||p.zona||"")+" Rio Cuarto Cordoba");
-    var mapa = '<div class="ficha-map"><iframe src="https://maps.google.com/maps?q='+q+'&z=14&output=embed" loading="lazy"></iframe></div>';
+    var mapa = '<div class="ficha-map" data-q="'+q+'"><div style="height:190px;background:#e8e0d0;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#888;font-size:14px;cursor:pointer" onclick="cargarMapa(this)">Ver en el mapa</div></div>';
 
     // WA
     var waC = waLink("Hola Vanina, vi "+p.titulo+" y quiero mas informacion. Precio: "+pr);
