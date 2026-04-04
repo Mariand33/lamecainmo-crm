@@ -7,9 +7,8 @@
   <meta name="description" content="Explorá propiedades en venta y alquiler en Río Cuarto."/>
   <style>
     :root{
-      --bg:#f5f1e8;--card:#fff;--dark:#111;--gold:#b78a3d;
-      --green:#143d2f;--green2:#1f5a45;--muted:#6f6a63;
-      --border:#e4dccf;--wa:#25D366;
+      --bg:#f5f1e8;--card:#fff;--dark:#111;
+      --green:#143d2f;--muted:#6f6a63;--border:#e4dccf;--wa:#25D366;
       --shadow:0 10px 30px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
@@ -57,20 +56,19 @@
     .searchbox input{border:none;outline:none;background:transparent;min-width:220px;font-size:15px;color:#222}
 
     .properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
-
     .card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #eee3d0;transition:.2s;display:flex;flex-direction:column}
     .card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,0,0,.12)}
     .card-image-wrap{position:relative;aspect-ratio:16/11;background:#ddd;overflow:hidden}
     .card-image{width:100%;height:100%;object-fit:cover}
-    .badge-top{position:absolute;top:14px;left:14px;z-index:2;display:flex;gap:8px;flex-wrap:wrap}
+    .badge-top{position:absolute;top:14px;left:14px;z-index:2;display:flex;gap:8px}
     .badge{border-radius:999px;padding:7px 11px;font-size:12px;font-weight:800}
     .badge-sale{background:#fff;color:#111}
     .badge-rent{background:#111;color:#fff}
     .card-body{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
     .card-title{font-size:20px;line-height:1.18;font-weight:800;color:#1b1b1b}
     .card-price{color:var(--green);font-size:26px;font-weight:800}
-    .card-zone{color:var(--muted);font-size:15px;line-height:1.3}
-    .card-meta{display:flex;flex-wrap:wrap;gap:10px;color:#5e564e;font-size:14px}
+    .card-zone{color:var(--muted);font-size:15px}
+    .card-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:14px}
     .meta-pill{background:#f8f4ec;border:1px solid #ebe1d0;border-radius:999px;padding:7px 11px}
     .card-desc{color:#5b554d;font-size:14px;line-height:1.45}
     .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}
@@ -78,7 +76,6 @@
     .btn-view{background:#111;color:#fff}
     .btn-contact{background:var(--wa);color:#fff}
 
-    /* FICHA INLINE */
     .ficha{display:none;padding:0 18px 22px;border-top:2px solid #e8dfc8}
     .ficha.abierta{display:block}
     .ficha-gallery{position:relative;height:270px;background:#111;border-radius:14px;overflow:hidden;margin:16px 0 14px}
@@ -97,17 +94,17 @@
     .ficha-map{margin-bottom:16px;border-radius:12px;overflow:hidden}
     .ficha-map iframe{width:100%;height:190px;border:none;display:block}
     .ficha-ctas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-    .fcta{display:flex;align-items:center;justify-content:center;padding:13px 10px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;border:none;cursor:pointer;transition:.2s}
+    .fcta{display:flex;align-items:center;justify-content:center;padding:13px 10px;border-radius:12px;font-size:13px;font-weight:800;text-decoration:none;transition:.2s}
     .fcta:hover{opacity:.88}
     .fcta-wa{background:var(--wa);color:#fff}
     .fcta-visit{background:#111;color:#fff}
     .fcta-share{background:#f5f1e8;color:#143d2f;border:2px solid #143d2f}
-    .fcta-cerrar{width:100%;background:none;border:1px solid #ccc;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;color:#888}
+    .fcta-cerrar{width:100%;background:none;border:1px solid #ccc;border-radius:10px;padding:10px;cursor:pointer;font-size:13px;color:#888;margin-top:4px}
 
-    .empty-state{background:#fff;border:1px dashed #d5c8b0;border-radius:24px;padding:34px;text-align:center;color:#6f675d;font-size:18px;margin-top:26px;box-shadow:var(--shadow)}
+    .empty-state{background:#fff;border:1px dashed #d5c8b0;border-radius:24px;padding:34px;text-align:center;color:#6f675d;font-size:18px;margin-top:26px}
     .loader{padding:40px 0;text-align:center;color:#786f64;font-size:18px}
 
-    .lead-box{margin-top:20px;background:linear-gradient(145deg,#16382b,#214f3f);color:#fff;border-radius:26px;padding:28px;box-shadow:var(--shadow)}
+    .lead-box{margin-top:20px;background:linear-gradient(145deg,#16382b,#214f3f);color:#fff;border-radius:26px;padding:28px}
     .lead-box h3{margin:0 0 8px;font-size:30px;font-family:Georgia,serif;font-weight:400}
     .lead-box p{margin:0 0 20px;color:rgba(255,255,255,.86);line-height:1.5}
     .lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
@@ -116,7 +113,7 @@
     .lead-form .full{grid-column:1/-1}
 
     .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:24px}
-    .testimonial{background:#fff;border:1px solid #eadfcf;border-radius:20px;padding:22px;box-shadow:var(--shadow)}
+    .testimonial{background:#fff;border:1px solid #eadfcf;border-radius:20px;padding:22px}
     .testimonial p{margin:0 0 14px;line-height:1.6;color:#4f4840;font-size:15px}
     .testimonial strong{display:block;color:#1f1b17;font-size:15px}
 
@@ -124,20 +121,15 @@
     .footer-brand{color:#d9b15d;font-size:18px;font-weight:800;margin-bottom:10px}
 
     .floating-wa{position:fixed;right:18px;bottom:18px;width:72px;height:72px;border-radius:50%;background:var(--wa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 16px 36px rgba(37,211,102,.35);z-index:80;text-decoration:none}
-    .floating-wa:hover{transform:translateY(-2px)}
     .counter-bubble{position:fixed;right:12px;bottom:88px;z-index:81;background:#d9363e;color:#fff;border-radius:999px;min-width:28px;height:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;border:3px solid #fff}
 
     @media(max-width:980px){
       .hero-grid,.filter-bar,.lead-form,.properties-grid,.testimonials{grid-template-columns:1fr}
       .searchbox input{min-width:0;width:100%}
       .topbar-inner{flex-direction:column;align-items:flex-start}
-      .card-actions{grid-template-columns:1fr}
-      .ficha-ctas{grid-template-columns:1fr}
+      .card-actions,.ficha-ctas{grid-template-columns:1fr}
     }
-    @media(max-width:640px){
-      .hero{padding-top:36px}
-      .hero h1{font-size:42px}
-    }
+    @media(max-width:640px){.hero{padding-top:36px}.hero h1{font-size:42px}}
   </style>
 </head>
 <body>
@@ -237,7 +229,7 @@
   <div class="container">
     <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
     <div class="testimonials">
-      <div class="testimonial"><p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia para mostrarnos opciones reales."</p><strong>María y Diego · Compra de vivienda</strong></div>
+      <div class="testimonial"><p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia."</p><strong>María y Diego · Compra de vivienda</strong></div>
       <div class="testimonial"><p>"Necesitábamos alquilar rápido, sin vueltas y sin perder tiempo viendo opciones que no servían. Nos acompañaron bien y encontramos una alternativa concreta."</p><strong>Lucía R. · Alquiler</strong></div>
       <div class="testimonial"><p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir."</p><strong>Fernando M. · Compra e inversión</strong></div>
     </div>
@@ -255,30 +247,46 @@
 <div class="counter-bubble">1</div>
 
 <script>
-var WA = "543585701632";
-var LEADS_URL = "https://inmocreador-crm.onrender.com/api/leads";
-var IMG_BASE  = "https://inmocreador-crm.onrender.com/uploads/";
+var WA         = "543585701632";
+var LEADS_URL  = "https://inmocreador-crm.onrender.com/api/leads";
+var IMG_BASE   = "https://inmocreador-crm.onrender.com/uploads/";
 var FUNNEL_URL = "https://mariand33.github.io/lamecainmo-crm/funnel-publico.html";
 
-// ══════════════════════════════════════════
-// PROPIEDADES — editá este array para agregar/quitar
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// PROPIEDADES — editá este array para agregar o quitar
+// ══════════════════════════════════════════════════════
 var PROPS = [
-  {titulo:"Casa 4 Dorm - Banda Norte",op:"venta",tipo:"casa",zona:"Banda Norte",dir:"Bolivia al 900",precio:150000,moneda:"USD",dorm:4,ban:3,sup:209,
-   desc:"Hermosa casa de 2 plantas en barrio tranquilo y familiar.\n📍 Bolivia al 900\n\n✨ 4 dormitorios (2 en suite)\n✨ 3 baños completos\n✨ Cocina con barra + living comedor con ventanal al jardín\n✨ Garage, patio de luz y amplio balcón\n🌿 Jardín con galería, asador y pileta con agua caliente\n\nTerreno: 13,35 x 24,59 (328 m²) · Construidos: 209 m²\nAcepta casa a reciclar como parte de pago y financia.",
-   imgs:["1772213059707.png","1772409657418.jpeg","1771987377886.webp","1771987377779.webp","1771987379015.webp","1772409659657.jpeg","1772409494345.jpeg","1772409491878.jpeg"]},
-  {titulo:"Casa Bimaco a Estrenar",op:"venta",tipo:"casa",zona:"Bimaco",dir:"Alameda 2500",precio:160000,moneda:"USD",dorm:2,ban:2,sup:0,
-   desc:"Ubicada en barrio Bimaco (Alameda al 2500), esta propiedad conjuga modernidad, practicidad y terminaciones de primera calidad.\n\n2 Dormitorios (uno en suite con vestidor)\n2 Baños\nCocina con equipamiento de última generación\nLiving Comedor super amplio · Garage\n\n🌿 Patio con Asador, PISCINA ILUMINADA con fuente de agua",
-   imgs:["1772573270295.jpg","1772573270297.jpg","1772573270299.jpg","1772573270300.jpg","1772573270303.jpg"]},
-  {titulo:"Casa Moderna - 3 Dorm · 3 Baños · Garage triple · Pileta",op:"venta",tipo:"casa",zona:"Sector Universitario",dir:"Teresa Frua al 1100",precio:150000,moneda:"USD",dorm:3,ban:3,sup:0,
-   desc:"Moderna, cómoda y versátil propiedad de 2 plantas.\n📍 Teresa Frua al 1100 (Sector universitario)\n\n3 dormitorios (dos con vestidores, el principal con balcón)\nLiving Comedor · Hermosa Cocina\n3 baños completos (uno con antebaño)\n\n⭐️ Amplio quincho con cocina y baño\n👉 Garage para 3 autos con portón automático\n🍃 Patio con Pileta\n\nTodos los Servicios. Detalles Premium.",
-   imgs:["1772578555340.jpg","1772576086268.jpg","1772578555357.jpg","1772578866171.jpg","1772579095146.jpg","1772579147792.jpg","1772579179156.jpg","1772628736757.jpg","1772628736758.jpg"]},
-  {titulo:"3 propiedades en 1 — Oportunidad de inversión",op:"venta",tipo:"casa",zona:"Zona Cucú Quintitas Golf",dir:"Río Deseado al 300",precio:120000,moneda:"USD",dorm:3,ban:2,sup:270,
-   desc:"Se venden 3 propiedades en 1. Ideal para inversión o familia numerosa.\n👉 Renta aproximada: $1.500.000\n\n📍 Río Deseado al 300 (Zona Cucú Quintitas Golf)\n\n🔸 Casa: 3 Dorm (uno en suite), 2 baños, patio doble, garage 2 autos (150 m²)\n🔸 Dto PB: 1 Dorm, baño, cocina-comedor (50 m²)\n🔸 Dto PA tipo loft: 1 Dorm, amplia cocina-comedor, living, baño (70 m²)\n\nSe escuchan ofertas de contado. Se recibe vehículo o departamento.",
-   imgs:["1772640682196-912.jpg","1772640682199-972.jpg","1772640682199-1401.jpg","1772640682200-8483.jpg","1772640682200-3720.jpg","1772640682204-3860.jpg","1772640682205-5112.jpg","1772640682205-1486.jpg","1772640682205-6490.jpg"]}
+  {
+    titulo:"Casa 4 Dorm - Banda Norte",
+    op:"venta",tipo:"casa",zona:"Banda Norte",dir:"Bolivia al 900",
+    precio:150000,moneda:"USD",dorm:4,ban:3,sup:209,
+    desc:"Hermosa casa de 2 plantas en barrio tranquilo y familiar.\n\n4 dormitorios (2 en suite) - 3 banos completos\nCocina con barra + living comedor con ventanal al jardin\nGarage, patio de luz y amplio balcon\nJardin con galeria, asador y pileta con agua caliente\n\nTerreno: 13,35 x 24,59 (328 m2) - Construidos: 209 m2\nAcepta casa a reciclar como parte de pago y financia.",
+    imgs:["1772213059707.png","1772409657418.jpeg","1771987377886.webp","1771987377779.webp","1771987379015.webp","1772409659657.jpeg","1772409494345.jpeg","1772409491878.jpeg"]
+  },
+  {
+    titulo:"Casa Bimaco a Estrenar",
+    op:"venta",tipo:"casa",zona:"Bimaco",dir:"Alameda 2500",
+    precio:160000,moneda:"USD",dorm:2,ban:2,sup:0,
+    desc:"Ubicada en barrio Bimaco (Alameda al 2500), modernidad, practicidad y terminaciones de primera calidad.\n\n2 Dormitorios (uno en suite con vestidor) - 2 Banos\nCocina con equipamiento de ultima generacion\nLiving Comedor super amplio - Garage\nPatio con Asador y PISCINA ILUMINADA con fuente de agua.",
+    imgs:["1772573270295.jpg","1772573270297.jpg","1772573270299.jpg","1772573270300.jpg","1772573270303.jpg"]
+  },
+  {
+    titulo:"Casa Moderna - 3 Dorm - 3 Banos - Garage triple - Pileta",
+    op:"venta",tipo:"casa",zona:"Sector Universitario",dir:"Teresa Frua al 1100",
+    precio:150000,moneda:"USD",dorm:3,ban:3,sup:0,
+    desc:"Moderna, comoda y versatil propiedad de 2 plantas.\nTeresa Frua al 1100, barrio tranquilo y familiar.\n\n3 dormitorios (dos con vestidores, el principal con balcon)\nLiving Comedor - Hermosa Cocina - 3 banos completos\nAmplio quincho con cocina y bano\nGarage para 3 autos con porton automatico\nPatio con Pileta - Todos los Servicios. Detalles Premium.",
+    imgs:["1772578555340.jpg","1772576086268.jpg","1772578555357.jpg","1772578866171.jpg","1772579095146.jpg","1772579147792.jpg","1772579179156.jpg","1772628736757.jpg","1772628736758.jpg"]
+  },
+  {
+    titulo:"3 propiedades en 1 - Oportunidad de inversion",
+    op:"venta",tipo:"casa",zona:"Zona Cucu Quintitas Golf",dir:"Rio Deseado al 300",
+    precio:120000,moneda:"USD",dorm:3,ban:2,sup:270,
+    desc:"Se venden 3 propiedades en 1. Ideal para inversion o familia numerosa.\nRenta aproximada: $1.500.000\nRio Deseado al 300 (Zona Cucu Quintitas Golf)\n\nCasa: 3 Dorm (uno en suite), 2 banos, patio doble, garage 2 autos (150 m2)\nDto PB: 1 Dorm, bano, cocina-comedor (50 m2)\nDto PA tipo loft: 1 Dorm, cocina-comedor, living, bano (70 m2)\n\nSe escuchan ofertas de contado. Se recibe vehiculo o departamento.",
+    imgs:["1772640682196-912.jpg","1772640682199-972.jpg","1772640682199-1401.jpg","1772640682200-8483.jpg","1772640682200-3720.jpg","1772640682204-3860.jpg","1772640682205-5112.jpg","1772640682205-1486.jpg","1772640682205-6490.jpg"]
+  }
 ];
 
-function precio(p){
+function fPrecio(p){
   return p.precio ? (p.moneda||"USD")+" "+p.precio.toLocaleString("es-AR") : "Consultar";
 }
 function waLink(txt){
@@ -288,7 +296,45 @@ function norm(t){
   return (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 }
 
-// ── Render ────────────────────────────────
+// ABRIR/CERRAR FICHA — recibe el boton, sube al article, busca .ficha adentro
+function abrirFicha(btn){
+  var article = btn.closest("article");
+  if(!article) return;
+  var ficha = article.querySelector(".ficha");
+  if(!ficha) return;
+  var estabaAbierta = ficha.classList.contains("abierta");
+  // cerrar todas
+  var todas = document.querySelectorAll(".ficha");
+  for(var x=0; x<todas.length; x++) todas[x].classList.remove("abierta");
+  // abrir solo si no estaba abierta
+  if(!estabaAbierta){
+    ficha.classList.add("abierta");
+    article.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+}
+
+// GALERIA — recibe el boton/dot, sube al .ficha-gallery
+function gNav(btn, dir){
+  var gallery = btn.closest(".ficha-gallery");
+  var track   = gallery.querySelector(".ficha-track");
+  var total   = track.querySelectorAll(".ficha-slide").length;
+  var cur     = parseInt(track.getAttribute("data-slide")||"0");
+  var next    = ((cur+dir)+total)%total;
+  gSet(gallery, track, next);
+}
+function gDot(dot, n){
+  var gallery = dot.closest(".ficha-gallery");
+  var track   = gallery.querySelector(".ficha-track");
+  gSet(gallery, track, n);
+}
+function gSet(gallery, track, n){
+  track.setAttribute("data-slide", n);
+  track.style.transform = "translateX(-"+(n*100)+"%)";
+  var ds = gallery.querySelectorAll(".gdot");
+  for(var i=0; i<ds.length; i++) ds[i].className = "gdot"+(i===n?" on":"");
+}
+
+// RENDER
 function render(items){
   var grid  = document.getElementById("propertiesGrid");
   var empty = document.getElementById("emptyState");
@@ -302,48 +348,56 @@ function render(items){
 
   var html = "";
   for(var i=0; i<items.length; i++){
-    var p   = items[i];
-    var idx = p._idx;
+    var p      = items[i];
     var isSale = norm(p.op).indexOf("venta")>=0;
-    var imgs = p.imgs.map(function(s){ return s.indexOf("http")===0 ? s : IMG_BASE+s; });
-    var pr   = precio(p);
+    var pr     = fPrecio(p);
 
-    // Galería
+    // Imagenes
+    var imgs = [];
+    for(var m=0; m<p.imgs.length; m++){
+      imgs.push(p.imgs[m].indexOf("http")===0 ? p.imgs[m] : IMG_BASE+p.imgs[m]);
+    }
+
+    // Slides
     var slides = "";
     for(var s=0; s<imgs.length; s++){
       slides += '<div class="ficha-slide"><img src="'+imgs[s]+'" alt="'+p.titulo+'" loading="lazy"></div>';
     }
-    var nav = imgs.length>1
-      ? '<button class="gnav gprev" onclick="gNav('+idx+',-1,'+imgs.length+')">&#8249;</button>'
-      + '<button class="gnav gnext" onclick="gNav('+idx+',1,'+imgs.length+')">&#8250;</button>'
-      : "";
+
+    // Nav flechas — pasan this
+    var nav = "";
+    if(imgs.length>1){
+      nav = '<button class="gnav gprev" onclick="gNav(this,-1)">&#8249;</button>'
+          + '<button class="gnav gnext" onclick="gNav(this,1)">&#8250;</button>';
+    }
+
+    // Dots — pasan this
     var dots = "";
     if(imgs.length>1){
       for(var d=0; d<imgs.length; d++){
-        dots += '<span class="gdot'+(d===0?" on":"")+'" onclick="gDot('+idx+','+d+')"></span>';
+        dots += '<span class="gdot'+(d===0?" on":"")+'" onclick="gDot(this,'+d+')"></span>';
       }
     }
 
     // Specs
     var specs = "";
-    if(p.dorm) specs += '<div class="fspec">&#128717; '+p.dorm+' Dorm.</div>';
-    if(p.ban)  specs += '<div class="fspec">&#128703; '+p.ban+' Ba&ntilde;o'+(p.ban>1?"s":"")+'</div>';
-    if(p.sup)  specs += '<div class="fspec">&#128207; '+p.sup+' m&sup2;</div>';
-    if(!specs)  specs = '<div class="fspec">Consult&aacute; para m&aacute;s detalles</div>';
+    if(p.dorm) specs += '<div class="fspec">Dorm: '+p.dorm+'</div>';
+    if(p.ban)  specs += '<div class="fspec">Banos: '+p.ban+'</div>';
+    if(p.sup)  specs += '<div class="fspec">'+p.sup+' m2</div>';
+    if(!specs)  specs  = '<div class="fspec">Consulta para mas detalles</div>';
 
     // Desc
-    var descHtml = (p.desc||"").replace(/\n/g,"<br>");
+    var descHtml  = (p.desc||"").replace(/\n/g,"<br>");
     var shortDesc = (p.desc||"").replace(/\n/g," ").slice(0,130);
 
     // Mapa
-    var mapa = "";
-    var q = encodeURIComponent((p.dir||p.zona||"")+" Río Cuarto Córdoba");
-    mapa = '<div class="ficha-map"><iframe src="https://maps.google.com/maps?q='+q+'&z=14&output=embed" loading="lazy"></iframe></div>';
+    var q    = encodeURIComponent((p.dir||p.zona||"")+" Rio Cuarto Cordoba");
+    var mapa = '<div class="ficha-map"><iframe src="https://maps.google.com/maps?q='+q+'&z=14&output=embed" loading="lazy"></iframe></div>';
 
-    // WA links
-    var waC = waLink("Hola Vanina, vi \""+p.titulo+"\" y quiero más información. Precio: "+pr);
-    var waV = waLink("Hola Vanina, quiero visitar \""+p.titulo+"\" en "+p.zona);
-    var waS = "https://wa.me/?text="+encodeURIComponent("🏠 *"+p.titulo+"*\n📍 "+p.zona+(p.dir?" · "+p.dir:"")+"\n💰 "+pr+"\n\nVer más: "+FUNNEL_URL);
+    // WA
+    var waC = waLink("Hola Vanina, vi "+p.titulo+" y quiero mas informacion. Precio: "+pr);
+    var waV = waLink("Hola Vanina, quiero visitar "+p.titulo+" en "+p.zona);
+    var waS = "https://wa.me/?text="+encodeURIComponent("Propiedad: "+p.titulo+"\nZona: "+p.zona+(p.dir?" - "+p.dir:"")+"\nPrecio: "+pr+"\n\nVer mas: "+FUNNEL_URL);
 
     html +=
       '<article class="card">'+
@@ -354,149 +408,106 @@ function render(items){
         '<div class="card-body">'+
           '<div class="card-title">'+p.titulo+'</div>'+
           '<div class="card-price">'+pr+'</div>'+
-          '<div class="card-zone">📍 '+p.zona+(p.dir?" · "+p.dir:"")+'</div>'+
+          '<div class="card-zone">'+p.zona+(p.dir?" - "+p.dir:"")+'</div>'+
           '<div class="card-meta">'+
             '<span class="meta-pill">'+(isSale?"Venta":"Alquiler")+'</span>'+
             '<span class="meta-pill">'+p.tipo+'</span>'+
             (p.dorm?'<span class="meta-pill">'+p.dorm+' dorm.</span>':"")+
-            (p.ban?'<span class="meta-pill">'+p.ban+' baños</span>':"")+
+            (p.ban?'<span class="meta-pill">'+p.ban+' banos</span>':"")+
           '</div>'+
-          '<div class="card-desc">'+shortDesc+'&hellip;</div>'+
+          '<div class="card-desc">'+shortDesc+'...</div>'+
           '<div class="card-actions">'+
-            '<button class="btn-card btn-view" onclick="abrirFicha('+idx+')">Ver ficha</button>'+
+            '<button class="btn-card btn-view" onclick="abrirFicha(this)">Ver ficha</button>'+
             '<a class="btn-card btn-contact" href="'+waC+'" target="_blank">Consultar</a>'+
           '</div>'+
         '</div>'+
-        '<div class="ficha" id="ficha-'+idx+'">'+
+        '<div class="ficha">'+
           '<div class="ficha-gallery">'+
-            '<div class="ficha-track" id="track-'+idx+'">'+slides+'</div>'+
+            '<div class="ficha-track" data-slide="0">'+slides+'</div>'+
             nav+
-            '<div class="gdots" id="dots-'+idx+'">'+dots+'</div>'+
+            '<div class="gdots">'+dots+'</div>'+
           '</div>'+
           '<div class="ficha-specs">'+specs+'</div>'+
           '<div class="ficha-desc">'+descHtml+'</div>'+
           mapa+
           '<div class="ficha-ctas">'+
-            '<a class="fcta fcta-wa"    href="'+waC+'" target="_blank">💬 Consultar</a>'+
-            '<a class="fcta fcta-visit" href="'+waV+'" target="_blank">📅 Visitarla</a>'+
-            '<a class="fcta fcta-share" href="'+waS+'" target="_blank">&#8599; Compartir</a>'+
+            '<a class="fcta fcta-wa"    href="'+waC+'" target="_blank">Consultar</a>'+
+            '<a class="fcta fcta-visit" href="'+waV+'" target="_blank">Visitarla</a>'+
+            '<a class="fcta fcta-share" href="'+waS+'" target="_blank">Compartir</a>'+
           '</div>'+
-          '<button class="fcta-cerrar" onclick="abrirFicha('+idx+')">Cerrar ficha ↑</button>'+
+          '<button class="fcta-cerrar" onclick="abrirFicha(this)">Cerrar ficha</button>'+
         '</div>'+
       '</article>';
   }
   grid.innerHTML = html;
 }
 
-// Abrir/cerrar ficha
-function abrirFicha(idx){
-  var ficha = document.getElementById("ficha-"+idx);
-  if(!ficha) return;
-  var estaba = ficha.classList.contains("abierta");
-  // cerrar todas
-  var todas = document.querySelectorAll(".ficha");
-  for(var i=0;i<todas.length;i++) todas[i].classList.remove("abierta");
-  if(!estaba){
-    ficha.classList.add("abierta");
-    ficha.parentElement.scrollIntoView({behavior:"smooth",block:"nearest"});
-  }
-}
-
-// Galería
-var gSlide = {};
-function gNav(idx, dir, total){
-  var cur = gSlide[idx]||0;
-  var next = ((cur+dir)+total)%total;
-  gSet(idx, next);
-}
-function gDot(idx, n){ gSet(idx, n); }
-function gSet(idx, n){
-  gSlide[idx] = n;
-  var track = document.getElementById("track-"+idx);
-  if(track) track.style.transform = "translateX(-"+(n*100)+"%)";
-  var dotsEl = document.getElementById("dots-"+idx);
-  if(dotsEl){
-    var ds = dotsEl.querySelectorAll(".gdot");
-    for(var i=0;i<ds.length;i++) ds[i].className = "gdot"+(i===n?" on":"");
-  }
-}
-
-// Filtros
+// FILTROS
 var currentFilter = "todos";
 function matches(p, filter, search){
-  var op = norm(p.op||"");
-  var tipo = norm(p.tipo||"");
-  var ok = true;
-  if(filter==="venta")   ok = op.indexOf("venta")>=0;
-  if(filter==="alquiler") ok = op.indexOf("alquiler")>=0;
-  if(filter==="casa"||filter==="depto"||filter==="local"||filter==="terreno") ok = tipo===filter;
+  var op=norm(p.op||""), tipo=norm(p.tipo||""), ok=true;
+  if(filter==="venta")    ok=op.indexOf("venta")>=0;
+  if(filter==="alquiler") ok=op.indexOf("alquiler")>=0;
+  if(filter==="casa"||filter==="depto"||filter==="local"||filter==="terreno") ok=tipo===filter;
   if(!ok) return false;
-  var big = norm((p.titulo||"")+" "+(p.zona||"")+" "+(p.dir||"")+" "+(p.desc||"")+" "+p.tipo);
+  var big=norm((p.titulo||"")+" "+(p.zona||"")+" "+(p.dir||"")+" "+(p.desc||"")+" "+p.tipo);
   return big.indexOf(norm(search))>=0;
 }
 function applyFilters(){
-  var s = document.getElementById("searchInput").value.trim();
-  var filtered = PROPS.filter(function(p){ return matches(p,currentFilter,s); });
-  render(filtered);
+  var s=document.getElementById("searchInput").value.trim();
+  render(PROPS.filter(function(p){return matches(p,currentFilter,s);}));
 }
 document.querySelectorAll(".chip").forEach(function(btn){
   btn.addEventListener("click",function(){
-    document.querySelectorAll(".chip").forEach(function(b){b.classList.remove("active")});
+    document.querySelectorAll(".chip").forEach(function(b){b.classList.remove("active");});
     btn.classList.add("active");
-    currentFilter = btn.dataset.filter;
+    currentFilter=btn.dataset.filter;
     applyFilters();
   });
 });
-document.getElementById("searchInput").addEventListener("input", applyFilters);
+document.getElementById("searchInput").addEventListener("input",applyFilters);
 
-// WhatsApp
-var waGeneric = waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.");
-document.getElementById("waHero").href  = waGeneric;
-document.getElementById("waTop").href   = waGeneric;
-document.getElementById("waFloat").href = waGeneric;
+// WHATSAPP
+var waG=waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero mas informacion.");
+document.getElementById("waHero").href=waG;
+document.getElementById("waTop").href=waG;
+document.getElementById("waFloat").href=waG;
 
-// Contador
+// CONTADOR
 (function(){
-  var el = document.getElementById("visitCounter");
-  var v = parseInt(localStorage.getItem("vb_v")||"2143");
-  v += Math.floor(Math.random()*3)+1;
+  var el=document.getElementById("visitCounter");
+  var v=parseInt(localStorage.getItem("vb_v")||"2143");
+  v+=Math.floor(Math.random()*3)+1;
   localStorage.setItem("vb_v",v);
-  el.textContent = v.toLocaleString("es-AR");
+  el.textContent=v.toLocaleString("es-AR");
 })();
 
-// Stats
-document.getElementById("miniTotal").textContent    = PROPS.length;
-document.getElementById("miniVenta").textContent    = PROPS.filter(function(p){return norm(p.op).indexOf("venta")>=0}).length;
-document.getElementById("miniAlquiler").textContent = PROPS.filter(function(p){return norm(p.op).indexOf("alquiler")>=0}).length;
+// STATS
+document.getElementById("miniTotal").textContent=PROPS.length;
+document.getElementById("miniVenta").textContent=PROPS.filter(function(p){return norm(p.op).indexOf("venta")>=0;}).length;
+document.getElementById("miniAlquiler").textContent=PROPS.filter(function(p){return norm(p.op).indexOf("alquiler")>=0;}).length;
 
-// Lead form
+// LEAD FORM
 document.getElementById("leadForm").addEventListener("submit",function(e){
   e.preventDefault();
-  var msg = document.getElementById("leadMsg");
-  var payload = {
-    nombre:          document.getElementById("leadNombre").value.trim(),
-    telefono:        document.getElementById("leadTelefono").value.trim(),
-    operacion:       document.getElementById("leadOperacion").value,
-    tipo:            document.getElementById("leadTipo").value,
-    zona:            document.getElementById("leadZona").value.trim(),
-    precio:          document.getElementById("leadPresupuesto").value.trim(),
-    mensajeOriginal: document.getElementById("leadMensaje").value.trim(),
-    origen:"funnel-publico", tipoLead:"comprador"
+  var msg=document.getElementById("leadMsg");
+  var payload={
+    nombre:document.getElementById("leadNombre").value.trim(),
+    telefono:document.getElementById("leadTelefono").value.trim(),
+    operacion:document.getElementById("leadOperacion").value,
+    tipo:document.getElementById("leadTipo").value,
+    zona:document.getElementById("leadZona").value.trim(),
+    precio:document.getElementById("leadPresupuesto").value.trim(),
+    mensajeOriginal:document.getElementById("leadMensaje").value.trim(),
+    origen:"funnel-publico",tipoLead:"comprador"
   };
   msg.textContent="Enviando...";
   fetch(LEADS_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})
-    .then(function(r){
-      if(!r.ok) throw new Error();
-      msg.textContent="¡Gracias! Recibimos tu búsqueda y te vamos a contactar.";
-      e.target.reset();
-    })
-    .catch(function(){
-      msg.textContent="No pudimos enviar. Escribinos directo por WhatsApp.";
-    });
+    .then(function(r){if(!r.ok)throw new Error();msg.textContent="Gracias! Recibimos tu busqueda.";e.target.reset();})
+    .catch(function(){msg.textContent="No pudimos enviar. Escribinos por WhatsApp.";});
 });
 
-// Init
-for(var _i=0;_i<PROPS.length;_i++) PROPS[_i]._idx=_i;
+// INIT
 document.getElementById("loader").style.display="none";
 document.getElementById("propertiesGrid").style.display="grid";
 applyFilters();
