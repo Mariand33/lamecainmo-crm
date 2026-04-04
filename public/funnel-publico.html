@@ -495,10 +495,8 @@ document.getElementById("leadForm").addEventListener("submit",function(e){
     });
 });
 
-// Asignar índice global a cada propiedad
-for(var _i=0;_i<PROPS.length;_i++) PROPS[_i]._idx=_i;
-
 // Init
+for(var _i=0;_i<PROPS.length;_i++) PROPS[_i]._idx=_i;
 document.getElementById("loader").style.display="none";
 document.getElementById("propertiesGrid").style.display="grid";
 applyFilters();
