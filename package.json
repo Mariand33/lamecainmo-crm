@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "sharp": "^0.33.5"
   "keywords": [],
   "author": "",
   "license": "ISC",
