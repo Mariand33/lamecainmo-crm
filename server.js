@@ -305,11 +305,18 @@ app.post(
     { name: "imagenes", maxCount: 20 },
     { name: "video", maxCount: 1 }
   ]),
-  (req, res) => {
-    let fotos = [];
-    if (req.files && req.files.imagenes) {
-      fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
-    }
+ async (req, res) =>
+   let fotos = [];
+let thumbnails = [];
+
+if (req.files && req.files.imagenes) {
+  fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
+
+  for (const foto of fotos) {
+    const thumb = await generarThumbnail(foto);
+    if (thumb) thumbnails.push(thumb);
+  }
+}
 
     let video = "";
     if (req.files && req.files.video && req.files.video.length) {
