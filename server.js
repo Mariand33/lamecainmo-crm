@@ -14,7 +14,7 @@ const OpenAI = require("openai");
 const PDFDocument = require("pdfkit");
 const https = require("https");
 const http = require("http");
-
+const sharp = require("sharp");
 // ============================
 // HELPERS
 // ============================
