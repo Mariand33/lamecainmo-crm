@@ -15,6 +15,7 @@ const PDFDocument = require("pdfkit");
 const https = require("https");
 const http = require("http");
 const sharp = require("sharp");
+
 // ============================
 // HELPERS
 // ============================
@@ -67,6 +68,7 @@ function limpiarTexto(str) {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
+
 async function generarThumbnail(nombreArchivo) {
   try {
     const inputPath = path.join(UPLOADS_DIR, nombreArchivo);
@@ -83,6 +85,7 @@ async function generarThumbnail(nombreArchivo) {
     return null;
   }
 }
+
 // ============================
 // MIDDLEWARES
 // ============================
@@ -145,8 +148,10 @@ if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 const UPLOADS_DIR = path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
 const THUMBS_DIR = path.join(__dirname, "public", "uploads", "thumbs");
 if (!fs.existsSync(THUMBS_DIR)) fs.mkdirSync(THUMBS_DIR, { recursive: true });
+
 // ============================
 // PERSISTENCIA
 // ============================
@@ -298,6 +303,7 @@ app.get("/logout", (req, res) => {
 // ============================
 // INMUEBLES
 // ============================
+
 app.post(
   "/guardar",
   upload.fields([
@@ -305,7 +311,6 @@ app.post(
     { name: "video", maxCount: 1 }
   ]),
   async (req, res) => {
-
     let fotos = [];
     let thumbnails = [];
 
@@ -335,7 +340,7 @@ app.post(
       tipoPropiedad: String(req.body.tipoPropiedad || "").trim(),
       descripcion: String(req.body.descripcion || "").trim(),
       imagenes: fotos,
-      thumbnails: thumbnails, // 👈 CLAVE
+      thumbnails: thumbnails,
       video,
       creadoPor: req.session.user ? req.session.user.email : "desconocido",
       estadoPublicacion: "borrador",
@@ -361,11 +366,15 @@ app.post(
   }
 );
 
-
-  
-
-app.post("/oportunidad", upload.single("thumb"), (req, res) => {
+app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
+  const imagenes = req.file ? [req.file.filename] : [];
+  const thumbnails = [];
+
+  if (req.file) {
+    const thumb = await generarThumbnail(req.file.filename);
+    if (thumb) thumbnails.push(thumb);
+  }
 
   const nueva = {
     titulo: body.titulo && String(body.titulo).trim() ? String(body.titulo).trim() : "Oportunidad",
@@ -380,7 +389,8 @@ app.post("/oportunidad", upload.single("thumb"), (req, res) => {
     linkPublicacion: String(body.linkPublicacion || "").trim(),
     estadoPublicacion: "oportunidad",
     creadoPor: req.session.user ? req.session.user.email : "sistema",
-    imagenes: req.file ? [req.file.filename] : [],
+    imagenes,
+    thumbnails,
     leads: []
   };
 
@@ -400,8 +410,15 @@ app.post("/oportunidad", upload.single("thumb"), (req, res) => {
   res.redirect("/dashboard.html");
 });
 
-app.post("/radar", upload.single("thumb"), (req, res) => {
+app.post("/radar", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
+  const imagenes = req.file ? [req.file.filename] : [];
+  const thumbnails = [];
+
+  if (req.file) {
+    const thumb = await generarThumbnail(req.file.filename);
+    if (thumb) thumbnails.push(thumb);
+  }
 
   const nuevo = {
     titulo: String(body.titulo || "").trim() || "Radar Calle",
@@ -420,7 +437,8 @@ app.post("/radar", upload.single("thumb"), (req, res) => {
     cantidadPublicaciones: 0,
     creadoPor: req.session.user ? req.session.user.email : "desconocido",
     fecha: new Date().toISOString(),
-    imagenes: req.file ? [req.file.filename] : [],
+    imagenes,
+    thumbnails,
     leads: []
   };
 
@@ -438,7 +456,7 @@ app.post("/radar", upload.single("thumb"), (req, res) => {
   res.redirect("/dashboard.html");
 });
 
-app.post("/editar/:index", upload.array("imagenes", 20), (req, res) => {
+app.post("/editar/:index", upload.array("imagenes", 20), async (req, res) => {
   const idx = Number(req.params.index);
   if (isNaN(idx) || !inmuebles[idx]) return res.redirect("/dashboard.html");
 
@@ -471,9 +489,20 @@ app.post("/editar/:index", upload.array("imagenes", 20), (req, res) => {
     inm.imagenes = pares.map((p) => p.nombre).filter(Boolean);
   }
 
+  if (!Array.isArray(inm.thumbnails)) inm.thumbnails = [];
+
   if (req.files && req.files.length) {
+    const nuevas = req.files.map((f) => f.filename);
+
     if (!Array.isArray(inm.imagenes)) inm.imagenes = [];
-    inm.imagenes = [...new Set(inm.imagenes.concat(req.files.map((f) => f.filename)))];
+    inm.imagenes = [...new Set(inm.imagenes.concat(nuevas))];
+
+    for (const foto of nuevas) {
+      const thumb = await generarThumbnail(foto);
+      if (thumb) inm.thumbnails.push(thumb);
+    }
+
+    inm.thumbnails = [...new Set(inm.thumbnails)];
   }
 
   guardarInmuebles();
@@ -497,14 +526,23 @@ app.post("/editar/:index/fotos/eliminar", (req, res) => {
 
   const inm = inmuebles[idx];
   if (!Array.isArray(inm.imagenes)) inm.imagenes = [];
+  if (!Array.isArray(inm.thumbnails)) inm.thumbnails = [];
 
   inm.imagenes = inm.imagenes.filter((f) => f !== nombreFoto);
+  inm.thumbnails = inm.thumbnails.filter((f) => f !== nombreFoto);
 
   try {
     const fp = path.join(__dirname, "public", "uploads", nombreFoto);
     if (fs.existsSync(fp)) fs.unlinkSync(fp);
   } catch (e) {
-    console.log("No se pudo borrar foto:", e.message);
+    console.log("No se pudo borrar foto original:", e.message);
+  }
+
+  try {
+    const tp = path.join(__dirname, "public", "uploads", "thumbs", nombreFoto);
+    if (fs.existsSync(tp)) fs.unlinkSync(tp);
+  } catch (e) {
+    console.log("No se pudo borrar thumbnail:", e.message);
   }
 
   guardarInmuebles();
@@ -555,6 +593,26 @@ app.post("/eliminar/:index", (req, res) => {
   const idx = Number(req.params.index);
 
   if (!Number.isNaN(idx) && idx >= 0 && idx < inmuebles.length) {
+    const inm = inmuebles[idx];
+
+    if (Array.isArray(inm.imagenes)) {
+      inm.imagenes.forEach((f) => {
+        try {
+          const file = path.join(__dirname, "public", "uploads", f);
+          if (fs.existsSync(file)) fs.unlinkSync(file);
+        } catch {}
+      });
+    }
+
+    if (Array.isArray(inm.thumbnails)) {
+      inm.thumbnails.forEach((f) => {
+        try {
+          const file = path.join(__dirname, "public", "uploads", "thumbs", f);
+          if (fs.existsSync(file)) fs.unlinkSync(file);
+        } catch {}
+      });
+    }
+
     inmuebles.splice(idx, 1);
     guardarInmuebles();
   }
@@ -589,6 +647,7 @@ app.get("/marketing/zip/:index", (req, res) => {
 app.get("/api/inmuebles", (req, res) => {
   res.json(inmuebles);
 });
+
 app.get("/api/inmuebles-publicos", (req, res) => {
   const publicos = inmuebles
     .map((inm, i) => ({ ...inm, _index: i }))
@@ -617,8 +676,38 @@ app.get("/api/inmuebles-publicos", (req, res) => {
   res.json(publicos);
 });
 
+app.get("/api/inmuebles-publicos/:id", (req, res) => {
+  const id = Number(req.params.id);
 
+  if (Number.isNaN(id) || !inmuebles[id]) {
+    return res.status(404).json({ ok: false, error: "Propiedad no encontrada" });
+  }
 
+  const inm = inmuebles[id];
+  const estado = String(inm.estadoPublicacion || "").toLowerCase();
+
+  if (estado !== "lista" && estado !== "publicada") {
+    return res.status(403).json({ ok: false, error: "Propiedad no pública" });
+  }
+
+  res.json({
+    id,
+    titulo: inm.titulo || "",
+    tipoOperacion: inm.tipoOperacion || "",
+    tipoPropiedad: inm.tipoPropiedad || "",
+    zona: inm.zona || "",
+    direccion: inm.direccion || "",
+    precio: inm.precio || 0,
+    moneda: inm.moneda || "USD",
+    dormitorios: inm.dormitorios || 0,
+    banos: inm.banos || 0,
+    descripcion: inm.descripcion || "",
+    imagenes: inm.imagenes || [],
+    thumbnails: inm.thumbnails || [],
+    video: inm.video || "",
+    estadoPublicacion: inm.estadoPublicacion || ""
+  });
+});
 
 app.get("/api/compradores", (req, res) => {
   res.json(compradores);
