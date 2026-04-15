@@ -67,7 +67,22 @@ function limpiarTexto(str) {
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
+async function generarThumbnail(nombreArchivo) {
+  try {
+    const inputPath = path.join(UPLOADS_DIR, nombreArchivo);
+    const outputPath = path.join(THUMBS_DIR, nombreArchivo);
 
+    await sharp(inputPath)
+      .resize({ width: 700, withoutEnlargement: true })
+      .jpeg({ quality: 70 })
+      .toFile(outputPath);
+
+    return nombreArchivo;
+  } catch (error) {
+    console.log("Error thumbnail:", error.message);
+    return null;
+  }
+}
 // ============================
 // MIDDLEWARES
 // ============================
