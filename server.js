@@ -589,7 +589,6 @@ app.get("/marketing/zip/:index", (req, res) => {
 app.get("/api/inmuebles", (req, res) => {
   res.json(inmuebles);
 });
-
 app.get("/api/inmuebles-publicos", (req, res) => {
   const publicos = inmuebles
     .map((inm, i) => ({ ...inm, _index: i }))
@@ -610,6 +609,7 @@ app.get("/api/inmuebles-publicos", (req, res) => {
       banos: inm.banos || 0,
       descripcion: inm.descripcion || "",
       imagenes: inm.imagenes || [],
+      thumbnails: inm.thumbnails || [],
       video: inm.video || "",
       estadoPublicacion: inm.estadoPublicacion || ""
     }));
@@ -617,37 +617,8 @@ app.get("/api/inmuebles-publicos", (req, res) => {
   res.json(publicos);
 });
 
-app.get("/api/inmuebles-publicos/:id", (req, res) => {
-  const id = Number(req.params.id);
 
-  if (Number.isNaN(id) || !inmuebles[id]) {
-    return res.status(404).json({ ok: false, error: "Propiedad no encontrada" });
-  }
 
-  const inm = inmuebles[id];
-  const estado = String(inm.estadoPublicacion || "").toLowerCase();
-
-  if (estado !== "lista" && estado !== "publicada") {
-    return res.status(403).json({ ok: false, error: "Propiedad no pública" });
-  }
-
-  res.json({
-    id,
-    titulo: inm.titulo || "",
-    tipoOperacion: inm.tipoOperacion || "",
-    tipoPropiedad: inm.tipoPropiedad || "",
-    zona: inm.zona || "",
-    direccion: inm.direccion || "",
-    precio: inm.precio || 0,
-    moneda: inm.moneda || "USD",
-    dormitorios: inm.dormitorios || 0,
-    banos: inm.banos || 0,
-    descripcion: inm.descripcion || "",
-    imagenes: inm.imagenes || [],
-    video: inm.video || "",
-    estadoPublicacion: inm.estadoPublicacion || ""
-  });
-});
 
 app.get("/api/compradores", (req, res) => {
   res.json(compradores);
