@@ -706,6 +706,20 @@
       return tipo || "otro";
     }
 
+    function getFirstImage(item){
+      const BASE = "https://inmocreador-crm.onrender.com";
+
+      if (item.thumbnails && item.thumbnails.length > 0) {
+        return BASE + "/uploads/thumbs/" + item.thumbnails[0];
+      }
+
+      if (item.imagenes && item.imagenes.length > 0) {
+        return BASE + "/uploads/" + item.imagenes[0];
+      }
+
+      return "https://via.placeholder.com/900x620?text=Propiedad";
+    }
+
     function propertyMatches(item, filter, search){
       const tipoOperacion = normalize(item.tipoOperacion || "");
       const tipo = detectType(item);
@@ -758,17 +772,13 @@
           .replace(/\r?\n/g, " ")
           .slice(0, 130);
 
-        const imgs = Array.isArray(item.imagenes) && item.imagenes.length
-          ? item.imagenes.map(n => `https://inmocreador-crm.onrender.com/uploads/${n}`)
-          : ["https://via.placeholder.com/900x620?text=Propiedad"];
-
         const waText = `Hola, vi esta propiedad y quiero más información:%0A%0A${item.titulo || "Propiedad"}%0AZona: ${item.zona || "-"}%0APrecio: ${formatPrice(item)}`;
 
         html +=
           '<article class="card">'+
             '<div class="card-image-wrap">'+
-              '<div class="badge-top"><span class="badge '+(isSale?"badge-sale":"badge-rent")+'">'+(isSale?"Venta":"Alquiler")+'</span></div>'+
-              '<img class="card-image" src="'+getFirstImage(item)+'" loading="lazy">'+
+              '<div class="badge-top"><span class="badge '+(isSale ? "badge-sale" : "badge-rent")+'">'+(isSale ? "Venta" : "Alquiler")+'</span></div>'+
+              '<img class="card-image" src="'+getFirstImage(item)+'" alt="'+(item.titulo || "Propiedad")+'" loading="lazy" onerror="this.src=\'https://via.placeholder.com/900x620?text=Propiedad\'">'+
             '</div>'+
             '<div class="card-body">'+
               '<div class="card-title">'+(item.titulo || "Propiedad disponible")+'</div>'+
@@ -797,7 +807,7 @@
       const grid = document.getElementById("propertiesGrid");
 
       try{
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, { cache: "no-store" });
         const data = await res.json();
 
         allProperties = Array.isArray(data) ? data : [];
@@ -812,6 +822,7 @@
         grid.style.display = "grid";
         applyFilters();
       } catch(error){
+        console.error("Error cargando propiedades:", error);
         loader.innerHTML = "No pudimos cargar las propiedades en este momento.";
       }
     }
@@ -885,6 +896,7 @@
           msg.textContent = "¡Gracias! Recibimos tu búsqueda.";
           form.reset();
         } catch(err){
+          console.error("Error enviando lead:", err);
           msg.textContent = "No pudimos enviar la búsqueda. Escribinos por WhatsApp.";
         }
       });
