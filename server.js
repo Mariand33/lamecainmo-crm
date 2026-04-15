@@ -298,25 +298,25 @@ app.get("/logout", (req, res) => {
 // ============================
 // INMUEBLES
 // ============================
-
 app.post(
   "/guardar",
   upload.fields([
     { name: "imagenes", maxCount: 20 },
     { name: "video", maxCount: 1 }
   ]),
- async (req, res) =>
-   let fotos = [];
-let thumbnails = [];
+  async (req, res) => {
 
-if (req.files && req.files.imagenes) {
-  fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
+    let fotos = [];
+    let thumbnails = [];
 
-  for (const foto of fotos) {
-    const thumb = await generarThumbnail(foto);
-    if (thumb) thumbnails.push(thumb);
-  }
-}
+    if (req.files && req.files.imagenes) {
+      fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
+
+      for (const foto of fotos) {
+        const thumb = await generarThumbnail(foto);
+        if (thumb) thumbnails.push(thumb);
+      }
+    }
 
     let video = "";
     if (req.files && req.files.video && req.files.video.length) {
@@ -335,6 +335,7 @@ if (req.files && req.files.imagenes) {
       tipoPropiedad: String(req.body.tipoPropiedad || "").trim(),
       descripcion: String(req.body.descripcion || "").trim(),
       imagenes: fotos,
+      thumbnails: thumbnails, // 👈 CLAVE
       video,
       creadoPor: req.session.user ? req.session.user.email : "desconocido",
       estadoPublicacion: "borrador",
@@ -359,6 +360,9 @@ if (req.files && req.files.imagenes) {
     res.redirect("/dashboard.html");
   }
 );
+
+
+  
 
 app.post("/oportunidad", upload.single("thumb"), (req, res) => {
   const body = req.body || {};
