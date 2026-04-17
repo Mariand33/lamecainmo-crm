@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -246,56 +246,39 @@
     }
 
     btnVolver.addEventListener("click", () => {
-      window.location.href = "/ver.html?id=" + encodeURIComponent(id);
+      window.location.href = "/ver.html?id=" + id;
     });
 
-    function normalizarInmueble(inm) {
-      return {
-        id: inm.id,
-        titulo: inm.titulo || "",
-        precio: inm.precio || "",
-        descripcion: inm.descripcion || "",
-        imagenes: Array.isArray(inm.imagenes) ? inm.imagenes.slice() : []
-      };
+    async function fetchJson(url){
+      const r = await fetch(url, { cache: "no-store" });
+      const txt = await r.text();
+      if (!txt) return null;
+      try { return JSON.parse(txt); } catch { return null; }
     }
 
-    async function cargarInmueble() {
-      try {
-        let inm = null;
-
-        const resDetalle = await fetch("/api/inmuebles-publicos/" + encodeURIComponent(id), { cache: "no-store" });
-        if (resDetalle.ok) {
-          inm = await resDetalle.json();
-        } else {
-          const resAll = await fetch("/api/inmuebles", { cache: "no-store" });
-          const data = await resAll.json();
-          if (Array.isArray(data)) {
-            inm = data.find(x => String(x.id) === String(id));
-          }
-        }
-
-        if (!inm) {
+    fetch("/api/inmuebles-publicos/" + id)
+      .then(res => res.json())
+      .then(inm => {
+        if (!inm || inm.ok === false) {
           alert("No se encontró el inmueble.");
           window.location.href = "/dashboard.html";
           return;
         }
 
-        const item = normalizarInmueble(inm);
+        document.getElementById("campoTitulo").value = inm.titulo || "";
+        document.getElementById("campoPrecio").value = inm.precio || "";
+        document.getElementById("campoDescripcion").value = inm.descripcion || "";
 
-        document.getElementById("campoTitulo").value = item.titulo;
-        document.getElementById("campoPrecio").value = item.precio;
-        document.getElementById("campoDescripcion").value = item.descripcion;
-
-        imagenesActuales = item.imagenes;
+        imagenesActuales = Array.isArray(inm.imagenes) ? inm.imagenes.slice() : [];
         renderThumbs();
 
-        form.action = "/editar/" + encodeURIComponent(id);
-      } catch (err) {
+        form.action = "/editar/" + id;
+      })
+      .catch(err => {
         console.error("Error al cargar inmueble para editar:", err);
         alert("Error al cargar el inmueble.");
         window.location.href = "/dashboard.html";
-      }
-    }
+      });
 
     function renderThumbs() {
       thumbsContainer.innerHTML = "";
@@ -330,7 +313,7 @@
           saveStatus.textContent = "Eliminando foto…";
 
           try {
-            const res = await fetch("/editar/" + encodeURIComponent(id) + "/fotos/eliminar", {
+            const res = await fetch("/editar/" + id + "/fotos/eliminar", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
               body: "nombreFoto=" + encodeURIComponent(nombre)
@@ -377,7 +360,7 @@
       e.preventDefault();
       if (!dragItem) return;
 
-      const afterElement = getDragAfterElement(thumbsContainer, e.clientY);
+      const afterElement = getDragAfterElement(thumbsContainer, e.clientX, e.clientY);
       if (!afterElement) {
         thumbsContainer.appendChild(dragItem);
       } else {
@@ -385,7 +368,7 @@
       }
     });
 
-    function getDragAfterElement(container, y) {
+    function getDragAfterElement(container, x, y) {
       const draggableElements = [...container.querySelectorAll(".thumb-item:not(.dragging)")];
 
       return draggableElements.reduce((closest, child) => {
@@ -393,7 +376,7 @@
         const offset = y - box.top - box.height / 2;
 
         if (offset < 0 && offset > closest.offset) {
-          return { offset, element: child };
+          return { offset: offset, element: child };
         } else {
           return closest;
         }
@@ -402,7 +385,9 @@
 
     function syncArrayFromDOM() {
       const items = thumbsContainer.querySelectorAll(".thumb-item");
-      imagenesActuales = [...items].map(item => item.dataset.nombre);
+      const nuevoOrden = [];
+      items.forEach(item => nuevoOrden.push(item.dataset.nombre));
+      imagenesActuales = nuevoOrden;
     }
 
     form.addEventListener("submit", () => {
@@ -434,8 +419,6 @@
       saveStatus.className = "status";
       saveStatus.textContent = "Guardando…";
     });
-
-    cargarInmueble();
   </script>
 </body>
 </html>
