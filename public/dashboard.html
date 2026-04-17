@@ -97,7 +97,6 @@
       position:relative;
     }
     .sidebar nav a:hover{background: rgba(255,255,255,0.16);}
-
     .sidebar nav a.active{
       background: rgba(255,255,255,0.22);
       font-weight:800;
@@ -364,6 +363,7 @@
 </head>
 
 <body>
+
   <aside class="sidebar">
     <div class="logo-buzzacchi">
       <img src="/logo.png" alt="Vanina Buzzacchi Negocios Inmobiliarios">
@@ -547,12 +547,11 @@
       const t = document.createElement("div");
       t.className = "toast";
 
-      const id = n.id ?? n.indexInmueble ?? null;
       const isOpor = String(n.estadoPublicacion || "").toLowerCase() === "oportunidad"
         || String(n.tipo || "").toLowerCase() === "nueva_oportunidad";
 
-      const linkVer = (id !== null && id !== undefined)
-        ? (isOpor ? `/oportunidad-ver.html?id=${id}` : `/ver.html?id=${id}`)
+      const linkVer = (typeof n.id === "number")
+        ? (isOpor ? `/oportunidad-ver.html?id=${n.id}` : `/ver.html?id=${n.id}`)
         : null;
 
       t.innerHTML = `
@@ -606,42 +605,15 @@
     setTimeout(pollNotifs, 1200);
 
     async function fetchJson(url){
-      const r = await fetch(url, { cache: "no-store" });
+      const r = await fetch(url);
       const txt = await r.text();
       if (!txt) return null;
       try { return JSON.parse(txt); } catch { return null; }
     }
 
-    function getOperacion(i){
-      return i.tipoOperacion || i.tipo_operacion || "";
-    }
-
-    function getTipoPropiedad(i){
-      return i.tipoPropiedad || i.tipo_propiedad || "";
-    }
-
-    function getCreadoPor(i){
-      return i.creadoPor || i.creado_por || "-";
-    }
-
-    function getEstado(i){
-      return i.estadoPublicacion || i.estado_publicacion || "borrador";
-    }
-
-    function getCantidadPublicaciones(i){
-      return Number(i.cantidadPublicaciones ?? i.cantidad_publicaciones ?? 0);
-    }
-
-    function getLeadsCount(i){
-      return Array.isArray(i.leads) ? i.leads.length : 0;
-    }
-
-    function getThumb(i){
-      if (Array.isArray(i.thumbnails) && i.thumbnails.length) {
-        return "/uploads/thumbs/" + i.thumbnails[0];
-      }
-      if (Array.isArray(i.imagenes) && i.imagenes.length) {
-        return "/uploads/" + i.imagenes[0];
+    function getCampo(obj, ...keys){
+      for (const k of keys) {
+        if (obj && obj[k] !== undefined && obj[k] !== null) return obj[k];
       }
       return "";
     }
@@ -651,10 +623,10 @@
       const compradores = await fetchJson("/api/compradores");
 
       if (!Array.isArray(inmuebles)) {
-        console.warn("API /api/inmuebles no respondió JSON válido.");
+        console.warn("API /api/inmuebles no respondió JSON válido. Revisar server.js.");
       }
       if (!Array.isArray(compradores)) {
-        console.warn("API /api/compradores no respondió JSON válido.");
+        console.warn("API /api/compradores no respondió JSON válido. Revisar server.js.");
       }
 
       const inm = Array.isArray(inmuebles) ? inmuebles : [];
@@ -665,8 +637,9 @@
       let totalLeads = 0;
 
       inm.forEach(i => {
-        valorTotal += Number(i.precio) || 0;
-        totalLeads += getLeadsCount(i);
+        valorTotal += Number(getCampo(i, "precio")) || 0;
+        const leads = getCampo(i, "leads");
+        if (Array.isArray(leads)) totalLeads += leads.length;
       });
 
       const promedio = total > 0 ? (valorTotal / total) : 0;
@@ -681,18 +654,22 @@
       tbody.innerHTML = "";
 
       inm.forEach((i) => {
-        const tr = document.createElement("tr");
-        const id = i.id;
-
-        const precioNum = Number(i.precio || 0);
+        const id = getCampo(i, "id");
+        const precioNum = Number(getCampo(i, "precio") || 0);
         const precioTexto = (precioNum > 0)
-          ? ((i.moneda || "USD") + " " + precioNum.toLocaleString("es-AR"))
+          ? ((getCampo(i, "moneda") || "USD") + " " + precioNum.toLocaleString("es-AR"))
           : "Consultar";
 
-        const cantLeads = getLeadsCount(i);
-        const estado = getEstado(i);
-        const vecesPub = getCantidadPublicaciones(i);
-        const thumb = getThumb(i);
+        const leads = getCampo(i, "leads");
+        const cantLeads = Array.isArray(leads) ? leads.length : 0;
+
+        const estado = getCampo(i, "estadoPublicacion", "estado_publicacion") || "borrador";
+        const vecesPub = Number(getCampo(i, "cantidadPublicaciones", "cantidad_publicaciones") || 0);
+
+        const imagenes = getCampo(i, "imagenes");
+        const thumb = (Array.isArray(imagenes) && imagenes.length)
+          ? ("/uploads/" + imagenes[0])
+          : "";
 
         const esOportunidad = String(estado).toLowerCase() === "oportunidad";
 
@@ -700,10 +677,17 @@
           ? `/oportunidad-ver.html?id=${id}`
           : `/ver.html?id=${id}`;
 
-        const tituloHtml = esOportunidad
-          ? `🟡 ${(i.titulo || "").toString()} <span class="badge-op">OPORTUNIDAD · ${String(i.origen || "").toUpperCase()}</span>`
-          : (i.titulo || "");
+        const titulo = getCampo(i, "titulo");
+        const origen = getCampo(i, "origen");
 
+        const tituloHtml = esOportunidad
+          ? `🟡 ${(titulo || "").toString()} <span class="badge-op">OPORTUNIDAD · ${String(origen || "").toUpperCase()}</span>`
+          : (titulo || "");
+
+        const tipoOperacion = getCampo(i, "tipoOperacion", "tipo_operacion");
+        const creadoPor = getCampo(i, "creadoPor", "creado_por");
+
+        const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="titulo-cell">
             <span class="titulo-text">${tituloHtml}</span>
@@ -718,9 +702,9 @@
               </div>
             </div>
           </td>
-          <td>${String(getOperacion(i)).toUpperCase()}</td>
+          <td>${(tipoOperacion || "").toUpperCase()}</td>
           <td>${precioTexto}</td>
-          <td>${getCreadoPor(i)}</td>
+          <td>${creadoPor || "-"}</td>
           <td>${cantLeads}</td>
           <td>${estado}</td>
           <td>${vecesPub}</td>
@@ -736,7 +720,7 @@
               <button class="btn btn-az" type="submit">Marcar publicada</button>
             </form>
 
-            <form action="/eliminar/${id}" method="POST" style="display:inline; margin-left:4px;" onsubmit="return confirm('¿Eliminar esta propiedad?');">
+            <form action="/eliminar/${id}" method="POST" style="display:inline; margin-left:4px;">
               <button class="btn btn-del" type="submit">Eliminar</button>
             </form>
           </td>
