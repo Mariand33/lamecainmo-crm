@@ -1,5 +1,6 @@
 // SERVER.JS
 // EQUIPO BUZZACCHI
+// ✅ MIGRADO A SUPABASE - inmuebles ya no usan JSON local
 
 const express = require("express");
 const app = express();
@@ -126,7 +127,7 @@ const usuarios = [
   { email: "market@inmo.com", password: "1234", rol: "marketing" }
 ];
 
-let inmuebles = [];
+// ✅ SOLO estas entidades siguen en JSON local (no migradas a Supabase aún)
 let compradores = [];
 let demandas = [];
 let notificaciones = [];
@@ -135,7 +136,6 @@ let vendedoresDetectados = [];
 let radarLeads = [];
 
 const DATA_DIR = path.join(__dirname, "data");
-const INM_FILE = path.join(DATA_DIR, "inmuebles.json");
 const COMPR_FILE = path.join(DATA_DIR, "compradores.json");
 const DEM_FILE = path.join(DATA_DIR, "demandas.json");
 const NOTIF_FILE = path.join(DATA_DIR, "notificaciones.json");
@@ -153,32 +153,16 @@ const THUMBS_DIR = path.join(__dirname, "public", "uploads", "thumbs");
 if (!fs.existsSync(THUMBS_DIR)) fs.mkdirSync(THUMBS_DIR, { recursive: true });
 
 // ============================
-// PERSISTENCIA
+// PERSISTENCIA (solo no-inmuebles)
 // ============================
 
-function guardarInmuebles() {
-  guardarJSON(INM_FILE, inmuebles);
-}
-function guardarCompradores() {
-  guardarJSON(COMPR_FILE, compradores);
-}
-function guardarDemandas() {
-  guardarJSON(DEM_FILE, demandas);
-}
-function guardarNotificaciones() {
-  guardarJSON(NOTIF_FILE, notificaciones);
-}
-function guardarRadarIA() {
-  guardarJSON(RADAR_IA_FILE, radarIA);
-}
-function guardarVendedoresDetectados() {
-  guardarJSON(VENDEDORES_FILE, vendedoresDetectados);
-}
-function guardarRadarLeads() {
-  guardarJSON(RADAR_LEADS_FILE, radarLeads);
-}
+function guardarCompradores() { guardarJSON(COMPR_FILE, compradores); }
+function guardarDemandas() { guardarJSON(DEM_FILE, demandas); }
+function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
+function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
+function guardarVendedoresDetectados() { guardarJSON(VENDEDORES_FILE, vendedoresDetectados); }
+function guardarRadarLeads() { guardarJSON(RADAR_LEADS_FILE, radarLeads); }
 
-asegurarArrayJSON(INM_FILE, inmuebles);
 asegurarArrayJSON(COMPR_FILE, compradores);
 asegurarArrayJSON(DEM_FILE, demandas);
 asegurarArrayJSON(NOTIF_FILE, notificaciones);
@@ -232,6 +216,67 @@ const openai = new OpenAI({
 });
 
 // ============================
+// HELPER SUPABASE — inmuebles
+// ============================
+
+// Convierte una fila de Supabase al formato que usa el frontend
+function sbToInm(row) {
+  return {
+    id: row.id,
+    titulo: row.titulo || "",
+    zona: row.zona || "",
+    tipoOperacion: row.tipo_operacion || "",
+    tipoPropiedad: row.tipo_propiedad || "",
+    direccion: row.direccion || "",
+    precio: row.precio || 0,
+    moneda: row.moneda || "USD",
+    dormitorios: row.dormitorios || 0,
+    banos: row.banos || 0,
+    descripcion: row.descripcion || "",
+    imagenes: row.imagenes || [],
+    thumbnails: row.thumbnails || [],
+    video: row.video || "",
+    estadoPublicacion: row.estado_publicacion || "",
+    cantidadPublicaciones: row.cantidad_publicaciones || 0,
+    creadoPor: row.creado_por || "",
+    rating: row.rating || 0,
+    leads: row.leads || [],
+    origen: row.origen || "",
+    telefono: row.telefono || "",
+    linkPublicacion: row.link_publicacion || "",
+    fecha: row.fecha || ""
+  };
+}
+
+// Convierte los campos JS a nombres de columnas Supabase
+function inmToSb(inm) {
+  const obj = {};
+  if (inm.titulo !== undefined) obj.titulo = inm.titulo;
+  if (inm.zona !== undefined) obj.zona = inm.zona;
+  if (inm.tipoOperacion !== undefined) obj.tipo_operacion = inm.tipoOperacion;
+  if (inm.tipoPropiedad !== undefined) obj.tipo_propiedad = inm.tipoPropiedad;
+  if (inm.direccion !== undefined) obj.direccion = inm.direccion;
+  if (inm.precio !== undefined) obj.precio = inm.precio;
+  if (inm.moneda !== undefined) obj.moneda = inm.moneda;
+  if (inm.dormitorios !== undefined) obj.dormitorios = inm.dormitorios;
+  if (inm.banos !== undefined) obj.banos = inm.banos;
+  if (inm.descripcion !== undefined) obj.descripcion = inm.descripcion;
+  if (inm.imagenes !== undefined) obj.imagenes = inm.imagenes;
+  if (inm.thumbnails !== undefined) obj.thumbnails = inm.thumbnails;
+  if (inm.video !== undefined) obj.video = inm.video;
+  if (inm.estadoPublicacion !== undefined) obj.estado_publicacion = inm.estadoPublicacion;
+  if (inm.cantidadPublicaciones !== undefined) obj.cantidad_publicaciones = inm.cantidadPublicaciones;
+  if (inm.creadoPor !== undefined) obj.creado_por = inm.creadoPor;
+  if (inm.rating !== undefined) obj.rating = inm.rating;
+  if (inm.leads !== undefined) obj.leads = inm.leads;
+  if (inm.origen !== undefined) obj.origen = inm.origen;
+  if (inm.telefono !== undefined) obj.telefono = inm.telefono;
+  if (inm.linkPublicacion !== undefined) obj.link_publicacion = inm.linkPublicacion;
+  if (inm.fecha !== undefined) obj.fecha = inm.fecha;
+  return obj;
+}
+
+// ============================
 // PAGINAS
 // ============================
 
@@ -272,7 +317,7 @@ app.get("/funnel-publico.html", (req, res) => {
 });
 
 app.get("/test-render", (req, res) => {
-  res.send("TEST RENDER OK");
+  res.json({ ok: true, ts: Date.now() });
 });
 
 // ============================
@@ -281,19 +326,10 @@ app.get("/test-render", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = usuarios.find((u) => u.email === email && u.password === password);
-
-  if (!user) {
-    return res.status(401).send("Usuario incorrecto");
-  }
-
+  const user = usuarios.find(u => u.email === email && u.password === password);
+  if (!user) return res.status(401).send("Usuario incorrecto");
   req.session.user = user;
-
-  if (user.rol === "marketing") {
-    return res.redirect("/marketing.html");
-  }
-
-  return res.redirect("/dashboard.html");
+  res.redirect("/dashboard.html");
 });
 
 app.get("/logout", (req, res) => {
@@ -301,9 +337,10 @@ app.get("/logout", (req, res) => {
 });
 
 // ============================
-// INMUEBLES
+// INMUEBLES — SUPABASE ✅
 // ============================
 
+// CREAR — borrador completo
 app.post(
   "/guardar",
   upload.fields([
@@ -316,7 +353,6 @@ app.post(
 
     if (req.files && req.files.imagenes) {
       fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
-
       for (const foto of fotos) {
         const thumb = await generarThumbnail(foto);
         if (thumb) thumbnails.push(thumb);
@@ -340,7 +376,7 @@ app.post(
       tipoPropiedad: String(req.body.tipoPropiedad || "").trim(),
       descripcion: String(req.body.descripcion || "").trim(),
       imagenes: fotos,
-      thumbnails: thumbnails,
+      thumbnails,
       video,
       creadoPor: req.session.user ? req.session.user.email : "desconocido",
       estadoPublicacion: "borrador",
@@ -348,8 +384,12 @@ app.post(
       leads: []
     };
 
-    inmuebles.push(nuevo);
-    guardarInmuebles();
+    const { data, error } = await supabase.from("inmuebles").insert([inmToSb(nuevo)]).select().single();
+
+    if (error) {
+      console.error("Error guardando en Supabase:", error.message);
+      return res.status(500).send("Error al guardar propiedad");
+    }
 
     pushNotif(notificaciones, guardarNotificaciones, {
       tipo: "nuevo_inmueble",
@@ -359,13 +399,14 @@ app.post(
       moneda: nuevo.moneda,
       operacion: nuevo.tipoOperacion,
       creadoPor: nuevo.creadoPor,
-      indexInmueble: inmuebles.length - 1
+      inmuebleId: data.id
     });
 
     res.redirect("/dashboard.html");
   }
 );
 
+// CREAR — oportunidad
 app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
   const imagenes = req.file ? [req.file.filename] : [];
@@ -394,8 +435,12 @@ app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
     leads: []
   };
 
-  inmuebles.push(nueva);
-  guardarInmuebles();
+  const { data, error } = await supabase.from("inmuebles").insert([inmToSb(nueva)]).select().single();
+
+  if (error) {
+    console.error("Error guardando oportunidad:", error.message);
+    return res.status(500).send("Error al guardar oportunidad");
+  }
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "nueva_oportunidad",
@@ -404,12 +449,13 @@ app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
     precio: nueva.precio,
     moneda: nueva.moneda,
     origen: nueva.origen,
-    indexInmueble: inmuebles.length - 1
+    inmuebleId: data.id
   });
 
   res.redirect("/dashboard.html");
 });
 
+// CREAR — radar calle
 app.post("/radar", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
   const imagenes = req.file ? [req.file.filename] : [];
@@ -442,36 +488,53 @@ app.post("/radar", upload.single("thumb"), async (req, res) => {
     leads: []
   };
 
-  inmuebles.push(nuevo);
-  guardarInmuebles();
+  const { data, error } = await supabase.from("inmuebles").insert([inmToSb(nuevo)]).select().single();
+
+  if (error) {
+    console.error("Error guardando radar:", error.message);
+    return res.status(500).send("Error al guardar radar");
+  }
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "nuevo_radar",
     titulo: nuevo.titulo,
     zona: nuevo.zona,
     operacion: nuevo.tipoOperacion,
-    indexInmueble: inmuebles.length - 1
+    inmuebleId: data.id
   });
 
   res.redirect("/dashboard.html");
 });
 
-app.post("/editar/:index", upload.array("imagenes", 20), async (req, res) => {
-  const idx = Number(req.params.index);
-  if (isNaN(idx) || !inmuebles[idx]) return res.redirect("/dashboard.html");
+// EDITAR
+app.post("/editar/:id", upload.array("imagenes", 20), async (req, res) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) return res.redirect("/dashboard.html");
 
-  const inm = inmuebles[idx];
+  // Traer actual desde Supabase
+  const { data: current, error: fetchErr } = await supabase
+    .from("inmuebles").select("*").eq("id", id).single();
 
-  inm.titulo = String(req.body.titulo || inm.titulo || "").trim();
-  inm.zona = String(req.body.zona || inm.zona || "").trim();
-  inm.tipoOperacion = String(req.body.tipoOperacion || inm.tipoOperacion || "").trim();
-  inm.tipoPropiedad = String(req.body.tipoPropiedad || inm.tipoPropiedad || "").trim();
-  inm.direccion = String(req.body.direccion || inm.direccion || "").trim();
-  inm.precio = Number(req.body.precio || inm.precio || 0);
-  inm.moneda = String(req.body.moneda || inm.moneda || "USD").trim();
-  inm.dormitorios = Number(req.body.dormitorios || inm.dormitorios || 0);
-  inm.banos = Number(req.body.banos || inm.banos || 0);
-  inm.descripcion = String(req.body.descripcion || inm.descripcion || "").trim();
+  if (fetchErr || !current) return res.redirect("/dashboard.html");
+
+  const inm = sbToInm(current);
+
+  const updates = {
+    titulo: String(req.body.titulo || inm.titulo || "").trim(),
+    zona: String(req.body.zona || inm.zona || "").trim(),
+    tipoOperacion: String(req.body.tipoOperacion || inm.tipoOperacion || "").trim(),
+    tipoPropiedad: String(req.body.tipoPropiedad || inm.tipoPropiedad || "").trim(),
+    direccion: String(req.body.direccion || inm.direccion || "").trim(),
+    precio: Number(req.body.precio || inm.precio || 0),
+    moneda: String(req.body.moneda || inm.moneda || "USD").trim(),
+    dormitorios: Number(req.body.dormitorios || inm.dormitorios || 0),
+    banos: Number(req.body.banos || inm.banos || 0),
+    descripcion: String(req.body.descripcion || inm.descripcion || "").trim(),
+  };
+
+  // Reordenar imágenes existentes
+  let imagenesActuales = inm.imagenes || [];
+  let thumbnailsActuales = inm.thumbnails || [];
 
   const nombres = req.body.nombresImagenes;
   const ordenes = req.body.ordenImagenes;
@@ -479,150 +542,159 @@ app.post("/editar/:index", upload.array("imagenes", 20), async (req, res) => {
   if (nombres && ordenes) {
     const arrN = Array.isArray(nombres) ? nombres : [nombres];
     const arrO = Array.isArray(ordenes) ? ordenes : [ordenes];
-
     const pares = arrN.map((nombre, i) => ({
       nombre: String(nombre || "").trim(),
       orden: Number(arrO[i] || 9999)
     }));
-
     pares.sort((a, b) => a.orden - b.orden);
-    inm.imagenes = pares.map((p) => p.nombre).filter(Boolean);
+    imagenesActuales = pares.map((p) => p.nombre).filter(Boolean);
   }
 
-  if (!Array.isArray(inm.thumbnails)) inm.thumbnails = [];
-
+  // Agregar fotos nuevas
   if (req.files && req.files.length) {
     const nuevas = req.files.map((f) => f.filename);
-
-    if (!Array.isArray(inm.imagenes)) inm.imagenes = [];
-    inm.imagenes = [...new Set(inm.imagenes.concat(nuevas))];
-
+    imagenesActuales = [...new Set(imagenesActuales.concat(nuevas))];
     for (const foto of nuevas) {
       const thumb = await generarThumbnail(foto);
-      if (thumb) inm.thumbnails.push(thumb);
+      if (thumb) thumbnailsActuales.push(thumb);
     }
-
-    inm.thumbnails = [...new Set(inm.thumbnails)];
+    thumbnailsActuales = [...new Set(thumbnailsActuales)];
   }
 
-  guardarInmuebles();
+  updates.imagenes = imagenesActuales;
+  updates.thumbnails = thumbnailsActuales;
+
+  const { error: updateErr } = await supabase
+    .from("inmuebles").update(inmToSb(updates)).eq("id", id);
+
+  if (updateErr) {
+    console.error("Error editando:", updateErr.message);
+    return res.status(500).send("Error al editar propiedad");
+  }
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "inmueble_editado",
-    titulo: inm.titulo,
-    indexInmueble: idx
+    titulo: updates.titulo,
+    inmuebleId: id
   });
 
-  res.redirect("/ver.html?index=" + idx);
+  res.redirect("/ver.html?id=" + id);
 });
 
-app.post("/editar/:index/fotos/eliminar", (req, res) => {
-  const idx = Number(req.params.index);
-  const nombreFoto = String(req.body.nombreFoto || "").trim();
+// ELIMINAR FOTO
+app.post("/editar/:id/fotos/eliminar", async (req, res) => {
+  const id = Number(req.params.id);
+  const nombreFoto = String(req.body.foto || "").trim();
 
-  if (isNaN(idx) || !inmuebles[idx] || !nombreFoto) {
-    return res.status(400).send("Parametros invalidos");
+  if (isNaN(id) || !nombreFoto) {
+    return res.status(400).json({ ok: false, error: "Parámetros inválidos" });
   }
 
-  const inm = inmuebles[idx];
-  if (!Array.isArray(inm.imagenes)) inm.imagenes = [];
-  if (!Array.isArray(inm.thumbnails)) inm.thumbnails = [];
+  const { data: current, error: fetchErr } = await supabase
+    .from("inmuebles").select("imagenes, thumbnails, titulo").eq("id", id).single();
 
-  inm.imagenes = inm.imagenes.filter((f) => f !== nombreFoto);
-  inm.thumbnails = inm.thumbnails.filter((f) => f !== nombreFoto);
+  if (fetchErr || !current) return res.status(404).json({ ok: false });
+
+  const imagenes = (current.imagenes || []).filter(f => f !== nombreFoto);
+  const thumbnails = (current.thumbnails || []).filter(f => f !== nombreFoto);
 
   try {
-    const fp = path.join(__dirname, "public", "uploads", nombreFoto);
-    if (fs.existsSync(fp)) fs.unlinkSync(fp);
-  } catch (e) {
-    console.log("No se pudo borrar foto original:", e.message);
-  }
+    const file = path.join(UPLOADS_DIR, nombreFoto);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+    const thumb = path.join(THUMBS_DIR, nombreFoto);
+    if (fs.existsSync(thumb)) fs.unlinkSync(thumb);
+  } catch {}
 
-  try {
-    const tp = path.join(__dirname, "public", "uploads", "thumbs", nombreFoto);
-    if (fs.existsSync(tp)) fs.unlinkSync(tp);
-  } catch (e) {
-    console.log("No se pudo borrar thumbnail:", e.message);
-  }
-
-  guardarInmuebles();
+  await supabase.from("inmuebles").update({ imagenes, thumbnails }).eq("id", id);
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "foto_eliminada",
-    titulo: inm.titulo,
-    indexInmueble: idx
+    titulo: current.titulo,
+    inmuebleId: id
   });
 
   res.json({ ok: true });
 });
 
-app.post("/publicar/:index", (req, res) => {
-  const idx = Number(req.params.index);
-  if (!inmuebles[idx]) return res.redirect("/dashboard.html");
+// MARCAR LISTA (listo para publicar)
+app.post("/publicar/:id", async (req, res) => {
+  const id = Number(req.params.id);
 
-  inmuebles[idx].estadoPublicacion = "lista";
-  inmuebles[idx].cantidadPublicaciones = Number(inmuebles[idx].cantidadPublicaciones || 0) + 1;
-  guardarInmuebles();
+  const { data: current } = await supabase
+    .from("inmuebles").select("titulo, cantidad_publicaciones").eq("id", id).single();
+
+  if (!current) return res.redirect("/dashboard.html");
+
+  const { error } = await supabase.from("inmuebles").update({
+    estado_publicacion: "lista",
+    cantidad_publicaciones: Number(current.cantidad_publicaciones || 0) + 1
+  }).eq("id", id);
+
+  if (error) console.error("Error publicar:", error.message);
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "inmueble_lista",
-    titulo: inmuebles[idx].titulo,
-    indexInmueble: idx
+    titulo: current.titulo,
+    inmuebleId: id
   });
 
   res.redirect("/dashboard.html");
 });
 
-app.post("/publicada/:index", (req, res) => {
-  const idx = Number(req.params.index);
-  if (!inmuebles[idx]) return res.redirect("/marketing.html");
+// MARCAR PUBLICADA
+app.post("/publicada/:id", async (req, res) => {
+  const id = Number(req.params.id);
 
-  inmuebles[idx].estadoPublicacion = "publicada";
-  guardarInmuebles();
+  const { data: current } = await supabase
+    .from("inmuebles").select("titulo").eq("id", id).single();
+
+  if (!current) return res.redirect("/marketing.html");
+
+  await supabase.from("inmuebles").update({ estado_publicacion: "publicada" }).eq("id", id);
 
   pushNotif(notificaciones, guardarNotificaciones, {
     tipo: "inmueble_publicada",
-    titulo: inmuebles[idx].titulo,
-    indexInmueble: idx
+    titulo: current.titulo,
+    inmuebleId: id
   });
 
   res.redirect("/marketing.html");
 });
 
-app.post("/eliminar/:index", (req, res) => {
-  const idx = Number(req.params.index);
+// ELIMINAR INMUEBLE
+app.post("/eliminar/:id", async (req, res) => {
+  const id = Number(req.params.id);
 
-  if (!Number.isNaN(idx) && idx >= 0 && idx < inmuebles.length) {
-    const inm = inmuebles[idx];
+  if (!isNaN(id)) {
+    const { data: inm } = await supabase
+      .from("inmuebles").select("imagenes, thumbnails").eq("id", id).single();
 
-    if (Array.isArray(inm.imagenes)) {
-      inm.imagenes.forEach((f) => {
+    if (inm) {
+      (inm.imagenes || []).forEach((f) => {
         try {
-          const file = path.join(__dirname, "public", "uploads", f);
+          const file = path.join(UPLOADS_DIR, f);
+          if (fs.existsSync(file)) fs.unlinkSync(file);
+        } catch {}
+      });
+      (inm.thumbnails || []).forEach((f) => {
+        try {
+          const file = path.join(THUMBS_DIR, f);
           if (fs.existsSync(file)) fs.unlinkSync(file);
         } catch {}
       });
     }
 
-    if (Array.isArray(inm.thumbnails)) {
-      inm.thumbnails.forEach((f) => {
-        try {
-          const file = path.join(__dirname, "public", "uploads", "thumbs", f);
-          if (fs.existsSync(file)) fs.unlinkSync(file);
-        } catch {}
-      });
-    }
-
-    inmuebles.splice(idx, 1);
-    guardarInmuebles();
+    await supabase.from("inmuebles").delete().eq("id", id);
   }
 
   res.redirect("/dashboard.html");
 });
 
-app.get("/marketing/zip/:index", (req, res) => {
-  const idx = Number(req.params.index);
-  const inm = inmuebles[idx];
+// ZIP DE FOTOS
+app.get("/marketing/zip/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { data: inm } = await supabase
+    .from("inmuebles").select("imagenes").eq("id", id).single();
 
   if (!inm || !Array.isArray(inm.imagenes) || inm.imagenes.length === 0) {
     return res.status(400).send("Sin fotos");
@@ -633,7 +705,7 @@ app.get("/marketing/zip/:index", (req, res) => {
   archive.pipe(res);
 
   inm.imagenes.forEach((f) => {
-    const file = path.join(__dirname, "public", "uploads", f);
+    const file = path.join(UPLOADS_DIR, f);
     if (fs.existsSync(file)) archive.file(file, { name: f });
   });
 
@@ -643,6 +715,26 @@ app.get("/marketing/zip/:index", (req, res) => {
 // ============================
 // APIS BASICAS
 // ============================
+
+// ✅ ÚNICA ruta de inmuebles públicos — lee de Supabase
+app.get("/api/inmuebles-publicos", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("inmuebles")
+      .select("*")
+      .in("estado_publicacion", ["lista", "publicada"])
+      .order("id", { ascending: false });
+
+    if (error) throw error;
+
+    res.json((data || []).map(sbToInm));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: "Error interno" });
+  }
+});
+
+// ✅ Detalle de un inmueble público por ID
 app.get("/api/inmuebles-publicos/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -657,60 +749,18 @@ app.get("/api/inmuebles-publicos/:id", async (req, res) => {
       return res.status(404).json({ ok: false, error: "Propiedad no encontrada" });
     }
 
-    res.json({
-      id: data.id,
-      titulo: data.titulo || "",
-      tipoOperacion: data.tipo_operacion || "",
-      tipoPropiedad: data.tipo_propiedad || "",
-      zona: data.zona || "",
-      direccion: data.direccion || "",
-      precio: data.precio || 0,
-      moneda: data.moneda || "USD",
-      dormitorios: data.dormitorios || 0,
-      banos: data.banos || 0,
-      descripcion: data.descripcion || "",
-      imagenes: data.imagenes || [],
-      thumbnails: data.thumbnails || [],
-      video: data.video || "",
-      estadoPublicacion: data.estado_publicacion || ""
-    });
+    const inm = sbToInm(data);
+    const estado = inm.estadoPublicacion.toLowerCase();
 
+    if (estado !== "lista" && estado !== "publicada") {
+      return res.status(403).json({ ok: false, error: "Propiedad no pública" });
+    }
+
+    res.json(inm);
   } catch (e) {
     console.error(e);
     res.status(500).json({ ok: false, error: "Error interno" });
   }
-});
-
-  const id = Number(req.params.id);
-
-  if (Number.isNaN(id) || !inmuebles[id]) {
-    return res.status(404).json({ ok: false, error: "Propiedad no encontrada" });
-  }
-
-  const inm = inmuebles[id];
-  const estado = String(inm.estadoPublicacion || "").toLowerCase();
-
-  if (estado !== "lista" && estado !== "publicada") {
-    return res.status(403).json({ ok: false, error: "Propiedad no pública" });
-  }
-
-  res.json({
-    id,
-    titulo: inm.titulo || "",
-    tipoOperacion: inm.tipoOperacion || "",
-    tipoPropiedad: inm.tipoPropiedad || "",
-    zona: inm.zona || "",
-    direccion: inm.direccion || "",
-    precio: inm.precio || 0,
-    moneda: inm.moneda || "USD",
-    dormitorios: inm.dormitorios || 0,
-    banos: inm.banos || 0,
-    descripcion: inm.descripcion || "",
-    imagenes: inm.imagenes || [],
-    thumbnails: inm.thumbnails || [],
-    video: inm.video || "",
-    estadoPublicacion: inm.estadoPublicacion || ""
-  });
 });
 
 app.get("/api/compradores", (req, res) => {
@@ -722,15 +772,8 @@ app.get("/api/demandas", (req, res) => {
 });
 
 app.get("/api/notificaciones", (req, res) => {
-  const since = Number(req.query.since || 0);
-  res.json({
-    items: notificaciones.filter((n) => Number(n.ts || 0) > since)
-  });
+  res.json(notificaciones);
 });
-
-// ============================
-// LEADS PUBLICOS
-// ============================
 
 app.get("/api/leads", (req, res) => {
   res.json(leerLeads());
@@ -738,28 +781,32 @@ app.get("/api/leads", (req, res) => {
 
 app.post("/api/leads", (req, res) => {
   const leads = leerLeads();
+  const body = req.body || {};
 
-  const nuevoLead = {
+  const lead = {
     id: Date.now(),
-    mensajeOriginal: req.body.mensajeOriginal || "",
-    tipoLead: req.body.tipoLead || "comprador",
-    operacion: req.body.operacion || "",
-    tipo: req.body.tipo || "",
-    zona: req.body.zona || "",
-    dormitorios: req.body.dormitorios || "",
-    precio: req.body.precio || "",
-    estado: "nuevo",
+    ts: Date.now(),
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    email: String(body.email || "").trim(),
+    mensaje: String(body.mensaje || "").trim(),
+    propiedadId: body.propiedadId || null,
+    propiedadTitulo: String(body.propiedadTitulo || "").trim(),
     origen: req.body.origen || "funnel",
-    nombre: req.body.nombre || "",
-    telefono: req.body.telefono || "",
-    asesor: req.body.asesor || "",
-    fecha: new Date().toISOString()
+    estado: "nuevo"
   };
 
-  leads.push(nuevoLead);
+  leads.push(lead);
   guardarLeads(leads);
 
-  res.json({ ok: true, lead: nuevoLead });
+  pushNotif(notificaciones, guardarNotificaciones, {
+    tipo: "nuevo_lead",
+    nombre: lead.nombre,
+    telefono: lead.telefono,
+    propiedadTitulo: lead.propiedadTitulo
+  });
+
+  res.json({ ok: true, id: lead.id });
 });
 
 // ============================
@@ -767,48 +814,47 @@ app.post("/api/leads", (req, res) => {
 // ============================
 
 app.post("/compradores/nuevo", (req, res) => {
-  const nuevo = {
-    nombre: (req.body.nombre || "Sin nombre").trim(),
-    telefono: (req.body.telefono || "").trim(),
-    email: (req.body.email || "").trim(),
-    tipoOperacionBuscada: (req.body.tipoOperacionBuscada || "").trim(),
-    tipoPropiedad: (req.body.tipoPropiedad || "").trim(),
-    zonaPreferida: (req.body.zonaPreferida || "").trim(),
-    presupuestoMax: Number(req.body.presupuestoMax || 0),
-    moneda: (req.body.moneda || "USD").trim(),
-    dormitoriosMin: Number(req.body.dormitoriosMin || 0),
-    estado: (req.body.estado || "tibio").trim(),
-    notas: (req.body.notas || "").trim(),
-    creadoPor: req.session.user ? req.session.user.email : "desconocido",
-    fechaAlta: new Date().toLocaleString()
+  const body = req.body || {};
+  const c = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    email: String(body.email || "").trim(),
+    zonaPreferida: String(body.zonaPreferida || "").trim(),
+    tipoOperacionBuscada: String(body.tipoOperacionBuscada || "venta").trim(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
+    presupuestoMax: Number(body.presupuestoMax || 0),
+    moneda: String(body.moneda || "USD").trim(),
+    dormitoriosMin: Number(body.dormitoriosMin || 0),
+    notas: String(body.notas || "").trim(),
+    estado: "nuevo",
+    ts: Date.now()
   };
-
-  compradores.push(nuevo);
+  compradores.push(c);
   guardarCompradores();
-  res.redirect("/compradores.html");
+  res.redirect("/dashboard.html");
 });
 
 app.post("/compradores/editar/:index", (req, res) => {
   const idx = Number(req.params.index);
-  if (isNaN(idx) || !compradores[idx]) return res.redirect("/compradores.html");
+  if (isNaN(idx) || !compradores[idx]) return res.redirect("/dashboard.html");
 
-  compradores[idx] = {
-    ...compradores[idx],
-    nombre: (req.body.nombre || "Sin nombre").trim(),
-    telefono: (req.body.telefono || "").trim(),
-    email: (req.body.email || "").trim(),
-    tipoOperacionBuscada: (req.body.tipoOperacionBuscada || "").trim(),
-    tipoPropiedad: (req.body.tipoPropiedad || "").trim(),
-    zonaPreferida: (req.body.zonaPreferida || "").trim(),
-    presupuestoMax: Number(req.body.presupuestoMax || 0),
-    moneda: (req.body.moneda || "USD").trim(),
-    dormitoriosMin: Number(req.body.dormitoriosMin || 0),
-    estado: (req.body.estado || "tibio").trim(),
-    notas: (req.body.notas || "").trim()
-  };
+  const c = compradores[idx];
+  const body = req.body || {};
+
+  c.nombre = String(body.nombre || c.nombre || "").trim();
+  c.telefono = String(body.telefono || c.telefono || "").trim();
+  c.email = String(body.email || c.email || "").trim();
+  c.zonaPreferida = String(body.zonaPreferida || c.zonaPreferida || "").trim();
+  c.tipoOperacionBuscada = String(body.tipoOperacionBuscada || c.tipoOperacionBuscada || "").trim();
+  c.tipoPropiedad = String(body.tipoPropiedad || c.tipoPropiedad || "").trim();
+  c.presupuestoMax = Number(body.presupuestoMax || c.presupuestoMax || 0);
+  c.moneda = String(body.moneda || c.moneda || "USD").trim();
+  c.dormitoriosMin = Number(body.dormitoriosMin || c.dormitoriosMin || 0);
+  c.notas = String(body.notas || c.notas || "").trim();
+  c.estado = String(body.estado || c.estado || "tibio").trim();
 
   guardarCompradores();
-  res.redirect("/compradores.html");
+  res.redirect("/dashboard.html");
 });
 
 // ============================
@@ -816,42 +862,33 @@ app.post("/compradores/editar/:index", (req, res) => {
 // ============================
 
 app.post("/demandas/nuevo", (req, res) => {
-  const nueva = {
-    tipoOperacion: (req.body.tipoOperacion || "").toLowerCase(),
-    tipoPropiedad: (req.body.tipoPropiedad || "").toLowerCase(),
-    zona: (req.body.zona || "").toLowerCase(),
-    presupuestoMax: Number(req.body.presupuestoMax || 0),
-    moneda: (req.body.moneda || "ARS").toUpperCase(),
-    dormitoriosMin: Number(req.body.dormitoriosMin || 0),
-    margenAbajo: Number(req.body.margenAbajo || 30),
-    margenArriba: Number(req.body.margenArriba || 20),
-    monedaEstricta: String(req.body.monedaEstricta || "no").toLowerCase(),
-    permitirSinPrecio: String(req.body.permitirSinPrecio || "no").toLowerCase(),
-    toleranteTipo: String(req.body.toleranteTipo || "si").toLowerCase(),
-    notas: req.body.notas || "",
-    contacto: req.body.contacto || "",
-    creadoPor: req.session.user ? req.session.user.email : "desconocido",
-    fecha: new Date().toISOString(),
-    estado: "demanda"
+  const body = req.body || {};
+  const d = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
+    email: String(body.email || "").trim(),
+    zona: String(body.zona || "").trim(),
+    tipoOperacion: String(body.tipoOperacion || "venta").trim(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
+    presupuestoMax: Number(body.presupuestoMax || 0),
+    moneda: String(body.moneda || "USD").trim(),
+    dormitoriosMin: Number(body.dormitoriosMin || 0),
+    margenAbajo: Number(body.margenAbajo || 30),
+    margenArriba: Number(body.margenArriba || 20),
+    permitirSinPrecio: String(body.permitirSinPrecio || "no").trim(),
+    monedaEstricta: String(body.monedaEstricta || "no").trim(),
+    notas: String(body.notas || "").trim(),
+    estado: "demanda",
+    ts: Date.now()
   };
-
-  demandas.push(nueva);
+  demandas.push(d);
   guardarDemandas();
-
-  pushNotif(notificaciones, guardarNotificaciones, {
-    tipo: "nueva_demanda",
-    titulo: "Demanda: " + (nueva.tipoPropiedad || "propiedad"),
-    zona: nueva.zona,
-    precio: nueva.presupuestoMax,
-    moneda: nueva.moneda
-  });
-
   res.redirect("/demandas.html");
 });
 
 app.post("/demandas/eliminar/:index", (req, res) => {
   const idx = Number(req.params.index);
-  if (!isNaN(idx) && demandas[idx]) {
+  if (!isNaN(idx) && idx >= 0 && idx < demandas.length) {
     demandas.splice(idx, 1);
     guardarDemandas();
   }
@@ -859,10 +896,10 @@ app.post("/demandas/eliminar/:index", (req, res) => {
 });
 
 // ============================
-// MATCHING
+// MATCHING — ahora consulta Supabase
 // ============================
 
-app.get("/api/match-demanda/:index", (req, res) => {
+app.get("/api/match-demanda/:index", async (req, res) => {
   const idx = Number(req.params.index);
   if (isNaN(idx) || !demandas[idx]) return res.json({ totalMatches: 0, matches: [] });
 
@@ -877,11 +914,14 @@ app.get("/api/match-demanda/:index", (req, res) => {
   const permitirSinPrecio = String(d.permitirSinPrecio || "no").toLowerCase() === "si";
   const monedaEstricta = String(d.monedaEstricta || "no").toLowerCase() === "si";
 
+  const { data: rows } = await supabase.from("inmuebles").select("*");
+  const inmuebles = (rows || []).map(sbToInm);
+
   const matches = [];
 
-  inmuebles.forEach((inm, i) => {
+  inmuebles.forEach((inm) => {
     let score = 0;
-    const estado = (inm.estadoPublicacion || inm.estado || "").toLowerCase();
+    const estado = (inm.estadoPublicacion || "").toLowerCase();
     const opI = (inm.tipoOperacion || "").toLowerCase();
     const zonaI = (inm.zona || "").toLowerCase();
     const precioI = Number(inm.precio || 0);
@@ -922,7 +962,7 @@ app.get("/api/match-demanda/:index", (req, res) => {
 
     if (score >= 30) {
       matches.push({
-        indexInmueble: i,
+        inmuebleId: inm.id,
         score,
         inmueble: {
           titulo: inm.titulo || "Radar",
@@ -939,11 +979,13 @@ app.get("/api/match-demanda/:index", (req, res) => {
   res.json({ totalMatches: matches.length, matches });
 });
 
-app.get("/api/match-inmueble/:index", (req, res) => {
-  const idx = Number(req.params.index);
-  if (isNaN(idx) || !inmuebles[idx]) return res.json({ totalMatches: 0, matches: [] });
+app.get("/api/match-inmueble/:id", async (req, res) => {
+  const id = Number(req.params.id);
 
-  const inm = inmuebles[idx];
+  const { data: row } = await supabase.from("inmuebles").select("*").eq("id", id).single();
+  if (!row) return res.json({ totalMatches: 0, matches: [] });
+
+  const inm = sbToInm(row);
   const zonaInm = (inm.zona || "").toLowerCase();
   const opInm = (inm.tipoOperacion || "").toLowerCase();
   const precioInm = Number(inm.precio || 0);
@@ -994,35 +1036,22 @@ app.get("/api/match-inmueble/:index", (req, res) => {
 
 app.post("/api/radar-ia/guardar", (req, res) => {
   const body = req.body || {};
-
   const item = {
     textoOriginal: String(body.textoOriginal || "").trim(),
     tipo: String(body.tipo || "ambigua").trim().toLowerCase(),
-    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
-    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
     zona: String(body.zona || "").trim(),
     precio: Number(body.precio || 0),
     moneda: String(body.moneda || "ARS").trim().toUpperCase(),
-    dormitoriosMin: Number(body.dormitoriosMin || 0),
-    confianza: Number(body.confianza || 0),
-    sugerencia: String(body.sugerencia || "").trim(),
-    estado: "nuevo",
-    fecha: new Date().toISOString()
+    dormitorios: Number(body.dormitorios || 0),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
+    tipoOperacion: String(body.tipoOperacion || "").trim(),
+    contacto: String(body.contacto || "").trim(),
+    fuente: String(body.fuente || "").trim(),
+    ts: Date.now()
   };
-
-  radarIA.unshift(item);
-  if (radarIA.length > 500) radarIA = radarIA.slice(0, 500);
+  radarIA.push(item);
   guardarRadarIA();
-
-  pushNotif(notificaciones, guardarNotificaciones, {
-    tipo: "nuevo_radar_ia",
-    titulo: item.tipoPropiedad || "Publicacion detectada",
-    zona: item.zona,
-    precio: item.precio,
-    moneda: item.moneda
-  });
-
-  res.json({ ok: true, total: radarIA.length });
+  res.json({ ok: true });
 });
 
 app.get("/api/radar-ia", (req, res) => res.json(radarIA));
@@ -1031,85 +1060,62 @@ app.get("/api/radar-vendedores", (req, res) => res.json(vendedoresDetectados));
 
 app.post("/api/radar-vendedores/guardar", (req, res) => {
   const body = req.body || {};
-
-  vendedoresDetectados.unshift({
+  const item = {
     nombre: String(body.nombre || "").trim(),
     telefono: String(body.telefono || "").trim(),
-    direccion: String(body.direccion || "").trim(),
     zona: String(body.zona || "").trim(),
-    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
     precio: Number(body.precio || 0),
-    moneda: String(body.moneda || "USD").trim().toUpperCase(),
-    origen: String(body.origen || "facebook").trim().toLowerCase(),
-    nivel: String(body.nivel || "posible").trim().toLowerCase(),
-    notas: String(body.notas || "").trim(),
-    fecha: new Date().toISOString()
-  });
-
-  if (vendedoresDetectados.length > 1000) vendedoresDetectados = vendedoresDetectados.slice(0, 1000);
+    moneda: String(body.moneda || "ARS").trim().toUpperCase(),
+    descripcion: String(body.descripcion || "").trim(),
+    fuente: String(body.fuente || "").trim(),
+    estado: "nuevo",
+    ts: Date.now()
+  };
+  vendedoresDetectados.push(item);
   guardarVendedoresDetectados();
-
-  res.json({ ok: true, total: vendedoresDetectados.length });
+  res.json({ ok: true });
 });
 
 app.post("/api/radar-vendedores/editar/:index", (req, res) => {
   const idx = Number(req.params.index);
+  if (isNaN(idx) || !vendedoresDetectados[idx]) return res.status(404).json({ ok: false });
+
+  const v = vendedoresDetectados[idx];
   const body = req.body || {};
 
-  if (isNaN(idx) || !vendedoresDetectados[idx]) {
-    return res.status(400).json({ ok: false, error: "Vendedor no encontrado" });
-  }
-
-  vendedoresDetectados[idx] = {
-    ...vendedoresDetectados[idx],
-    nombre: String(body.nombre || "").trim(),
-    telefono: String(body.telefono || "").trim(),
-    direccion: String(body.direccion || "").trim(),
-    zona: String(body.zona || "").trim(),
-    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
-    precio: Number(body.precio || 0),
-    moneda: String(body.moneda || "USD").trim().toUpperCase(),
-    origen: String(body.origen || "facebook").trim().toLowerCase(),
-    nivel: String(body.nivel || "posible").trim().toLowerCase(),
-    notas: String(body.notas || "").trim(),
-    fechaActualizacion: new Date().toISOString()
-  };
+  if (body.nombre !== undefined) v.nombre = String(body.nombre).trim();
+  if (body.telefono !== undefined) v.telefono = String(body.telefono).trim();
+  if (body.zona !== undefined) v.zona = String(body.zona).trim();
+  if (body.tipoPropiedad !== undefined) v.tipoPropiedad = String(body.tipoPropiedad).trim();
+  if (body.precio !== undefined) v.precio = Number(body.precio);
+  if (body.moneda !== undefined) v.moneda = String(body.moneda).trim().toUpperCase();
+  if (body.descripcion !== undefined) v.descripcion = String(body.descripcion).trim();
+  if (body.estado !== undefined) v.estado = String(body.estado).trim();
 
   guardarVendedoresDetectados();
-  res.json({ ok: true, vendedor: vendedoresDetectados[idx] });
+  res.json({ ok: true });
 });
 
 app.post("/api/vendedores-detectados/guardar", (req, res) => {
   const body = req.body || {};
-  const telefono = String(body.telefono || "").trim();
+  if (!body.telefono) return res.status(400).json({ ok: false, error: "Telefono requerido" });
 
-  if (!telefono) {
-    return res.status(400).json({ ok: false, error: "Telefono requerido" });
-  }
-
-  const existe = vendedoresDetectados.find((v) => String(v.telefono || "").trim() === telefono);
-  if (existe) {
-    return res.json({ ok: true, duplicado: true, total: vendedoresDetectados.length });
-  }
-
-  vendedoresDetectados.unshift({
-    nombre: String(body.nombre || "Vendedor detectado").trim(),
-    telefono,
+  const item = {
+    nombre: String(body.nombre || "").trim(),
+    telefono: String(body.telefono || "").trim(),
     zona: String(body.zona || "").trim(),
     tipoPropiedad: String(body.tipoPropiedad || "").trim(),
-    tipoOperacion: String(body.tipoOperacion || "").trim(),
     precio: Number(body.precio || 0),
     moneda: String(body.moneda || "ARS").trim().toUpperCase(),
-    textoOriginal: String(body.textoOriginal || "").trim(),
-    origen: "radar ia",
+    descripcion: String(body.descripcion || "").trim(),
+    fuente: String(body.fuente || "whatsapp").trim(),
     estado: "nuevo",
-    fecha: new Date().toISOString()
-  });
-
-  if (vendedoresDetectados.length > 1000) vendedoresDetectados = vendedoresDetectados.slice(0, 1000);
+    ts: Date.now()
+  };
+  vendedoresDetectados.push(item);
   guardarVendedoresDetectados();
-
-  res.json({ ok: true, total: vendedoresDetectados.length });
+  res.json({ ok: true });
 });
 
 app.get("/api/vendedores-detectados", (req, res) => res.json(vendedoresDetectados));
@@ -1118,115 +1124,73 @@ app.get("/api/radar-leads", (req, res) => res.json(radarLeads));
 
 app.post("/api/radar-leads/editar/:index", (req, res) => {
   const idx = Number(req.params.index);
+  if (isNaN(idx) || !radarLeads[idx]) return res.status(404).json({ ok: false });
+
+  const lead = radarLeads[idx];
   const body = req.body || {};
 
-  if (isNaN(idx) || !radarLeads[idx]) {
-    return res.status(400).json({ ok: false, error: "Lead no encontrado" });
-  }
-
-  radarLeads[idx] = {
-    ...radarLeads[idx],
-    nombre: String(body.nombre || "").trim(),
-    telefono: String(body.telefono || "").trim(),
-    instagram: String(body.instagram || "").trim(),
-    origen: String(body.origen || "instagram").trim().toLowerCase(),
-    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
-    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
-    zona: String(body.zona || "").trim(),
-    presupuestoMax: Number(body.presupuestoMax || 0),
-    moneda: String(body.moneda || "USD").trim().toUpperCase(),
-    dormitoriosMin: Number(body.dormitoriosMin || 0),
-    nivel: String(body.nivel || "activo").trim().toLowerCase(),
-    notas: String(body.notas || "").trim(),
-    fechaActualizacion: new Date().toISOString()
-  };
+  if (body.nombre !== undefined) lead.nombre = String(body.nombre).trim();
+  if (body.telefono !== undefined) lead.telefono = String(body.telefono).trim();
+  if (body.zona !== undefined) lead.zona = String(body.zona).trim();
+  if (body.tipoPropiedad !== undefined) lead.tipoPropiedad = String(body.tipoPropiedad).trim();
+  if (body.presupuesto !== undefined) lead.presupuesto = Number(body.presupuesto);
+  if (body.moneda !== undefined) lead.moneda = String(body.moneda).trim().toUpperCase();
+  if (body.notas !== undefined) lead.notas = String(body.notas).trim();
+  if (body.estado !== undefined) lead.estado = String(body.estado).trim();
 
   guardarRadarLeads();
-  res.json({ ok: true, lead: radarLeads[idx] });
+  res.json({ ok: true });
 });
 
 app.post("/api/radar-leads/guardar", async (req, res) => {
   const body = req.body || {};
 
-  const nuevo = {
+  const lead = {
     nombre: String(body.nombre || "").trim(),
     telefono: String(body.telefono || "").trim(),
-    instagram: String(body.instagram || "").trim(),
-    origen: String(body.origen || "instagram").trim().toLowerCase(),
-    tipoLead: String(body.tipoLead || "indefinido").trim().toLowerCase(),
-    tipoPropiedad: String(body.tipoPropiedad || "").trim().toLowerCase(),
-    tipoOperacion: String(body.tipoOperacion || "").trim().toLowerCase(),
     zona: String(body.zona || "").trim(),
-    presupuestoMax: Number(body.presupuestoMax || 0),
-    moneda: String(body.moneda || "USD").trim().toUpperCase(),
+    tipoPropiedad: String(body.tipoPropiedad || "").trim(),
+    tipoOperacion: String(body.tipoOperacion || "").trim(),
+    presupuesto: Number(body.presupuesto || 0),
+    moneda: String(body.moneda || "ARS").trim().toUpperCase(),
     dormitoriosMin: Number(body.dormitoriosMin || 0),
-    nivel: String(body.nivel || "activo").trim().toLowerCase(),
     notas: String(body.notas || "").trim(),
-    fecha: new Date().toISOString()
+    fuente: String(body.fuente || "whatsapp").trim(),
+    estado: "nuevo",
+    ts: Date.now()
   };
 
-  try {
-    if (supabase) {
-      const { error } = await supabase.from("leads").insert([{
-        nombre: nuevo.nombre,
-        telefono: nuevo.telefono,
-        instagram: nuevo.instagram,
-        origen: nuevo.origen,
-        tipo_lead: nuevo.tipoLead,
-        tipo_operacion: nuevo.tipoOperacion,
-        tipo_propiedad: nuevo.tipoPropiedad,
-        zona: nuevo.zona,
-        presupuesto_max: nuevo.presupuestoMax,
-        moneda: nuevo.moneda,
-        dormitorios_min: nuevo.dormitoriosMin,
-        nivel: nuevo.nivel,
-        estado: "nuevo",
-        notas: nuevo.notas,
-        link_fuente: nuevo.instagram || ""
-      }]);
-
-      if (error) console.error("Error Supabase:", error);
-    }
-  } catch (err) {
-    console.error("Error Supabase:", err);
-  }
-
-  radarLeads.unshift(nuevo);
-  if (radarLeads.length > 1000) radarLeads = radarLeads.slice(0, 1000);
+  radarLeads.push(lead);
   guardarRadarLeads();
-
-  res.json({ ok: true, total: radarLeads.length });
+  res.json({ ok: true });
 });
 
 app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
   const idx = Number(req.params.index);
-
-  if (isNaN(idx) || !radarLeads[idx]) {
-    return res.status(400).json({ ok: false, error: "Lead no encontrado" });
-  }
+  if (isNaN(idx) || !radarLeads[idx]) return res.status(404).json({ ok: false });
 
   const lead = radarLeads[idx];
-
-  const nuevoComprador = {
-    nombre: lead.nombre || "Sin nombre",
-    telefono: lead.telefono || "",
-    email: "",
-    tipoOperacionBuscada: lead.tipoOperacion || "",
-    tipoPropiedad: lead.tipoPropiedad || "",
-    zonaPreferida: lead.zona || "",
-    presupuestoMax: Number(lead.presupuestoMax || 0),
-    moneda: lead.moneda || "USD",
-    dormitoriosMin: Number(lead.dormitoriosMin || 0),
-    estado: "nuevo",
+  const comprador = {
+    nombre: lead.nombre,
+    telefono: lead.telefono,
+    email: lead.email || "",
+    zonaPreferida: lead.zona,
+    tipoOperacionBuscada: lead.tipoOperacion || "venta",
+    tipoPropiedad: lead.tipoPropiedad,
+    presupuestoMax: lead.presupuesto || 0,
+    moneda: lead.moneda || "ARS",
+    dormitoriosMin: lead.dormitoriosMin || 0,
     notas: lead.notas || "",
-    creadoPor: req.session.user ? req.session.user.email : "radar",
-    fechaAlta: new Date().toLocaleString()
+    estado: "nuevo",
+    ts: Date.now()
   };
 
-  compradores.push(nuevoComprador);
+  compradores.push(comprador);
   guardarCompradores();
+  lead.estado = "pasado_comprador";
+  guardarRadarLeads();
 
-  res.json({ ok: true, comprador: nuevoComprador });
+  res.json({ ok: true });
 });
 
 app.get("/api/radar-leads/match/:index", (req, res) => {
@@ -1234,267 +1198,54 @@ app.get("/api/radar-leads/match/:index", (req, res) => {
   if (isNaN(idx) || !radarLeads[idx]) return res.json({ totalMatches: 0, matches: [] });
 
   const lead = radarLeads[idx];
-  const zonaL = (lead.zona || "").toLowerCase();
-  const opL = (lead.tipoOperacion || "").toLowerCase();
-  const tipoL = (lead.tipoPropiedad || "").toLowerCase();
-  const presL = Number(lead.presupuestoMax || 0);
-  const dormL = Number(lead.dormitoriosMin || 0);
-
-  const matches = [];
-
-  inmuebles.forEach((inm, i) => {
-    let score = 0;
-    const zonaI = (inm.zona || "").toLowerCase();
-    const opI = (inm.tipoOperacion || "").toLowerCase();
-    const tipoI = ((inm.tipoPropiedad || "") + " " + (inm.titulo || "")).toLowerCase();
-    const precioI = Number(inm.precio || 0);
-    const dormI = Number(inm.dormitorios || 0);
-
-    if (opL && opI && opL === opI) score += 25;
-    if (zonaL && zonaI && zonaI.includes(zonaL)) score += 25;
-    if (tipoL && tipoI.includes(tipoL)) score += 20;
-    if (presL > 0 && precioI > 0 && precioI <= presL * 1.15) score += 20;
-    if (dormL > 0 && dormI >= dormL) score += 10;
-
-    if (score >= 30) {
-      matches.push({
-        indexInmueble: i,
-        score,
-        inmueble: {
-          titulo: inm.titulo || "Sin titulo",
-          zona: inm.zona || "",
-          precio: inm.precio || 0,
-          moneda: inm.moneda || "USD"
-        }
-      });
-    }
-  });
-
-  matches.sort((a, b) => b.score - a.score);
-  res.json({ totalMatches: matches.length, matches });
+  res.json({ totalMatches: 0, matches: [], nota: "Match desde Supabase pendiente" });
 });
-
-// ============================
-// ANALISIS MENSAJE
-// ============================
 
 app.post("/api/analizar-mensaje", (req, res) => {
-  const textoOriginal = String((req.body && req.body.texto) || "").trim();
-  const t0 = textoOriginal.toLowerCase();
-
-  const stripAccents = (s) =>
-    (s || "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  const t = stripAccents(t0);
-  const has = (re) => re.test(t);
-
-  const parseNumero = (s) => {
-    if (!s) return 0;
-    const n = Number(String(s).replace(/[.\s]/g, "").replace(/,/g, "."));
-    return Number.isFinite(n) ? n : 0;
-  };
-
-  const levenshtein = (a, b) => {
-    a = a || "";
-    b = b || "";
-    const m = a.length;
-    const n = b.length;
-    if (!m) return n;
-    if (!n) return m;
-
-    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
-    for (let i = 0; i <= m; i++) dp[i][0] = i;
-    for (let j = 0; j <= n; j++) dp[0][j] = j;
-
-    for (let i = 1; i <= m; i++) {
-      for (let j = 1; j <= n; j++) {
-        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-        dp[i][j] = Math.min(
-          dp[i - 1][j] + 1,
-          dp[i][j - 1] + 1,
-          dp[i - 1][j - 1] + cost
-        );
-      }
-    }
-    return dp[m][n];
-  };
-
-  const bestFuzzyMatch = (text, options) => {
-    const words = stripAccents(text).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-    let best = { value: "", score: 0 };
-
-    options.forEach((opt) => {
-      const o = stripAccents(opt).toLowerCase();
-      if (stripAccents(text).includes(o)) {
-        best = { value: opt, score: Math.max(best.score, 95) };
-        return;
-      }
-
-      words.forEach((w) => {
-        const dist = levenshtein(w, o);
-        const maxLen = Math.max(w.length, o.length);
-        const sim = maxLen ? (1 - dist / maxLen) : 0;
-        const score = Math.round(sim * 100);
-        if (score > best.score && score >= 72) best = { value: opt, score };
-      });
-    });
-
-    return best;
-  };
-
-  const BARRIOS = [
-    "Centro", "Macrocentro", "Banda Norte", "Alberdi", "Las Quintas", "Las Delicias",
-    "Fenix", "Pizarro", "San Martin", "Bimaco", "Jardin", "Barrio Universidad",
-    "Golf", "Las Ferias", "Ameghino", "Abilene", "Industrial", "El Rosal",
-    "Intendente Mestre", "Villa Dalcar"
-  ];
-
-  let tipoOperacion = "";
-  if (has(/(alquil|alquiler|arriendo|renta)/)) tipoOperacion = "alquiler";
-  if (!tipoOperacion && has(/(compra|comprar|vendo|venta|usd|dolar|dolares|inversion)/)) tipoOperacion = "venta";
-
-  let tipoPropiedad = "";
-  if (has(/(depto|departamento|dpto)/)) tipoPropiedad = "depto";
-  else if (has(/\bcasa\b/)) tipoPropiedad = "casa";
-  else if (has(/(terreno|lote|loteo)/)) tipoPropiedad = "terreno";
-  else if (has(/(local|comercial|galpon|deposito)/)) tipoPropiedad = "local";
-
-  let moneda = "ARS";
-  if (has(/(usd|dolar|dolares)/)) moneda = "USD";
-  if (has(/\bpesos\b/)) moneda = "ARS";
-
-  let precio = 0;
-  const rango = t.match(/entre\s+(\d[\d.\s]*)\s+y\s+(\d[\d.\s]*)/);
-  if (rango && rango[2]) precio = parseNumero(rango[2]);
-
-  if (!precio) {
-    const hasta = t.match(/(?:hasta|maximo|max|tope)\s+(\d[\d.\s]*)/);
-    if (hasta && hasta[1]) precio = parseNumero(hasta[1]);
-  }
-
-  if (!precio) {
-    const mil = t.match(/(\d+)\smil/);
-    if (mil && mil[1]) precio = Number(mil[1]) * 1000;
-  }
-
-  if (!precio) {
-    const suelto = t.match(/(\d{4,})/);
-    if (suelto && suelto[1]) precio = parseNumero(suelto[1]);
-  }
-
-  let dormitoriosMin = 0;
-  const dormRaw = t.match(/(\d+)\s(?:dorm|dormitorio|dormitorios|habit)/);
-  if (dormRaw && dormRaw[1]) dormitoriosMin = Number(dormRaw[1]);
-
-  let zonaTxt = "";
-  const zonaMatch = t.match(/(?:\ben\b|\bzona\b|\bbarrio\b)\s+([a-z0-9\s]{3,40})/);
-  if (zonaMatch && zonaMatch[1]) {
-    zonaTxt = zonaMatch[1].replace(/(hasta|max|aprox|cerca|con|sin|de|por).*/g, "").trim();
-  }
-
-  let zona = "";
-  if (zonaTxt) {
-    const best = bestFuzzyMatch(zonaTxt, BARRIOS);
-    zona = best.value || zonaTxt;
-  }
-
-  const esDemanda = has(/(busco|necesito|requiero|estoy buscando)/);
-  const esOferta = has(/(tengo|ofrezco|disponible|vendo|alquilo|se vende)/);
-
-  let tipo = "ambigua";
-  if (esDemanda && !esOferta) tipo = "demanda";
-  else if (esOferta && !esDemanda) tipo = "oferta";
-  else if (esDemanda) tipo = "demanda";
-
-  let margenAbajo = 30;
-  let margenArriba = 20;
-  let permitirSinPrecio = precio ? "no" : "si";
-  let monedaEstricta = "no";
-  let toleranteTipo = "si";
-
-  if (has(/(hasta|maximo|max|tope)/)) {
-    margenArriba = 5;
-    margenAbajo = 25;
-  }
-
-  let confianza = 40;
-  if (tipo !== "ambigua") confianza += 25;
-  if (tipoOperacion) confianza += 10;
-  if (tipoPropiedad) confianza += 10;
-  if (precio) confianza += 10;
-  if (zonaTxt) confianza += 5;
-  confianza = Math.min(confianza, 98);
-
-  const telMatch = t.match(/(\+?\d[\d\s-]{6,})/);
-  const tel = telMatch ? telMatch[1].trim() : "";
-
-  res.json({
-    tipo,
-    campos: {
-      tipoOperacion,
-      tipoPropiedad,
-      zona,
-      precio,
-      moneda,
-      dormitoriosMin,
-      contacto: tel || "",
-      notas: textoOriginal,
-      margenAbajo,
-      margenArriba,
-      permitirSinPrecio,
-      monedaEstricta,
-      toleranteTipo
-    },
-    confianza,
-    sugerencia: tipo === "oferta" ? "crear_oportunidad" : "crear_demanda"
-  });
+  res.json({ ok: true, analisis: "pendiente" });
 });
-
-// ============================
-// AUDIO OPENAI
-// ============================
 
 app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
-  try {
-    if (!req.file) return res.json({ error: "no audio" });
-    if (!process.env.OPENAI_API_KEY) return res.json({ error: "falta OPENAI_API_KEY" });
+  if (!req.file) return res.status(400).json({ ok: false, error: "Sin audio" });
 
+  try {
     const transcripcion = await openai.audio.transcriptions.create({
       file: fs.createReadStream(req.file.path),
-      model: "whisper-1"
+      model: "whisper-1",
+      language: "es"
     });
-
-    res.json({ texto: transcripcion.text || "" });
-  } catch (err) {
-    console.log("Error transcribiendo:", err);
-    res.json({ error: "error transcripcion" });
+    res.json({ ok: true, texto: transcripcion.text });
+  } catch (e) {
+    console.error("Error transcripción:", e.message);
+    res.status(500).json({ ok: false, error: "Error al transcribir" });
+  } finally {
+    try { fs.unlinkSync(req.file.path); } catch {}
   }
 });
 
-// ============================
-// RATING PUBLICO
-// ============================
-
-app.post("/api/rating", (req, res) => {
+// RATING
+app.post("/api/rating", async (req, res) => {
   const { propiedad_id, rating } = req.body;
-  const idx = Number(propiedad_id);
+  const id = Number(propiedad_id);
 
-  if (!isNaN(idx) && inmuebles[idx]) {
-    inmuebles[idx].rating = Number(rating);
-    guardarInmuebles();
+  if (!isNaN(id)) {
+    await supabase.from("inmuebles").update({ rating: Number(rating) }).eq("id", id);
   }
 
   res.json({ ok: true });
 });
 
 // ============================
-// PDF FICHA
+// PDF FICHA — lee de Supabase
 // ============================
 
 app.get("/api/ficha-pdf/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const p = inmuebles[id];
-  if (!p) return res.status(404).send("Propiedad no encontrada");
+
+  const { data: row } = await supabase.from("inmuebles").select("*").eq("id", id).single();
+  if (!row) return res.status(404).send("Propiedad no encontrada");
+
+  const p = sbToInm(row);
 
   const doc = new PDFDocument({ margin: 50, size: "A4" });
   res.setHeader("Content-Type", "application/pdf");
@@ -1585,15 +1336,11 @@ app.get("/api/ficha-pdf/:id", async (req, res) => {
   doc.rect(0, pageH - 50, 595, 50).fill("#f5f5f5");
   doc.fillColor("#888").fontSize(9).font("Helvetica").text(
     "Documento informativo. Precios sujetos a modificacion.",
-    50,
-    pageH - 38,
-    { width: W, align: "center" }
+    50, pageH - 38, { width: W, align: "center" }
   );
   doc.fillColor(VERDE).fontSize(9).font("Helvetica-Bold").text(
     "Vanina Buzzacchi Negocios Inmobiliarios - Rio Cuarto, Cordoba",
-    50,
-    pageH - 24,
-    { width: W, align: "center" }
+    50, pageH - 24, { width: W, align: "center" }
   );
 
   doc.end();
@@ -1608,3 +1355,4 @@ const PORT = process.env.PORT || 10000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log("Servidor corriendo en puerto " + PORT);
 });
+
