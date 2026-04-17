@@ -188,7 +188,7 @@
     <h1>Editar inmueble</h1>
     <div class="hint">
       • Podés <strong>arrastrar</strong> las fotos para cambiar el orden.<br>
-      • El botón <strong>Eliminar</strong> borra la foto del inmueble y también del server/storage según tu backend.<br>
+      • El botón <strong>Eliminar</strong> borra la foto del inmueble y también del server.<br>
       • Las fotos nuevas se suman a las existentes.
     </div>
 
@@ -246,25 +246,15 @@
     }
 
     btnVolver.addEventListener("click", () => {
-      window.location.href = "/ver.html?id=" + id;
+      window.location.href = "/ver.html?id=" + encodeURIComponent(id);
     });
 
-    async function fetchJson(url){
-      const r = await fetch(url, { cache: "no-store" });
-      const txt = await r.text();
-      if (!txt) return null;
-      try { return JSON.parse(txt); } catch { return null; }
-    }
-
-    fetch("/api/inmuebles-publicos/" + id)
-      .then(res => res.json())
+    fetch("/api/inmuebles-publicos/" + encodeURIComponent(id))
+      .then(res => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
       .then(inm => {
-        if (!inm || inm.ok === false) {
-          alert("No se encontró el inmueble.");
-          window.location.href = "/dashboard.html";
-          return;
-        }
-
         document.getElementById("campoTitulo").value = inm.titulo || "";
         document.getElementById("campoPrecio").value = inm.precio || "";
         document.getElementById("campoDescripcion").value = inm.descripcion || "";
@@ -272,7 +262,7 @@
         imagenesActuales = Array.isArray(inm.imagenes) ? inm.imagenes.slice() : [];
         renderThumbs();
 
-        form.action = "/editar/" + id;
+        form.action = "/editar/" + encodeURIComponent(id);
       })
       .catch(err => {
         console.error("Error al cargar inmueble para editar:", err);
@@ -306,14 +296,14 @@
         `;
 
         wrapper.querySelector(".btn-delete").addEventListener("click", async () => {
-          const ok = confirm("¿Eliminar esta foto del inmueble?");
+          const ok = confirm("¿Eliminar esta foto del inmueble? (se borra del server)");
           if (!ok) return;
 
           saveStatus.className = "status";
           saveStatus.textContent = "Eliminando foto…";
 
           try {
-            const res = await fetch("/editar/" + id + "/fotos/eliminar", {
+            const res = await fetch("/editar/" + encodeURIComponent(id) + "/fotos/eliminar", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
               body: "nombreFoto=" + encodeURIComponent(nombre)
