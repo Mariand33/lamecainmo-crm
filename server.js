@@ -881,7 +881,22 @@ app.get("/api/inmuebles", async (req, res) => {
     res.status(500).json({ ok: false, error: "Error interno" });
   }
 });
+// ✅ Ruta interna — devuelve TODOS los inmuebles (para el dashboard)
+app.get("/api/inmuebles", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("inmuebles")
+      .select("*")
+      .order("id", { ascending: false });
 
+    if (error) throw error;
+
+    res.json((data || []).map(sbToInm));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json([]);
+  }
+});
 // Solo públicos para funnel
 app.get("/api/inmuebles-publicos", async (req, res) => {
   try {
