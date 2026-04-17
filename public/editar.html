@@ -230,217 +230,206 @@
 
     <a class="back" href="/dashboard.html">← Volver al dashboard</a>
   </div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const index = params.get("index");
+  const thumbsContainer = document.getElementById("thumbs");
+  const thumbsStatus = document.getElementById("thumbsStatus");
+  const form = document.getElementById("formEditar");
+  const saveStatus = document.getElementById("saveStatus");
+  const btnVolver = document.getElementById("btnVolver");
 
-    const thumbsContainer = document.getElementById("thumbs");
-    const thumbsStatus = document.getElementById("thumbsStatus");
-    const form = document.getElementById("formEditar");
-    const saveStatus = document.getElementById("saveStatus");
-    const btnVolver = document.getElementById("btnVolver");
+  let imagenesActuales = [];
 
-    let imagenesActuales = []; // nombres (strings)
+  if (!id) {
+    alert("No se indicó qué inmueble editar.");
+    window.location.href = "/dashboard.html";
+  }
 
-    if (!index) {
-      alert("No se indicó qué inmueble editar.");
-      window.location.href = "/dashboard.html";
-    }
+  btnVolver.addEventListener("click", () => {
+    window.location.href = "/ver.html?id=" + id;
+  });
 
-    btnVolver.addEventListener("click", () => {
-      window.location.href = "/ver.html?index=" + index;
-    });
-
-    // ==========================
-    // CARGAR INMUEBLE
-    // ==========================
-    fetch("/api/inmuebles")
-      .then(res => res.json())
-      .then(data => {
-        const inm = data[index];
-        if (!inm) {
-          alert("No se encontró el inmueble.");
-          window.location.href = "/dashboard.html";
-          return;
-        }
-
-        document.getElementById("campoTitulo").value = inm.titulo || "";
-        document.getElementById("campoPrecio").value = inm.precio || "";
-        document.getElementById("campoDescripcion").value = inm.descripcion || "";
-
-        imagenesActuales = Array.isArray(inm.imagenes) ? inm.imagenes.slice() : [];
-        renderThumbs();
-
-        // Acción del form
-        form.action = "/editar/" + index;
-      })
-      .catch(err => {
-        console.error("Error al cargar inmueble para editar:", err);
-        alert("Error al cargar el inmueble.");
+  // ==========================
+  // CARGAR INMUEBLE
+  // ==========================
+  fetch("/api/inmuebles-publicos/" + id)
+    .then(res => {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(inm => {
+      if (!inm) {
+        alert("No se encontró el inmueble.");
         window.location.href = "/dashboard.html";
-      });
-
-    // ==========================
-    // RENDERIZAR MINIATURAS
-    // ==========================
-    function renderThumbs() {
-      thumbsContainer.innerHTML = "";
-
-      if (!imagenesActuales.length) {
-        const msg = document.createElement("div");
-        msg.className = "status";
-        msg.textContent = "No hay fotos cargadas.";
-        thumbsContainer.appendChild(msg);
         return;
       }
 
-      imagenesActuales.forEach((nombre, idx) => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "thumb-item";
-        wrapper.draggable = true;
-        wrapper.dataset.nombre = nombre;
+      document.getElementById("campoTitulo").value = inm.titulo || "";
+      document.getElementById("campoPrecio").value = inm.precio || "";
+      document.getElementById("campoDescripcion").value = inm.descripcion || "";
 
-        wrapper.innerHTML = `
-          <img src="/uploads/${nombre}" alt="Foto ${idx + 1}">
-          <div class="thumb-meta">
-            <span class="pill">#${idx + 1}</span>
-            <button type="button" class="btn-delete" title="Eliminar foto">Eliminar</button>
-          </div>
-        `;
+      imagenesActuales = Array.isArray(inm.imagenes) ? inm.imagenes.slice() : [];
+      renderThumbs();
 
-        // eliminar foto (SERVER + UI)
-        wrapper.querySelector(".btn-delete").addEventListener("click", async () => {
-          const ok = confirm("¿Eliminar esta foto del inmueble? (se borra del server)");
-          if (!ok) return;
-
-          // feedback
-          saveStatus.className = "status";
-          saveStatus.textContent = "Eliminando foto…";
-
-          try {
-            const res = await fetch("/editar/" + index + "/fotos/eliminar", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-              body: "nombreFoto=" + encodeURIComponent(nombre)
-            });
-
-            // si la ruta responde redirect, fetch igual devuelve 200/302 según config.
-            // Tomamos como OK si no fue 4xx/5xx.
-            if (!res.ok) throw new Error("HTTP " + res.status);
-
-            // actualizar UI
-            imagenesActuales = imagenesActuales.filter(n => n !== nombre);
-            renderThumbs();
-
-            saveStatus.className = "status ok";
-            saveStatus.textContent = "Foto eliminada.";
-            setTimeout(() => (saveStatus.textContent = ""), 2500);
-          } catch (e) {
-            console.error(e);
-            saveStatus.className = "status err";
-            saveStatus.textContent = "No se pudo eliminar la foto.";
-            setTimeout(() => (saveStatus.textContent = ""), 3000);
-          }
-        });
-
-        addDragEvents(wrapper);
-        thumbsContainer.appendChild(wrapper);
-      });
-    }
-
-    // ==========================
-    // DRAG & DROP
-    // ==========================
-    let dragItem = null;
-
-    function addDragEvents(el) {
-      el.addEventListener("dragstart", () => {
-        dragItem = el;
-        el.classList.add("dragging");
-      });
-
-      el.addEventListener("dragend", () => {
-        dragItem = null;
-        el.classList.remove("dragging");
-        syncArrayFromDOM();
-        // refrescar numeritos
-        renderThumbs();
-      });
-    }
-
-    thumbsContainer.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      if (!dragItem) return;
-
-      const afterElement = getDragAfterElement(thumbsContainer, e.clientX, e.clientY);
-      if (!afterElement) {
-        thumbsContainer.appendChild(dragItem);
-      } else {
-        thumbsContainer.insertBefore(dragItem, afterElement);
-      }
+      form.action = "/editar/" + id;
+    })
+    .catch(err => {
+      console.error("Error al cargar inmueble para editar:", err);
+      alert("Error al cargar el inmueble.");
+      window.location.href = "/dashboard.html";
     });
 
-    function getDragAfterElement(container, x, y) {
-      const draggableElements = [...container.querySelectorAll(".thumb-item:not(.dragging)")];
+  // ==========================
+  // RENDERIZAR MINIATURAS
+  // ==========================
+  function renderThumbs() {
+    thumbsContainer.innerHTML = "";
 
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
+    if (!imagenesActuales.length) {
+      const msg = document.createElement("div");
+      msg.className = "status";
+      msg.textContent = "No hay fotos cargadas.";
+      thumbsContainer.appendChild(msg);
+      return;
+    }
 
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
+    imagenesActuales.forEach((nombre, idx) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "thumb-item";
+      wrapper.draggable = true;
+      wrapper.dataset.nombre = nombre;
+
+      wrapper.innerHTML = `
+        <img src="/uploads/${nombre}" alt="Foto ${idx + 1}">
+        <div class="thumb-meta">
+          <span class="pill">#${idx + 1}</span>
+          <button type="button" class="btn-delete" title="Eliminar foto">Eliminar</button>
+        </div>
+      `;
+
+      wrapper.querySelector(".btn-delete").addEventListener("click", async () => {
+        const ok = confirm("¿Eliminar esta foto del inmueble? (se borra del server)");
+        if (!ok) return;
+
+        saveStatus.className = "status";
+        saveStatus.textContent = "Eliminando foto…";
+
+        try {
+          const res = await fetch("/editar/" + id + "/fotos/eliminar", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+            body: "nombreFoto=" + encodeURIComponent(nombre)
+          });
+
+          if (!res.ok) throw new Error("HTTP " + res.status);
+
+          imagenesActuales = imagenesActuales.filter(n => n !== nombre);
+          renderThumbs();
+
+          saveStatus.className = "status ok";
+          saveStatus.textContent = "Foto eliminada.";
+          setTimeout(() => (saveStatus.textContent = ""), 2500);
+        } catch (e) {
+          console.error(e);
+          saveStatus.className = "status err";
+          saveStatus.textContent = "No se pudo eliminar la foto.";
+          setTimeout(() => (saveStatus.textContent = ""), 3000);
         }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    function syncArrayFromDOM() {
-      const items = thumbsContainer.querySelectorAll(".thumb-item");
-      const nuevoOrden = [];
-      items.forEach(item => nuevoOrden.push(item.dataset.nombre));
-      imagenesActuales = nuevoOrden;
-    }
-
-    // ==========================
-    // SUBMIT: mandar orden actual en hidden inputs
-    // ==========================
-    form.addEventListener("submit", (e) => {
-      // Normalizamos campos para evitar cosas raras
-      const t = document.getElementById("campoTitulo");
-      const d = document.getElementById("campoDescripcion");
-      if (t && typeof t.value === "string") t.value = t.value.trim();
-      if (d && typeof d.value === "string") d.value = d.value.trim();
-
-      // sync y hidden
-      syncArrayFromDOM();
-
-      // limpiamos hidden previos
-      [...form.querySelectorAll("input[name='nombresImagenes'], input[name='ordenImagenes']")]
-        .forEach(el => el.remove());
-
-      // generamos pares nombre + orden
-      imagenesActuales.forEach((nombre, idx) => {
-        const inputNombre = document.createElement("input");
-        inputNombre.type = "hidden";
-        inputNombre.name = "nombresImagenes";
-        inputNombre.value = nombre;
-
-        const inputOrden = document.createElement("input");
-        inputOrden.type = "hidden";
-        inputOrden.name = "ordenImagenes";
-        inputOrden.value = String(idx + 1);
-
-        form.appendChild(inputNombre);
-        form.appendChild(inputOrden);
       });
 
-      // feedback
-      saveStatus.className = "status";
-      saveStatus.textContent = "Guardando…";
-      // dejamos que el submit siga (POST normal)
+      addDragEvents(wrapper);
+      thumbsContainer.appendChild(wrapper);
     });
-  </script>
+  }
+
+  // ==========================
+  // DRAG & DROP
+  // ==========================
+  let dragItem = null;
+
+  function addDragEvents(el) {
+    el.addEventListener("dragstart", () => {
+      dragItem = el;
+      el.classList.add("dragging");
+    });
+
+    el.addEventListener("dragend", () => {
+      dragItem = null;
+      el.classList.remove("dragging");
+      syncArrayFromDOM();
+      renderThumbs();
+    });
+  }
+
+  thumbsContainer.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    if (!dragItem) return;
+
+    const afterElement = getDragAfterElement(thumbsContainer, e.clientX, e.clientY);
+    if (!afterElement) {
+      thumbsContainer.appendChild(dragItem);
+    } else {
+      thumbsContainer.insertBefore(dragItem, afterElement);
+    }
+  });
+
+  function getDragAfterElement(container, x, y) {
+    const draggableElements = [...container.querySelectorAll(".thumb-item:not(.dragging)")];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function syncArrayFromDOM() {
+    const items = thumbsContainer.querySelectorAll(".thumb-item");
+    const nuevoOrden = [];
+    items.forEach(item => nuevoOrden.push(item.dataset.nombre));
+    imagenesActuales = nuevoOrden;
+  }
+
+  // ==========================
+  // SUBMIT
+  // ==========================
+  form.addEventListener("submit", () => {
+    const t = document.getElementById("campoTitulo");
+    const d = document.getElementById("campoDescripcion");
+    if (t && typeof t.value === "string") t.value = t.value.trim();
+    if (d && typeof d.value === "string") d.value = d.value.trim();
+
+    syncArrayFromDOM();
+
+    [...form.querySelectorAll("input[name='nombresImagenes'], input[name='ordenImagenes']")]
+      .forEach(el => el.remove());
+
+    imagenesActuales.forEach((nombre, idx) => {
+      const inputNombre = document.createElement("input");
+      inputNombre.type = "hidden";
+      inputNombre.name = "nombresImagenes";
+      inputNombre.value = nombre;
+
+      const inputOrden = document.createElement("input");
+      inputOrden.type = "hidden";
+      inputOrden.name = "ordenImagenes";
+      inputOrden.value = String(idx + 1);
+
+      form.appendChild(inputNombre);
+      form.appendChild(inputOrden);
+    });
+
+    saveStatus.className = "status";
+    saveStatus.textContent = "Guardando…";
+  });
+</script>
+  
 </body>
 </html>
