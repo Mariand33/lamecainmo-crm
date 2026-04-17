@@ -181,6 +181,14 @@
       return `${inm.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
     }
 
+    function getImageSrc(img) {
+      if (!img) return "";
+      if (String(img).startsWith("http://") || String(img).startsWith("https://")) {
+        return img;
+      }
+      return "/uploads/" + img;
+    }
+
     async function cargarFicha() {
       const id = getIdFromUrl();
       const ficha = document.getElementById("ficha");
@@ -202,7 +210,7 @@
 
         const imagenes = Array.isArray(data.imagenes) ? data.imagenes : [];
         const galeriaHtml = imagenes.length
-          ? imagenes.map(img => `<img src="/uploads/${img}" alt="Imagen propiedad">`).join("")
+          ? imagenes.map(img => `<img src="${getImageSrc(img)}" alt="Imagen propiedad">`).join("")
           : `<div style="color:#666;">Sin imágenes disponibles.</div>`;
 
         ficha.innerHTML = `
