@@ -619,6 +619,7 @@
     }
 
     async function actualizarDashboard(){
+      
       const inmuebles = await fetchJson("/api/inmuebles");
       const compradores = await fetchJson("/api/compradores");
 
