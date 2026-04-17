@@ -648,32 +648,46 @@ app.get("/api/inmuebles", (req, res) => {
   res.json(inmuebles);
 });
 
-app.get("/api/inmuebles-publicos", (req, res) => {
-  const publicos = inmuebles
-    .map((inm, i) => ({ ...inm, _index: i }))
-    .filter((i) => {
-      const estado = String(i.estadoPublicacion || "").toLowerCase();
-      return estado === "lista" || estado === "publicada";
-    })
-    .map((inm) => ({
-      id: inm._index,
+app.get("/api/inmuebles-publicos", async (req, res) => {
+  try {
+    if (!supabase) {
+      return res.status(500).json({ ok: false, error: "Supabase no configurado" });
+    }
+
+    const { data, error } = await supabase
+      .from("inmuebles")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      return res.status(500).json({ ok: false, error: "Error cargando inmuebles" });
+    }
+
+    const publicos = (data || []).map((inm) => ({
+      id: inm.id,
       titulo: inm.titulo || "",
-      tipoOperacion: inm.tipoOperacion || "",
-      tipoPropiedad: inm.tipoPropiedad || "",
+      tipoOperacion: inm.tipo_operacion || "",
+      tipoPropiedad: inm.tipo_propiedad || "",
       zona: inm.zona || "",
       direccion: inm.direccion || "",
-      precio: inm.precio || 0,
+      precio: Number(inm.precio || 0),
       moneda: inm.moneda || "USD",
-      dormitorios: inm.dormitorios || 0,
-      banos: inm.banos || 0,
+      dormitorios: Number(inm.dormitorios || 0),
+      banos: Number(inm.banos || 0),
       descripcion: inm.descripcion || "",
       imagenes: inm.imagenes || [],
       thumbnails: inm.thumbnails || [],
       video: inm.video || "",
-      estadoPublicacion: inm.estadoPublicacion || ""
+      estadoPublicacion: inm.estado_publicacion || ""
     }));
 
-  res.json(publicos);
+    res.json(publicos);
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, error: "Error interno" });
+  }
 });
 
 app.get("/api/inmuebles-publicos/:id", (req, res) => {
