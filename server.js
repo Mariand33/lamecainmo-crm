@@ -643,46 +643,37 @@ app.get("/marketing/zip/:index", (req, res) => {
 // ============================
 // APIS BASICAS
 // ============================
-
-app.get("/api/inmuebles", (req, res) => {
-  res.json(inmuebles);
-});
-
-app.get("/api/inmuebles-publicos", async (req, res) => {
+app.get("/api/inmuebles-publicos/:id", async (req, res) => {
   try {
-    if (!supabase) {
-      return res.status(500).json({ ok: false, error: "Supabase no configurado" });
-    }
+    const id = Number(req.params.id);
 
     const { data, error } = await supabase
       .from("inmuebles")
       .select("*")
-      .order("id", { ascending: false });
+      .eq("id", id)
+      .single();
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return res.status(500).json({ ok: false, error: "Error cargando inmuebles" });
+    if (error || !data) {
+      return res.status(404).json({ ok: false, error: "Propiedad no encontrada" });
     }
 
-    const publicos = (data || []).map((inm) => ({
-      id: inm.id,
-      titulo: inm.titulo || "",
-      tipoOperacion: inm.tipo_operacion || "",
-      tipoPropiedad: inm.tipo_propiedad || "",
-      zona: inm.zona || "",
-      direccion: inm.direccion || "",
-      precio: Number(inm.precio || 0),
-      moneda: inm.moneda || "USD",
-      dormitorios: Number(inm.dormitorios || 0),
-      banos: Number(inm.banos || 0),
-      descripcion: inm.descripcion || "",
-      imagenes: inm.imagenes || [],
-      thumbnails: inm.thumbnails || [],
-      video: inm.video || "",
-      estadoPublicacion: inm.estado_publicacion || ""
-    }));
-
-    res.json(publicos);
+    res.json({
+      id: data.id,
+      titulo: data.titulo || "",
+      tipoOperacion: data.tipo_operacion || "",
+      tipoPropiedad: data.tipo_propiedad || "",
+      zona: data.zona || "",
+      direccion: data.direccion || "",
+      precio: data.precio || 0,
+      moneda: data.moneda || "USD",
+      dormitorios: data.dormitorios || 0,
+      banos: data.banos || 0,
+      descripcion: data.descripcion || "",
+      imagenes: data.imagenes || [],
+      thumbnails: data.thumbnails || [],
+      video: data.video || "",
+      estadoPublicacion: data.estado_publicacion || ""
+    });
 
   } catch (e) {
     console.error(e);
@@ -690,7 +681,6 @@ app.get("/api/inmuebles-publicos", async (req, res) => {
   }
 });
 
-app.get("/api/inmuebles-publicos/:id", (req, res) => {
   const id = Number(req.params.id);
 
   if (Number.isNaN(id) || !inmuebles[id]) {
