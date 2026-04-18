@@ -810,7 +810,8 @@
         const res = await fetch(API_URL, { cache: "no-store" });
         const data = await res.json();
 
-        allProperties = Array.isArray(data) ? data : [];
+       allProperties = Array.isArray(data) ? data : [];
+alert("Propiedades recibidas: " + allProperties.length);
 
         document.getElementById("miniTotal").textContent = allProperties.length;
         document.getElementById("miniVenta").textContent =
