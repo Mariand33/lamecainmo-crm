@@ -142,14 +142,7 @@ function inmToSb(inm) {
 // ============================
 
 app.use(cors({
-  origin: [
-    "https://mariand33.github.io",
-    "https://marianad33.github.io",
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-  ],
+  origin: "*",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type"]
 }));
