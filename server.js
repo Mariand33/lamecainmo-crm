@@ -299,6 +299,7 @@ app.get("/radar-ia", (req, res) => {
 });
 
 app.get("/funnel", (req, res) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
 });
 
