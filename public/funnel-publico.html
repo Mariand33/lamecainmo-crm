@@ -8,8 +8,8 @@
   <style>
     :root{
       --bg:#f5f1e8;--card:#fff;--dark:#111;
-      --green:#143d2f;--muted:#6f6a63;--border:#e4dccf;--wa:#25D366;
-      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --green:#143d2f;--green2:#1a4a38;--muted:#6f6a63;--border:#e4dccf;
+      --wa:#25D366;--gold:#d9b15d;--shadow:0 10px 30px rgba(0,0,0,.08);
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
@@ -50,8 +50,6 @@
     .chip.active,.chip:hover{background:#171717;color:#fff;border-color:#171717}
     .searchbox{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:999px;padding:8px 10px 8px 16px;box-shadow:var(--shadow)}
     .searchbox input{border:none;outline:none;background:transparent;min-width:220px;font-size:15px;color:#222}
-
-    /* GRID — las cards van en columnas, la ficha ocupa fila completa */
     .properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
     .card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid #eee3d0;transition:.2s;display:flex;flex-direction:column}
     .card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(0,0,0,.12)}
@@ -72,40 +70,6 @@
     .btn-card{border-radius:14px;padding:13px 14px;text-align:center;font-weight:800;font-size:14px;border:none;cursor:pointer;display:block}
     .btn-view{background:#111;color:#fff}
     .btn-contact{background:var(--wa);color:#fff}
-
-    /* FICHA — fila separada que ocupa todo el ancho */
-    .ficha-row{display:none;grid-column:1/-1;background:#fff;border-radius:22px;box-shadow:var(--shadow);border:2px solid #d9b15d;padding:24px;margin-bottom:6px}
-    .ficha-row.abierta{display:block}
-    .ficha-gallery{position:relative;height:300px;background:#111;border-radius:14px;overflow:hidden;margin-bottom:16px}
-    .ficha-track{display:flex;height:100%;transition:transform .35s ease}
-    .ficha-slide{min-width:100%;height:100%}
-    .ficha-slide img{width:100%;height:100%;object-fit:cover;display:block}
-    .gnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
-    .gnav:hover{background:rgba(255,255,255,.4)}
-    .gprev{left:14px}.gnext{right:14px}
-    .gdots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:7px}
-    .gdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:.2s}
-    .gdot.on{background:#d9b15d;transform:scale(1.3)}
-    .ficha-content{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-    .ficha-left{}
-    .ficha-right{}
-    .ficha-titulo{font-size:22px;font-weight:800;color:#1b1b1b;margin:0 0 8px}
-    .ficha-precio{font-size:28px;font-weight:800;color:var(--green);margin:0 0 12px}
-    .ficha-zona{color:var(--muted);font-size:15px;margin-bottom:14px}
-    .ficha-specs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-    .fspec{background:#f8f4ec;border:1px solid #ebe1d0;border-radius:12px;padding:9px 14px;font-size:14px}
-    .ficha-desc{font-size:14px;line-height:1.7;color:#4a4540;margin-bottom:16px}
-    .ficha-map{border-radius:12px;overflow:hidden;margin-bottom:16px;height:220px;background:#e8e0d0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#888;font-size:14px}
-    .ficha-map iframe{width:100%;height:100%;border:none;display:block}
-    .ficha-ctas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
-    .fcta{display:flex;align-items:center;justify-content:center;padding:14px 10px;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;transition:.2s;gap:6px}
-    .fcta:hover{opacity:.88}
-    .fcta-wa{background:var(--wa);color:#fff}
-    .fcta-visit{background:#111;color:#fff}
-    .fcta-share{background:#f5f1e8;color:#143d2f;border:2px solid #143d2f}
-    .fcta-cerrar{width:100%;background:none;border:2px solid #ddd;border-radius:12px;padding:11px;cursor:pointer;font-size:14px;color:#888;font-weight:700}
-    .fcta-cerrar:hover{border-color:#999;color:#555}
-
     .empty-state{background:#fff;border:1px dashed #d5c8b0;border-radius:24px;padding:34px;text-align:center;color:#6f675d;font-size:18px;margin-top:26px}
     .loader{padding:40px 0;text-align:center;color:#786f64;font-size:18px}
     .lead-box{margin-top:20px;background:linear-gradient(145deg,#16382b,#214f3f);color:#fff;border-radius:26px;padding:28px}
@@ -122,16 +86,12 @@
     .footer{background:#111;color:#eee;padding:36px 0 100px;margin-top:20px;text-align:center}
     .footer-brand{color:#d9b15d;font-size:18px;font-weight:800;margin-bottom:10px}
     .floating-wa{position:fixed;right:18px;bottom:18px;width:72px;height:72px;border-radius:50%;background:var(--wa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 16px 36px rgba(37,211,102,.35);z-index:80;text-decoration:none}
-    .counter-bubble{position:fixed;right:12px;bottom:88px;z-index:81;background:#d9363e;color:#fff;border-radius:999px;min-width:28px;height:28px;padding:0 8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;border:3px solid #fff}
-
     @media(max-width:980px){
       .hero-grid,.filter-bar,.lead-form,.testimonials{grid-template-columns:1fr}
       .properties-grid{grid-template-columns:1fr}
       .searchbox input{min-width:0;width:100%}
       .topbar-inner{flex-direction:column;align-items:flex-start}
       .card-actions{grid-template-columns:1fr}
-      .ficha-content{grid-template-columns:1fr}
-      .ficha-ctas{grid-template-columns:1fr}
     }
     @media(max-width:640px){.hero{padding-top:36px}.hero h1{font-size:42px}}
   </style>
@@ -142,11 +102,11 @@
   <div class="container topbar-inner">
     <div class="brand">
       <div class="brand-title">Vanina Buzzacchi</div>
-      <div class="brand-sub">Negocios Inmobiliarios - Rio Cuarto</div>
+      <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
     </div>
     <div class="top-actions">
       <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
-      <a class="btn btn-wa" id="waTop" href="#" target="_blank">Consultar</a>
+      <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
     </div>
   </div>
 </header>
@@ -154,23 +114,23 @@
 <section class="hero">
   <div class="container hero-grid">
     <div>
-      <div class="eyebrow">Rio Cuarto - Cordoba</div>
-      <h1>Tu proxima <span class="gold">propiedad</span><br>te esta esperando.</h1>
-      <p>Explora casas, departamentos, locales y oportunidades reales. Compara opciones, abri fichas, consulta por WhatsApp o deja tu busqueda.</p>
+      <div class="eyebrow">Rio Cuarto · Córdoba</div>
+      <h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1>
+      <p>Explorá casas, departamentos, locales y oportunidades reales. Comparás opciones, abrís fichas, consultás por WhatsApp o dejás tu búsqueda.</p>
       <div class="top-actions" style="justify-content:flex-start">
-        <a class="btn btn-wa" id="waHero" href="#" target="_blank">Hablar por WhatsApp</a>
-        <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi busqueda</a>
+        <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a>
+        <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
       </div>
       <div class="hero-badges">
         <div class="hero-badge">+2.143 personas ya exploraron propiedades</div>
         <div class="hero-badge">Consultas reales por WhatsApp</div>
-        <div class="hero-badge">Atencion personalizada</div>
+        <div class="hero-badge">Atención personalizada</div>
       </div>
     </div>
     <div class="hero-card">
-      <h3>Actividad del catalogo</h3>
+      <h3>Actividad del catálogo</h3>
       <div class="metric" id="visitCounter">2.143</div>
-      <p>Visitas estimadas al catalogo inmobiliario este mes.</p>
+      <p>Visitas estimadas al catálogo inmobiliario este mes.</p>
       <div class="stats-mini">
         <div class="mini"><strong id="miniTotal">0</strong> propiedades visibles</div>
         <div class="mini"><strong id="miniVenta">0</strong> en venta</div>
@@ -182,8 +142,8 @@
 
 <section class="section" id="propiedades">
   <div class="container">
-    <h2 class="section-title">Explora todas las propiedades</h2>
-    <p class="section-sub">Filtra por operacion o tipo y abri cada ficha para ver fotos, detalles y consultar directo por WhatsApp.</p>
+    <h2 class="section-title">Explorá todas las propiedades</h2>
+    <p class="section-sub">Filtrá por operación o tipo y abrí cada ficha para ver fotos, detalles y consultar directo por WhatsApp.</p>
     <div class="filter-bar">
       <div class="chips">
         <button class="chip active" data-filter="todos">Todos</button>
@@ -195,13 +155,12 @@
         <button class="chip" data-filter="terreno">Terrenos</button>
       </div>
       <div class="searchbox">
-        <span>&#128269;</span>
+        <span>🔍</span>
         <input type="text" id="searchInput" placeholder="Buscar por zona, calle, tipo...">
       </div>
     </div>
-    <div class="stats-mini">
+    <div class="stats-mini" style="margin-top:16px">
       <div class="mini" id="resultCount">Mostrando 0 propiedades</div>
-      <div class="mini">Fichas publicas + contacto inmediato</div>
     </div>
     <div id="loader" class="loader">Cargando propiedades...</div>
     <div id="propertiesGrid" class="properties-grid" style="display:none"></div>
@@ -212,17 +171,17 @@
 <section class="section" id="dejar-busqueda">
   <div class="container">
     <div class="lead-box">
-      <h3>No encontraste todavia lo que buscas?</h3>
-      <p>Dejanos tu busqueda y te contactamos cuando entre una propiedad que encaje.</p>
+      <h3>¿No encontraste todavía lo que buscás?</h3>
+      <p>Dejanos tu búsqueda y te contactamos cuando entre una propiedad que encaje.</p>
       <form class="lead-form" id="leadForm">
         <input type="text" id="leadNombre" placeholder="Nombre y apellido" required>
         <input type="text" id="leadTelefono" placeholder="WhatsApp" required>
-        <select id="leadOperacion" required><option value="">Operacion</option><option value="venta">Comprar</option><option value="alquiler">Alquilar</option></select>
+        <select id="leadOperacion" required><option value="">Operación</option><option value="venta">Comprar</option><option value="alquiler">Alquilar</option></select>
         <select id="leadTipo" required><option value="">Tipo de propiedad</option><option value="casa">Casa</option><option value="depto">Departamento</option><option value="local">Local</option><option value="terreno">Terreno</option></select>
         <input type="text" id="leadZona" placeholder="Zona deseada">
         <input type="text" id="leadPresupuesto" placeholder="Presupuesto aproximado">
-        <textarea id="leadMensaje" placeholder="Contanos que buscas: dormitorios, patio, cochera, barrio, urgencia, etc."></textarea>
-        <button class="btn btn-wa full" type="submit">Enviar busqueda</button>
+        <textarea id="leadMensaje" placeholder="Contanos qué buscás: dormitorios, patio, cochera, barrio, urgencia, etc."></textarea>
+        <button class="btn btn-wa full" type="submit">Enviar búsqueda</button>
       </form>
       <div id="leadMsg" style="margin-top:14px;font-size:15px;color:#dfeee8"></div>
     </div>
@@ -233,269 +192,233 @@
   <div class="container">
     <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
     <div class="testimonials">
-      <div class="testimonial"><p>"Encontramos una casa en la zona que buscabamos y el proceso fue claro desde el primer dia. Valoramos mucho el criterio y la paciencia."</p><strong>Maria y Diego - Compra de vivienda</strong></div>
-      <div class="testimonial"><p>"Necesitabamos alquilar rapido, sin vueltas y sin perder tiempo viendo opciones que no servian. Nos acompanaron bien y encontramos una alternativa concreta."</p><strong>Lucia R. - Alquiler</strong></div>
-      <div class="testimonial"><p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir."</p><strong>Fernando M. - Compra e inversion</strong></div>
+      <div class="testimonial"><p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia."</p><strong>María y Diego · Compra de vivienda</strong></div>
+      <div class="testimonial"><p>"Necesitábamos alquilar rápido, sin vueltas y sin perder tiempo viendo opciones que no servían. Nos acompañaron bien y encontramos una alternativa concreta."</p><strong>Lucía R. · Alquiler</strong></div>
+      <div class="testimonial"><p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento. No fue solo mostrar propiedades: hubo criterio para ayudarnos a decidir."</p><strong>Fernando M. · Compra e inversión</strong></div>
     </div>
   </div>
 </section>
 
 <footer class="footer">
   <div class="container">
-    <div class="footer-brand">Vanina Buzzacchi - Propiedades - Rio Cuarto, Cordoba</div>
-    <div>+54 9 358 570-1632 - Todos los derechos reservados</div>
+    <div class="footer-brand">Vanina Buzzacchi · Propiedades · Río Cuarto, Córdoba</div>
+    <div>+54 9 358 570-1632 · Todos los derechos reservados</div>
   </div>
 </footer>
 
-<a class="floating-wa" id="waFloat" href="#" target="_blank">&#128172;</a>
-<div class="counter-bubble">1</div>
+<a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a>
 
 <script>
-var WA         = "543585701632";
-var LEADS_URL  = "https://inmocreador-crm.onrender.com/api/leads";
-var IMG_BASE   = "https://inmocreador-crm.onrender.com/uploads/";
-var FUNNEL_URL = "https://mariand33.github.io/lamecainmo-crm/funnel-publico.html";
+  const API_URL     = "https://inmocreador-crm.onrender.com/api/inmuebles-publicos";
+  const LEADS_URL   = "https://inmocreador-crm.onrender.com/api/leads";
+  const WHATSAPP_NUMBER = "543585701632";
+  const IMG_BASE    = "https://inmocreador-crm.onrender.com/uploads/";
 
-var PROPS = [
-  {
-    titulo:"Casa 4 Dorm - Banda Norte",
-    op:"venta",tipo:"casa",zona:"Banda Norte",dir:"Bolivia al 900",
-    precio:150000,moneda:"USD",dorm:4,ban:3,sup:209,
-    desc:"Hermosa casa de 2 plantas en barrio tranquilo y familiar.\n4 dormitorios (2 en suite) - 3 banos completos\nCocina con barra + living comedor\nGarage, patio de luz y amplio balcon\nJardin con galeria, asador y pileta con agua caliente\nTerreno: 328 m2 - Construidos: 209 m2\nAcepta casa a reciclar como parte de pago y financia.",
-    imgs:["1772213059707.png","1772409657418.jpeg","1771987377886.webp","1771987377779.webp","1771987379015.webp","1772409659657.jpeg","1772409494345.jpeg","1772409491878.jpeg"]
-  },
-  {
-    titulo:"Casa Bimaco a Estrenar",
-    op:"venta",tipo:"casa",zona:"Bimaco",dir:"Alameda 2500",
-    precio:160000,moneda:"USD",dorm:2,ban:2,sup:0,
-    desc:"Ubicada en barrio Bimaco (Alameda al 2500).\n2 Dormitorios (uno en suite con vestidor) - 2 Banos\nCocina con equipamiento de ultima generacion\nLiving Comedor super amplio - Garage\nPatio con Asador y PISCINA ILUMINADA con fuente de agua.",
-    imgs:["1772573270295.jpg","1772573270297.jpg","1772573270299.jpg","1772573270300.jpg","1772573270303.jpg"]
-  },
-  {
-    titulo:"Casa Moderna - 3 Dorm - 3 Banos - Garage triple - Pileta",
-    op:"venta",tipo:"casa",zona:"Sector Universitario",dir:"Teresa Frua al 1100",
-    precio:150000,moneda:"USD",dorm:3,ban:3,sup:0,
-    desc:"Moderna, comoda y versatil propiedad de 2 plantas.\nTeresa Frua al 1100, barrio tranquilo y familiar.\n3 dormitorios (dos con vestidores)\nLiving Comedor - Hermosa Cocina - 3 banos completos\nAmplio quincho con cocina y bano\nGarage para 3 autos con porton automatico\nPatio con Pileta - Detalles Premium.",
-    imgs:["1772578555340.jpg","1772576086268.jpg","1772578555357.jpg","1772578866171.jpg","1772579095146.jpg","1772579147792.jpg","1772579179156.jpg","1772628736757.jpg","1772628736758.jpg"]
-  },
-  {
-    titulo:"3 propiedades en 1 - Oportunidad de inversion",
-    op:"venta",tipo:"casa",zona:"Cucu Quintitas Golf",dir:"Rio Deseado al 300",
-    precio:120000,moneda:"USD",dorm:3,ban:2,sup:270,
-    desc:"Se venden 3 propiedades en 1. Ideal para inversion o familia numerosa.\nRenta aproximada: $1.500.000\nRio Deseado al 300 (Zona Cucu Quintitas Golf)\nCasa: 3 Dorm, 2 banos, patio doble, garage 2 autos (150 m2)\nDto PB: 1 Dorm, bano, cocina-comedor (50 m2)\nDto PA loft: 1 Dorm, cocina-comedor, living, bano (70 m2)\nSe recibe vehiculo o departamento.",
-    imgs:["1772640682196-912.jpg","1772640682199-972.jpg","1772640682199-1401.jpg","1772640682200-8483.jpg","1772640682200-3720.jpg","1772640682204-3860.jpg","1772640682205-5112.jpg","1772640682205-1486.jpg","1772640682205-6490.jpg"]
+  let allProperties = [];
+  let currentFilter = "todos";
+
+  function waLink(texto){
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`;
   }
-];
 
-function fPrecio(p){
-  return p.precio ? (p.moneda||"USD")+" "+p.precio.toLocaleString("es-AR") : "Consultar";
-}
-function waLink(txt){
-  return "https://wa.me/"+WA+"?text="+encodeURIComponent(txt);
-}
-function norm(t){
-  return (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-}
-
-var fichaAbierta = null;
-
-function abrirFicha(idx){
-  var row = document.getElementById("ficha-"+idx);
-  if(!row) return;
-  if(fichaAbierta !== null && fichaAbierta !== idx){
-    var prev = document.getElementById("ficha-"+fichaAbierta);
-    if(prev) prev.classList.remove("abierta");
+  function formatPrice(item){
+    const precio = Number(item.precio || 0);
+    if (!precio) return "Consultar";
+    return `${item.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
   }
-  if(fichaAbierta === idx){
-    row.classList.remove("abierta");
-    fichaAbierta = null;
-    return;
+
+  function normalize(text){
+    return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
-  row.classList.add("abierta");
-  fichaAbierta = idx;
-  row.scrollIntoView({behavior:"smooth",block:"nearest"});
-  var mapDiv = row.querySelector(".ficha-map[data-q]");
-  if(mapDiv){
-    var q = mapDiv.getAttribute("data-q");
-    mapDiv.removeAttribute("data-q");
-    mapDiv.innerHTML = "<iframe src='https://maps.google.com/maps?q="+q+"&z=14&output=embed' style='width:100%;height:100%;border:none;display:block'></iframe>";
+
+  function detectType(item){
+    const tipo = normalize(item.tipoPropiedad || item.tipo || item.titulo || "");
+    if (tipo.includes("depto") || tipo.includes("departamento")) return "depto";
+    if (tipo.includes("casa")) return "casa";
+    if (tipo.includes("local")) return "local";
+    if (tipo.includes("terreno") || tipo.includes("lote")) return "terreno";
+    return tipo || "otro";
   }
-}
 
-function gNav(btn,dir){
-  var gallery = btn.closest(".ficha-gallery");
-  var track = gallery.querySelector(".ficha-track");
-  var total = track.querySelectorAll(".ficha-slide").length;
-  var cur = parseInt(track.getAttribute("data-slide")||"0");
-  var next = ((cur+dir)+total)%total;
-  track.setAttribute("data-slide",next);
-  track.style.transform = "translateX(-"+(next*100)+"%)";
-  gallery.querySelectorAll(".gdot").forEach(function(d,i){d.className="gdot"+(i===next?" on":"");});
-}
-function gDot(dot,n){
-  var gallery = dot.closest(".ficha-gallery");
-  var track = gallery.querySelector(".ficha-track");
-  track.setAttribute("data-slide",n);
-  track.style.transform = "translateX(-"+(n*100)+"%)";
-  gallery.querySelectorAll(".gdot").forEach(function(d,i){d.className="gdot"+(i===n?" on":"");});
-}
+  function getFirstImage(item){
+    if (item.thumbnails && item.thumbnails.length > 0)
+      return IMG_BASE + "thumbs/" + item.thumbnails[0];
+    if (item.imagenes && item.imagenes.length > 0)
+      return IMG_BASE + item.imagenes[0];
+    return "https://via.placeholder.com/900x620?text=Propiedad";
+  }
 
-function render(items){
-  var grid = document.getElementById("propertiesGrid");
-  var empty = document.getElementById("emptyState");
-  document.getElementById("resultCount").textContent =
-    "Mostrando "+items.length+" "+(items.length===1?"propiedad":"propiedades");
-  if(!items.length){grid.style.display="none";empty.style.display="block";return;}
-  empty.style.display="none";grid.style.display="grid";
-  fichaAbierta = null;
+  function propertyMatches(item, filter, search){
+    const tipoOperacion = normalize(item.tipoOperacion || "");
+    const tipo = detectType(item);
+    let okFilter = true;
+    if (filter === "venta") okFilter = tipoOperacion.includes("venta");
+    if (filter === "alquiler") okFilter = tipoOperacion.includes("alquiler");
+    if (["casa","depto","local","terreno"].includes(filter)) okFilter = tipo === filter;
+    if (!okFilter) return false;
+    const bigText = normalize(`${item.titulo||""} ${item.zona||""} ${item.direccion||""} ${item.descripcion||""} ${item.tipoPropiedad||""} ${item.tipoOperacion||""}`);
+    return bigText.includes(normalize(search));
+  }
 
-  var html = "";
-  for(var i=0;i<items.length;i++){
-    var p = items[i];
-    var idx = PROPS.indexOf(p);
-    var isSale = norm(p.op).indexOf("venta")>=0;
-    var pr = fPrecio(p);
-    var imgs = [];
-    for(var m=0;m<p.imgs.length;m++) imgs.push(p.imgs[m].indexOf("http")===0?p.imgs[m]:IMG_BASE+p.imgs[m]);
+  function renderCards(items){
+    const grid = document.getElementById("propertiesGrid");
+    const empty = document.getElementById("emptyState");
+    const resultCount = document.getElementById("resultCount");
 
-    var slides="";
-    for(var s=0;s<imgs.length;s++) slides+='<div class="ficha-slide"><img src="'+imgs[s]+'" loading="lazy"></div>';
+    resultCount.textContent = `Mostrando ${items.length} ${items.length === 1 ? "propiedad" : "propiedades"}`;
 
-    var nav="";
-    if(imgs.length>1){
-      nav='<button class="gnav gprev" onclick="gNav(this,-1)">&#8249;</button><button class="gnav gnext" onclick="gNav(this,1)">&#8250;</button>';
+    if (!items.length){
+      grid.style.display = "none";
+      empty.style.display = "block";
+      return;
     }
-    var dots="";
-    if(imgs.length>1){for(var d=0;d<imgs.length;d++) dots+='<span class="gdot'+(d===0?" on":"")+'" onclick="gDot(this,'+d+')"></span>';}
 
-    var specs="";
-    if(p.dorm) specs+='<div class="fspec">'+p.dorm+' Dorm.</div>';
-    if(p.ban)  specs+='<div class="fspec">'+p.ban+' Banos</div>';
-    if(p.sup)  specs+='<div class="fspec">'+p.sup+' m2</div>';
-    if(!specs)  specs='<div class="fspec">Consultar</div>';
+    empty.style.display = "none";
+    grid.style.display = "grid";
 
-    var descHtml = (p.desc||"").replace(/\n/g,"<br>");
-    var shortDesc = (p.desc||"").replace(/\n/g," ").slice(0,120);
-    var q = encodeURIComponent((p.dir||p.zona||"")+" Rio Cuarto Cordoba");
-    var waC = waLink("Hola Vanina, vi "+p.titulo+" y quiero mas informacion. Precio: "+pr);
-    var waV = waLink("Hola Vanina, quiero visitar "+p.titulo+" en "+p.zona);
-    var waS = "https://wa.me/?text="+encodeURIComponent("Propiedad: "+p.titulo+" - "+p.zona+" - "+pr+" - Ver mas: "+FUNNEL_URL);
+    let html = "";
 
-    // CARD
-    html +=
-      '<article class="card">'+
-        '<div class="card-image-wrap">'+
-          '<div class="badge-top"><span class="badge '+(isSale?"badge-sale":"badge-rent")+'">'+(isSale?"Venta":"Alquiler")+'</span></div>'+
-          '<img class="card-image" src="'+imgs[0]+'" loading="lazy">'+
-        '</div>'+
-        '<div class="card-body">'+
-          '<div class="card-title">'+p.titulo+'</div>'+
-          '<div class="card-price">'+pr+'</div>'+
-          '<div class="card-zone">'+p.zona+(p.dir?" - "+p.dir:"")+'</div>'+
-          '<div class="card-meta"><span class="meta-pill">'+(isSale?"Venta":"Alquiler")+'</span><span class="meta-pill">'+p.tipo+'</span>'+(p.dorm?'<span class="meta-pill">'+p.dorm+' dorm.</span>':"")+(p.ban?'<span class="meta-pill">'+p.ban+' banos</span>':"")+
+    items.forEach((item) => {
+      const tipoOperacion = normalize(item.tipoOperacion || "");
+      const isSale = tipoOperacion.includes("venta");
+      const tipo = detectType(item);
+      const dormitorios = item.dormitorios ? `${item.dormitorios} dorm.` : "Consultar";
+      const banos = item.banos ? `${item.banos} baños` : "Consultar";
+      const shortDesc = (item.descripcion || "Propiedad disponible.")
+        .replace(/\r?\n/g, " ").slice(0, 130);
+      const waText = `Hola, vi esta propiedad y quiero más información:%0A%0A${item.titulo||"Propiedad"}%0AZona: ${item.zona||"-"}%0APrecio: ${formatPrice(item)}`;
+
+      html +=
+        '<article class="card">'+
+          '<div class="card-image-wrap">'+
+            '<div class="badge-top"><span class="badge '+(isSale?"badge-sale":"badge-rent")+'">'+(isSale?"Venta":"Alquiler")+'</span></div>'+
+            '<img class="card-image" src="'+getFirstImage(item)+'" alt="'+(item.titulo||"Propiedad")+'" loading="lazy" onerror="this.src=\'https://via.placeholder.com/900x620?text=Propiedad\'">'+
           '</div>'+
-          '<div class="card-desc">'+shortDesc+'...</div>'+
-          '<div class="card-actions">'+
-            '<button class="btn-card btn-view" onclick="abrirFicha('+idx+')">Ver ficha</button>'+
-            '<a class="btn-card btn-contact" href="'+waC+'" target="_blank">Consultar</a>'+
-          '</div>'+
-        '</div>'+
-      '</article>';
-
-    // FICHA en fila separada despues de cada card
-    html +=
-      '<div class="ficha-row" id="ficha-'+idx+'" style="grid-column:1/-1">'+
-        '<div class="ficha-gallery">'+
-          '<div class="ficha-track" data-slide="0">'+slides+'</div>'+
-          nav+
-          '<div class="gdots">'+dots+'</div>'+
-        '</div>'+
-        '<div class="ficha-content">'+
-          '<div class="ficha-left">'+
-            '<div class="ficha-titulo">'+p.titulo+'</div>'+
-            '<div class="ficha-precio">'+pr+'</div>'+
-            '<div class="ficha-zona">'+p.zona+(p.dir?" - "+p.dir:"")+'</div>'+
-            '<div class="ficha-specs">'+specs+'</div>'+
-            '<div class="ficha-desc">'+descHtml+'</div>'+
-          '</div>'+
-          '<div class="ficha-right">'+
-            '<div class="ficha-map" data-q="'+q+'">Ver en el mapa</div>'+
-            '<div class="ficha-ctas">'+
-              '<a class="fcta fcta-wa" href="'+waC+'" target="_blank">Consultar</a>'+
-              '<a class="fcta fcta-visit" href="'+waV+'" target="_blank">Visitarla</a>'+
-              '<a class="fcta fcta-share" href="'+waS+'" target="_blank">Compartir</a>'+
+          '<div class="card-body">'+
+            '<div class="card-title">'+(item.titulo||"Propiedad disponible")+'</div>'+
+            '<div class="card-price">'+formatPrice(item)+'</div>'+
+            '<div class="card-zone">'+(item.zona||"Zona a consultar")+(item.direccion?" · "+item.direccion:"")+'</div>'+
+            '<div class="card-meta">'+
+              '<span class="meta-pill">'+(isSale?"Venta":"Alquiler")+'</span>'+
+              '<span class="meta-pill">'+(tipo||"Propiedad")+'</span>'+
+              '<span class="meta-pill">'+dormitorios+'</span>'+
+              '<span class="meta-pill">'+banos+'</span>'+
             '</div>'+
-            '<button class="fcta-cerrar" onclick="abrirFicha('+idx+')">Cerrar ficha</button>'+
+            '<div class="card-desc">'+shortDesc+'...</div>'+
+            '<div class="card-actions">'+
+              '<a class="btn-card btn-view" href="/propiedad.html?id='+item.id+'">Ver ficha</a>'+
+              '<a class="btn-card btn-contact" href="https://wa.me/'+WHATSAPP_NUMBER+'?text='+waText+'" target="_blank">Consultar</a>'+
+            '</div>'+
           '</div>'+
-        '</div>'+
-      '</div>';
+        '</article>';
+    });
+
+    grid.innerHTML = html;
   }
-  grid.innerHTML = html;
-}
 
-var currentFilter="todos";
-function matches(p,filter,search){
-  var op=norm(p.op||""),tipo=norm(p.tipo||""),ok=true;
-  if(filter==="venta") ok=op.indexOf("venta")>=0;
-  if(filter==="alquiler") ok=op.indexOf("alquiler")>=0;
-  if(filter==="casa"||filter==="depto"||filter==="local"||filter==="terreno") ok=tipo===filter;
-  if(!ok) return false;
-  var big=norm((p.titulo||"")+" "+(p.zona||"")+" "+(p.dir||"")+" "+(p.desc||""));
-  return big.indexOf(norm(search))>=0;
-}
-function applyFilters(){
-  var s=document.getElementById("searchInput").value.trim();
-  render(PROPS.filter(function(p){return matches(p,currentFilter,s);}));
-}
-document.querySelectorAll(".chip").forEach(function(btn){
-  btn.addEventListener("click",function(){
-    document.querySelectorAll(".chip").forEach(function(b){b.classList.remove("active");});
-    btn.classList.add("active");
-    currentFilter=btn.dataset.filter;
-    applyFilters();
-  });
-});
-document.getElementById("searchInput").addEventListener("input",applyFilters);
+  async function loadProperties(){
+    const loader = document.getElementById("loader");
+    const grid   = document.getElementById("propertiesGrid");
 
-var waG=waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero mas informacion.");
-document.getElementById("waHero").href=waG;
-document.getElementById("waTop").href=waG;
-document.getElementById("waFloat").href=waG;
+    for (let intento = 1; intento <= 3; intento++) {
+      try {
+        loader.innerHTML = intento === 1 ? "Cargando propiedades..." : `Conectando... (intento ${intento}/3)`;
+        const res  = await fetch(API_URL, { cache: "no-store" });
+        const data = await res.json();
 
-(function(){
-  var el=document.getElementById("visitCounter");
-  var v=parseInt(localStorage.getItem("vb_v")||"2143");
-  v+=Math.floor(Math.random()*3)+1;
-  localStorage.setItem("vb_v",v);
-  el.textContent=v.toLocaleString("es-AR");
-})();
+        allProperties = Array.isArray(data) ? data : [];
 
-document.getElementById("miniTotal").textContent=PROPS.length;
-document.getElementById("miniVenta").textContent=PROPS.filter(function(p){return norm(p.op).indexOf("venta")>=0;}).length;
-document.getElementById("miniAlquiler").textContent=PROPS.filter(function(p){return norm(p.op).indexOf("alquiler")>=0;}).length;
+        document.getElementById("miniTotal").textContent = allProperties.length;
+        document.getElementById("miniVenta").textContent =
+          allProperties.filter(i => normalize(i.tipoOperacion||"").includes("venta")).length;
+        document.getElementById("miniAlquiler").textContent =
+          allProperties.filter(i => normalize(i.tipoOperacion||"").includes("alquiler")).length;
 
-document.getElementById("leadForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var msg=document.getElementById("leadMsg");
-  var payload={
-    nombre:document.getElementById("leadNombre").value.trim(),
-    telefono:document.getElementById("leadTelefono").value.trim(),
-    operacion:document.getElementById("leadOperacion").value,
-    tipo:document.getElementById("leadTipo").value,
-    zona:document.getElementById("leadZona").value.trim(),
-    precio:document.getElementById("leadPresupuesto").value.trim(),
-    mensajeOriginal:document.getElementById("leadMensaje").value.trim(),
-    origen:"funnel-publico",tipoLead:"comprador"
-  };
-  msg.textContent="Enviando...";
-  fetch(LEADS_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})
-    .then(function(r){if(!r.ok)throw new Error();msg.textContent="Gracias! Recibimos tu busqueda.";e.target.reset();})
-    .catch(function(){msg.textContent="No pudimos enviar. Escribinos por WhatsApp.";});
-});
+        loader.style.display = "none";
+        grid.style.display   = "grid";
+        applyFilters();
+        return;
+      } catch(error) {
+        console.error(`Intento ${intento} fallido:`, error);
+        if (intento < 3) await new Promise(r => setTimeout(r, 4000));
+      }
+    }
+    loader.innerHTML = "No pudimos cargar las propiedades. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
+  }
 
-document.getElementById("loader").style.display="none";
-document.getElementById("propertiesGrid").style.display="grid";
-applyFilters();
+  function applyFilters(){
+    const search   = document.getElementById("searchInput").value.trim();
+    const filtered = allProperties.filter(item => propertyMatches(item, currentFilter, search));
+    renderCards(filtered);
+  }
+
+  function setupFilters(){
+    document.querySelectorAll(".chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.filter;
+        applyFilters();
+      });
+    });
+    document.getElementById("searchInput").addEventListener("input", applyFilters);
+  }
+
+  function setupWhatsApp(){
+    const genericText = "Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.";
+    const href = waLink(genericText);
+    document.getElementById("heroWhatsApp").href      = href;
+    document.getElementById("heroWhatsAppTop").href   = href;
+    document.getElementById("floatingWhatsApp").href  = href;
+  }
+
+  function setupCounter(){
+    const el    = document.getElementById("visitCounter");
+    let value   = Number(localStorage.getItem("vb_visits_visual") || 2143);
+    value      += Math.floor(Math.random() * 3) + 1;
+    localStorage.setItem("vb_visits_visual", value);
+    el.textContent = value.toLocaleString("es-AR");
+  }
+
+  function setupLeadForm(){
+    const form = document.getElementById("leadForm");
+    const msg  = document.getElementById("leadMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        nombre:          document.getElementById("leadNombre").value.trim(),
+        telefono:        document.getElementById("leadTelefono").value.trim(),
+        operacion:       document.getElementById("leadOperacion").value,
+        tipo:            document.getElementById("leadTipo").value,
+        zona:            document.getElementById("leadZona").value.trim(),
+        precio:          document.getElementById("leadPresupuesto").value.trim(),
+        mensajeOriginal: document.getElementById("leadMensaje").value.trim(),
+        origen:          "funnel-publico",
+        tipoLead:        "comprador"
+      };
+      msg.textContent = "Enviando...";
+      try {
+        const res = await fetch(LEADS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("Error");
+        msg.textContent = "¡Gracias! Recibimos tu búsqueda.";
+        form.reset();
+      } catch(err) {
+        msg.textContent = "No pudimos enviar. Escribinos por WhatsApp.";
+      }
+    });
+  }
+
+  setupWhatsApp();
+  setupCounter();
+  setupFilters();
+  setupLeadForm();
+  loadProperties();
 </script>
 </body>
 </html>
+
