@@ -811,7 +811,7 @@
         const data = await res.json();
 
       allProperties = Array.isArray(data) ? data : [];
-alert("URL: " + API_URL + " | Recibidas: " + allProperties.length);
+alert("URL: " + API_URL + " | Recibidas: " + allProperties.length + " | Data: " + JSON.stringify(data).substring(0, 200));
         document.getElementById("miniTotal").textContent = allProperties.length;
         document.getElementById("miniVenta").textContent =
           allProperties.filter(i => normalize(i.tipoOperacion || "").includes("venta")).length;
