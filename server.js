@@ -706,6 +706,12 @@ app.get("/api/inmuebles-publicos", async (req, res) => {
 });
 
 // ✅ Detalle de un inmueble público por ID
+// Alias para el dashboard
+app.get("/api/inmuebles", async (req, res) => {
+  const { data, error } = await supabase.from("inmuebles").select("*").order("id", { ascending: false });
+  if (error) return res.status(500).json([]);
+  res.json((data || []).map(sbToInm));
+});
 app.get("/api/inmuebles-publicos/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
