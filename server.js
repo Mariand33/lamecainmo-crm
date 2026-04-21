@@ -1184,7 +1184,7 @@ app.post("/api/radar-leads/guardar", async (req, res) => {
   res.json({ ok: true });
 });
 
-app.post("/api/radar-leads/pasar-comprador/:index", (req, res) => {
+app.post("/api/radar-leads/pasar-comprador/:index", async (req, res) => {
   const idx = Number(req.params.index);
   if (isNaN(idx) || !radarLeads[idx]) return res.status(404).json({ ok: false });
 
