@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Diagnóstico</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
+  <link rel="apple-touch-icon" href="/icon-192x192.png" />
 </head>
 <body style="font-family:Arial;padding:20px;background:#f5f1e8">
 <h2>Diagnóstico de fichas</h2>
@@ -47,5 +54,11 @@ function abrirFicha(btn){
   if(!estaba) ficha.style.display = "block";
 }
 </script>
+  <!-- Service Worker PWA -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  </script>
 </body>
 </html>
