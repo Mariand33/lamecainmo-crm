@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Editar inmueble - EQUIPO BUZZACCHI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root{
       --morado:#4b3ca7;
@@ -94,6 +95,7 @@
       border:1px solid #d6daf6;
     }
     .btn:hover{ filter:brightness(.97); }
+    .btn:disabled{ opacity:0.6; cursor:not-allowed; filter:none; }
 
     a.back{
       display:inline-block;
@@ -167,12 +169,41 @@
       white-space:nowrap;
     }
 
+    .pill.supabase{
+      background:#e6f9f0;
+      color:#166534;
+      border-color:#bbf7d0;
+    }
+
     .status{
       font-size:12px;
       color:var(--muted);
     }
     .status.ok{ color:var(--ok); font-weight:700; }
     .status.err{ color:var(--rojo); font-weight:700; }
+
+    /* Barra de progreso subida */
+    .upload-progress{
+      display:none;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .upload-progress.visible{ display:block; }
+    .progress-bar-bg{
+      background:#e5e7eb;
+      border-radius:99px;
+      height:6px;
+      margin-top:4px;
+      overflow:hidden;
+    }
+    .progress-bar-fill{
+      height:100%;
+      background:var(--morado);
+      border-radius:99px;
+      transition:width 0.3s;
+      width:0%;
+    }
 
     @media (max-width: 720px){
       body{ padding:12px; }
@@ -189,7 +220,7 @@
     <div class="hint">
       • Podés <strong>arrastrar</strong> las fotos para cambiar el orden.<br>
       • El botón <strong>Eliminar</strong> borra la foto del inmueble y también del server.<br>
-      • Las fotos nuevas se suman a las existentes.
+      • Las fotos nuevas se suman a las existentes y se guardan en Supabase ☁️
     </div>
 
     <div class="thumbs" id="thumbs">
@@ -215,7 +246,11 @@
 
         <div class="full">
           <label>Agregar más fotos (opcional)</label>
-          <input type="file" name="imagenes" multiple accept="image/*" />
+          <input type="file" id="inputFotos" multiple accept="image/*" />
+          <div class="upload-progress" id="uploadProgress">
+            <span id="uploadLabel">Subiendo fotos…</span>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+          </div>
         </div>
       </div>
 
@@ -230,14 +265,27 @@
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
+    // ── Supabase ────────────────────────────────────────────────────
+    const SUPABASE_URL  = 'https://nniivhebocgdsynlpuhf.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
+    const BUCKET        = 'Subidas';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-    const thumbsContainer = document.getElementById("thumbs");
-    const form = document.getElementById("formEditar");
-    const saveStatus = document.getElementById("saveStatus");
-    const btnVolver = document.getElementById("btnVolver");
+    // ── Estado ──────────────────────────────────────────────────────
+    const params           = new URLSearchParams(window.location.search);
+    const id               = params.get("id");
+    const thumbsContainer  = document.getElementById("thumbs");
+    const form             = document.getElementById("formEditar");
+    const saveStatus       = document.getElementById("saveStatus");
+    const btnVolver        = document.getElementById("btnVolver");
+    const btnGuardar       = document.getElementById("btnGuardar");
+    const uploadProgress   = document.getElementById("uploadProgress");
+    const progressFill     = document.getElementById("progressFill");
+    const uploadLabel      = document.getElementById("uploadLabel");
 
+    // imagenesActuales: array de strings.
+    // Fotos viejas → nombre corto  ej: "abc123.jpg"   → se muestra con /uploads/
+    // Fotos nuevas → URL completa  ej: "https://..."  → se muestra directo
     let imagenesActuales = [];
 
     if (!id) {
@@ -249,27 +297,43 @@
       window.location.href = "/ver.html?id=" + encodeURIComponent(id);
     });
 
+    // ── Helpers ─────────────────────────────────────────────────────
+    function esUrlSupabase(str) {
+      return typeof str === "string" && str.startsWith("http");
+    }
+
+    function srcDeFoto(nombre) {
+      return esUrlSupabase(nombre) ? nombre : "/uploads/" + nombre;
+    }
+
+    // ── Cargar inmueble ─────────────────────────────────────────────
     fetch("/api/inmuebles-publicos/" + encodeURIComponent(id))
       .then(res => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
       })
       .then(inm => {
-        document.getElementById("campoTitulo").value = inm.titulo || "";
-        document.getElementById("campoPrecio").value = inm.precio || "";
+        document.getElementById("campoTitulo").value      = inm.titulo      || "";
+        document.getElementById("campoPrecio").value      = inm.precio      || "";
         document.getElementById("campoDescripcion").value = inm.descripcion || "";
 
-        imagenesActuales = Array.isArray(inm.imagenes) ? inm.imagenes.slice() : [];
+        // Soporta tanto array como JSON string
+        let imgs = inm.imagenes;
+        if (typeof imgs === "string") {
+          try { imgs = JSON.parse(imgs); } catch { imgs = imgs ? [imgs] : []; }
+        }
+        imagenesActuales = Array.isArray(imgs) ? imgs.slice() : [];
         renderThumbs();
 
         form.action = "/editar/" + encodeURIComponent(id);
       })
       .catch(err => {
-        console.error("Error al cargar inmueble para editar:", err);
+        console.error("Error al cargar inmueble:", err);
         alert("Error al cargar el inmueble.");
         window.location.href = "/dashboard.html";
       });
 
+    // ── Render miniaturas ───────────────────────────────────────────
     function renderThumbs() {
       thumbsContainer.innerHTML = "";
 
@@ -287,33 +351,47 @@
         wrapper.draggable = true;
         wrapper.dataset.nombre = nombre;
 
+        const esSupabase = esUrlSupabase(nombre);
+
         wrapper.innerHTML = `
-          <img src="/uploads/${nombre}" alt="Foto ${idx + 1}">
+          <img src="${srcDeFoto(nombre)}" alt="Foto ${idx + 1}">
           <div class="thumb-meta">
-            <span class="pill">#${idx + 1}</span>
+            <span class="pill ${esSupabase ? 'supabase' : ''}">${esSupabase ? '☁️' : '#' + (idx + 1)}</span>
             <button type="button" class="btn-delete" title="Eliminar foto">Eliminar</button>
           </div>
         `;
 
         wrapper.querySelector(".btn-delete").addEventListener("click", async () => {
-          const ok = confirm("¿Eliminar esta foto del inmueble? (se borra del server)");
+          const ok = confirm("¿Eliminar esta foto del inmueble?");
           if (!ok) return;
 
           saveStatus.className = "status";
           saveStatus.textContent = "Eliminando foto…";
 
           try {
-            const res = await fetch("/editar/" + encodeURIComponent(id) + "/fotos/eliminar", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-              body: "nombreFoto=" + encodeURIComponent(nombre)
-            });
+            if (esUrlSupabase(nombre)) {
+              // Foto en Supabase: extraer path y borrar del bucket
+              const path = nombre.split("/object/public/" + BUCKET + "/")[1];
+              if (path) {
+                await sb.storage.from(BUCKET).remove([decodeURIComponent(path)]);
+              }
+              imagenesActuales = imagenesActuales.filter(n => n !== nombre);
+              // Actualizar DB
+              await sb.from("inmuebles")
+                .update({ imagenes: JSON.stringify(imagenesActuales) })
+                .eq("id", id);
+            } else {
+              // Foto en Render: usar endpoint existente
+              const res = await fetch("/editar/" + encodeURIComponent(id) + "/fotos/eliminar", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                body: "nombreFoto=" + encodeURIComponent(nombre)
+              });
+              if (!res.ok) throw new Error("HTTP " + res.status);
+              imagenesActuales = imagenesActuales.filter(n => n !== nombre);
+            }
 
-            if (!res.ok) throw new Error("HTTP " + res.status);
-
-            imagenesActuales = imagenesActuales.filter(n => n !== nombre);
             renderThumbs();
-
             saveStatus.className = "status ok";
             saveStatus.textContent = "Foto eliminada.";
             setTimeout(() => (saveStatus.textContent = ""), 2500);
@@ -330,6 +408,7 @@
       });
     }
 
+    // ── Drag & drop reordenar ───────────────────────────────────────
     let dragItem = null;
 
     function addDragEvents(el) {
@@ -337,7 +416,6 @@
         dragItem = el;
         el.classList.add("dragging");
       });
-
       el.addEventListener("dragend", () => {
         dragItem = null;
         el.classList.remove("dragging");
@@ -349,7 +427,6 @@
     thumbsContainer.addEventListener("dragover", (e) => {
       e.preventDefault();
       if (!dragItem) return;
-
       const afterElement = getDragAfterElement(thumbsContainer, e.clientX, e.clientY);
       if (!afterElement) {
         thumbsContainer.appendChild(dragItem);
@@ -359,55 +436,95 @@
     });
 
     function getDragAfterElement(container, x, y) {
-      const draggableElements = [...container.querySelectorAll(".thumb-item:not(.dragging)")];
-
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
+      const els = [...container.querySelectorAll(".thumb-item:not(.dragging)")];
+      return els.reduce((closest, child) => {
+        const box    = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
-
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
+        return (offset < 0 && offset > closest.offset)
+          ? { offset, element: child }
+          : closest;
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
     function syncArrayFromDOM() {
       const items = thumbsContainer.querySelectorAll(".thumb-item");
-      const nuevoOrden = [];
-      items.forEach(item => nuevoOrden.push(item.dataset.nombre));
-      imagenesActuales = nuevoOrden;
+      imagenesActuales = [...items].map(item => item.dataset.nombre);
     }
 
-    form.addEventListener("submit", () => {
-      const t = document.getElementById("campoTitulo");
-      const d = document.getElementById("campoDescripcion");
-      if (t && typeof t.value === "string") t.value = t.value.trim();
-      if (d && typeof d.value === "string") d.value = d.value.trim();
+    // ── Submit: primero sube fotos a Supabase, luego guarda el form ─
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
+      const archivos = document.getElementById("inputFotos").files;
+      btnGuardar.disabled = true;
+      btnGuardar.textContent = "Guardando…";
+
+      // 1. Subir fotos nuevas a Supabase si hay
+      if (archivos && archivos.length > 0) {
+        uploadProgress.classList.add("visible");
+        let done = 0;
+        const total = archivos.length;
+
+        for (const file of archivos) {
+          uploadLabel.textContent = `Subiendo foto ${done + 1} de ${total}…`;
+          const ext  = file.name.split(".").pop();
+          const path = `propiedad_${id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+          const { error } = await sb.storage.from(BUCKET).upload(path, file, {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+          });
+
+          if (error) {
+            console.error("Error subiendo foto:", error.message);
+            saveStatus.className = "status err";
+            saveStatus.textContent = "Error subiendo " + file.name + ": " + error.message;
+          } else {
+            const { data: urlData } = sb.storage.from(BUCKET).getPublicUrl(path);
+            imagenesActuales.push(urlData.publicUrl);
+          }
+
+          done++;
+          progressFill.style.width = Math.round((done / total) * 100) + "%";
+        }
+
+        uploadLabel.textContent = `${done} foto(s) subidas ✓`;
+      }
+
+      // 2. Sincronizar orden actual del DOM
       syncArrayFromDOM();
 
+      // 3. Inyectar campos ocultos con nombres/orden para el backend de Render
       [...form.querySelectorAll("input[name='nombresImagenes'], input[name='ordenImagenes']")]
         .forEach(el => el.remove());
 
       imagenesActuales.forEach((nombre, idx) => {
         const inputNombre = document.createElement("input");
-        inputNombre.type = "hidden";
-        inputNombre.name = "nombresImagenes";
+        inputNombre.type  = "hidden";
+        inputNombre.name  = "nombresImagenes";
         inputNombre.value = nombre;
 
-        const inputOrden = document.createElement("input");
-        inputOrden.type = "hidden";
-        inputOrden.name = "ordenImagenes";
-        inputOrden.value = String(idx + 1);
+        const inputOrden  = document.createElement("input");
+        inputOrden.type   = "hidden";
+        inputOrden.name   = "ordenImagenes";
+        inputOrden.value  = String(idx + 1);
 
         form.appendChild(inputNombre);
         form.appendChild(inputOrden);
       });
 
+      // 4. Trim campos de texto
+      const t = document.getElementById("campoTitulo");
+      const d = document.getElementById("campoDescripcion");
+      if (t) t.value = t.value.trim();
+      if (d) d.value = d.value.trim();
+
       saveStatus.className = "status";
       saveStatus.textContent = "Guardando…";
+
+      // 5. Enviar el form normalmente al backend de Render
+      form.submit();
     });
   </script>
 </body>
