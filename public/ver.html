@@ -170,13 +170,13 @@
   <script>
     cconst API_URL = "/api/inmueble/";
     
-    function getIdFromUrl() {
+   
       const params = new URLSearchParams(window.location.search);
       return params.get("id");
     }
 
     function formatoPrecio(inm) {
-      const precio = Number(inm.precio || 0);
+     
       if (!precio) return "Consultar";
       return `${inm.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
     }
