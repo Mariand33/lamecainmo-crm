@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Quiero más información</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
+  <link rel="apple-touch-icon" href="/icon-192x192.png" />
   <style>
     body {
       margin: 0;
@@ -128,6 +135,12 @@
     form.addEventListener("submit", () => {
       // dejemos que el servidor redireccione; si más adelante queremos AJAX, se cambia
     });
+  </script>
+  <!-- Service Worker PWA -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
   </script>
 </body>
 </html>
