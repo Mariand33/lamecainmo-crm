@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Nueva Oportunidad - EQUIPO BUZZACCHI</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
+  <link rel="apple-touch-icon" href="/icon-192x192.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
@@ -235,5 +242,11 @@
     if (v) txt.textContent = "Link: " + v;
   })();
 </script>
+  <!-- Service Worker PWA -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  </script>
 </body>
 </html>
