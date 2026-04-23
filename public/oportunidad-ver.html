@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Ver oportunidad</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
+  <link rel="apple-touch-icon" href="/icon-192x192.png" />
   <style>
     body{font-family:Arial;background:#f4f6f9;margin:0;padding:20px;}
     .box{max-width:900px;margin:0 auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -86,6 +93,12 @@
         alert("Error cargando oportunidad");
         location.href = "/dashboard.html";
       });
+  </script>
+  <!-- Service Worker PWA -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
   </script>
 </body>
 </html>
