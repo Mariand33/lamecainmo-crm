@@ -1,0 +1,14 @@
+{
+  "name": "Vanina Buzzacchi - CRM",
+  "short_name": "VB Inmuebles",
+  "description": "CRM de Negocios Inmobiliarios - Vanina Buzzacchi",
+  "start_url": "/dashboard.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#c9a84c",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icon-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
