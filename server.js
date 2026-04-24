@@ -251,39 +251,39 @@ function inmToSb(inm) {
 // ============================
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+  res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
 });
 
 app.get("/demandas", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "demandas.html"));
+  res.sendFile(path.join(__dirname, "Público", "demandas.html"));
 });
 
 app.get("/demandas.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "demandas.html"));
+  res.sendFile(path.join(__dirname, "Público", "demandas.html"));
 });
 
 app.get("/radar-vendedores", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "radar-vendedores.html"));
+  res.sendFile(path.join(__dirname, "Público", "radar-vendedores.html"));
 });
 
 app.get("/radar-leads", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "radar-leads.html"));
+  res.sendFile(path.join(__dirname, "Público", "radar-leads.html"));
 });
 
 app.get("/radar-ia", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "radar-ia.html"));
+  res.sendFile(path.join(__dirname, "Público", "radar-ia.html"));
 });
 
 app.get("/funnel", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
 });
 
 app.get("/funnel.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
 });
 
 app.get("/funnel-publico.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
 });
 
 app.get("/test-render", (req, res) => {
