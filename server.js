@@ -140,10 +140,10 @@ const RADAR_LEADS_FILE = path.join(DATA_DIR, "radar_leads.json");
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const UPLOADS_DIR = path.join(__dirname, "public", "uploads");
+const UPLOADS_DIR = path.join(__dirname, "Público", "Subidas");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-const THUMBS_DIR = path.join(__dirname, "public", "uploads", "thumbs");
+const THUMBS_DIR = path.join(__dirname, "Público", "Subidas", "thumbs");
 if (!fs.existsSync(THUMBS_DIR)) fs.mkdirSync(THUMBS_DIR, { recursive: true });
 
 // ============================
