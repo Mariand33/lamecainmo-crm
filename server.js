@@ -106,7 +106,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "P\u00FAblico")));
+app.use(express.static(path.join(__dirname, "Público")));
 app.use(
   session({
     secret: "buzzacchi",
