@@ -711,22 +711,16 @@ app.get("/api/inmuebles", async (req, res) => {
   if (error) return res.status(500).json([]);
   res.json((data || []).map(sbToInm));
 });
+// Para ver cualquier inmueble desde el dashboard (sin filtro de estado)
+app.get("/api/inmueble/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { data, error } = await supabase.from("inmuebles").select("*").eq("id", id).single();
+  if (error || !data) return res.status(404).json({ ok: false, error: "No encontrado" });
+  res.json(sbToInm(data));
+});
+
 app.get("/api/inmuebles-publicos/:id", async (req, res) => {
   try {
-// Para ver cualquier inmueble desde el dashboard (sin filtro de estado)
-
-app.get("/api/inmueble/:id", async (req, res) => {
-
-  const id = Number(req.params.id);
-
-  const { data, error } = await supabase.from("inmuebles").select("*").eq("id", id).single();
-
-  if (error || !data) return res.status(404).json({ ok: false, error: "No encontrado" });
-
-  res.json(sbToInm(data));
-
-});
-    
     const id = Number(req.params.id);
 
     const { data, error } = await supabase
