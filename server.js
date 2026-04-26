@@ -106,7 +106,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "Público")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
@@ -141,10 +140,10 @@ const RADAR_LEADS_FILE = path.join(DATA_DIR, "radar_leads.json");
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const UPLOADS_DIR = path.join(__dirname, "Público", "Subidas");
+const UPLOADS_DIR = path.join(__dirname, "public", "Subidas");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-const THUMBS_DIR = path.join(__dirname, "Público", "Subidas", "thumbs");
+const THUMBS_DIR = path.join(__dirname, "public", "Subidas", "thumbs");
 if (!fs.existsSync(THUMBS_DIR)) fs.mkdirSync(THUMBS_DIR, { recursive: true });
 
 // ============================
@@ -258,39 +257,39 @@ function inmToSb(inm) {
 // ============================
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
 
 app.get("/demandas", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "demandas.html"));
+  res.sendFile(path.join(__dirname, "public", "demandas.html"));
 });
 
 app.get("/demandas.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "demandas.html"));
+  res.sendFile(path.join(__dirname, "public", "demandas.html"));
 });
 
 app.get("/radar-vendedores", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "radar-vendedores.html"));
+  res.sendFile(path.join(__dirname, "public", "radar-vendedores.html"));
 });
 
 app.get("/radar-leads", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "radar-leads.html"));
+  res.sendFile(path.join(__dirname, "public", "radar-leads.html"));
 });
 
 app.get("/radar-ia", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "radar-ia.html"));
+  res.sendFile(path.join(__dirname, "public", "radar-ia.html"));
 });
 
 app.get("/funnel", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "public", "funnel.html"));
 });
 
 app.get("/funnel.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "public", "funnel.html"));
 });
 
 app.get("/funnel-publico.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "Público", "funnel-publico.html"));
+  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
 });
 
 app.get("/test-render", (req, res) => {
