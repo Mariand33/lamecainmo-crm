@@ -282,11 +282,11 @@ app.get("/radar-ia", (req, res) => {
 });
 
 app.get("/funnel", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "funnel.html"));
+  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
 });
 
 app.get("/funnel.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "funnel.html"));
+  res.sendFile(path.join(__dirname, "public", "funnel-publico.html"));
 });
 
 app.get("/funnel-publico.html", (req, res) => {
