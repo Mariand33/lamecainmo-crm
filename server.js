@@ -164,13 +164,19 @@ asegurarArrayJSON(RADAR_LEADS_FILE, radarLeads);
 // MULTER
 // ============================
 
-const storage = multer.diskStorage({
-  destination: UPLOADS_DIR,
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`);
-  }
-});
-const upload = multer({ storage });
+// Multer en memoria — sube directo a Supabase Storage (no guarda en disco)
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Sube un archivo a Supabase Storage y devuelve la URL pública
+async function subirASupabase(buffer, originalname, mimetype) {
+  const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname)}`;
+  const { error } = await supabase.storage
+    .from("SUBIDAS")
+    .upload(filename, buffer, { contentType: mimetype, upsert: false });
+  if (error) { console.error("Error subiendo a Supabase Storage:", error.message); return null; }
+  const { data } = supabase.storage.from("SUBIDAS").getPublicUrl(filename);
+  return data.publicUrl;
+}
 
 // ============================
 // SERVICIOS EXTERNOS
@@ -322,16 +328,16 @@ app.post(
     let thumbnails = [];
 
     if (req.files && req.files.imagenes) {
-      fotos = [...new Set(req.files.imagenes.map((f) => f.filename))];
-      for (const foto of fotos) {
-        const thumb = await generarThumbnail(foto);
-        if (thumb) thumbnails.push(thumb);
+      for (const f of req.files.imagenes) {
+        const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
+        if (url) fotos.push(url);
       }
     }
 
     let video = "";
     if (req.files && req.files.video && req.files.video.length) {
-      video = req.files.video[0].filename;
+      const f = req.files.video[0];
+      video = await subirASupabase(f.buffer, f.originalname, f.mimetype) || "";
     }
 
     const nuevo = {
@@ -379,12 +385,12 @@ app.post(
 // CREAR — oportunidad
 app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
-  const imagenes = req.file ? [req.file.filename] : [];
+  const imagenes = [];
   const thumbnails = [];
 
   if (req.file) {
-    const thumb = await generarThumbnail(req.file.filename);
-    if (thumb) thumbnails.push(thumb);
+    const url = await subirASupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
+    if (url) imagenes.push(url);
   }
 
   const nueva = {
@@ -428,12 +434,12 @@ app.post("/oportunidad", upload.single("thumb"), async (req, res) => {
 // CREAR — radar calle
 app.post("/radar", upload.single("thumb"), async (req, res) => {
   const body = req.body || {};
-  const imagenes = req.file ? [req.file.filename] : [];
+  const imagenes = [];
   const thumbnails = [];
 
   if (req.file) {
-    const thumb = await generarThumbnail(req.file.filename);
-    if (thumb) thumbnails.push(thumb);
+    const url = await subirASupabase(req.file.buffer, req.file.originalname, req.file.mimetype);
+    if (url) imagenes.push(url);
   }
 
   const nuevo = {
@@ -522,13 +528,11 @@ app.post("/editar/:id", upload.array("imagenes", 20), async (req, res) => {
 
   // Agregar fotos nuevas
   if (req.files && req.files.length) {
-    const nuevas = req.files.map((f) => f.filename);
-    imagenesActuales = [...new Set(imagenesActuales.concat(nuevas))];
-    for (const foto of nuevas) {
-      const thumb = await generarThumbnail(foto);
-      if (thumb) thumbnailsActuales.push(thumb);
+    for (const f of req.files) {
+      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
+      if (url) imagenesActuales.push(url);
     }
-    thumbnailsActuales = [...new Set(thumbnailsActuales)];
+    imagenesActuales = [...new Set(imagenesActuales)];
   }
 
   updates.imagenes = imagenesActuales;
@@ -1252,8 +1256,11 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
   if (!req.file) return res.status(400).json({ ok: false, error: "Sin audio" });
 
   try {
+    const { Readable } = require("stream");
+    const stream = Readable.from(req.file.buffer);
+    stream.path = req.file.originalname || "audio.webm";
     const transcripcion = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(req.file.path),
+      file: stream,
       model: "whisper-1",
       language: "es"
     });
@@ -1261,8 +1268,6 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
   } catch (e) {
     console.error("Error transcripción:", e.message);
     res.status(500).json({ ok: false, error: "Error al transcribir" });
-  } finally {
-    try { fs.unlinkSync(req.file.path); } catch {}
   }
 });
 
