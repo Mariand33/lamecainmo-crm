@@ -14,6 +14,7 @@ const { createClient } = require("@supabase/supabase-js");
 const OpenAI = require("openai");
 const PDFDocument = require("pdfkit");
 const https = require("https");
+let webpush; try { webpush = require("web-push"); } catch(e) { webpush = null; }
 const http = require("http");
 const sharp = require("sharp");
 
@@ -379,6 +380,13 @@ app.post(
       inmuebleId: data.id
     });
 
+    // Push a suscriptores PWA
+    sendPushToAll({
+      title: "🏠 Nueva propiedad en Buzzacchi",
+      body: `${nuevo.titulo || "Nueva propiedad"} · ${nuevo.zona || ""}`,
+      url: `/funnel#prop-${data.id}`
+    });
+
     res.redirect("/dashboard.html");
   }
 );
@@ -636,6 +644,34 @@ app.post("/publicada/:id", async (req, res) => {
   res.redirect("/marketing.html");
 });
 
+app.post("/vendida/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { data: current } = await supabase
+    .from("inmuebles").select("titulo").eq("id", id).single();
+  if (!current) return res.redirect("/dashboard.html");
+  await supabase.from("inmuebles").update({ estado_publicacion: "vendida" }).eq("id", id);
+  pushNotif(notificaciones, guardarNotificaciones, {
+    tipo: "inmueble_vendida",
+    titulo: current.titulo,
+    inmuebleId: id
+  });
+  res.redirect("/dashboard.html");
+});
+
+app.post("/alquilada/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { data: current } = await supabase
+    .from("inmuebles").select("titulo").eq("id", id).single();
+  if (!current) return res.redirect("/dashboard.html");
+  await supabase.from("inmuebles").update({ estado_publicacion: "alquilada" }).eq("id", id);
+  pushNotif(notificaciones, guardarNotificaciones, {
+    tipo: "inmueble_alquilada",
+    titulo: current.titulo,
+    inmuebleId: id
+  });
+  res.redirect("/dashboard.html");
+});
+
 // ELIMINAR INMUEBLE
 app.post("/eliminar/:id", async (req, res) => {
   const id = Number(req.params.id);
@@ -697,7 +733,7 @@ app.get("/api/inmuebles-publicos", async (req, res) => {
     const { data, error } = await supabase
       .from("inmuebles")
       .select("*")
-      .in("estado_publicacion", ["lista", "publicada"])
+      .in("estado_publicacion", ["lista", "publicada", "vendida", "alquilada"])
       .order("id", { ascending: false });
 
     if (error) throw error;
@@ -1398,6 +1434,96 @@ app.get("/api/ficha-pdf/:id", async (req, res) => {
 // ============================
 // SERVER
 // ============================
+
+// ============================
+// WEB PUSH — VAPID + SUBSCRIPTIONS
+// ============================
+const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY  || "";
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
+let pushSubscriptions = []; // en memoria (se puede migrar a Supabase luego)
+
+if (webpush && VAPID_PUBLIC && VAPID_PRIVATE) {
+  webpush.setVapidDetails("mailto:info@vaninabuzzacchi.com", VAPID_PUBLIC, VAPID_PRIVATE);
+}
+
+// Guardar suscripción push
+app.post("/api/push/subscribe", (req, res) => {
+  const sub = req.body;
+  if (!sub || !sub.endpoint) return res.status(400).json({ ok: false });
+  const exists = pushSubscriptions.find(s => s.endpoint === sub.endpoint);
+  if (!exists) pushSubscriptions.push(sub);
+  res.json({ ok: true });
+});
+
+// VAPID public key para el cliente
+app.get("/api/push/vapid-public", (req, res) => {
+  res.json({ key: VAPID_PUBLIC });
+});
+
+// Enviar notificación a todos los suscriptores (uso interno)
+async function sendPushToAll(payload) {
+  if (!webpush || !VAPID_PUBLIC) return;
+  const dead = [];
+  for (const sub of pushSubscriptions) {
+    try {
+      await webpush.sendNotification(sub, JSON.stringify(payload));
+    } catch (e) {
+      dead.push(sub.endpoint);
+    }
+  }
+  pushSubscriptions = pushSubscriptions.filter(s => !dead.includes(s.endpoint));
+}
+
+// ============================
+// IA MATCH — búsqueda por texto libre
+// ============================
+app.post("/api/match-ia", async (req, res) => {
+  const { consulta, presupuesto, operacion } = req.body || {};
+  if (!consulta) return res.status(400).json({ ok: false, error: "Sin consulta" });
+
+  try {
+    // Traer propiedades públicas
+    const { data: rows } = await supabase
+      .from("inmuebles")
+      .select("id,titulo,zona,direccion,tipo_operacion,tipo_propiedad,precio,moneda,dormitorios,banos,descripcion,estado_publicacion")
+      .in("estado_publicacion", ["lista", "publicada"]);
+
+    const props = (rows || []).map(r => ({
+      id: r.id,
+      titulo: r.titulo,
+      zona: r.zona,
+      tipoOperacion: r.tipo_operacion,
+      tipoPropiedad: r.tipo_propiedad,
+      precio: r.precio,
+      moneda: r.moneda,
+      dormitorios: r.dormitorios,
+      banos: r.banos,
+      descripcion: (r.descripcion || "").slice(0, 200)
+    }));
+
+    const prompt = `Sos un asistente inmobiliario. El cliente busca: "${consulta}"${presupuesto ? `. Presupuesto: ${presupuesto}` : ""}${operacion ? `. Operación: ${operacion}` : ""}.
+
+Estas son las propiedades disponibles (JSON):
+${JSON.stringify(props)}
+
+Devolvé SOLO un JSON array con los IDs de las propiedades que mejor coinciden, ordenados por relevancia, máximo 6. Ejemplo: [12, 5, 23]
+Si ninguna coincide bien, devolvé [].`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 100,
+      temperature: 0.2
+    });
+
+    const text = completion.choices[0].message.content.trim();
+    const ids = JSON.parse(text.replace(/```json|```/g, "").trim());
+    res.json({ ok: true, ids: Array.isArray(ids) ? ids : [] });
+  } catch (e) {
+    console.error("Error match IA:", e.message);
+    res.status(500).json({ ok: false, error: "Error IA", ids: [] });
+  }
+});
 
 const PORT = process.env.PORT || 10000;
 
