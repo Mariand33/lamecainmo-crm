@@ -1,5 +1,5 @@
 // Service Worker - Vanina Buzzacchi CRM
-const CACHE_NAME = 'vb-crm-v1';
+const CACHE_NAME = 'vb-crm-v2';
 
 const STATIC_ASSETS = [
   '/dashboard.html',
@@ -28,14 +28,12 @@ self.addEventListener('activate', event => {
 
 // Estrategia: Network first, cache como fallback
 self.addEventListener('fetch', event => {
-  // Solo interceptar GETs del mismo origen
   if (event.request.method !== 'GET') return;
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // Guardar copia en cache si es válida
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
