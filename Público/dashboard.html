@@ -721,7 +721,7 @@
           <td>${precioTexto}</td>
           <td>${creadoPor || "-"}</td>
           <td>${cantLeads}</td>
-          <td>${estado}</td>
+          <td><span style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700;background:${estado==="vendida"?"#7c3aed":estado==="alquilada"?"#0891b2":estado==="publicada"?"#16a34a":estado==="lista"?"#d97706":"#6b7280"};color:#fff">${estado.toUpperCase()}</span></td>
           <td>${vecesPub}</td>
           <td>
             <a href="${verLink}" class="link-ver">Ver</a>
@@ -733,6 +733,14 @@
 
             <form action="/publicada/${id}" method="POST" style="display:inline; margin-left:4px;">
               <button class="btn btn-az" type="submit">Marcar publicada</button>
+            </form>
+
+            <form action="/vendida/${id}" method="POST" style="display:inline; margin-left:4px;">
+              <button class="btn" style="background:#7c3aed;" type="submit">Vendida</button>
+            </form>
+
+            <form action="/alquilada/${id}" method="POST" style="display:inline; margin-left:4px;">
+              <button class="btn" style="background:#0891b2;" type="submit">Alquilada</button>
             </form>
 
             <form action="/eliminar/${id}" method="POST" style="display:inline; margin-left:4px;">
