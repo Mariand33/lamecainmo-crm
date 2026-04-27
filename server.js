@@ -1482,7 +1482,6 @@ app.post("/api/match-ia", async (req, res) => {
   if (!consulta) return res.status(400).json({ ok: false, error: "Sin consulta" });
 
   try {
-    // Traer propiedades públicas
     const { data: rows } = await supabase
       .from("inmuebles")
       .select("id,titulo,zona,direccion,tipo_operacion,tipo_propiedad,precio,moneda,dormitorios,banos,descripcion,estado_publicacion")
@@ -1490,30 +1489,41 @@ app.post("/api/match-ia", async (req, res) => {
 
     const props = (rows || []).map(r => ({
       id: r.id,
-      titulo: r.titulo,
-      zona: r.zona,
-      tipoOperacion: r.tipo_operacion,
-      tipoPropiedad: r.tipo_propiedad,
-      precio: r.precio,
-      moneda: r.moneda,
-      dormitorios: r.dormitorios,
-      banos: r.banos,
-      descripcion: (r.descripcion || "").slice(0, 200)
+      titulo: r.titulo || "",
+      zona: r.zona || "",
+      direccion: r.direccion || "",
+      operacion: (r.tipo_operacion || "").toLowerCase(),
+      tipo: (r.tipo_propiedad || "").toLowerCase(),
+      precio: r.precio || 0,
+      moneda: r.moneda || "USD",
+      dormitorios: r.dormitorios || 0,
+      banos: r.banos || 0,
+      resumen: (r.descripcion || "").slice(0, 300)
     }));
 
-    const prompt = `Sos un asistente inmobiliario. El cliente busca: "${consulta}"${presupuesto ? `. Presupuesto: ${presupuesto}` : ""}${operacion ? `. Operación: ${operacion}` : ""}.
+    const prompt = `Sos un asesor inmobiliario experto en Río Cuarto, Argentina.
 
-Estas son las propiedades disponibles (JSON):
+El cliente busca: "${consulta}"${presupuesto ? `\nPresupuesto máximo: ${presupuesto} USD` : ""}${operacion ? `\nOperación: ${operacion}` : ""}
+
+PROPIEDADES DISPONIBLES:
 ${JSON.stringify(props)}
 
-Devolvé SOLO un JSON array con los IDs de las propiedades que mejor coinciden, ordenados por relevancia, máximo 6. Ejemplo: [12, 5, 23]
-Si ninguna coincide bien, devolvé [].`;
+INSTRUCCIONES:
+- Buscá coincidencias en TODOS los campos: titulo, zona, tipo, resumen
+- Si el tipo está vacío, inferilo del titulo y resumen
+- Ignorá mayúsculas/minúsculas
+- Si el presupuesto está definido, excluí propiedades que lo superen
+- Devolvé SOLO un JSON array con los IDs que mejor coinciden, máximo 6, ordenados por relevancia
+- Si ninguna coincide, devolvé []
+- No expliques nada, solo el array
+
+Ejemplo de respuesta: [12, 5, 23]`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 100,
-      temperature: 0.2
+      max_tokens: 150,
+      temperature: 0.1
     });
 
     const text = completion.choices[0].message.content.trim();
