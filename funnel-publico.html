@@ -36,7 +36,6 @@
     .btn:hover{transform:translateY(-2px)}
     .btn-wa{background:var(--wa);color:#fff;box-shadow:0 8px 24px rgba(37,211,102,.25)}
     .btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
-    .btn-install{background:var(--gold);color:#0a1e12;font-weight:700;display:none}
 
     /* HERO */
     .hero{background:linear-gradient(160deg,#0a1e12 0%,#143d2f 60%,#1a5c3f 100%);color:#fff;padding:64px 0 48px;position:relative;overflow:hidden}
@@ -58,11 +57,6 @@
     .mini strong{display:block;font-size:20px;font-weight:700;color:#fff}
 
     /* INSTALL BANNER */
-    .install-banner{background:linear-gradient(135deg,var(--gold),#b8943e);color:#0a1e12;padding:14px 20px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .install-banner.show{display:flex}
-    .install-banner p{font-weight:600;font-size:14px}
-    .install-banner small{font-size:12px;opacity:.8}
-    .btn-install-banner{background:#0a1e12;color:#fff;border:none;border-radius:999px;padding:10px 20px;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap}
 
     /* IA MATCH */
     .ia-section{padding:42px 0 0}
@@ -188,15 +182,6 @@
 </head>
 <body>
 
-<!-- INSTALL BANNER -->
-<div class="install-banner" id="installBanner">
-  <div>
-    <p>📲 Guardá la app en tu celular</p>
-    <small>Recibí notificaciones cuando entre una nueva propiedad</small>
-  </div>
-  <button class="btn-install-banner" id="installBannerBtn">Instalar ahora</button>
-</div>
-
 <header class="topbar">
   <div class="container topbar-inner">
     <div>
@@ -204,7 +189,6 @@
       <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
     </div>
     <div class="top-actions">
-      <button class="btn btn-install" id="installBtn">📲 Instalar app</button>
       <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
       <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
     </div>
@@ -365,32 +349,6 @@
   let deferredPrompt = null;
 
   // ===================== PWA INSTALL =====================
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById("installBtn").style.display = "inline-flex";
-    document.getElementById("installBanner").classList.add("show");
-  });
-
-  window.addEventListener("appinstalled", () => {
-    document.getElementById("installBtn").style.display = "none";
-    document.getElementById("installBanner").classList.remove("show");
-    deferredPrompt = null;
-  });
-
-  async function triggerInstall() {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      document.getElementById("installBanner").classList.remove("show");
-      document.getElementById("installBtn").style.display = "none";
-    }
-    deferredPrompt = null;
-  }
-
-  document.getElementById("installBtn").addEventListener("click", triggerInstall);
-  document.getElementById("installBannerBtn").addEventListener("click", triggerInstall);
 
   // ===================== PUSH NOTIFICATIONS =====================
   async function suscribirPush() {
