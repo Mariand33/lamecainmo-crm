@@ -1527,6 +1527,8 @@ Ejemplo de respuesta: [12, 5, 23]`;
     });
 
     const text = completion.choices[0].message.content.trim();
+    console.log("IA match response:", text);
+    console.log("Props enviadas:", props.length, "propiedades");
     const ids = JSON.parse(text.replace(/```json|```/g, "").trim());
     res.json({ ok: true, ids: Array.isArray(ids) ? ids : [] });
   } catch (e) {
