@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Propiedades | Equipo Buzzacchi</title>
+<<<<<<< HEAD
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#c9a84c" />
@@ -11,222 +12,451 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
   <link rel="apple-touch-icon" href="/icon-192x192.png" />
+=======
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+>>>>>>> e64ec7d (Fix radar leads match)
   <style>
-    body{
-      margin:0;
-      font-family:Arial, sans-serif;
-      background:#f4f6f8;
-      color:#222;
+    :root {
+      --dark: #0f1117;
+      --dark2: #1a1d27;
+      --accent: #c9a84c;
+      --accent2: #e8c96d;
+      --green: #22c55e;
+      --text: #e8e9ed;
+      --muted: #9ca3af;
+      --card-bg: #161923;
+      --border: rgba(255,255,255,0.07);
     }
-    .topbar{
-      background:#111827;
-      color:#fff;
-      padding:14px 20px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
     }
-    .topbar h1{
-      margin:0;
-      font-size:20px;
+ 
+    /* TOPBAR */
+    .topbar {
+      background: var(--dark2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .topbar p{
-      margin:4px 0 0;
-      font-size:13px;
-      color:#d1d5db;
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .container{
-      max-width:1200px;
-      margin:0 auto;
-      padding:20px;
+    .topbar-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--dark);
     }
-    .hero{
-      background:#fff;
-      padding:20px;
-      border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom:20px;
+    .topbar h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
     }
-    .hero h2{
-      margin-top:0;
+    .topbar-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
     }
-    .filters{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:12px;
-      margin-top:16px;
+    .topbar-badge {
+      font-size: 12px;
+      color: var(--accent);
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 5px 12px;
+      border-radius: 20px;
     }
-    .filters input,
-    .filters select{
-      width:100%;
-      padding:10px;
-      border:1px solid #d1d5db;
-      border-radius:8px;
-      font-size:14px;
-      box-sizing:border-box;
+ 
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--dark2) 0%, #1e2235 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px 36px;
+      text-align: center;
     }
-    .filters button{
-      padding:10px 14px;
-      border:none;
-      border-radius:8px;
-      background:#25D366;
-      color:#fff;
-      cursor:pointer;
-      font-size:14px;
+    .hero-eyebrow {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
     }
-    .actions-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
     }
-    .actions-row button{
-      padding:10px 14px;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:14px;
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 32px;
     }
-    .btn-primary{ background:#111827; color:#fff; }
-    .btn-secondary{ background:#e5e7eb; color:#111827; }
-
-    .lead-box{
-      background:#fff;
-      padding:20px;
-      border-radius:12px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom:20px;
+ 
+    /* FILTERS */
+    .filters-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
     }
-    .lead-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:12px;
-      margin-top:12px;
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .filters select,
+    .filters input {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      appearance: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .filters select:focus,
+    .filters input:focus {
+      border-color: var(--accent);
+    }
+    .filters select option {
+      background: var(--dark2);
+    }
+    .filters input::placeholder { color: var(--muted); }
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .btn-buscar {
+      flex: 1;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: var(--dark);
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-buscar:hover { opacity: 0.88; }
+    .btn-limpiar {
+      padding: 12px 20px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .btn-limpiar:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+ 
+    /* MAIN CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+ 
+    /* LEAD BOX */
+    .lead-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .lead-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .lead-box h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .lead-box p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .lead-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
     }
     .lead-grid input,
-    .lead-grid select{
-      width:100%;
-      padding:10px;
-      border:1px solid #d1d5db;
-      border-radius:8px;
-      box-sizing:border-box;
+    .lead-grid select {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
     }
-
-    .results-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-      gap:10px;
+    .lead-grid input:focus,
+    .lead-grid select:focus { border-color: var(--accent); }
+    .lead-grid input::placeholder { color: var(--muted); }
+    .lead-grid select option { background: var(--dark2); }
+    .btn-lead {
+      margin-top: 12px;
+      padding: 12px 24px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: opacity 0.2s;
     }
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:16px;
+    .btn-lead:hover { opacity: 0.88; }
+ 
+    /* RESULTS */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .card{
-      background:#fff;
-      border-radius:12px;
-      overflow:hidden;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-      display:flex;
-      flex-direction:column;
+    .results-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
     }
-    .card img{
-      width:100%;
-      height:210px;
-      object-fit:cover;
-      background:#e5e7eb;
+    .contador {
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      padding: 5px 12px;
+      border-radius: 20px;
     }
-    .card-body{
-      padding:16px;
+ 
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
     }
-    .card-body h3{
-      margin:0 0 8px;
-      font-size:18px;
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .meta{
-      font-size:14px;
-      color:#555;
-      line-height:1.6;
-      margin-bottom:10px;
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
     }
-    .price{
-      font-size:20px;
-      font-weight:bold;
-      color:#16a34a;
-      margin-bottom:12px;
+    .card-img-wrap {
+      position: relative;
+      height: 210px;
+      overflow: hidden;
     }
-    .card-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
     }
-    .card-actions button,
-    .card-actions a{
-      text-decoration:none;
-      padding:10px 12px;
-      border:none;
-      border-radius:8px;
-      cursor:pointer;
-      font-size:14px;
-      display:inline-block;
+    .card:hover img { transform: scale(1.04); }
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    .btn-wa{
-      background:#25D366;
-      color:#fff;
+    .badge-venta { background: rgba(201,168,76,0.9); color: #000; }
+    .badge-alquiler { background: rgba(34,197,94,0.9); color: #000; }
+ 
+    .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .card-body h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      margin-bottom: 10px;
+      line-height: 1.3;
     }
-    .btn-view{
-      background:#111827;
-      color:#fff;
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 12px;
+      flex: 1;
     }
-    .empty{
-      background:#fff;
-      padding:24px;
-      border-radius:12px;
-      text-align:center;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    .meta span { color: var(--text); }
+    .price {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 14px;
+      font-family: 'Playfair Display', serif;
     }
-    .small{
-      font-size:12px;
-      color:#666;
+    .card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-view {
+      flex: 1;
+      padding: 10px;
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .btn-view:hover { background: rgba(255,255,255,0.13); }
+    .btn-wa {
+      flex: 1;
+      padding: 10px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+    .btn-wa:hover { opacity: 0.88; }
+ 
+    .empty {
+      grid-column: 1/-1;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 48px 24px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .empty h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .empty p { color: var(--muted); font-size: 14px; }
+ 
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e2a1e;
+      border: 1px solid #22c55e44;
+      color: #22c55e;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #2a1e1e; border-color: #ef444444; color: #ef4444; }
+ 
+    @media (max-width: 600px) {
+      .hero { padding: 32px 16px 24px; }
+      .filters { grid-template-columns: 1fr 1fr; }
+      .cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
+ 
   <div class="topbar">
-    <div>
-      <h1>Equipo Buzzacchi</h1>
-      <p>Funnel de propiedades · catálogo conversacional</p>
+    <div class="topbar-brand">
+      <div class="topbar-logo">B</div>
+      <div>
+        <div class="topbar h1" style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;">Equipo Buzzacchi</div>
+        <div class="topbar-sub">Catálogo de propiedades</div>
+      </div>
     </div>
-    <div class="small">Link ideal para WhatsApp, Instagram y anuncios</div>
+    <div class="topbar-badge">📍 Río Cuarto, Córdoba</div>
   </div>
-
-  <div class="container">
-    <div class="hero">
-      <h2>Encontrá tu próxima propiedad</h2>
-      <p>Filtrá opciones disponibles y consultá directo por WhatsApp.</p>
-
+ 
+  <div class="hero">
+    <div class="hero-eyebrow">Inmobiliaria · Río Cuarto</div>
+    <h2>Encontrá tu próxima<br>propiedad</h2>
+    <p>Filtrá entre nuestras propiedades disponibles y consultanos directo por WhatsApp.</p>
+ 
+    <div class="filters-wrap">
       <div class="filters">
         <select id="fOperacion">
           <option value="">Operación</option>
           <option value="venta">Venta</option>
           <option value="alquiler">Alquiler</option>
         </select>
-
         <select id="fTipo">
           <option value="">Tipo</option>
           <option value="casa">Casa</option>
-          <option value="departamento">Departamento</option>
-          <option value="lote">Lote / Terreno</option>
+          <option value="depto">Departamento</option>
+          <option value="terreno">Lote / Terreno</option>
           <option value="local">Local</option>
         </select>
-
         <input id="fZona" type="text" placeholder="Zona / Barrio">
-
         <select id="fDormitorios">
           <option value="">Dormitorios</option>
           <option value="1">1+</option>
@@ -234,194 +464,264 @@
           <option value="3">3+</option>
           <option value="4">4+</option>
         </select>
-
         <input id="fPrecio" type="number" placeholder="Precio máximo">
       </div>
-
-      <div class="actions-row">
-        <button class="btn-primary" onclick="aplicarFiltros()">Buscar</button>
-        <button class="btn-secondary" onclick="limpiarFiltros()">Limpiar filtros</button>
+      <div class="filter-actions">
+        <button class="btn-buscar" onclick="aplicarFiltros()">🔍 Buscar propiedades</button>
+        <button class="btn-limpiar" onclick="limpiarFiltros()">Limpiar</button>
       </div>
     </div>
-
+  </div>
+ 
+  <div class="container">
+ 
     <div class="lead-box">
-      <h3>Dejanos tu búsqueda</h3>
-      <p class="small">Si no encontrás una coincidencia exacta, registramos tu demanda y te contactamos.</p>
-
+      <h3>¿No encontraste lo que buscás?</h3>
+      <p>Dejanos tu contacto y tu búsqueda — te avisamos cuando tengamos una propiedad que te encaje.</p>
       <div class="lead-grid">
-        <input id="leadNombre" type="text" placeholder="Nombre">
+        <input id="leadNombre" type="text" placeholder="Tu nombre">
         <input id="leadTelefono" type="text" placeholder="WhatsApp / Teléfono">
         <select id="leadAsesor">
-          <option value="">Asesor</option>
+          <option value="">Elegí un asesor</option>
           <option value="Mariano">Mariano</option>
           <option value="Vanina">Vanina</option>
           <option value="Catalina">Catalina</option>
         </select>
       </div>
-
-      <div class="actions-row">
-        <button class="btn-primary" onclick="guardarBusquedaLead()">Guardar búsqueda como lead</button>
-      </div>
+      <button class="btn-lead" onclick="guardarBusquedaLead()">💾 Guardar mi búsqueda</button>
     </div>
-
+ 
     <div class="results-header">
       <h3 id="resultadosTitulo">Propiedades disponibles</h3>
-      <div class="small" id="contadorResultados">0 resultados</div>
+      <div class="contador" id="contadorResultados">Cargando...</div>
     </div>
-
+ 
     <div id="cards" class="cards"></div>
   </div>
-
+ 
+  <div class="toast" id="toast"></div>
+ 
   <script>
+    // ─── CONFIGURACIÓN ────────────────────────────────────────────────
+    // Número de WhatsApp de la inmobiliaria (sin + ni espacios)
+    const WA_NUMBER = "5493584000000"; // ← CAMBIAR POR EL NÚMERO REAL
+ 
+    // Asesores y sus números de WhatsApp
+    const ASESORES_WA = {
+      "Mariano":  "5493584000001",
+      "Vanina":   "5493584000002",
+      "Catalina": "5493584000003"
+    };
+ 
+    // Estados que se muestran en el funnel público
+    const ESTADOS_VISIBLES = ["publicada", "lista"];
+    // ──────────────────────────────────────────────────────────────────
+ 
     let inmueblesOriginales = [];
-    let inmueblesFiltrados = [];
-
+    let inmueblesFiltrados  = [];
+ 
     async function cargarInmuebles() {
       try {
-        const res = await fetch("/api/inmuebles");
+        const res  = await fetch("/api/inmuebles");
         const data = await res.json();
-        inmueblesOriginales = Array.isArray(data) ? data : [];
+        const todos = Array.isArray(data) ? data : [];
+ 
+        // FIX: solo mostrar propiedades publicadas o listas, con su índice real
+        inmueblesOriginales = todos
+          .map((inm, realIndex) => ({ ...inm, _realIndex: realIndex }))
+          .filter(inm => ESTADOS_VISIBLES.includes((inm.estadoPublicacion || "").toLowerCase()));
+ 
         inmueblesFiltrados = [...inmueblesOriginales];
         renderCards(inmueblesFiltrados);
-      } catch (error) {
-        console.error("Error cargando inmuebles:", error);
-        document.getElementById("cards").innerHTML = '<div class="empty">No se pudieron cargar los inmuebles.</div>';
+      } catch (e) {
+        console.error("Error cargando inmuebles:", e);
+        document.getElementById("cards").innerHTML =
+          '<div class="empty"><h3>No se pudieron cargar las propiedades</h3><p>Intentá de nuevo en unos minutos.</p></div>';
       }
     }
-
+ 
     function aplicarFiltros() {
-      const operacion = document.getElementById("fOperacion").value.toLowerCase().trim();
-      const tipo = document.getElementById("fTipo").value.toLowerCase().trim();
-      const zona = document.getElementById("fZona").value.toLowerCase().trim();
+      const operacion   = document.getElementById("fOperacion").value.toLowerCase().trim();
+      const tipo        = document.getElementById("fTipo").value.toLowerCase().trim();
+      const zona        = document.getElementById("fZona").value.toLowerCase().trim();
       const dormitorios = Number(document.getElementById("fDormitorios").value || 0);
-      const precio = Number(document.getElementById("fPrecio").value || 0);
-
+      const precio      = Number(document.getElementById("fPrecio").value || 0);
+ 
       inmueblesFiltrados = inmueblesOriginales.filter(i => {
+        // FIX: usar tipoPropiedad, no tipo
+        const tipoInm = String(i.tipoPropiedad || "").toLowerCase();
         return (
-          (!operacion || String(i.tipoOperacion || "").toLowerCase() === operacion) &&
-          (!tipo || String(i.tipo || "").toLowerCase() === tipo) &&
-          (!zona || String(i.zona || "").toLowerCase().includes(zona) || String(i.direccion || "").toLowerCase().includes(zona)) &&
+          (!operacion   || String(i.tipoOperacion || "").toLowerCase() === operacion) &&
+          (!tipo        || tipoInm === tipo || tipoInm.includes(tipo)) &&
+          (!zona        || String(i.zona || "").toLowerCase().includes(zona) ||
+                          String(i.direccion || "").toLowerCase().includes(zona)) &&
           (!dormitorios || Number(i.dormitorios || 0) >= dormitorios) &&
-          (!precio || Number(i.precio || 0) <= precio)
+          (!precio      || Number(i.precio || 0) <= precio)
         );
       });
-
+ 
       renderCards(inmueblesFiltrados);
     }
-
+ 
     function limpiarFiltros() {
-      document.getElementById("fOperacion").value = "";
-      document.getElementById("fTipo").value = "";
-      document.getElementById("fZona").value = "";
-      document.getElementById("fDormitorios").value = "";
-      document.getElementById("fPrecio").value = "";
+      ["fOperacion","fTipo","fZona","fDormitorios","fPrecio"]
+        .forEach(id => document.getElementById(id).value = "");
       inmueblesFiltrados = [...inmueblesOriginales];
       renderCards(inmueblesFiltrados);
     }
-
+ 
+    function formatPrecio(p, moneda) {
+      if (!p) return "-";
+      const m = (moneda || "USD").toUpperCase();
+      const n = Number(p).toLocaleString("es-AR");
+      return `${m === "ARS" ? "$" : "USD"} ${n}`;
+    }
+ 
     function renderCards(lista) {
-      const cards = document.getElementById("cards");
+      const cards   = document.getElementById("cards");
       const contador = document.getElementById("contadorResultados");
-      contador.textContent = `${lista.length} resultados`;
-
+      contador.textContent = `${lista.length} propiedad${lista.length !== 1 ? "es" : ""}`;
+ 
       if (!lista.length) {
         cards.innerHTML = `
           <div class="empty">
-            <h3>No encontramos coincidencias exactas</h3>
-            <p>Podés guardar tu búsqueda y te contactamos con nuevas oportunidades.</p>
-          </div>
-        `;
+            <h3>Sin coincidencias exactas</h3>
+            <p>Podés guardar tu búsqueda arriba y te contactamos en cuanto tengamos algo.</p>
+          </div>`;
         return;
       }
-
-      cards.innerHTML = lista.map((p, index) => {
+ 
+      cards.innerHTML = lista.map(p => {
         const imagen = p.imagenes && p.imagenes.length
           ? `/uploads/${p.imagenes[0]}`
-          : "https://via.placeholder.com/600x400?text=Propiedad";
-
-        const textoWhatsapp = encodeURIComponent(
-`Hola 👋
-
-Te consulto por esta propiedad:
-
-${p.titulo || "Propiedad"}
-Operación: ${p.tipoOperacion || "-"}
-Tipo: ${p.tipo || "-"}
-Zona: ${p.zona || "-"}
-Dormitorios: ${p.dormitorios || "-"}
-Precio: USD ${p.precio || "-"}
-
-¿Podrían enviarme más información?
-Equipo Buzzacchi.`
+          : "https://placehold.co/600x400/1a1d27/9ca3af?text=Sin+foto";
+ 
+        const badgeClass = (p.tipoOperacion || "").toLowerCase() === "alquiler"
+          ? "badge-alquiler" : "badge-venta";
+        const badgeText = (p.tipoOperacion || "venta").charAt(0).toUpperCase()
+          + (p.tipoOperacion || "venta").slice(1);
+ 
+        // FIX: índice real del inmueble para ver.html
+        const realIndex = p._realIndex;
+ 
+        // FIX: moneda dinámica
+        const precioFormateado = formatPrecio(p.precio, p.moneda);
+ 
+        const textoWA = encodeURIComponent(
+`Hola 👋, te consulto por esta propiedad:
+ 
+📌 *${p.titulo || "Propiedad"}*
+🏷️ ${badgeText} · ${p.tipoPropiedad || "-"}
+📍 ${p.zona || "-"}${p.direccion ? " — " + p.direccion : ""}
+🛏️ Dormitorios: ${p.dormitorios || "-"}
+💰 ${precioFormateado}
+ 
+¿Podrían darme más información? ¡Gracias!`
         );
-
+ 
         return `
           <div class="card">
-            <img src="${imagen}" alt="${p.titulo || "Propiedad"}">
+            <div class="card-img-wrap">
+              <img src="${imagen}" alt="${p.titulo || "Propiedad"}" loading="lazy">
+              <span class="card-badge ${badgeClass}">${badgeText}</span>
+            </div>
             <div class="card-body">
               <h3>${p.titulo || "Propiedad sin título"}</h3>
               <div class="meta">
-                Operación: ${p.tipoOperacion || "-"}<br>
-                Tipo: ${p.tipo || "-"}<br>
-                Zona: ${p.zona || "-"}<br>
-                Dormitorios: ${p.dormitorios || "-"}
+                Tipo: <span>${p.tipoPropiedad || "-"}</span><br>
+                Zona: <span>${p.zona || "-"}</span><br>
+                ${p.dormitorios ? `Dormitorios: <span>${p.dormitorios}</span><br>` : ""}
+                ${p.banos ? `Baños: <span>${p.banos}</span><br>` : ""}
               </div>
-              <div class="price">USD ${p.precio || "-"}</div>
+              <div class="price">${precioFormateado}</div>
               <div class="card-actions">
-                <a class="btn-view" href="/ver.html?index=${index}">Ver ficha</a>
-                <a class="btn-wa" href="https://wa.me/?text=${textoWhatsapp}" target="_blank">Consultar por WhatsApp</a>
+                <a class="btn-view" href="/ver.html?index=${realIndex}">Ver ficha</a>
+                <a class="btn-wa" href="https://wa.me/${WA_NUMBER}?text=${textoWA}" target="_blank">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                  WhatsApp
+                </a>
               </div>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join("");
     }
-
+ 
     async function guardarBusquedaLead() {
-      const nombre = document.getElementById("leadNombre").value.trim();
+      const nombre   = document.getElementById("leadNombre").value.trim();
       const telefono = document.getElementById("leadTelefono").value.trim();
-      const asesor = document.getElementById("leadAsesor").value.trim();
-
+      const asesor   = document.getElementById("leadAsesor").value.trim();
+ 
+      if (!nombre || !telefono) {
+        showToast("Completá nombre y teléfono para guardar tu búsqueda.", "error");
+        return;
+      }
+ 
+      // FIX: incluir todos los campos necesarios incluyendo nombre, teléfono y asesor
       const busqueda = {
-        mensajeOriginal: "Lead desde funnel inmobiliario",
-        tipoLead: "comprador",
-        operacion: document.getElementById("fOperacion").value || "",
-        tipo: document.getElementById("fTipo").value || "",
-        zona: document.getElementById("fZona").value || "",
+        mensajeOriginal: `Lead desde funnel inmobiliario — ${nombre}`,
+        tipoLead:    "comprador",
+        operacion:   document.getElementById("fOperacion").value || "",
+        tipo:        document.getElementById("fTipo").value || "",
+        zona:        document.getElementById("fZona").value || "",
         dormitorios: document.getElementById("fDormitorios").value || "",
-        precio: document.getElementById("fPrecio").value || "",
-        estado: "nuevo",
-        origen: "funnel",
+        precio:      document.getElementById("fPrecio").value || "",
+        estado:      "nuevo",
+        origen:      "funnel",
         nombre,
         telefono,
         asesor
       };
-
+ 
       try {
-        const res = await fetch("/api/leads", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(busqueda)
+        const res  = await fetch("/api/leads", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(busqueda)
         });
-
         const data = await res.json();
-
+ 
         if (data.ok) {
-          alert("Búsqueda guardada como lead.");
-          document.getElementById("leadNombre").value = "";
+          showToast("✅ Búsqueda guardada. Te contactamos pronto.");
+          document.getElementById("leadNombre").value   = "";
           document.getElementById("leadTelefono").value = "";
-          document.getElementById("leadAsesor").value = "";
+          document.getElementById("leadAsesor").value   = "";
+ 
+          // Si eligió asesor, abrir WhatsApp con ese asesor
+          if (asesor && ASESORES_WA[asesor]) {
+            const msg = encodeURIComponent(
+`Hola ${asesor} 👋, soy *${nombre}*.
+ 
+Dejé mi búsqueda en el funnel:
+🏷️ ${busqueda.operacion || "-"} · ${busqueda.tipo || "-"}
+📍 ${busqueda.zona || "-"}
+🛏️ ${busqueda.dormitorios || "-"} dorm.
+💰 Hasta ${busqueda.precio ? "$ " + Number(busqueda.precio).toLocaleString("es-AR") : "-"}
+ 
+📞 Mi WhatsApp: ${telefono}`
+            );
+            setTimeout(() => {
+              window.open(`https://wa.me/${ASESORES_WA[asesor]}?text=${msg}`, "_blank");
+            }, 800);
+          }
         } else {
-          alert("No se pudo guardar el lead.");
+          showToast("No se pudo guardar el lead.", "error");
         }
-      } catch (error) {
-        console.error("Error guardando lead:", error);
-        alert("Error guardando lead.");
+      } catch (e) {
+        console.error("Error guardando lead:", e);
+        showToast("Error de conexión. Intentá de nuevo.", "error");
       }
     }
-
+ 
+    function showToast(msg, type = "ok") {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast" + (type === "error" ? " error" : "");
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3500);
+    }
+ 
     cargarInmuebles();
   </script>
   <!-- Service Worker PWA -->

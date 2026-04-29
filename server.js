@@ -18,9 +18,9 @@ let webpush; try { webpush = require("web-push"); } catch(e) { webpush = null; }
 const http = require("http");
 const sharp = require("sharp");
 
-// ============================
+
 // HELPERS
-// ============================
+
 
 function descargarImagen(url) {
   return new Promise((resolve) => {
@@ -88,9 +88,9 @@ async function generarThumbnail(nombreArchivo) {
   }
 }
 
-// ============================
+
 // MIDDLEWARES
-// ============================
+
 
 app.use(cors({
   origin: [
@@ -117,9 +117,9 @@ app.use(
   })
 );
 
-// ============================
+
 // CONFIG
-// ============================
+
 
 const usuarios = [
   { email: "mariano@inmo.com", password: "1234", rol: "admin" },
@@ -148,9 +148,9 @@ if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const THUMBS_DIR = path.join(__dirname, "public", "Subidas", "thumbs");
 if (!fs.existsSync(THUMBS_DIR)) fs.mkdirSync(THUMBS_DIR, { recursive: true });
 
-// ============================
+
 // PERSISTENCIA (radar y notificaciones)
-// ============================
+
 
 function guardarNotificaciones() { guardarJSON(NOTIF_FILE, notificaciones); }
 function guardarRadarIA() { guardarJSON(RADAR_IA_FILE, radarIA); }
@@ -162,9 +162,9 @@ asegurarArrayJSON(RADAR_IA_FILE, radarIA);
 asegurarArrayJSON(VENDEDORES_FILE, vendedoresDetectados);
 asegurarArrayJSON(RADAR_LEADS_FILE, radarLeads);
 
-// ============================
+
 // MULTER
-// ============================
+
 
 // Multer en memoria — sube directo a Supabase Storage (no guarda en disco)
 const upload = multer({ storage: multer.memoryStorage() });
@@ -180,9 +180,9 @@ async function subirASupabase(buffer, originalname, mimetype) {
   return data.publicUrl;
 }
 
-// ============================
+
 // SERVICIOS EXTERNOS
-// ============================
+
 
 const supabase =
   process.env.SUPABASE_URL && process.env.SUPABASE_KEY
@@ -193,9 +193,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ""
 });
 
-// ============================
+
 // HELPER SUPABASE — inmuebles
-// ============================
+
 
 // Convierte una fila de Supabase al formato que usa el frontend
 function sbToInm(row) {
@@ -254,9 +254,9 @@ function inmToSb(inm) {
   return obj;
 }
 
-// ============================
+
 // PAGINAS
-// ============================
+
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
@@ -298,9 +298,9 @@ app.get("/test-render", (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
-// ============================
+
 // AUTH
-// ============================
+
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -314,9 +314,9 @@ app.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/login.html"));
 });
 
-// ============================
+
 // INMUEBLES — SUPABASE ✅
-// ============================
+
 
 // CREAR — borrador completo
 app.post(
@@ -723,9 +723,9 @@ app.get("/marketing/zip/:id", async (req, res) => {
   archive.finalize();
 });
 
-// ============================
+
 // APIS BASICAS
-// ============================
+
 
 // ✅ ÚNICA ruta de inmuebles públicos — lee de Supabase
 app.get("/api/inmuebles-publicos", async (req, res) => {
@@ -872,9 +872,9 @@ app.post("/api/leads", async (req, res) => {
   res.json({ ok: true, id: data.id });
 });
 
-// ============================
+
 // COMPRADORES — Supabase ✅
-// ============================
+
 
 app.post("/compradores/nuevo", async (req, res) => {
   const body = req.body || {};
@@ -917,9 +917,9 @@ app.post("/compradores/editar/:id", async (req, res) => {
   res.redirect("/dashboard.html");
 });
 
-// ============================
+
 // DEMANDAS — Supabase ✅
-// ============================
+
 
 app.post("/demandas/nuevo", async (req, res) => {
   const body = req.body || {};
@@ -953,9 +953,9 @@ app.post("/demandas/eliminar/:id", async (req, res) => {
   res.redirect("/demandas.html");
 });
 
-// ============================
+
 // MATCHING — Supabase ✅
-// ============================
+
 
 app.get("/api/match-demanda/:id", async (req, res) => {
   const id = Number(req.params.id);
@@ -1103,9 +1103,9 @@ app.get("/api/match-inmueble/:id", async (req, res) => {
   res.json({ totalMatches: matches.length, matches });
 });
 
-// ============================
+
 // RADAR IA / VENDEDORES / LEADS
-// ============================
+
 
 app.post("/api/radar-ia/guardar", (req, res) => {
   const body = req.body || {};
@@ -1276,15 +1276,26 @@ app.post("/api/radar-leads/pasar-comprador/:index", async (req, res) => {
 
   res.json({ ok: true });
 });
+ HEAD
 
-app.get("/api/radar-leads/match/:index", (req, res) => {
+
+app.get("/api/radar-leads/match/:index", async (req, res) => {
+ e64ec7d (Fix radar leads match)
+
   const idx = Number(req.params.index);
+ HEAD
   if (isNaN(idx) || !radarLeads[idx]) return res.json({ totalMatches: 0, matches: [] });
 
   const lead = radarLeads[idx];
   res.json({ totalMatches: 0, matches: [], nota: "Match desde Supabase pendiente" });
 });
 
+  if (isNaN(idx) || !radarLeads[idx]) return res.json({ totalMatches: 0, matches: [] });
+
+  const lead = radarLeads[idx];
+  res.json({ totalMatches: 0, matches: [], nota: "Match desde Supabase pendiente" });
+});
+e64ec7d (Fix radar leads match)
 app.post("/api/analizar-mensaje", (req, res) => {
   res.json({ ok: true, analisis: "pendiente" });
 });
@@ -1300,6 +1311,187 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
       file: stream,
       model: "whisper-1",
       language: "es"
+
+
+  if (isNaN(idx) || !radarLeads[idx]) {
+    return res.json({
+      totalMatches: 0,
+      matches: []
+    });
+  }
+
+  const lead = radarLeads[idx];
+
+  const zonaL = (lead.zona || "").toLowerCase();
+
+  const opL = (lead.tipoOperacion || "").toLowerCase();
+
+  const tipoL = (lead.tipoPropiedad || "").toLowerCase();
+
+  const presL = Number(
+    lead.presupuesto ||
+    lead.presupuestoMax ||
+    0
+  );
+
+  const dormL = Number(
+    lead.dormitoriosMin || 0
+  );
+
+  try {
+
+    const { data: rows, error } = await supabase
+      .from("inmuebles")
+      .select("*");
+
+    if (error) {
+
+      console.error(
+        "Error trayendo inmuebles:",
+        error.message
+      );
+
+      return res.json({
+        totalMatches: 0,
+        matches: []
+      });
+
+    }
+
+    const inmuebles = (rows || []).map(sbToInm);
+
+    const matches = [];
+
+    inmuebles.forEach((inm) => {
+
+      let score = 0;
+
+      const estado = (
+        inm.estadoPublicacion || ""
+      ).toLowerCase();
+
+      // SOLO propiedades visibles
+      if (
+        estado !== "lista" &&
+        estado !== "publicada" &&
+        estado !== "oportunidad"
+      ) {
+        return;
+      }
+
+      const zonaI = (
+        inm.zona || ""
+      ).toLowerCase();
+
+      const opI = (
+        inm.tipoOperacion || ""
+      ).toLowerCase();
+
+      const textoI = (
+        (inm.tipoPropiedad || "") +
+        " " +
+        (inm.titulo || "") +
+        " " +
+        (inm.descripcion || "")
+      ).toLowerCase();
+
+      const precioI = Number(
+        inm.precio || 0
+      );
+
+      const dormI = Number(
+        inm.dormitorios || 0
+      );
+
+      // OPERACION
+      if (
+        opL &&
+        opI &&
+        opL === opI
+      ) {
+        score += 25;
+      }
+
+      // ZONA
+      if (
+        zonaL &&
+        zonaI &&
+        zonaI.includes(zonaL)
+      ) {
+        score += 25;
+      }
+
+      // TIPO
+      if (
+        tipoL &&
+        textoI.includes(tipoL)
+      ) {
+        score += 20;
+      }
+
+      // PRECIO
+      if (
+        presL > 0 &&
+        precioI > 0 &&
+        precioI <= presL * 1.15
+      ) {
+        score += 20;
+      }
+
+      // DORMITORIOS
+      if (
+        dormL > 0 &&
+        dormI >= dormL
+      ) {
+        score += 10;
+      }
+
+      // BONUS oportunidad
+      if (estado === "oportunidad") {
+        score += 5;
+      }
+
+      if (score >= 30) {
+
+        matches.push({
+
+          inmuebleId: inm.id,
+
+          score,
+
+          inmueble: {
+
+            titulo:
+              inm.titulo || "Sin título",
+
+            zona:
+              inm.zona || "",
+
+            precio:
+              inm.precio || 0,
+
+            moneda:
+              inm.moneda || "USD",
+
+            estadoPublicacion:
+              inm.estadoPublicacion || "",
+
+            tipoOperacion:
+              inm.tipoOperacion || "",
+
+            tipoPropiedad:
+              inm.tipoPropiedad || "",
+
+            dormitorios:
+              inm.dormitorios || 0
+
+          }
+
+        });
+
+      }
+
+ e64ec7d (Fix radar leads match)
     });
     res.json({ ok: true, texto: transcripcion.text });
   } catch (e) {
@@ -1308,10 +1500,33 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
   }
 });
 
+ HEAD
 // RATING
 app.post("/api/rating", async (req, res) => {
   const { propiedad_id, rating } = req.body;
   const id = Number(propiedad_id);
+
+    matches.sort(
+      (a, b) => b.score - a.score
+    );
+
+    res.json({
+      totalMatches: matches.length,
+      matches
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Error match radar leads:",
+      err
+    );
+
+    res.json({
+      totalMatches: 0,
+      matches: []
+    });
+ e64ec7d (Fix radar leads match)
 
   if (!isNaN(id)) {
     await supabase.from("inmuebles").update({ rating: Number(rating) }).eq("id", id);
@@ -1320,9 +1535,10 @@ app.post("/api/rating", async (req, res) => {
   res.json({ ok: true });
 });
 
-// ============================
+ HEAD
+
 // PDF FICHA — lee de Supabase
-// ============================
+
 
 app.get("/api/ficha-pdf/:id", async (req, res) => {
   const id = Number(req.params.id);
@@ -1431,13 +1647,160 @@ app.get("/api/ficha-pdf/:id", async (req, res) => {
   doc.end();
 });
 
-// ============================
-// SERVER
-// ============================
+=======
+app.post("/api/analizar-mensaje", (req, res) => {
+  res.json({ ok: true, analisis: "pendiente" });
+});
 
-// ============================
+app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
+  if (!req.file) return res.status(400).json({ ok: false, error: "Sin audio" });
+
+  try {
+    const { Readable } = require("stream");
+    const stream = Readable.from(req.file.buffer);
+    stream.path = req.file.originalname || "audio.webm";
+    const transcripcion = await openai.audio.transcriptions.create({
+      file: stream,
+      model: "whisper-1",
+      language: "es"
+    });
+    res.json({ ok: true, texto: transcripcion.text });
+  } catch (e) {
+    console.error("Error transcripción:", e.message);
+    res.status(500).json({ ok: false, error: "Error al transcribir" });
+  }
+});
+
+// RATING
+app.post("/api/rating", async (req, res) => {
+  const { propiedad_id, rating } = req.body;
+  const id = Number(propiedad_id);
+
+  if (!isNaN(id)) {
+    await supabase.from("inmuebles").update({ rating: Number(rating) }).eq("id", id);
+  }
+
+  res.json({ ok: true });
+});
+
+
+// PDF FICHA — lee de Supabase
+
+
+app.get("/api/ficha-pdf/:id", async (req, res) => {
+  const id = Number(req.params.id);
+
+  const { data: row } = await supabase.from("inmuebles").select("*").eq("id", id).single();
+  if (!row) return res.status(404).send("Propiedad no encontrada");
+
+  const p = sbToInm(row);
+
+  const doc = new PDFDocument({ margin: 50, size: "A4" });
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", `inline; filename="ficha-${id}.pdf"`);
+  doc.pipe(res);
+
+  const VERDE = "#1a3a2a";
+  const DORADO = "#c9a96e";
+  const W = 495;
+
+  doc.rect(0, 0, 595, 80).fill(VERDE);
+  doc.fillColor("white").fontSize(22).font("Helvetica-Bold").text("Vanina Buzzacchi", 50, 20, { width: W });
+  doc.fontSize(11).font("Helvetica").text("Negocios Inmobiliarios - Rio Cuarto, Cordoba", 50, 48);
+
+  doc.fillColor(VERDE).fontSize(18).font("Helvetica-Bold").text(limpiarTexto(p.titulo), 50, 100, { width: W });
+  doc.moveTo(50, 125).lineTo(545, 125).strokeColor(DORADO).lineWidth(2).stroke();
+
+  let posY = 140;
+  const badge = p.tipoOperacion === "venta" ? "VENTA" : "ALQUILER";
+  doc.roundedRect(50, posY, 70, 20, 4).fill(DORADO);
+  doc.fillColor(VERDE).fontSize(10).font("Helvetica-Bold").text(badge, 50, posY + 4, { width: 70, align: "center" });
+  posY += 32;
+
+  const fila = (label, valor) => {
+    if (!valor || valor === "-" || valor === "0") return;
+    doc.fillColor("#555").fontSize(10).font("Helvetica-Bold").text(label, 50, posY);
+    doc.fillColor("#111").fontSize(10).font("Helvetica").text(limpiarTexto(String(valor)), 180, posY);
+    posY += 20;
+  };
+
+  fila("Tipo:", p.tipoPropiedad || "-");
+  fila("Zona:", p.zona);
+  fila("Direccion:", p.direccion);
+  fila("Precio:", `${p.moneda || "USD"} ${Number(p.precio || 0).toLocaleString("es-AR")}`);
+  fila("Dormitorios:", p.dormitorios ? String(p.dormitorios) : null);
+  fila("Banos:", p.banos ? String(p.banos) : null);
+
+  posY += 8;
+  doc.moveTo(50, posY).lineTo(545, posY).strokeColor("#ddd").lineWidth(1).stroke();
+  posY += 16;
+
+  const imagenes = (p.imagenes || []).slice(0, 4);
+  if (imagenes.length > 0) {
+    doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Fotos", 50, posY);
+    posY += 16;
+
+    const fotoW = 220;
+    const fotoH = 150;
+    const gap = 15;
+    const BASE = "https://inmocreador-crm.onrender.com";
+
+    for (let fi = 0; fi < imagenes.length; fi++) {
+      const fx = fi % 2 === 0 ? 50 : 50 + fotoW + gap;
+      if (fi % 2 === 0 && fi > 0) posY += fotoH + gap;
+
+      const buffer = await descargarImagen(`${BASE}/uploads/${imagenes[fi]}`);
+      if (buffer) {
+        try {
+          doc.image(buffer, fx, posY, { width: fotoW, height: fotoH, cover: [fotoW, fotoH] });
+        } catch (e) {
+          doc.rect(fx, posY, fotoW, fotoH).fill("#eee");
+        }
+      } else {
+        doc.rect(fx, posY, fotoW, fotoH).fill("#eee");
+      }
+    }
+
+    posY += fotoH + gap + 10;
+  }
+
+  doc.moveTo(50, posY).lineTo(545, posY).strokeColor("#ddd").lineWidth(1).stroke();
+  posY += 14;
+  doc.fillColor(VERDE).fontSize(12).font("Helvetica-Bold").text("Descripcion", 50, posY);
+  posY += 18;
+
+  const descLimpia = limpiarTexto(p.descripcion || "Sin descripcion disponible.")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .join("\n");
+
+  doc.fillColor("#333").fontSize(10).font("Helvetica").text(descLimpia, 50, posY, {
+    width: W,
+    lineGap: 3
+  });
+
+  const pageH = doc.page.height;
+  doc.rect(0, pageH - 50, 595, 50).fill("#f5f5f5");
+  doc.fillColor("#888").fontSize(9).font("Helvetica").text(
+    "Documento informativo. Precios sujetos a modificacion.",
+    50, pageH - 38, { width: W, align: "center" }
+  );
+  doc.fillColor(VERDE).fontSize(9).font("Helvetica-Bold").text(
+    "Vanina Buzzacchi Negocios Inmobiliarios - Rio Cuarto, Cordoba",
+    50, pageH - 24, { width: W, align: "center" }
+  );
+
+  doc.end();
+});
+
+ e64ec7d (Fix radar leads match)
+
+// SERVER
+
+
 // WEB PUSH — VAPID + SUBSCRIPTIONS
-// ============================
+
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY  || "";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
 let pushSubscriptions = []; // en memoria (se puede migrar a Supabase luego)
@@ -1474,9 +1837,9 @@ async function sendPushToAll(payload) {
   pushSubscriptions = pushSubscriptions.filter(s => !dead.includes(s.endpoint));
 }
 
-// ============================
+
 // IA MATCH — búsqueda por texto libre
-// ============================
+
 app.post("/api/match-ia", async (req, res) => {
   const { consulta, presupuesto, operacion } = req.body || {};
   if (!consulta) return res.status(400).json({ ok: false, error: "Sin consulta" });
