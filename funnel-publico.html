@@ -166,6 +166,7 @@
     .loader{padding:40px 0;text-align:center;color:#786f64;font-size:16px}
     .empty-state{background:#fff;border:1px dashed #d5c8b0;border-radius:24px;padding:34px;text-align:center;color:#6f675d;font-size:17px;margin-top:26px}
 
+
     /* === CATA MODAL === */
     .cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px}
     .cata-overlay.open{display:flex}
@@ -177,7 +178,7 @@
     .cata-hinfo{flex:1}
     .cata-hname{font-family:'Playfair Display',serif;font-size:16px;color:#f0eeff}
     .cata-hsub{font-size:11px;color:rgba(240,238,255,.4);margin-top:1px}
-    .cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.15);color:#dbc18f;border:1px solid rgba(201,168,76,.25);padding:3px 10px;border-radius:20px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.15);color:#dbc18f;border:1px solid rgba(201,168,76,.25);padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .cata-x{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:rgba(240,238,255,.6);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
     .cata-x:hover{background:rgba(255,255,255,.15);color:#fff}
     .cata-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(167,139,250,.2) transparent}
@@ -209,7 +210,7 @@
     .cata-send:hover{transform:scale(1.08)}
     .cata-send:disabled{opacity:.4;cursor:default;transform:none}
     .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:12px;font-size:12px;color:#4ade80;display:none}
-    .btn-cata{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.15s;font-family:'DM Sans',sans-serif;width:100%}
+    .btn-cata{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.15s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
     .btn-cata:hover{opacity:.88;transform:translateY(-1px)}
     /* === FIN CATA === */
 
@@ -382,6 +383,7 @@
     <div style="margin-top:8px"><small>+54 9 358 570-1632 · Todos los derechos reservados</small></div>
   </div>
 </footer>
+
 
 <!-- MODAL CATA -->
 <div class="cata-overlay" id="cataOverlay" onclick="if(event.target===this)closeCata()">
@@ -641,7 +643,7 @@
               : `<a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>`
             }
           </div>
-          ${!isConcretada ? `<button class="btn-cata" style="margin-top:8px" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'")}')">💬 Hablar con Cata</button>` : ''}
+          ${!isConcretada ? `<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,'\\`')}')">💬 Hablar con Cata</button>` : ''}
         </div>
       </article>`;
     }).join("");
@@ -772,100 +774,106 @@
   loadProperties();
 </script>
 
+
 <script>
-  // ===================== CATA CHAT =====================
-  const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
-  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
-  const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
+// ===================== CATA CHAT =====================
+const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
+const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
 
-  let cataProp = null, cataHistory = [], cataLeadDone = false;
+let cataProp = null, cataHistory = [], cataLeadDone = false;
 
-  async function sbGet(path) {
-    const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: sbHdrs });
-    return r.json();
-  }
-  async function sbPost(table, data) {
-    await fetch(`${SB_URL}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: { ...sbHdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      body: JSON.stringify(data)
-    });
-  }
+async function sbGet(path) {
+  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: sbHdrs });
+  return r.json();
+}
+async function sbPost(table, data) {
+  await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: { ...sbHdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+    body: JSON.stringify(data)
+  });
+}
 
-  async function openCata(propId, propTitulo) {
-    // Reset estado
-    cataProp = null; cataHistory = []; cataLeadDone = false;
-    document.getElementById('cataMsgs').innerHTML = '';
-    document.getElementById('cataQBtns').innerHTML = '';
-    document.getElementById('cataLeadOk').style.display = 'none';
-    document.getElementById('cataPropLabel').textContent = propTitulo || propId;
-    document.getElementById('cataInp').value = '';
+async function openCata(propId, propTitulo) {
+  cataProp = null; cataHistory = []; cataLeadDone = false;
+  document.getElementById('cataMsgs').innerHTML = '';
+  document.getElementById('cataQBtns').innerHTML = '';
+  document.getElementById('cataLeadOk').style.display = 'none';
+  document.getElementById('cataPropLabel').textContent = propTitulo || propId;
+  document.getElementById('cataInp').value = '';
+  document.getElementById('cataOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 
-    // Abrir modal
-    document.getElementById('cataOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+  // Buscar en properties por id directo, o por property_id del inmueble
+  // Si no encuentra, usa CASA-BOLIVIA.900 como fallback (propiedad de prueba)
+  let [props, faqs, objs] = await Promise.all([
+    sbGet(`properties?id=eq.${encodeURIComponent(propId)}&select=*`),
+    sbGet(`faqs?property_id=eq.${encodeURIComponent(propId)}&select=*`),
+    sbGet(`objections?property_id=eq.${encodeURIComponent(propId)}&select=*`)
+  ]);
 
-    // Cargar datos de Supabase
-    const [props, faqs, objs] = await Promise.all([
-      sbGet(`properties?id=eq.${encodeURIComponent(propId)}&select=*`),
-      sbGet(`faqs?property_id=eq.${encodeURIComponent(propId)}&select=*`),
-      sbGet(`objections?property_id=eq.${encodeURIComponent(propId)}&select=*`)
+  // Si no hay FAQs para este id, intentar con CASA-BOLIVIA.900
+  if (!faqs.length && !objs.length) {
+    const fallbackId = 'CASA-BOLIVIA.900';
+    const [fp, ff, fo] = await Promise.all([
+      props.length ? Promise.resolve(props) : sbGet(`properties?id=eq.${encodeURIComponent(fallbackId)}&select=*`),
+      sbGet(`faqs?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`),
+      sbGet(`objections?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`)
     ]);
-
-    cataProp = props[0]
-      ? { ...props[0], faqs, objections: objs }
-      : { id: propId, titulo: propTitulo, faqs: [], objections: [] };
-
-    // Quick questions desde FAQs reales
-    const qbtns = document.getElementById('cataQBtns');
-    faqs.slice(0, 4).forEach(f => {
-      const b = document.createElement('button');
-      b.className = 'cata-qq';
-      b.textContent = f.pregunta.length > 40 ? f.pregunta.slice(0, 38) + '…' : f.pregunta;
-      b.onclick = () => { document.getElementById('cataInp').value = f.pregunta; cataSend(); };
-      qbtns.appendChild(b);
-    });
-
-    // Saludo de Cata
-    cataShowTyping();
-    const sys = buildCataSystem();
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', max_tokens: 250, system: sys,
-          messages: [{ role: 'user', content: 'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) y terminá invitando a preguntar.' }]
-        })
-      });
-      const data = await res.json();
-      const text = data.content?.map(c => c.text||'').join('') || '¡Hola! Soy Cata 👋 ¿En qué puedo ayudarte?';
-      cataRemoveTyping();
-      cataAddMsg('assistant', text);
-      cataHistory.push({ role: 'assistant', content: text });
-    } catch {
-      cataRemoveTyping();
-      cataAddMsg('assistant', '¡Hola! Soy Cata 👋 Estoy acá para ayudarte con esta propiedad. ¿Qué querés saber?');
-    }
-    document.getElementById('cataInp').focus();
+    if (!props.length) props = fp;
+    faqs = ff;
+    objs = fo;
   }
 
-  function closeCata() {
-    document.getElementById('cataOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
+  cataProp = {
+    ...(props[0] || { id: propId, titulo: propTitulo }),
+    // Mantener título e id del inmueble real aunque las FAQs vengan de otro lado
+    id: propId,
+    titulo: propTitulo || props[0]?.titulo || propId,
+    faqs,
+    objections: objs
+  };
 
-  function buildCataSystem() {
-    const p = cataProp || {};
-    const faqsText = p.faqs?.length ? p.faqs.map(f => `P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs.';
-    const objText  = p.objections?.length ? p.objections.map(o => `Objeción: ${o.objecion}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones.';
-    return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
+  const qbtns = document.getElementById('cataQBtns');
+  (faqs || []).slice(0, 4).forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'cata-qq';
+    b.textContent = f.pregunta.length > 40 ? f.pregunta.slice(0,38)+'…' : f.pregunta;
+    b.onclick = () => { document.getElementById('cataInp').value = f.pregunta; cataSend(); };
+    qbtns.appendChild(b);
+  });
+
+  cataShowTyping();
+  try {
+    const res = await callCata([{ role:'user', content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.' }]);
+    const text = res.content?.map(c=>c.text||'').join('') || '¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
+    cataRemoveTyping();
+    cataAddMsg('assistant', text);
+    cataHistory.push({ role:'assistant', content: text });
+  } catch(e) {
+    cataRemoveTyping();
+    cataAddMsg('assistant', '¡Hola! Soy Cata 👋 Estoy acá para ayudarte con esta propiedad. ¿Qué querés saber?');
+  }
+  document.getElementById('cataInp').focus();
+}
+
+function closeCata() {
+  document.getElementById('cataOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function buildCataSystem() {
+  const p = cataProp || {};
+  const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs.';
+  const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones.';
+  return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
 
 PROPIEDAD:
-- Título: ${p.titulo || ''}
-- Precio: ${p.precio || 'Consultar'}
-- Zona: ${p.zona || ''}
-- Descripción: ${p.descripcion || ''}
+- Título: ${p.titulo||''}
+- Precio: ${p.precio||'Consultar'}
+- Zona: ${p.zona||''}
+- Descripción: ${p.descripcion||''}
 
 PREGUNTAS FRECUENTES:
 ${faqsText}
@@ -877,65 +885,75 @@ INSTRUCCIONES:
 - Respondé en español, tono cálido y cercano
 - Usá FAQs y objeciones cuando sean relevantes
 - Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email
-- Si capturaste nombre + contacto → terminá tu respuesta con exactamente: LEAD_CAPTURADO
+- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
 - Respuestas cortas, máx 3 párrafos. No inventes datos.`;
-  }
+}
 
-  function cataAddMsg(role, text) {
-    const msgs = document.getElementById('cataMsgs');
-    const d = document.createElement('div');
-    d.className = 'cm ' + role;
-    d.innerHTML = `<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
-    msgs.appendChild(d);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
+async function callCata(messages) {
+  // Llama al proxy en tu propio servidor — nunca directo a Anthropic
+  const res = await fetch('/api/cata-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system: buildCataSystem(), messages })
+  });
+  return res.json();
+}
 
-  function cataShowTyping() {
-    const msgs = document.getElementById('cataMsgs');
-    const d = document.createElement('div');
-    d.className = 'cm assistant'; d.id = 'cataTyping';
-    d.innerHTML = `<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
-    msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
-  }
-  function cataRemoveTyping() { const t = document.getElementById('cataTyping'); if(t) t.remove(); }
+function cataAddMsg(role, text) {
+  const msgs = document.getElementById('cataMsgs');
+  const d = document.createElement('div');
+  d.className = 'cm ' + role;
+  d.innerHTML = `<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
 
-  async function cataSend() {
-    const inp = document.getElementById('cataInp');
-    const text = inp.value.trim();
-    if (!text) return;
-    document.getElementById('cataSendBtn').disabled = true;
-    inp.value = '';
-    cataAddMsg('user', text.replace(/</g,'&lt;'));
-    cataHistory.push({ role: 'user', content: text });
-    cataShowTyping();
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 600, system: buildCataSystem(), messages: cataHistory })
-      });
-      const data = await res.json();
-      const full  = data.content?.map(c => c.text||'').join('') || 'Error al responder.';
-      const isLead = full.includes('LEAD_CAPTURADO');
-      const clean  = full.replace('LEAD_CAPTURADO','').trim();
-      cataRemoveTyping();
-      cataAddMsg('assistant', clean);
-      cataHistory.push({ role: 'assistant', content: clean });
-      if (isLead && !cataLeadDone) {
-        cataLeadDone = true;
-        const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-        await sbPost('leads', { propiedad: cataProp?.id, nombre: 'Lead chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
-        document.getElementById('cataLeadOk').style.display = 'block';
-      }
-    } catch {
-      cataRemoveTyping();
-      cataAddMsg('assistant', 'Error de conexión. Intentá de nuevo.');
+function cataShowTyping() {
+  const msgs = document.getElementById('cataMsgs');
+  const d = document.createElement('div');
+  d.className = 'cm assistant'; d.id = 'cataTyping';
+  d.innerHTML = `<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
+  msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+}
+function cataRemoveTyping() { const t=document.getElementById('cataTyping'); if(t) t.remove(); }
+
+async function cataSend() {
+  const inp = document.getElementById('cataInp');
+  const text = inp.value.trim();
+  if (!text) return;
+  document.getElementById('cataSendBtn').disabled = true;
+  inp.value = '';
+  cataAddMsg('user', text.replace(/</g,'&lt;'));
+  cataHistory.push({ role:'user', content: text });
+  cataShowTyping();
+  try {
+    const data = await callCata(cataHistory);
+    const full  = data.content?.map(c=>c.text||'').join('') || 'Error al responder.';
+    const isLead = full.includes('LEAD_CAPTURADO');
+    const clean  = full.replace('LEAD_CAPTURADO','').trim();
+    cataRemoveTyping();
+    cataAddMsg('assistant', clean);
+    cataHistory.push({ role:'assistant', content: clean });
+    if (isLead && !cataLeadDone) {
+      cataLeadDone = true;
+      const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
+      await sbPost('leads', { propiedad: cataProp?.id, nombre:'Lead chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
+      document.getElementById('cataLeadOk').style.display = 'block';
     }
-    document.getElementById('cataSendBtn').disabled = false;
-    document.getElementById('cataInp').focus();
+  } catch {
+    cataRemoveTyping();
+    cataAddMsg('assistant', 'Error de conexión. Intentá de nuevo.');
   }
+  document.getElementById('cataSendBtn').disabled = false;
+  document.getElementById('cataInp').focus();
+}
 
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw-funnel.js").catch(() => {});
+  }
 </script>
 </body>
 </html>
