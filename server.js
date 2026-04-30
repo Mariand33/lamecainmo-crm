@@ -20,10 +20,19 @@ const sharp = require("sharp");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 👇 ESTO ES LO QUE TE FALTA
+// =========================
+// ARCHIVOS ESTÁTICOS
+// =========================
 app.use(express.static(path.join(__dirname, "public")));
+
+// 👇 ESTE ES TU FUNNEL (IMPORTANTE)
+app.use("/funnel", express.static(path.join(__dirname, "public/funnel")));
+
+// =========================
+// LANDING → FUNNEL
+// =========================
 app.get("/", (req, res) => {
- res.redirect("/funnel");
+  res.redirect("/funnel");
 });
 // =========================
 // CONFIG
