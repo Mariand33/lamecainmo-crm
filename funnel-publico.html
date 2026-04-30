@@ -188,9 +188,15 @@
       <div class="brand-title">Vanina Buzzacchi</div>
       <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
     </div>
-    <div class="top-actions">
-      <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
-      <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
+   <div class="top-actions">
+  <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
+
+  <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
+
+  <button class="btn btn-outline" onclick="window.location.href='/chat/cata.html?property=CASA-BOLIVIA-900'">
+    💬 Hablar con Cata
+  </button>
+</div>
     </div>
   </div>
 </header>
@@ -202,6 +208,9 @@
       <h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1>
       <p>Explorá casas, departamentos, locales y oportunidades reales. Consultá directo por WhatsApp o dejá tu búsqueda.</p>
       <div class="hero-cta">
+        <button class="btn btn-outline" onclick="window.location.href='/chat/cata.html?property=CASA-BOLIVIA-900'">
+  💬 Hablar con Cata
+</button>
         <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a>
         <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
       </div>
@@ -232,7 +241,10 @@
       <p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos.</p>
       <div class="ia-form">
         <input class="ia-input" id="iaQuery" type="text" placeholder="Ej: casa con patio en Banda Norte para familia, tranquila..."/>
-        <button class="btn-ia" id="iaBtn" onclick="buscarConIA()">🔍 Buscar con IA</button>
+
+<button class="btn-ia" id="iaBtn" onclick="buscarConIA()">
+  🔍 Buscar con IA
+</button>
       </div>
       <div class="ia-extras">
         <div class="budget-wrap">
