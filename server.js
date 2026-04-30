@@ -25,14 +25,19 @@ app.use(express.urlencoded({ extended: true }));
 // =========================
 app.use(express.static(path.join(__dirname, "public")));
 
-// 👇 ESTE ES TU FUNNEL (IMPORTANTE)
-app.use("/funnel", express.static(path.join(__dirname, "public/funnel")));
+// 👇 FUNNEL PÚBLICO
+app.get("/funnel", (req, res) => {
+  res.sendFile(path.join(__dirname, "funnel-publico.html"));
+});
+app.get("/funnel-publico.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "funnel-publico.html"));
+});
 
 // =========================
 // LANDING → FUNNEL
 // =========================
 app.get("/", (req, res) => {
-  res.redirect("/funnel");
+  res.sendFile(path.join(__dirname, "funnel-publico.html"));
 });
 // =========================
 // CONFIG
