@@ -17,7 +17,14 @@ const PDFDocument = require("pdfkit");
 const https = require("https");
 const http = require("http");
 const sharp = require("sharp");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// 👇 ESTO ES LO QUE TE FALTA
+app.use(express.static(path.join(__dirname, "public")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
 // =========================
 // CONFIG
 // =========================
