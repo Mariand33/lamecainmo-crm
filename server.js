@@ -364,7 +364,46 @@ app.post("/api/cata-chat", async (req, res) => {
     res.status(500).json({ error: "Error al conectar con Anthropic" });
   }
 });
+// CATA CHAT — IA con Claude
+app.post("/api/cata-chat", async (req, res) => {
+  const { mensaje, historial, propiedad } = req.body || {};
+  if (!mensaje) return res.status(400).json({ ok: false, error: "Sin mensaje" });
 
+  try {
+    const propCtx = propiedad
+      ? `Propiedad consultada: ${propiedad.titulo || ""} · ${propiedad.zona || ""} · ${propiedad.moneda || "USD"} ${propiedad.precio || 0} · ${propiedad.tipoOperacion || ""}`
+      : "Consulta general sobre propiedades";
+
+    const messages = [
+      ...(historial || []),
+      { role: "user", content: mensaje }
+    ];
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `Sos Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina. 
+Respondés consultas sobre propiedades de manera amigable, breve y profesional.
+${propCtx}
+Si el cliente muestra interés concreto, pedile nombre y teléfono para que Vanina lo contacte.
+Respondé siempre en español, máximo 3 oraciones.`
+        },
+        ...messages
+      ],
+      max_tokens: 300,
+      temperature: 0.7
+    });
+
+    const respuesta = completion.choices[0].message.content.trim();
+    res.json({ ok: true, respuesta });
+
+  } catch (e) {
+    console.error("Error cata-chat:", e.message);
+    res.status(500).json({ ok: false, error: "Error al procesar" });
+  }
+});
 // =========================
 // SERVER START
 // =========================
