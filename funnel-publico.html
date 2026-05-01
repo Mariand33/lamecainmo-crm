@@ -808,11 +808,10 @@ async function openCata(propId, propTitulo) {
   // Buscar en properties por id directo, o por property_id del inmueble
   // Si no encuentra, usa CASA-BOLIVIA.900 como fallback (propiedad de prueba)
   let [props, faqs, objs] = await Promise.all([
-    sbGet(`properties?id=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`faqs?property_id=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`objections?property_id=eq.${encodeURIComponent(propId)}&select=*`)
-  ]);
-
+    
+    sbGet(`properties?inmueble_id=eq.${propId}&select=*`),
+sbGet(`faqs?property_id_num=eq.${propId}&select=*`),
+sbGet(`objections?property_id_num=eq.${propId}&select=*`)
   // Si no hay FAQs para este id, intentar con CASA-BOLIVIA.900
   if (!faqs.length && !objs.length) {
     const fallbackId = 'CASA-BOLIVIA.900';
