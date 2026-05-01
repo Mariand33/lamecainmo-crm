@@ -24,22 +24,20 @@ app.use(express.urlencoded({ extended: true }));
 // ARCHIVOS ESTÁTICOS
 // =========================
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname)));  // sirve archivos de la raíz
 
-// 👇 FUNNEL PÚBLICO
+// 👇 RUTAS PRINCIPALES
 app.get("/funnel", (req, res) => {
   res.sendFile(path.join(__dirname, "funnel-publico.html"));
 });
 app.get("/funnel-publico.html", (req, res) => {
   res.sendFile(path.join(__dirname, "funnel-publico.html"));
 });
-
-// 👇 DASHBOARD
-app.get("/dashboard.html", (req, res) => {
- res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
-});
 app.get("/dashboard", (req, res) => {
- res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
+  res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
+});
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
+});
 
 // =========================
 // LANDING → FUNNEL
@@ -346,15 +344,10 @@ app.get("/api/radar-ia", (req, res) => {
 // =========================
 // CATA CHAT (proxy Anthropic)
 // =========================
-
 app.post("/api/cata-chat", async (req, res) => {
   const { messages, system } = req.body;
   const apiKey = process.env.ANTHROPIC_API_KEY;
-
-  if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY no configurada en Render" });
-  }
-
+  if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_API_KEY no configurada" });
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -363,14 +356,8 @@ app.post("/api/cata-chat", async (req, res) => {
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01"
       },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 600,
-        system,
-        messages
-      })
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages })
     });
-
     const data = await response.json();
     res.json(data);
   } catch (e) {
