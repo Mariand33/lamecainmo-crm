@@ -36,11 +36,10 @@ app.get("/funnel-publico.html", (req, res) => {
 
 // 👇 DASHBOARD
 app.get("/dashboard.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+ res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
 });
 app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-});
+ res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
 
 // =========================
 // LANDING → FUNNEL
