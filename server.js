@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // ARCHIVOS ESTÁTICOS
 // =========================
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname)));  // sirve archivos de la raíz
 
 // 👇 FUNNEL PÚBLICO
 app.get("/funnel", (req, res) => {
