@@ -891,9 +891,9 @@ INSTRUCCIONES:
 
 async function callCata(messages) {
   // Llama al proxy en tu propio servidor — nunca directo a Anthropic
-  const res = await fetch('/api/cata-chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+ const res = await fetch('https://nniivhebocgdsynlpuhf.supabase.co/functions/v1/cata-chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_KEY}` },
     body: JSON.stringify({ system: buildCataSystem(), messages })
   });
   return res.json();
