@@ -808,21 +808,24 @@ async function openCata(propId, propTitulo) {
   // Buscar en properties por id directo, o por property_id del inmueble
   // Si no encuentra, usa CASA-BOLIVIA.900 como fallback (propiedad de prueba)
   let [props, faqs, objs] = await Promise.all([
-    
     sbGet(`properties?inmueble_id=eq.${propId}&select=*`),
-sbGet(`faqs?property_id_num=eq.${propId}&select=*`),
-sbGet(`objections?property_id_num=eq.${propId}&select=*`)
-  // Si no hay FAQs para este id, intentar con CASA-BOLIVIA.900
+    sbGet(`faqs?property_id_num=eq.${propId}&select=*`),
+    sbGet(`objections?property_id_num=eq.${propId}&select=*`)
+  ]);
+
+  if (!Array.isArray(faqs)) faqs = [];
+  if (!Array.isArray(objs)) objs = [];
+  if (!Array.isArray(props)) props = [];
+
   if (!faqs.length && !objs.length) {
-    const fallbackId = 'CASA-BOLIVIA.900';
     const [fp, ff, fo] = await Promise.all([
-      props.length ? Promise.resolve(props) : sbGet(`properties?id=eq.${encodeURIComponent(fallbackId)}&select=*`),
-      sbGet(`faqs?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`),
-      sbGet(`objections?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`)
+      props.length ? Promise.resolve(props) : sbGet(`properties?inmueble_id=eq.2&select=*`),
+      sbGet(`faqs?property_id_num=eq.2&select=*`),
+      sbGet(`objections?property_id_num=eq.2&select=*`)
     ]);
-    if (!props.length) props = fp;
-    faqs = ff;
-    objs = fo;
+    if (!props.length) props = Array.isArray(fp) ? fp : [];
+    faqs = Array.isArray(ff) ? ff : [];
+    objs = Array.isArray(fo) ? fo : [];
   }
 
   cataProp = {
@@ -890,9 +893,9 @@ INSTRUCCIONES:
 
 async function callCata(messages) {
   // Llama al proxy en tu propio servidor — nunca directo a Anthropic
- const res = await fetch('https://nniivhebocgdsynlpuhf.supabase.co/functions/v1/cata-chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_KEY}` },
+  const res = await fetch('https://nniivhebocgdsynlpuhf.supabase.co/functions/v1/cata-chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_KEY}` },
     body: JSON.stringify({ system: buildCataSystem(), messages })
   });
   return res.json();
