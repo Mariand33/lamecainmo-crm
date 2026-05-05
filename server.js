@@ -17,15 +17,19 @@ const PDFDocument = require("pdfkit");
 const https = require("https");
 const http = require("http");
 const sharp = require("sharp");
+
+// =========================
+// MIDDLEWARE (una sola vez, al inicio)
+// =========================
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// =========================
-// ARCHIVOS ESTÁTICOS
-// =========================
+app.use(session({ secret: "buzzacchi", resave: false, saveUninitialized: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// 👇 RUTAS PRINCIPALES
+// =========================
+// ARCHIVOS ESTÁTICOS / RUTAS PRINCIPALES
+// =========================
 app.get("/funnel", (req, res) => {
   res.sendFile(path.join(__dirname, "funnel-publico.html"));
 });
@@ -38,21 +42,33 @@ app.get("/dashboard", (req, res) => {
 app.get("/dashboard.html", (req, res) => {
   res.sendFile(path.join(__dirname, "Público", "dashboard.html"));
 });
-
-// =========================
-// LANDING → FUNNEL
-// =========================
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "funnel-publico.html"));
 });
+
+// =========================
+// KEEP-ALIVE (Bug #3 — ping endpoint + loop interno)
+// =========================
+app.get("/ping", (req, res) => res.json({ ok: true, ts: Date.now() }));
+
+// Loop interno cada 14 min para evitar que Render duerma el servidor
+setInterval(() => {
+  const PORT_PING = process.env.PORT || 10000;
+  http.get(`http://localhost:${PORT_PING}/ping`, (r) => {
+    console.log("keep-alive ping →", r.statusCode);
+  }).on("error", (e) => console.warn("keep-alive error:", e.message));
+}, 14 * 60 * 1000);
+
 // =========================
 // CONFIG
 // =========================
 
-const supabase =
-  process.env.SUPABASE_URL && process.env.SUPABASE_KEY
-    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
-    : null;
+// Bug #5 — supabase null: lanzar error claro si faltan variables de entorno
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error("❌ FATAL: SUPABASE_URL y SUPABASE_KEY son requeridas.");
+  process.exit(1);
+}
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || ""
@@ -172,16 +188,6 @@ function inmToSb(i) {
 }
 
 // =========================
-// MIDDLEWARE
-// =========================
-
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(session({ secret: "buzzacchi", resave: false, saveUninitialized: false }));
-app.use(express.static(path.join(__dirname, "public")));
-
-// =========================
 // USERS (simple)
 // =========================
 
@@ -239,12 +245,42 @@ app.get("/api/inmuebles-publicos", async (req, res) => {
 });
 
 // =========================
-// LEADS
+// LEADS (Bug #2 — faltaba GET)
 // =========================
 
 app.post("/api/leads", async (req, res) => {
   const { error } = await supabase.from("leads").insert([req.body]);
   res.json({ ok: !error });
+});
+
+// GET /api/leads — necesario para el dashboard
+app.get("/api/leads", async (req, res) => {
+  const { data, error } = await supabase
+    .from("leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) return res.status(500).json({ ok: false, error: error.message });
+  res.json(data || []);
+});
+
+// =========================
+// OPORTUNIDADES (Bug #4 — ruta GET faltante)
+// =========================
+
+app.post("/api/oportunidades", async (req, res) => {
+  const { error } = await supabase.from("oportunidades").insert([req.body]);
+  res.json({ ok: !error });
+});
+
+app.get("/api/oportunidades", async (req, res) => {
+  const { data, error } = await supabase
+    .from("oportunidades")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) return res.status(500).json({ ok: false, error: error.message });
+  res.json(data || []);
 });
 
 // =========================
@@ -268,7 +304,7 @@ app.get("/api/match-demanda/:id", async (req, res) => {
 });
 
 // =========================
-// RATING (ÚNICO)
+// RATING
 // =========================
 
 app.post("/api/rating", async (req, res) => {
@@ -283,7 +319,7 @@ app.post("/api/rating", async (req, res) => {
 });
 
 // =========================
-// TRANSCRIPCIÓN (ÚNICA)
+// TRANSCRIPCIÓN
 // =========================
 
 app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
@@ -304,7 +340,7 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
 });
 
 // =========================
-// PDF FICHA (ÚNICO)
+// PDF FICHA
 // =========================
 
 app.get("/api/ficha-pdf/:id", async (req, res) => {
@@ -340,31 +376,11 @@ app.get("/api/radar-ia", (req, res) => {
   res.json(radarIA);
 });
 
+// =========================
+// CATA CHAT (Bug #1 — ruta duplicada eliminada, queda una sola versión)
+// Usa OpenAI GPT-4o-mini con contexto de propiedad
+// =========================
 
-// =========================
-// CATA CHAT (proxy Anthropic)
-// =========================
-app.post("/api/cata-chat", async (req, res) => {
-  const { messages, system } = req.body;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "ANTHROPIC_API_KEY no configurada" });
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages })
-    });
-    const data = await response.json();
-    res.json(data);
-  } catch (e) {
-    res.status(500).json({ error: "Error al conectar con Anthropic" });
-  }
-});
-// CATA CHAT — IA con Claude
 app.post("/api/cata-chat", async (req, res) => {
   const { mensaje, historial, propiedad } = req.body || {};
   if (!mensaje) return res.status(400).json({ ok: false, error: "Sin mensaje" });
@@ -384,7 +400,7 @@ app.post("/api/cata-chat", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `Sos Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina. 
+          content: `Sos Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina.
 Respondés consultas sobre propiedades de manera amigable, breve y profesional.
 ${propCtx}
 Si el cliente muestra interés concreto, pedile nombre y teléfono para que Vanina lo contacte.
@@ -404,6 +420,7 @@ Respondé siempre en español, máximo 3 oraciones.`
     res.status(500).json({ ok: false, error: "Error al procesar" });
   }
 });
+
 // =========================
 // SERVER START
 // =========================
@@ -412,6 +429,6 @@ const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
   console.log("SERVER OK EN PUERTO", PORT);
-
 });
+
 
