@@ -576,7 +576,100 @@ app.post("/api/cata-chat", async (req, res) => {
 
   return res.status(500).json({ error: "No hay API key de IA configurada (ANTHROPIC_API_KEY o OPENAI_API_KEY)" });
 });
+// =========================
+// CATA CHAT IA
+// =========================
+app.post("/api/cata-chat", async (req, res) => {
 
+  try {
+
+    const { mensaje, historial, propiedad } = req.body || {};
+
+    if (!mensaje) {
+      return res.status(400).json({
+        ok: false,
+        error: "Falta mensaje"
+      });
+    }
+
+    // =========================
+    // ANTHROPIC
+    // =========================
+    if (process.env.ANTHROPIC_API_KEY) {
+
+      const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01"
+        },
+        body: JSON.stringify({
+          model: "claude-3-haiku-20240307",
+          max_tokens: 300,
+          messages: [
+            {
+              role: "user",
+              content:
+                `Sos Cata, asistente inmobiliaria de Río Cuarto.
+                 Propiedad: ${propiedad || "general"}.
+                 Cliente dice: ${mensaje}`
+            }
+          ]
+        })
+      });
+
+      const data = await anthropicResponse.json();
+
+      return res.json({
+        ok: true,
+        respuesta: data.content?.[0]?.text || "Sin respuesta"
+      });
+    }
+
+    // =========================
+    // OPENAI FALLBACK
+    // =========================
+    if (process.env.OPENAI_API_KEY) {
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content:
+              "Sos Cata, asistente inmobiliaria profesional."
+          },
+          {
+            role: "user",
+            content: mensaje
+          }
+        ],
+        max_tokens: 300
+      });
+
+      return res.json({
+        ok: true,
+        respuesta: completion.choices[0].message.content
+      });
+    }
+
+    return res.status(500).json({
+      ok: false,
+      error: "No hay API keys configuradas"
+    });
+
+  } catch (e) {
+
+    console.error("ERROR CATA:", e);
+
+    return res.status(500).json({
+      ok: false,
+      error: e.message
+    });
+  }
+
+});
 // =========================
 // FAQS Y OBJECIONES (para el chat Cata)
 // =========================
