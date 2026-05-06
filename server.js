@@ -24,12 +24,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({ secret: "buzzacchi2025", resave: false, saveUninitialized: false }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "Público")));
 
 // =========================
 // RUTAS DE PÁGINAS HTML
 // =========================
-const PUB = path.join(__dirname, "public");
+const PUB = path.join(__dirname, "Público");
 
 app.get("/",                  (_, res) => res.sendFile(path.join(__dirname, "funnel-publico.html")));
 app.get("/funnel",            (_, res) => res.sendFile(path.join(__dirname, "funnel-publico.html")));
