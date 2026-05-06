@@ -85,25 +85,40 @@
 </div>
 
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const property = params.get("property");
+ <script>
 
-  const contexto = document.getElementById("contexto");
+const params = new URLSearchParams(window.location.search);
+const property = params.get("property");
 
-  if(property){
-    contexto.innerText = "Analizando propiedad: " + property;
-  } else {
-    contexto.innerText = "Asistente activo para búsqueda inmobiliaria";
-  }
+const contexto = document.getElementById("contexto");
 
-  function enviar(){
-    const msg = document.getElementById("mensaje").value;
+if(property){
+  contexto.innerText = "Analizando propiedad: " + property;
+} else {
+  contexto.innerText = "Asistente activo para búsqueda inmobiliaria";
+}
 
-    const text = `Hola Cata 👋%0A%0APropiedad: ${property || "general"}%0AConsulta: ${msg}`;
+async function enviar(){
 
-    window.location.href =
-      "https://wa.me/543585701632?text=" + encodeURIComponent(text);
-  }
+  const msg = document.getElementById("mensaje").value;
+
+  const response = await fetch("https://inmocreador-crm.onrender.com/api/cata-chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      mensaje: msg,
+      propiedad: property
+    })
+  });
+
+  const data = await response.json();
+
+  alert(data.respuesta || data.error);
+}
+
+</script>
 </script>
 
 </body>
