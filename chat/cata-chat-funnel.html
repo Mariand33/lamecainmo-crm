@@ -119,6 +119,39 @@ async function enviar(){
 }
 
 </script>
+  <script>
+async function enviar(){
+
+  try {
+
+    const msg = document.getElementById("mensaje").value;
+
+    const response = await fetch("https://inmocreador-crm.onrender.com/api/cata-chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        mensaje: msg
+      })
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    alert(JSON.stringify(data));
+
+  } catch(e){
+
+    console.error(e);
+
+    alert("ERROR REAL: " + e.message);
+
+  }
+
+}
+</script>
 </script>
 
 </body>
