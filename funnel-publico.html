@@ -872,32 +872,43 @@ async function openCata(propId, propTitulo) {
   document.getElementById('cataOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Buscar en properties por id directo, o por property_id del inmueble
-  // Si no encuentra, usa CASA-BOLIVIA.900 como fallback (propiedad de prueba)
-  let [props, faqs, objs] = await Promise.all([
-    sbGet(`properties?id=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`faqs?property_id=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`objections?property_id=eq.${encodeURIComponent(propId)}&select=*`)
+  // Cargar datos completos del inmueble desde la tabla correcta + FAQs y objeciones
+  let [inmuebles, faqs, objs] = await Promise.all([
+    sbGet(`inmuebles?id=eq.${encodeURIComponent(propId)}&select=*`),
+    sbGet(`Preguntas%20frecuentes?propiedad_codigo=eq.${encodeURIComponent(propId)}&select=*`),
+    sbGet(`Objeciones?propiedad_codigo=eq.${encodeURIComponent(propId)}&select=*`)
   ]);
 
-  // Si no hay FAQs para este id, intentar con CASA-BOLIVIA.900
-  if (!faqs.length && !objs.length) {
-    const fallbackId = 'CASA-BOLIVIA.900';
-    const [fp, ff, fo] = await Promise.all([
-      props.length ? Promise.resolve(props) : sbGet(`properties?id=eq.${encodeURIComponent(fallbackId)}&select=*`),
-      sbGet(`faqs?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`),
-      sbGet(`objections?property_id=eq.${encodeURIComponent(fallbackId)}&select=*`)
-    ]);
-    if (!props.length) props = fp;
-    faqs = ff;
-    objs = fo;
+  // Si no hay FAQs específicas para esta propiedad, cargar todas (son genéricas)
+  if (!faqs.length) {
+    faqs = await sbGet(`Preguntas%20frecuentes?select=*&limit=8`);
+  }
+  if (!objs.length) {
+    objs = await sbGet(`Objeciones?select=*&limit=8`);
   }
 
+  const inm = inmuebles[0] || {};
   cataProp = {
-    ...(props[0] || { id: propId, titulo: propTitulo }),
-    // Mantener título e id del inmueble real aunque las FAQs vengan de otro lado
     id: propId,
-    titulo: propTitulo || props[0]?.titulo || propId,
+    titulo: inm.titulo || propTitulo || propId,
+    precio: inm.precio,
+    moneda: inm.moneda || 'USD',
+    zona: inm.zona,
+    direccion: inm.direccion,
+    tipoPropiedad: inm.tipo_propiedad,
+    tipoOperacion: inm.tipo_operacion,
+    dormitorios: inm.dormitorios,
+    banos: inm.banos,
+    m2Totales: inm.m2_totales,
+    m2Cubiertos: inm.m2_cubiertos,
+    descripcion: inm.descripcion,
+    scriptVenta: inm.script_venta,
+    aptaCredito: inm.apta_credito,
+    expensas: inm.expensas,
+    antiguedad: inm.antiguedad,
+    cochera: inm.cochera,
+    amenities: inm.amenities,
+    mapsUrl: inm.maps_url,
     faqs,
     objections: objs
   };
@@ -933,28 +944,40 @@ function closeCata() {
 
 function buildCataSystem() {
   const p = cataProp || {};
-  const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs.';
-  const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones.';
+  const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs cargadas.';
+  const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion||o.pregunta}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones cargadas.';
+  const precio   = p.precio ? `${p.moneda||'USD'} ${Number(p.precio).toLocaleString('es-AR')}` : 'Consultar';
   return `Sos Cata, asistente inmobiliaria de Inmobiliaria Buzzacchi en Río Cuarto. Sos cálida, cercana y entusiasta — hablás como una amiga que conoce muy bien la propiedad. NUNCA uses artículos incorrectos como "La Cata" o "la inmobiliaria". Siempre decí "Inmobiliaria Buzzacchi" o simplemente "Buzzacchi".
 
-PROPIEDAD:
+DATOS COMPLETOS DE LA PROPIEDAD:
 - Título: ${p.titulo||''}
-- Precio: ${p.precio||'Consultar'}
-- Zona: ${p.zona||''}
+- Tipo: ${p.tipoPropiedad||''} en ${p.tipoOperacion||''}
+- Precio: ${precio}
+- Zona: ${p.zona||''} ${p.direccion ? '· '+p.direccion : ''}
+- Dormitorios: ${p.dormitorios||'No especificado'}
+- Baños: ${p.banos||'No especificado'}
+- M² totales: ${p.m2Totales||'No especificado'}
+- M² cubiertos: ${p.m2Cubiertos||'No especificado'}
+- Apta crédito: ${p.aptaCredito ? 'SÍ ✅' : p.aptaCredito === false ? 'NO ❌' : 'Consultar con la inmobiliaria'}
+- Expensas: ${p.expensas||'No aplica'}
+- Cochera: ${p.cochera ? 'Sí' : 'No especificado'}
+- Amenities: ${p.amenities||'No especificado'}
+- Antigüedad: ${p.antiguedad||'No especificado'}
 - Descripción: ${p.descripcion||''}
+- Script de venta: ${p.scriptVenta||''}
 
 PREGUNTAS FRECUENTES:
 ${faqsText}
 
-OBJECIONES:
+MANEJO DE OBJECIONES:
 ${objText}
 
 INSTRUCCIONES:
-- Respondé en español, tono cálido y cercano
-- Usá FAQs y objeciones cuando sean relevantes
-- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email
-- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
-- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
+- Respondé SIEMPRE con los datos reales de arriba. Si un dato dice "No especificado" o "Consultar", decí honestamente que no tenés ese dato y sugerí contactar a la inmobiliaria.
+- Si pregunta por crédito hipotecario, usá el dato "Apta crédito" de arriba.
+- Tono cálido y cercano, respuestas cortas (máx 3 párrafos).
+- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email.
+- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO`;
 }
 
 async function callCata(messages) {
