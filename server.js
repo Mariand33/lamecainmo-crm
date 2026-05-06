@@ -623,3 +623,4 @@ app.listen(PORT, () => {
   console.log(`🧠 Anthropic: ${process.env.ANTHROPIC_API_KEY ? "✅" : "⚠️  no configurado"}`);
   console.log(`⏰ Keep-alive: ping interno cada 4 min → Render no se duerme\n`);
 });
+
