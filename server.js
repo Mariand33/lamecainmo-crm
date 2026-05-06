@@ -36,6 +36,8 @@ app.get("/funnel",            (_, res) => res.sendFile(path.join(__dirname, "fun
 app.get("/funnel-publico.html",(_, res)=> res.sendFile(path.join(__dirname, "funnel-publico.html")));
 app.get("/dashboard",         (_, res) => res.sendFile(path.join(PUB, "dashboard.html")));
 app.get("/dashboard.html",    (_, res) => res.sendFile(path.join(PUB, "dashboard.html")));
+app.get("/propiedad.html",    (_, res) => res.sendFile(path.join(__dirname, "public", "propiedad.html")));
+app.get("/propiedad",         (_, res) => res.sendFile(path.join(__dirname, "public", "propiedad.html")));
 
 // =========================
 // SUPABASE
