@@ -541,7 +541,7 @@ app.post("/api/cata-chat", async (req, res) => {
           "x-api-key":       anthropicKey,
           "anthropic-version": "2023-06-01"
         },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages })
+        body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: 600, system, messages })
       });
       const data = await response.json();
       return res.json(data);
@@ -577,114 +577,84 @@ app.post("/api/cata-chat", async (req, res) => {
   return res.status(500).json({ error: "No hay API key de IA configurada (ANTHROPIC_API_KEY o OPENAI_API_KEY)" });
 });
 // =========================
-// CATA CHAT IA
+// MATCH IA — FIX: esta ruta faltaba completamente
+// El funnel la llama en /api/match-ia para buscar propiedades con IA
 // =========================
-app.post("/api/cata-chat", async (req, res) => {
-
+app.post("/api/match-ia", async (req, res) => {
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
   try {
+    const { consulta, presupuesto, operacion } = req.body || {};
+    if (!consulta) return res.json({ ids: [] });
 
-    const { mensaje, historial, propiedad } = req.body || {};
+    // Traer propiedades públicas
+    const { data: inms } = await supabase
+      .from("inmuebles").select("id,titulo,zona,descripcion,precio,moneda,tipo_operacion,tipo_propiedad,dormitorios")
+      .in("estado_publicacion", ["lista", "publicada"]);
 
-    if (!mensaje) {
-      return res.status(400).json({
-        ok: false,
-        error: "Falta mensaje"
-      });
-    }
+    const lista = (inms || []).map(r => `ID:${r.id} | ${r.titulo} | ${r.zona} | ${r.tipo_operacion} | ${r.moneda||'USD'} ${r.precio||0} | ${r.dormitorios||0} dorm | ${(r.descripcion||'').slice(0,80)}`).join('\n');
 
-    // =========================
-    // ANTHROPIC
-    // =========================
-    if (process.env.ANTHROPIC_API_KEY) {
+    if (!anthropicKey) return res.json({ ids: [] });
 
-      const anthropicResponse = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.ANTHROPIC_API_KEY,
-          "anthropic-version": "2023-06-01"
-        },
-        body: JSON.stringify({
-          model: "claude-3-haiku-20240307",
-          max_tokens: 300,
-          messages: [
-            {
-              role: "user",
-              content:
-                `Sos Cata, asistente inmobiliaria de Río Cuarto.
-                 Propiedad: ${propiedad || "general"}.
-                 Cliente dice: ${mensaje}`
-            }
-          ]
-        })
-      });
-
-      const data = await anthropicResponse.json();
-
-      return res.json({
-        ok: true,
-        respuesta: data.content?.[0]?.text || "Sin respuesta"
-      });
-    }
-
-    // =========================
-    // OPENAI FALLBACK
-    // =========================
-    if (process.env.OPENAI_API_KEY) {
-
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Sos Cata, asistente inmobiliaria profesional."
-          },
-          {
-            role: "user",
-            content: mensaje
-          }
-        ],
-        max_tokens: 300
-      });
-
-      return res.json({
-        ok: true,
-        respuesta: completion.choices[0].message.content
-      });
-    }
-
-    return res.status(500).json({
-      ok: false,
-      error: "No hay API keys configuradas"
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5",
+        max_tokens: 200,
+        messages: [{
+          role: "user",
+          content: `Seleccioná los IDs de las propiedades que mejor coincidan con esta búsqueda: "${consulta}"${presupuesto ? ` Presupuesto máximo: USD ${presupuesto}` : ""}${operacion ? ` Operación: ${operacion}` : ""}.\n\nPropiedades disponibles:\n${lista}\n\nRespondé SOLO con un JSON así: {"ids":[1,2,3]} con máximo 5 IDs. Si no hay coincidencias, respondé {"ids":[]}.`
+        }]
+      })
     });
-
+    const data = await response.json();
+    const text = data.content?.[0]?.text || '{"ids":[]}';
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    return res.json({ ids: parsed.ids || [] });
   } catch (e) {
-
-    console.error("ERROR CATA:", e);
-
-    return res.status(500).json({
-      ok: false,
-      error: e.message
-    });
+    console.error("match-ia error:", e.message);
+    return res.json({ ids: [] });
   }
-
 });
+
+
 // =========================
 // FAQS Y OBJECIONES (para el chat Cata)
+// FIX: el funnel llama directo a Supabase REST con property_id=eq.X
+// Estas rutas son para el dashboard; el funnel usa Supabase directo.
+// Pero si Supabase devuelve 400, es porque la columna se llama diferente.
+// Agregamos rutas API propias como alternativa segura.
 // =========================
 app.get("/api/faqs", async (req, res) => {
   try {
-    const { data, error } = await supabase.from("Preguntas frecuentes").select("*");
-    if (error) return res.json([]);
+    const propId = req.query.property_id;
+    let query = supabase.from("faqs").select("*");
+    if (propId) query = query.eq("property_id", propId);
+    const { data, error } = await query;
+    if (error) {
+      // intentar con nombre de tabla alternativo
+      const { data: d2 } = await supabase.from("Preguntas frecuentes").select("*");
+      return res.json(d2 || []);
+    }
     res.json(data || []);
   } catch { res.json([]); }
 });
 
 app.get("/api/objeciones", async (req, res) => {
   try {
-    const { data, error } = await supabase.from("Objeciones").select("*");
-    if (error) return res.json([]);
+    const propId = req.query.property_id;
+    let query = supabase.from("objections").select("*");
+    if (propId) query = query.eq("property_id", propId);
+    const { data, error } = await query;
+    if (error) {
+      const { data: d2 } = await supabase.from("Objeciones").select("*");
+      return res.json(d2 || []);
+    }
     res.json(data || []);
   } catch { res.json([]); }
 });
