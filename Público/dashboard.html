@@ -682,8 +682,9 @@
         const vecesPub = Number(getCampo(i, "cantidadPublicaciones", "cantidad_publicaciones") || 0);
 
         const imagenes = getCampo(i, "imagenes");
-        const thumb = (Array.isArray(imagenes) && imagenes.length)
-          ? ("/uploads/" + imagenes[0])
+        const primeraImg = (Array.isArray(imagenes) && imagenes.length) ? imagenes[0] : "";
+        const thumb = primeraImg
+          ? (primeraImg.startsWith("http") ? primeraImg : "/uploads/" + primeraImg)
           : "";
 
         const esOportunidad = String(estado).toLowerCase() === "oportunidad";
@@ -726,26 +727,11 @@
           <td>
             <a href="${verLink}" class="link-ver">Ver</a>
             <a href="/editar.html?id=${id}" class="link-ver">Editar</a>
-
-            <form action="/publicar/${id}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-ok" type="submit">Marcar lista</button>
-            </form>
-
-            <form action="/publicada/${id}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-az" type="submit">Marcar publicada</button>
-            </form>
-
-            <form action="/vendida/${id}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn" style="background:#7c3aed;" type="submit">Vendida</button>
-            </form>
-
-            <form action="/alquilada/${id}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn" style="background:#0891b2;" type="submit">Alquilada</button>
-            </form>
-
-            <form action="/eliminar/${id}" method="POST" style="display:inline; margin-left:4px;">
-              <button class="btn btn-del" type="submit">Eliminar</button>
-            </form>
+            <button class="btn btn-ok"   style="margin-left:4px;" data-action="publicar"   data-id="${id}">Marcar lista</button>
+            <button class="btn btn-az"   style="margin-left:4px;" data-action="publicada"  data-id="${id}">Marcar publicada</button>
+            <button class="btn"          style="margin-left:4px;background:#7c3aed;" data-action="vendida"    data-id="${id}">Vendida</button>
+            <button class="btn"          style="margin-left:4px;background:#0891b2;" data-action="alquilada" data-id="${id}">Alquilada</button>
+            <button class="btn btn-del"  style="margin-left:4px;" data-action="eliminar"   data-id="${id}">Eliminar</button>
           </td>
         `;
 
@@ -766,12 +752,59 @@
       });
     }
 
-    document.addEventListener("click", (ev) => {
+    // ── Acciones async (sin recarga) + cierre de popups ─────────────────────
+    document.addEventListener("click", async (ev) => {
+      // Cerrar popups de miniaturas
       document.querySelectorAll(".thumb-pop").forEach(pop => {
         const cell = pop.closest(".titulo-cell");
         if (cell && !cell.contains(ev.target)) pop.style.display = "none";
       });
+
+      const btn = ev.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const id     = btn.dataset.id;
+      if (!action || !id) return;
+
+      if (action === "eliminar") {
+        if (!confirm("¿Eliminar este inmueble? Esta acción no se puede deshacer.")) return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "...";
+
+      try {
+        const resp = await fetch(`/${action}/${id}`, { method: "POST" });
+        if (resp.ok) {
+          mostrarToastAccion(`✅ "${originalText}" aplicado correctamente.`, "ok");
+          await actualizarDashboard();
+        } else {
+          mostrarToastAccion(`❌ Error al ejecutar "${originalText}" (${resp.status})`, "error");
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      } catch (e) {
+        mostrarToastAccion(`❌ Error de red: ${e.message}`, "error");
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
     });
+
+    function mostrarToastAccion(msg, tipo){
+      const t = document.createElement("div");
+      t.className = "toast";
+      t.style.background = tipo === "ok" ? "#065f46" : "#7f1d1d";
+      t.innerHTML = `
+        <div class="top">
+          <div class="ttl" style="font-size:13px">${msg}</div>
+          <button class="x" aria-label="Cerrar">×</button>
+        </div>`;
+      t.querySelector(".x").addEventListener("click", () => t.remove());
+      toastWrap.appendChild(t);
+      setTimeout(() => { if (t.parentNode) t.remove(); }, 5000);
+    }
 
     window.addEventListener("load", actualizarDashboard);
   </script>
