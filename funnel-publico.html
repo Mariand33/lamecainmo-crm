@@ -484,7 +484,7 @@
   const LEADS_URL = "/api/leads";
   const MATCH_URL = "/api/match-ia";
   const WHATSAPP_NUMBER = "543585701632";
-  const IMG_BASE  = "https://nniivhebocgdsynlpuhf.supabase.co/storage/v1/object/public/SUBIDAS/";
+  const IMG_BASE  = "/uploads/";
 
   let allProperties  = [];
   let currentFilter  = "todos";
@@ -872,59 +872,47 @@ async function openCata(propId, propTitulo) {
   document.getElementById('cataOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Cargar datos completos del inmueble desde la tabla correcta + FAQs y objeciones
-  let [inmuebles, faqs, objs] = await Promise.all([
-    sbGet(`inmuebles?id=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`Preguntas%20frecuentes?propiedad_codigo=eq.${encodeURIComponent(propId)}&select=*`),
-    sbGet(`Objeciones?propiedad_codigo=eq.${encodeURIComponent(propId)}&select=*`)
-  ]);
-
-  // Si no hay FAQs específicas para esta propiedad, cargar todas (son genéricas)
-  if (!faqs.length) {
-    faqs = await sbGet(`Preguntas%20frecuentes?select=*&limit=8`);
-  }
-  if (!objs.length) {
-    objs = await sbGet(`Objeciones?select=*&limit=8`);
+  // Cargar FAQs y objeciones desde el server (no Supabase directo)
+  let faqs = [], objs = [];
+  try {
+    const [faqRes, objRes] = await Promise.all([
+      fetch('/api/faqs'),
+      fetch('/api/objeciones')
+    ]);
+    if (faqRes.ok) faqs = await faqRes.json();
+    if (objRes.ok) objs = await objRes.json();
+  } catch(e) {
+    console.warn('No se pudieron cargar FAQs/objeciones:', e.message);
   }
 
-  const inm = inmuebles[0] || {};
+  // Buscar los datos del inmueble en allProperties (ya cargado en el funnel)
+  const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
+
   cataProp = {
     id: propId,
-    titulo: inm.titulo || propTitulo || propId,
-    precio: inm.precio,
-    moneda: inm.moneda || 'USD',
-    zona: inm.zona,
-    direccion: inm.direccion,
-    tipoPropiedad: inm.tipo_propiedad,
-    tipoOperacion: inm.tipo_operacion,
-    dormitorios: inm.dormitorios,
-    banos: inm.banos,
-    m2Totales: inm.m2_totales,
-    m2Cubiertos: inm.m2_cubiertos,
-    descripcion: inm.descripcion,
-    scriptVenta: inm.script_venta,
-    aptaCredito: inm.apta_credito,
-    expensas: inm.expensas,
-    antiguedad: inm.antiguedad,
-    cochera: inm.cochera,
-    amenities: inm.amenities,
-    mapsUrl: inm.maps_url,
+    titulo: propTitulo || prop.titulo || propId,
+    zona: prop.zona || '',
+    precio: prop.precio || '',
+    moneda: prop.moneda || 'USD',
+    descripcion: prop.descripcion || '',
     faqs,
     objections: objs
   };
 
+  // Mostrar botones de preguntas frecuentes
   const qbtns = document.getElementById('cataQBtns');
   (faqs || []).slice(0, 4).forEach(f => {
     const b = document.createElement('button');
     b.className = 'cata-qq';
-    b.textContent = f.pregunta.length > 40 ? f.pregunta.slice(0,38)+'…' : f.pregunta;
-    b.onclick = () => { document.getElementById('cataInp').value = f.pregunta; cataSend(); };
+    const pregunta = f.pregunta || f.question || '';
+    b.textContent = pregunta.length > 40 ? pregunta.slice(0,38)+'…' : pregunta;
+    b.onclick = () => { document.getElementById('cataInp').value = pregunta; cataSend(); };
     qbtns.appendChild(b);
   });
 
   cataShowTyping();
   try {
-    const res = await callCata([{ role:'user', content:'Presentate como Cata, asistente de Inmobiliaria Buzzacchi. Sé cálida y cercana, en UNA sola oración mencioná el nombre de la propiedad y su beneficio más destacado, luego en otra oración corta invitá a hacer preguntas. Sin "LA", sin artículos raros. Ejemplo del tono: "¡Hola! Soy Cata de Inmobiliaria Buzzacchi 👋 Esta propiedad tiene [beneficio clave] — ¡preguntame lo que quieras!"' }]);
+    const res = await callCata([{ role:'user', content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.' }]);
     const text = extractCataText(res) || '¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
     cataRemoveTyping();
     cataAddMsg('assistant', text);
@@ -944,54 +932,32 @@ function closeCata() {
 
 function buildCataSystem() {
   const p = cataProp || {};
-  const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs específicas — usá el conocimiento general.';
-  const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion||o.pregunta}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones cargadas.';
-  const precio   = p.precio ? `${p.moneda||'USD'} ${Number(p.precio).toLocaleString('es-AR')}` : 'Consultar';
-  return `Sos Cata, asistente inmobiliaria de Inmobiliaria Buzzacchi en Río Cuarto. Sos cálida, cercana y entusiasta — hablás como una amiga que conoce muy bien la propiedad. NUNCA uses artículos incorrectos como "La Cata" o "la inmobiliaria". Siempre decí "Inmobiliaria Buzzacchi" o simplemente "Buzzacchi".
+  const faqsText = p.faqs?.length
+    ? p.faqs.map(f => `P: ${f.pregunta || f.question || f.p || ''}\nR: ${f.respuesta || f.answer || f.r || ''}`).join('\n\n')
+    : 'Sin FAQs.';
+  const objText = p.objections?.length
+    ? p.objections.map(o => `Objeción: ${o.objecion || o.objection || o.o || ''}\nRespuesta: ${o.respuesta || o.answer || o.r || ''}`).join('\n\n')
+    : 'Sin objeciones.';
+  return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
 
-DATOS COMPLETOS DE LA PROPIEDAD:
+PROPIEDAD:
 - Título: ${p.titulo||''}
-- Tipo: ${p.tipoPropiedad||''} en ${p.tipoOperacion||''}
-- Precio: ${precio}
-- Zona: ${p.zona||''} ${p.direccion ? '· '+p.direccion : ''}
-- Dormitorios: ${p.dormitorios||'No especificado'}
-- Baños: ${p.banos||'No especificado'}
-- M² totales: ${p.m2Totales||'No especificado'}
-- M² cubiertos: ${p.m2Cubiertos||'No especificado'}
-- Apta crédito: ${p.aptaCredito ? 'SÍ ✅' : p.aptaCredito === false ? 'NO ❌' : 'Consultar con la inmobiliaria'}
-- Expensas: ${p.expensas||'No aplica'}
-- Cochera: ${p.cochera ? 'Sí' : 'No especificado'}
-- Amenities: ${p.amenities||'No especificado'}
-- Antigüedad: ${p.antiguedad||'No especificado'}
-- Descripción completa: ${p.descripcion||''}
-- Script de venta: ${p.scriptVenta||''}
+- Precio: ${p.precio||'Consultar'}
+- Zona: ${p.zona||''}
+- Descripción: ${p.descripcion||''}
 
-PREGUNTAS FRECUENTES DE ESTA PROPIEDAD:
+PREGUNTAS FRECUENTES:
 ${faqsText}
 
-MANEJO DE OBJECIONES:
+OBJECIONES:
 ${objText}
 
-CONOCIMIENTO GENERAL INMOBILIARIO (Río Cuarto, Argentina — usalo para TODAS las propiedades):
-- HONORARIOS INMOBILIARIOS: Para ventas = 3% del precio de venta + IVA (lo paga el comprador). Para alquileres = 1 mes de alquiler + IVA (se divide entre propietario e inquilino según acuerdo).
-- ALQUILERES — DEPÓSITO: Por ley se puede pedir hasta 1 mes de depósito. Se devuelve al finalizar el contrato si el inmueble está en buen estado.
-- ALQUILERES — GARANTÍA: Se acepta garantía propietaria (inmueble en Córdoba), garantía de alquiler (seguro de caución), o aval bancario. La inmobiliaria asesora sobre cuál conviene.
-- ALQUILERES — CONTRATO: Duración mínima 2 años por ley. Los ajustes de precio se hacen según el Índice para Contratos de Locación (ICL) del Banco Central.
-- ALQUILERES — GASTOS DE ENTRADA: Primer mes + depósito + honorarios inmobiliarios + sellado del contrato.
-- VENTAS — ESCRITURA: Los gastos de escritura los paga el comprador (aprox 2-3% del valor fiscal). El vendedor paga el impuesto a la transferencia si corresponde.
-- VENTAS — FINANCIACIÓN: Depende de cada propiedad. Algunos propietarios aceptan financiación propia. Los créditos hipotecarios requieren que la propiedad sea apta crédito.
-- PERMUTA: Inmobiliaria Buzzacchi evalúa permutas caso por caso. Consultá directamente.
-- VISITAS: Se coordinan previamente con la inmobiliaria. Contacto: WhatsApp +54 9 358 570-1632.
-- RESERVA: Para reservar una propiedad se firma una seña/reserva con un monto a acordar que se descuenta del precio final.
-
 INSTRUCCIONES:
-- Usá PRIMERO los datos específicos de la propiedad de arriba.
-- Si un dato dice "No especificado", usá el conocimiento general inmobiliario para responder.
-- Si no sabés algo específico de la propiedad (como un precio de expensas exacto), decilo honestamente y ofrecé conectar con la inmobiliaria.
-- Respondé preguntas sobre honorarios, depósito, garantías, alquiler, crédito usando el conocimiento general de arriba.
-- Tono cálido y cercano, respuestas cortas y claras (máx 3 párrafos).
-- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email.
-- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO`;
+- Respondé en español, tono cálido y cercano
+- Usá FAQs y objeciones cuando sean relevantes
+- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email
+- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
+- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
 }
 
 async function callCata(messages) {
