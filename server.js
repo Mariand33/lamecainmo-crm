@@ -536,6 +536,28 @@ app.get("/api/objeciones", async (req, res) => {
 // Usa Anthropic si hay clave, sino OpenAI
 // Siempre devuelve formato Anthropic { content: [{type:"text", text:"..."}] }
 // =========================
+// Helper: https.request como Promise (compatible Node 14/16/18+)
+function httpsPost(hostname, path, headers, body) {
+  return new Promise((resolve, reject) => {
+    const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
+    const options = {
+      hostname, path, method: "POST",
+      headers: { ...headers, "Content-Length": Buffer.byteLength(bodyStr) }
+    };
+    const req = https.request(options, (r) => {
+      let raw = "";
+      r.on("data", chunk => raw += chunk);
+      r.on("end", () => {
+        try { resolve(JSON.parse(raw)); }
+        catch(e) { reject(new Error("JSON parse error: " + raw.slice(0, 200))); }
+      });
+    });
+    req.on("error", reject);
+    req.write(bodyStr);
+    req.end();
+  });
+}
+
 app.post("/api/cata-chat", async (req, res) => {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   const openaiKey    = process.env.OPENAI_API_KEY;
@@ -543,20 +565,20 @@ app.post("/api/cata-chat", async (req, res) => {
   if (anthropicKey) {
     try {
       const { system, messages } = req.body;
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
+      const data = await httpsPost(
+        "api.anthropic.com",
+        "/v1/messages",
+        {
           "Content-Type":      "application/json",
           "x-api-key":         anthropicKey,
           "anthropic-version": "2023-06-01"
         },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages })
-      });
-      const data = await response.json();
+        { model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages }
+      );
       if (!data.error) return res.json(data);
       console.error("Anthropic error:", data.error.message);
     } catch (e) {
-      console.error("Anthropic fetch error:", e.message);
+      console.error("Anthropic https error:", e.message);
     }
   }
 
