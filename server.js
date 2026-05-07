@@ -35,6 +35,10 @@ app.get("/funnel",             (_, res) => res.sendFile(path.join(__dirname, "fu
 app.get("/funnel-publico.html",(_, res) => res.sendFile(path.join(__dirname, "funnel-publico.html")));
 app.get("/dashboard",          (_, res) => res.sendFile(path.join(__dirname, "Público", "dashboard.html")));
 app.get("/dashboard.html",     (_, res) => res.sendFile(path.join(__dirname, "Público", "dashboard.html")));
+app.get("/ver",                (_, res) => res.sendFile(path.join(__dirname, "Público", "ver.html")));
+app.get("/ver.html",           (_, res) => res.sendFile(path.join(__dirname, "Público", "ver.html")));
+app.get("/editar",             (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
+app.get("/editar.html",        (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
 app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/"); });
 
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
@@ -93,13 +97,15 @@ setInterval(() => {
 // =========================
 const upload = multer({ storage: multer.memoryStorage() });
 
+const BUCKET = "Subidas"; // nombre exacto del bucket en Supabase (case-sensitive)
+
 async function subirASupabase(buffer, name, type) {
   const filename = `${Date.now()}-${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
   const { error } = await supabase.storage
-    .from("SUBIDAS")
+    .from(BUCKET)
     .upload(filename, buffer, { contentType: type, upsert: false });
   if (error) { console.error("Storage error:", error.message); return null; }
-  const { data } = supabase.storage.from("SUBIDAS").getPublicUrl(filename);
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
   return data.publicUrl;
 }
 
@@ -230,6 +236,63 @@ app.put("/api/inmuebles/:id", async (req, res) => {
   try {
     const { error } = await supabase.from("inmuebles").update(inmToSb(req.body)).eq("id", req.params.id);
     if (error) return res.status(500).json({ error: error.message });
+    res.json({ ok: true });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /editar/:id — form submit desde editar.html
+app.post("/editar/:id", upload.fields([{ name: "imagenes" }]), async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    // Subir fotos nuevas si las hay
+    const nuevasFotos = [];
+    for (const f of (req.files?.imagenes || [])) {
+      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
+      if (url) nuevasFotos.push(url);
+    }
+
+    // Reconstruir lista de imágenes: las que ya existían (nombresImagenes) + nuevas
+    let imagenesExistentes = req.body.nombresImagenes || [];
+    if (!Array.isArray(imagenesExistentes)) imagenesExistentes = [imagenesExistentes];
+    const imagenes = [...imagenesExistentes, ...nuevasFotos];
+
+    const payload = {
+      titulo:      req.body.titulo?.trim()      || null,
+      precio:      req.body.precio              ? parseFloat(req.body.precio) : null,
+      descripcion: req.body.descripcion?.trim() || null,
+      imagenes:    imagenes,
+    };
+
+    const { error } = await supabase.from("inmuebles").update(payload).eq("id", id);
+    if (error) {
+      console.error("Error editando inmueble:", error.message);
+      return res.status(500).send("Error al guardar: " + error.message);
+    }
+    res.redirect("/ver.html?id=" + id);
+  } catch (e) {
+    console.error("Error en POST /editar:", e.message);
+    res.status(500).send("Error interno: " + e.message);
+  }
+});
+
+// POST /editar/:id/fotos/eliminar — eliminar foto individual (fotos en /uploads/ locales)
+app.post("/editar/:id/fotos/eliminar", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const nombreFoto = req.body.nombreFoto;
+    if (!nombreFoto) return res.status(400).json({ error: "nombreFoto requerido" });
+
+    // Quitar de la lista en Supabase
+    const { data } = await supabase.from("inmuebles").select("imagenes").eq("id", id).single();
+    let imgs = Array.isArray(data?.imagenes) ? data.imagenes : [];
+    imgs = imgs.filter(i => i !== nombreFoto);
+    await supabase.from("inmuebles").update({ imagenes: imgs }).eq("id", id);
+
+    // Si es archivo local, borrar del disco
+    const localPath = path.join(__dirname, "uploads", nombreFoto);
+    if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
+
     res.json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
