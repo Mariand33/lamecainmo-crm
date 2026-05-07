@@ -3,294 +3,833 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ficha del inmueble - EQUIPO BUZZACCHI</title>
-  <!-- PWA -->
+  <title>Ficha del inmueble – EQUIPO BUZZACCHI</title>
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#c9a84c" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
   <link rel="apple-touch-icon" href="/icon-192x192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8d49a;
+      --dark: #0f0f0f;
+      --dark-2: #1a1a1a;
+      --dark-3: #252525;
+      --mid: #3a3a3a;
+      --muted: #888;
+      --light: #f5f3ef;
+      --white: #ffffff;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-      margin: 0;
+      font-family: var(--font-body);
+      background: var(--dark);
+      color: var(--white);
+      min-height: 100vh;
     }
 
-    .ficha {
-      background: white;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-    }
-
-    .header {
+    /* ── ESTADO / LOADING ── */
+    #estado-wrapper {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 20px;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 16px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .logo-buzzacchi {
-      display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-    }
-
-    .logo-buzzacchi img {
-      max-height: 60px;
-      width: auto;
-      display: block;
-    }
-
-    .contacto {
-      text-align: right;
-      font-size: 12px;
-      color: #555;
-      line-height: 1.4;
-    }
-
-    .contacto strong {
-      display: block;
-      font-size: 13px;
-      color: #333;
-    }
-
-    .datos-principales {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      min-height: 100vh;
+      flex-direction: column;
       gap: 16px;
+    }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 2px solid rgba(201,168,76,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #estado-wrapper p {
+      font-size: 13px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── CONTENIDO PRINCIPAL ── */
+    #contenido { display: none; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 70vh;
+      min-height: 420px;
+      overflow: hidden;
+      background: var(--dark-2);
+    }
+
+    .hero-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: .7;
+      transition: opacity .4s;
+    }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(15,15,15,0.2) 0%,
+        rgba(15,15,15,0.0) 35%,
+        rgba(15,15,15,0.7) 75%,
+        rgba(15,15,15,1.0) 100%
+      );
+    }
+
+    .hero-badge {
+      position: absolute;
+      top: 24px; left: 24px;
+      background: var(--gold);
+      color: var(--dark);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 2px;
+    }
+
+    .hero-ref {
+      position: absolute;
+      top: 24px; right: 24px;
+      font-size: 11px;
+      letter-spacing: .12em;
+      color: rgba(255,255,255,.55);
+      text-transform: uppercase;
+    }
+
+    /* ── NAVEGACIÓN SUPERIOR ── */
+    .topbar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 32px 40px 0;
+      z-index: 2;
+    }
+
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .prop-type {
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+
+    .prop-titulo {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--white);
       margin-bottom: 20px;
     }
 
-    .bloque {
-      flex: 1 1 220px;
-      background: #f8fafc;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 14px;
+    .prop-precio {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 500;
+      color: var(--gold);
+      letter-spacing: .02em;
+      padding-bottom: 28px;
     }
 
-    .bloque h3 {
-      margin: 0 0 8px;
-      font-size: 13px;
-      color: #666;
-      text-transform: uppercase;
-      letter-spacing: .4px;
-    }
-
-    .bloque p {
-      margin: 0;
-      font-size: 18px;
-      font-weight: bold;
-      color: #1f2937;
-    }
-
-    .titulo {
-      font-size: 28px;
-      margin: 0 0 20px;
-      color: #0e6b4d;
-    }
-
-    .descripcion {
-      background: #fafafa;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 16px;
-      margin-bottom: 24px;
-      white-space: pre-line;
-      line-height: 1.5;
-      color: #333;
-    }
-
-    .galeria {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    .galeria img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      background: #f3f4f6;
-    }
-
+    /* ── ACCIONES ── */
     .acciones {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      padding: 20px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
     .btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       text-decoration: none;
       border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 9px 18px;
+      border-radius: 3px;
       cursor: pointer;
-      font-size: 14px;
-      color: #fff;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: opacity .2s, transform .15s;
     }
 
-    .btn-volver { background: #6b7280; }
-    .btn-editar { background: #0984e3; }
-    .btn-pdf { background: #27ae60; }
+    .btn:hover { opacity: .82; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
 
-    .estado {
-      padding: 40px;
-      text-align: center;
-      color: #666;
-      font-size: 18px;
+    .btn-volver {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,.22);
+      color: rgba(255,255,255,.8);
     }
 
-    @media (max-width: 640px) {
-      body { padding: 12px; }
-      .ficha { padding: 16px; }
-      .titulo { font-size: 24px; }
-      .contacto { text-align: left; }
+    .btn-editar {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.18);
+      color: var(--white);
     }
+
+    .btn-pdf {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .btn-wa {
+      background: #25d366;
+      color: var(--white);
+    }
+
+    /* ── CUERPO ── */
+    .body-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px 60px;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+
+    .stat {
+      flex: 1 1 120px;
+      padding: 18px 20px;
+      border-right: 1px solid rgba(255,255,255,.1);
+      position: relative;
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-val {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .stat-icon {
+      position: absolute;
+      top: 18px; right: 16px;
+      font-size: 16px;
+      opacity: .18;
+    }
+
+    /* ── GRID 2 COLUMNAS ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ── SECCIÓN ── */
+    .seccion {
+      margin-bottom: 36px;
+    }
+
+    .seccion-titulo {
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .seccion-titulo::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201,168,76,.2);
+    }
+
+    /* ── DESCRIPCIÓN ── */
+    .descripcion {
+      font-size: 15px;
+      line-height: 1.75;
+      color: rgba(255,255,255,.72);
+      white-space: pre-line;
+    }
+
+    /* ── GALERÍA ── */
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .galeria-grid img {
+      width: 100%; height: 160px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform .25s, opacity .25s;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .galeria-grid img:hover { transform: scale(1.02); opacity: .85; }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #lightbox.open { display: flex; }
+
+    #lightbox img {
+      max-width: 92vw;
+      max-height: 88vh;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    #lightbox-close {
+      position: absolute;
+      top: 20px; right: 24px;
+      font-size: 32px;
+      color: rgba(255,255,255,.6);
+      cursor: pointer;
+      line-height: 1;
+      background: none;
+      border: none;
+    }
+
+    #lightbox-close:hover { color: white; }
+
+    /* ── VIDEO ── */
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 6px;
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ── MAPA ── */
+    #mapa {
+      height: 280px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: sticky;
+      top: 24px;
+    }
+
+    .card {
+      background: var(--dark-2);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .card-titulo {
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── DATOS FICHA ── */
+    .dato {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 13px;
+      gap: 12px;
+    }
+
+    .dato:last-child { border-bottom: none; }
+
+    .dato-k {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .dato-v {
+      color: var(--white);
+      font-weight: 500;
+      text-align: right;
+    }
+
+    /* ── RATING STARS ── */
+    .stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 6px;
+    }
+
+    .star {
+      font-size: 16px;
+      color: rgba(255,255,255,.18);
+    }
+
+    .star.on { color: var(--gold); }
+
+    .rating-num {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--white);
+    }
+
+    .rating-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: .06em;
+    }
+
+    /* ── BRANDING FOOTER ── */
+    .branding {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin-top: 16px;
+    }
+
+    .logo-wrap img {
+      max-height: 42px;
+      width: auto;
+      opacity: .9;
+    }
+
+    .contacto-info {
+      text-align: right;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .contacto-info strong {
+      display: block;
+      color: rgba(255,255,255,.7);
+      letter-spacing: .08em;
+      font-size: 12px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .topbar, .body-wrap, .acciones { padding-left: 18px; padding-right: 18px; }
+      .stats-bar { border-radius: 4px; }
+      .stat { flex: 1 1 100px; padding: 14px; }
+      .hero { height: 55vh; }
+      .branding { flex-direction: column; text-align: center; }
+      .contacto-info { text-align: center; }
+    }
+
+    /* ── LEAFLET DARK TILES override ── */
+    .leaflet-tile-pane { filter: brightness(.85) saturate(.7); }
   </style>
 </head>
 <body>
 
-  <div class="ficha" id="ficha">
-    <div class="estado" id="estado">Cargando inmueble...</div>
+  <!-- LOADING -->
+  <div id="estado-wrapper">
+    <div class="spinner"></div>
+    <p>Cargando propiedad…</p>
   </div>
 
+  <!-- CONTENIDO -->
+  <div id="contenido">
+
+    <!-- HERO -->
+    <div class="hero" id="hero">
+      <img id="hero-img" class="hero-img" src="" alt="Imagen principal" />
+      <div class="hero-overlay"></div>
+      <span class="hero-badge" id="hero-badge">Venta</span>
+      <span class="hero-ref" id="hero-ref">#000</span>
+
+      <div class="topbar">
+        <div class="topbar-inner">
+          <p class="prop-type" id="prop-type">Propiedad</p>
+          <h1 class="prop-titulo" id="prop-titulo">–</h1>
+          <span class="prop-precio" id="prop-precio">–</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="acciones">
+      <a class="btn btn-volver" href="/dashboard.html">← Volver</a>
+      <a class="btn btn-editar" id="btn-editar" href="#">Editar</a>
+      <a class="btn btn-pdf" id="btn-pdf" href="#" target="_blank">Descargar PDF</a>
+      <a class="btn btn-wa" id="btn-wa" href="#" target="_blank">Compartir por WhatsApp</a>
+    </div>
+
+    <!-- CUERPO -->
+    <div class="body-wrap">
+
+      <!-- STATS BAR -->
+      <div class="stats-bar" id="stats-bar"></div>
+
+      <!-- GRID 2 COL -->
+      <div class="grid-2">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div>
+
+          <!-- DESCRIPCIÓN -->
+          <div class="seccion" id="sec-descripcion">
+            <p class="seccion-titulo">Descripción</p>
+            <p class="descripcion" id="descripcion-txt"></p>
+          </div>
+
+          <!-- GALERÍA -->
+          <div class="seccion" id="sec-galeria">
+            <p class="seccion-titulo">Galería</p>
+            <div class="galeria-grid" id="galeria"></div>
+          </div>
+
+          <!-- VIDEO -->
+          <div class="seccion" id="sec-video" style="display:none;">
+            <p class="seccion-titulo">Video / Tour virtual</p>
+            <div class="video-wrapper">
+              <iframe id="video-frame" src="" allowfullscreen loading="lazy"></iframe>
+            </div>
+          </div>
+
+          <!-- MAPA -->
+          <div class="seccion" id="sec-mapa" style="display:none;">
+            <p class="seccion-titulo">Ubicación</p>
+            <div id="mapa"></div>
+          </div>
+
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+
+          <!-- FICHA TÉCNICA -->
+          <div class="card">
+            <p class="card-titulo">Ficha técnica</p>
+            <div id="ficha-datos"></div>
+          </div>
+
+          <!-- RATING -->
+          <div class="card" id="card-rating" style="display:none;">
+            <p class="card-titulo">Valoración</p>
+            <div class="stars" id="stars-cont"></div>
+            <p class="rating-num" id="rating-num">–</p>
+            <p class="rating-desc" id="rating-desc"></p>
+          </div>
+
+        </div>
+      </div><!-- /grid -->
+
+      <!-- BRANDING FOOTER -->
+      <div class="branding">
+        <div class="logo-wrap">
+          <img src="/logo.png" alt="Vanina Buzzacchi" />
+        </div>
+        <div class="contacto-info">
+          <strong>EQUIPO BUZZACCHI</strong>
+          Negocios Inmobiliarios · Río Cuarto, Córdoba
+        </div>
+      </div>
+
+    </div><!-- /body-wrap -->
+  </div><!-- /contenido -->
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" role="dialog" aria-label="Imagen ampliada">
+    <button id="lightbox-close" aria-label="Cerrar">&times;</button>
+    <img id="lightbox-img" src="" alt="Imagen ampliada" />
+  </div>
+
+  <!-- LEAFLET -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
-    const API_URL = "/api/inmueble/";
+    const API_URL = "/api/inmuebles/";   // <-- plural, ruta correcta
 
-    function getIdFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("id");
+    function getId() {
+      return new URLSearchParams(window.location.search).get("id");
     }
 
-    function formatoPrecio(inm) {
-      const precio = Number(inm.precio || 0);
-      if (!precio) return "Consultar";
-      return `${inm.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
+    function formatPrecio(d) {
+      const n = Number(d.precio || 0);
+      if (!n) return "Consultar";
+      return `${d.moneda || "USD"} ${n.toLocaleString("es-AR")}`;
     }
 
-    function getImageSrc(img) {
+    function imgSrc(img) {
       if (!img) return "";
-      if (String(img).startsWith("http://") || String(img).startsWith("https://")) {
-        return img;
-      }
+      if (/^https?:\/\//.test(String(img))) return img;
       return "/uploads/" + img;
     }
 
-    async function cargarFicha() {
-      const id = getIdFromUrl();
-      const ficha = document.getElementById("ficha");
-      const estado = document.getElementById("estado");
+    function youtubeEmbedUrl(url) {
+      if (!url) return null;
+      const m = url.match(/(?:youtu\.be\/|v=|embed\/)([A-Za-z0-9_-]{11})/);
+      if (m) return `https://www.youtube.com/embed/${m[1]}?rel=0&modestbranding=1`;
+      if (url.includes("youtube.com/embed/")) return url;
+      return null;
+    }
 
+    function ratingLabel(r) {
+      if (r >= 4.5) return "Excelente condición";
+      if (r >= 3.5) return "Muy buena condición";
+      if (r >= 2.5) return "Buena condición";
+      return "Condición estándar";
+    }
+
+    function renderStars(r, container) {
+      container.innerHTML = "";
+      for (let i = 1; i <= 5; i++) {
+        const s = document.createElement("span");
+        s.className = "star" + (i <= Math.round(r) ? " on" : "");
+        s.textContent = "★";
+        container.appendChild(s);
+      }
+    }
+
+    function renderStats(d) {
+      const items = [
+        { label: "Operación",    val: d.tipoOperacion || "–",    icon: "🏷" },
+        { label: "Tipo",         val: d.tipoPropiedad || "–",    icon: "🏠" },
+        { label: "Dormitorios",  val: d.dormitorios   || "–",    icon: "🛏" },
+        { label: "Baños",        val: d.banos         || "–",    icon: "🚿" },
+        { label: "Zona",         val: d.zona          || "–",    icon: "📍" },
+      ];
+      const sup = d.superficieTotal || d.superficie;
+      if (sup) items.push({ label: "Superficie", val: sup + " m²", icon: "📐" });
+
+      const bar = document.getElementById("stats-bar");
+      bar.innerHTML = items.map(i => `
+        <div class="stat">
+          <div class="stat-label">${i.label}</div>
+          <div class="stat-val">${i.val}</div>
+          <span class="stat-icon" aria-hidden="true">${i.icon}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderFichaDatos(d) {
+      const rows = [
+        ["Operación",   d.tipoOperacion],
+        ["Tipo",        d.tipoPropiedad],
+        ["Dirección",   d.direccion],
+        ["Zona",        d.zona],
+        ["Dormitorios", d.dormitorios],
+        ["Baños",       d.banos],
+        ["Cochera",     d.cochera],
+        ["Ambientes",   d.ambientes],
+        ["Superficie cubierta", d.superficieCubierta ? d.superficieCubierta + " m²" : null],
+        ["Superficie total",    d.superficieTotal    ? d.superficieTotal    + " m²" : null],
+        ["Antigüedad",  d.antiguedad],
+        ["Expensas",    d.expensas],
+        ["Estado",      d.estadoPublicacion],
+      ];
+      const cont = document.getElementById("ficha-datos");
+      cont.innerHTML = rows
+        .filter(([, v]) => v != null && v !== "" && v !== undefined)
+        .map(([k, v]) => `
+          <div class="dato">
+            <span class="dato-k">${k}</span>
+            <span class="dato-v">${v}</span>
+          </div>
+        `).join("");
+    }
+
+    function initMapa(lat, lng, titulo) {
+      document.getElementById("sec-mapa").style.display = "";
+      const map = L.map("mapa", { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 15);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 19,
+      }).addTo(map);
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="width:14px;height:14px;background:#c9a84c;border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(201,168,76,.6)"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+      });
+      L.marker([lat, lng], { icon }).addTo(map).bindPopup(`<b>${titulo}</b>`);
+    }
+
+    function initLightbox(imgs) {
+      const lb = document.getElementById("lightbox");
+      const lbImg = document.getElementById("lightbox-img");
+      document.querySelectorAll(".galeria-grid img").forEach((el, i) => {
+        el.addEventListener("click", () => {
+          lbImg.src = imgSrc(imgs[i]);
+          lb.classList.add("open");
+        });
+      });
+      document.getElementById("lightbox-close").addEventListener("click", () => lb.classList.remove("open"));
+      lb.addEventListener("click", e => { if (e.target === lb) lb.classList.remove("open"); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") lb.classList.remove("open"); });
+    }
+
+    async function cargar() {
+      const id = getId();
       if (!id) {
-        estado.textContent = "ID no encontrado.";
+        document.getElementById("estado-wrapper").innerHTML = `<p style="color:#c9a84c;font-size:15px;">ID no encontrado en la URL.</p>`;
         return;
       }
 
       try {
-        const res = await fetch(API_URL + id, { cache: "no-store" });
+        const res  = await fetch(API_URL + id, { cache: "no-store" });
         const data = await res.json();
 
         if (!res.ok || !data || data.ok === false) {
-          estado.textContent = "Propiedad no encontrada.";
+          document.getElementById("estado-wrapper").innerHTML = `<p style="color:#c9a84c;font-size:15px;">Propiedad no encontrada.</p>`;
           return;
         }
 
-        const imagenes = Array.isArray(data.imagenes) ? data.imagenes : [];
-        const galeriaHtml = imagenes.length
-          ? imagenes.map(img => `<img src="${getImageSrc(img)}" alt="Imagen propiedad">`).join("")
-          : `<div style="color:#666;">Sin imágenes disponibles.</div>`;
+        // Ocultar loader, mostrar contenido
+        document.getElementById("estado-wrapper").style.display = "none";
+        document.getElementById("contenido").style.display    = "block";
 
-        ficha.innerHTML = `
-          <div class="header">
-            <div class="logo-buzzacchi">
-              <img src="/logo.png" alt="Vanina Buzzacchi">
-            </div>
-            <div class="contacto">
-              <strong>EQUIPO BUZZACCHI</strong>
-              Negocios Inmobiliarios<br>
-              Río Cuarto, Córdoba
-            </div>
-          </div>
+        // ── HERO ──
+        const imgs = Array.isArray(data.imagenes) ? data.imagenes : [];
+        if (imgs.length) {
+          document.getElementById("hero-img").src = imgSrc(imgs[0]);
+        } else {
+          document.getElementById("hero").style.background = "#1a1a1a";
+        }
+        document.getElementById("hero-badge").textContent = data.tipoOperacion || "Propiedad";
+        document.getElementById("hero-ref").textContent   = "#" + (data.id || "");
+        document.getElementById("prop-type").textContent  = data.tipoPropiedad || "";
+        document.getElementById("prop-titulo").textContent = data.titulo || "Sin título";
+        document.getElementById("prop-precio").textContent = formatPrecio(data);
 
-          <div class="acciones">
-            <a class="btn btn-volver" href="/dashboard.html">← Volver</a>
-            <a class="btn btn-editar" href="/editar.html?id=${data.id}">Editar</a>
-            <a class="btn btn-pdf" href="/api/ficha-pdf/${data.id}" target="_blank">Ver PDF</a>
-          </div>
+        // ── ACCIONES ──
+        document.getElementById("btn-editar").href = `/editar.html?id=${data.id}`;
+        document.getElementById("btn-pdf").href    = `/api/ficha-pdf/${data.id}`;
+        const waText = encodeURIComponent(`Hola! Te comparto esta propiedad: ${data.titulo} — ${formatPrecio(data)}\n${window.location.href}`);
+        document.getElementById("btn-wa").href     = `https://wa.me/?text=${waText}`;
 
-          <h1 class="titulo">${data.titulo || "Sin título"}</h1>
+        // ── STATS ──
+        renderStats(data);
 
-          <div class="datos-principales">
-            <div class="bloque">
-              <h3>Operación</h3>
-              <p>${data.tipoOperacion || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Precio</h3>
-              <p>${formatoPrecio(data)}</p>
-            </div>
-            <div class="bloque">
-              <h3>Zona</h3>
-              <p>${data.zona || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Dirección</h3>
-              <p>${data.direccion || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Dormitorios</h3>
-              <p>${data.dormitorios || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Baños</h3>
-              <p>${data.banos || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Tipo</h3>
-              <p>${data.tipoPropiedad || "-"}</p>
-            </div>
-            <div class="bloque">
-              <h3>Estado</h3>
-              <p>${data.estadoPublicacion || "-"}</p>
-            </div>
-          </div>
+        // ── DESCRIPCIÓN ──
+        document.getElementById("descripcion-txt").textContent = data.descripcion || "Sin descripción disponible.";
 
-          <div class="descripcion">${data.descripcion || "Sin descripción disponible."}</div>
+        // ── GALERÍA ──
+        const gal = document.getElementById("galeria");
+        if (imgs.length) {
+          gal.innerHTML = imgs.map(img => `<img src="${imgSrc(img)}" alt="Imagen propiedad" loading="lazy">`).join("");
+          initLightbox(imgs);
+        } else {
+          document.getElementById("sec-galeria").style.display = "none";
+        }
 
-          <div class="galeria">
-            ${galeriaHtml}
-          </div>
-        `;
+        // ── VIDEO ──
+        const videoUrl = youtubeEmbedUrl(data.videoUrl || data.video || data.youtubeUrl || "");
+        if (videoUrl) {
+          document.getElementById("video-frame").src = videoUrl;
+          document.getElementById("sec-video").style.display = "";
+        }
+
+        // ── MAPA ──
+        const lat = parseFloat(data.lat || data.latitude  || 0);
+        const lng = parseFloat(data.lng || data.longitude || 0);
+        if (lat && lng) initMapa(lat, lng, data.titulo);
+
+        // ── FICHA TÉCNICA ──
+        renderFichaDatos(data);
+
+        // ── RATING ──
+        const rating = parseFloat(data.rating || data.calificacion || 0);
+        if (rating > 0) {
+          document.getElementById("card-rating").style.display = "";
+          renderStars(rating, document.getElementById("stars-cont"));
+          document.getElementById("rating-num").textContent  = rating.toFixed(1);
+          document.getElementById("rating-desc").textContent = ratingLabel(rating);
+        }
+
+        // ── TÍTULO DE PÁGINA ──
+        document.title = `${data.titulo || "Propiedad"} – Equipo Buzzacchi`;
+
       } catch (err) {
         console.error(err);
-        estado.textContent = "Error cargando inmueble.";
+        document.getElementById("estado-wrapper").innerHTML = `<p style="color:#c9a84c;font-size:15px;">Error al cargar la propiedad.</p>`;
       }
     }
 
-    cargarFicha();
+    cargar();
   </script>
 
-  <!-- Service Worker PWA -->
+  <!-- PWA Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
