@@ -307,7 +307,7 @@
     }
 
     // ── Cargar inmueble ─────────────────────────────────────────────
-    fetch("/api/inmuebles-publicos/" + encodeURIComponent(id))
+    fetch("/api/inmuebles/" + encodeURIComponent(id))
       .then(res => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.json();
@@ -329,8 +329,14 @@
       })
       .catch(err => {
         console.error("Error al cargar inmueble:", err);
-        alert("Error al cargar el inmueble.");
-        window.location.href = "/dashboard.html";
+        const thumbsStatus = document.getElementById("thumbsStatus");
+        if (thumbsStatus) {
+          thumbsStatus.className = "status err";
+          thumbsStatus.textContent = "No se pudo cargar el inmueble (id=" + id + "). Verificá que exista en la base de datos.";
+          thumbsStatus.style.display = "block";
+        }
+        document.getElementById("btnGuardar").disabled = true;
+        document.getElementById("btnGuardar").textContent = "No disponible";
       });
 
     // ── Render miniaturas ───────────────────────────────────────────
