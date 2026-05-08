@@ -456,9 +456,9 @@
   let favorites      = JSON.parse(localStorage.getItem("vb_favs") || "[]");
   let deferredPrompt = null;
 
-  PWA INSTALL 
+  // ===================== PWA INSTALL =====================
 
- PUSH NOTIFICATIONS 
+  // ===================== PUSH NOTIFICATIONS =====================
   async function suscribirPush() {
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       alert("Tu navegador no soporta notificaciones push. Intentá instalar la app primero.");
@@ -510,14 +510,14 @@
     });
   }
 
-  BUDGET SLIDER 
+  // ===================== BUDGET SLIDER =====================
   function updateBudget() {
     const val = Number(document.getElementById("budgetRange").value);
     document.getElementById("budgetVal").textContent = val === 0 ? "Sin límite" : `USD ${val.toLocaleString("es-AR")}`;
     applyFilters();
   }
 
- IA MATCH 
+  // ===================== IA MATCH =====================
   async function buscarConIA() {
     const consulta   = document.getElementById("iaQuery").value.trim();
     const presupuesto = Number(document.getElementById("budgetRange").value) || null;
@@ -566,7 +566,7 @@
     if (e.key === "Enter") buscarConIA();
   });
 
-  HELPERS
+  // ===================== HELPERS =====================
   function waLink(texto) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`; }
 
   function formatPrice(item) {
@@ -617,7 +617,8 @@
       b.textContent = favorites.includes(id) ? "❤️" : "🤍";
     });
   }
- RENDER 
+
+  // ===================== RENDER =====================
   function renderCards(items) {
     const grid  = document.getElementById("propertiesGrid");
     const empty = document.getElementById("emptyState");
@@ -733,7 +734,7 @@
     document.getElementById("searchInput").addEventListener("input", applyFilters);
   }
 
-   LOAD
+  // ===================== LOAD =====================
   async function loadProperties() {
     const loader = document.getElementById("loader");
     for (let i = 1; i <= 3; i++) {
@@ -756,7 +757,7 @@
     loader.innerHTML = "No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
   }
 
-  COMPARTIR PROPIEDAD 
+  // ===================== COMPARTIR PROPIEDAD =====================
   function compartirPropiedad(e, id, titulo, precio) {
     e.preventDefault();
     e.stopPropagation();
@@ -766,7 +767,7 @@
     window.open(waUrl, "_blank");
   }
 
- WHATSAPP 
+  // ===================== WHATSAPP =====================
   function setupWhatsApp() {
     const href = waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.");
     document.getElementById("heroWhatsApp").href     = href;
@@ -774,7 +775,7 @@
     document.getElementById("floatingWhatsApp").href = href;
   }
 
-  COUNTER 
+  // ===================== COUNTER =====================
   function setupCounter() {
     const el  = document.getElementById("visitCounter");
     let val   = Number(localStorage.getItem("vb_visits") || 2143);
@@ -783,7 +784,7 @@
     el.textContent = val.toLocaleString("es-AR");
   }
 
- LEAD FORM 
+  // ===================== LEAD FORM =====================
   function setupLeadForm() {
     document.getElementById("leadForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -815,7 +816,7 @@
     });
   }
 
-   INIT 
+  // ===================== INIT =====================
   setupWhatsApp();
   setupCounter();
   setupFilters();
@@ -825,7 +826,7 @@
 
 
 <script>
-CATA CHAT 
+// ===================== CATA CHAT =====================
 const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
 const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
@@ -944,7 +945,7 @@ function buildCataSystem() {
   const objText = p.objections?.length
     ? p.objections.map(o => `Objeción: ${o.objecion || o.objection || o.o || ''}\nRespuesta: ${o.respuesta || o.answer || o.r || ''}`).join('\n\n')
     : 'Sin objeciones.';
-
+=======
   const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs.';
   const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones.';
 >>>>>>> 28e4dac (fix supabase image urls)
