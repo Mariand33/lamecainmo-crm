@@ -3,48 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cata | Asistente Inmobiliario</title>
+  <title>Confirmar Visita · Buzzacchi Inmobiliaria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold:    #c9a84c;
+      --gold-lt: #e8d49a;
+      --dark:    #0d0d0d;
+      --dark-2:  #141414;
+      --dark-3:  #1c1c1c;
+      --green:   #25D366;
+      --green-d: #1ebe5a;
+      --off:     rgba(255,255,255,.78);
+      --muted:   rgba(255,255,255,.42);
+      --border:  rgba(255,255,255,.09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: Arial, sans-serif;
-      background: #0f1a14;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
       color: #fff;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      padding: 16px;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    .chat-wrapper {
+    /* Fondo decorativo */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201,168,76,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(37,211,102,.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card {
       width: 100%;
-      max-width: 520px;
+      max-width: 440px;
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      animation: slideUp .5s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── Foto propiedad ── */
+    .prop-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      background: var(--dark-3);
+    }
+
+    .prop-img-placeholder {
+      width: 100%;
+      height: 200px;
+      background: var(--dark-3);
       display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      max-height: 100dvh;
-      padding: 16px 0;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      opacity: .3;
     }
 
     /* ── Header ── */
     .header {
-      background: #143d2f;
-      border-radius: 14px 14px 0 0;
+      padding: 20px 22px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(201,168,76,.1);
+      border: 1px solid rgba(201,168,76,.22);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin-bottom: 10px;
+    }
+
+    .prop-titulo {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .prop-subtitulo {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── Visita info ── */
+    .visita-box {
+      margin: 18px 22px;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
       padding: 16px 18px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      flex-shrink: 0;
+      gap: 16px;
     }
 
-    .avatar {
-      width: 44px;
-      height: 44px;
-      background: #25D366;
-      border-radius: 50%;
+    .visita-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.22);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -52,469 +139,281 @@
       flex-shrink: 0;
     }
 
-    .header-info h1 {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 2px;
+    .visita-data { flex: 1; }
+
+    .visita-data .label {
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
     }
 
-    .header-info p {
-      font-size: 12px;
-      opacity: .65;
+    .visita-data .fecha {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--gold-lt);
+      line-height: 1.1;
     }
 
-    /* ── Propiedad card ── */
-    .prop-card {
-      background: #1a4a35;
-      padding: 12px 16px;
-      display: none;
-      gap: 12px;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      flex-shrink: 0;
+    .visita-data .hora {
+      font-size: 13px;
+      color: var(--off);
+      margin-top: 3px;
     }
 
-    .prop-card.visible { display: flex; }
-
-    .prop-thumb {
-      width: 52px;
-      height: 42px;
-      object-fit: cover;
-      border-radius: 8px;
-      background: #0f1a14;
-      flex-shrink: 0;
+    .visita-data .agente {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
     }
 
-    .prop-info { flex: 1; min-width: 0; }
-    .prop-info strong { font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .prop-info span   { font-size: 11px; opacity: .7; }
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 22px;
+    }
 
-    /* ── Mensajes ── */
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      background: #0f2318;
-      padding: 16px 14px;
+    /* ── Pregunta ── */
+    .pregunta {
+      padding: 18px 22px 8px;
+      text-align: center;
+    }
+
+    .pregunta p {
+      font-size: 14px;
+      color: var(--off);
+      line-height: 1.5;
+    }
+
+    /* ── Botones ── */
+    .btns {
+      padding: 14px 22px 22px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,.15) transparent;
     }
 
-    .msg {
-      max-width: 80%;
-      padding: 10px 13px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.45;
-      word-break: break-word;
-    }
-
-    .msg.bot {
-      background: #1e4d37;
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-    }
-
-    .msg.user {
-      background: #25D366;
-      color: #0f1a14;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
-      font-weight: 500;
-    }
-
-    .msg.typing {
-      background: #1e4d37;
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
-      color: rgba(255,255,255,.5);
-      font-style: italic;
-      font-size: 13px;
-    }
-
-    /* ── Input area ── */
-    .input-area {
-      background: #143d2f;
-      border-radius: 0 0 14px 14px;
-      padding: 12px 14px;
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      border-top: 1px solid rgba(255,255,255,.1);
-      flex-shrink: 0;
-    }
-
-    .input-area textarea {
-      flex: 1;
-      background: #0f2318;
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: #fff;
-      font-size: 14px;
-      resize: none;
-      min-height: 42px;
-      max-height: 120px;
-      font-family: Arial, sans-serif;
-      line-height: 1.4;
-      overflow-y: auto;
-    }
-
-    .input-area textarea::placeholder { color: rgba(255,255,255,.35); }
-    .input-area textarea:focus { outline: none; border-color: rgba(37,211,102,.4); }
-
-    .btn-send {
-      width: 42px;
-      height: 42px;
-      background: #25D366;
+    .btn {
+      width: 100%;
+      padding: 14px;
       border: none;
-      border-radius: 50%;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      transition: background .15s;
+      gap: 8px;
+      transition: transform .12s, filter .15s;
+      text-decoration: none;
     }
 
-    .btn-send:hover   { background: #1ebe5a; }
-    .btn-send:disabled { background: #2a5e3f; cursor: not-allowed; }
-    .btn-send svg { fill: #fff; width: 18px; height: 18px; }
+    .btn:active { transform: scale(.97); }
 
-    /* ── Lead capture form ── */
-    .lead-form {
-      background: #1a4a35;
-      border: 1px solid rgba(37,211,102,.3);
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 4px;
+    .btn-confirmar {
+      background: var(--green);
+      color: #0d0d0d;
+      font-weight: 700;
+    }
+
+    .btn-confirmar:hover { filter: brightness(1.08); }
+
+    .btn-otro {
+      background: transparent;
+      color: var(--off);
+      border: 1px solid var(--border);
+    }
+
+    .btn-otro:hover { background: rgba(255,255,255,.04); }
+
+    /* ── Estado confirmado ── */
+    .estado-ok {
       display: none;
+      padding: 28px 22px;
+      text-align: center;
+      animation: fadeIn .4s ease both;
     }
 
-    .lead-form.visible { display: block; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 
-    .lead-form p {
-      font-size: 13px;
-      margin-bottom: 10px;
-      opacity: .85;
+    .estado-ok .big-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+      display: block;
     }
 
-    .lead-form input {
-      width: 100%;
-      background: #0f2318;
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 8px;
-      padding: 9px 11px;
-      color: #fff;
-      font-size: 13px;
+    .estado-ok h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 500;
       margin-bottom: 8px;
     }
 
-    .lead-form input::placeholder { color: rgba(255,255,255,.3); }
-
-    .btn-lead {
-      width: 100%;
-      background: #25D366;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      color: #0f1a14;
-      font-weight: bold;
-      font-size: 14px;
-      cursor: pointer;
+    .estado-ok p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
     }
 
-    .btn-lead:hover { background: #1ebe5a; }
-
-    .lead-ok {
-      font-size: 13px;
-      color: #25D366;
+    /* ── Footer ── */
+    .footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,.22);
+      letter-spacing: .05em;
       text-align: center;
-      padding: 8px 0 4px;
-      display: none;
+      animation: slideUp .5s .15s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 40px 22px;
+      color: var(--muted);
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-<div class="chat-wrapper">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="avatar">🏡</div>
-    <div class="header-info">
-      <h1>Cata · Asistente IA</h1>
-      <p>Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto</p>
-    </div>
-  </div>
-
-  <!-- Prop card -->
-  <div class="prop-card" id="propCard">
-    <img class="prop-thumb" id="propThumb" src="" alt="">
-    <div class="prop-info">
-      <strong id="propTitulo"></strong>
-      <span id="propPrecio"></span>
-    </div>
-  </div>
-
-  <!-- Mensajes -->
-  <div class="messages" id="messages"></div>
-
-  <!-- Lead form -->
-  <div class="lead-form" id="leadForm">
-    <p>📋 Para enviarte más información dejame tu nombre y contacto:</p>
-    <input type="text"  id="leadNombre"    placeholder="Tu nombre" />
-    <input type="text"  id="leadContacto"  placeholder="WhatsApp o email" />
-    <button class="btn-lead" onclick="enviarLead()">Enviar datos ✉️</button>
-    <div class="lead-ok" id="leadOk">✅ ¡Gracias! Te contactamos pronto.</div>
-  </div>
-
-  <!-- Input -->
-  <div class="input-area">
-    <textarea id="inputMsg" placeholder="Escribí tu consulta…" rows="1"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviar();}"></textarea>
-    <button class="btn-send" id="btnSend" onclick="enviar()">
-      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-    </button>
-  </div>
-
+<div class="card" id="card">
+  <div class="loading">Cargando visita…</div>
 </div>
 
+<div class="footer">Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto</div>
+
 <script>
-  const API_BASE = "https://inmocreador-crm.onrender.com";
   const SUPABASE_URL  = "https://nniivhebocgdsynlpuhf.supabase.co";
   const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70";
 
-  const params = new URLSearchParams(window.location.search);
-  const propId = params.get("id") || params.get("property");
+  // Número de WhatsApp del equipo (sin + ni espacios)
+  const WA_EQUIPO = "5493584000000"; // ← REEMPLAZÁ con el número real
 
-  let propiedad    = null;
-  let historial    = []; // {role, content}
-  let leadCapturado = false;
+  const params  = new URLSearchParams(window.location.search);
+  const propId  = params.get("id");
+  const fecha   = params.get("fecha");   // ej: 2026-05-15
+  const hora    = params.get("hora");    // ej: 11:00
+  const agente  = params.get("agente") || "el equipo";
 
-  const messagesEl = document.getElementById("messages");
-  const inputEl    = document.getElementById("inputMsg");
-  const btnSend    = document.getElementById("btnSend");
+  const card = document.getElementById("card");
 
-  // ── Auto-resize textarea ──────────────────────────────
-  inputEl.addEventListener("input", () => {
-    inputEl.style.height = "auto";
-    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
-  });
-
-  // ── Agregar mensaje al chat ───────────────────────────
-  function addMsg(role, text) {
-    const div = document.createElement("div");
-    div.className = "msg " + (role === "user" ? "user" : "bot");
-    div.textContent = text;
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    return div;
+  // ── Formatear fecha legible ───────────────────────────
+  function formatearFecha(str) {
+    if (!str) return "—";
+    const [y, m, d] = str.split("-");
+    const dias   = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    const meses  = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    const date   = new Date(y, m - 1, d);
+    return `${dias[date.getDay()]} ${d} de ${meses[m - 1]}`;
   }
 
-  function addTyping() {
-    const div = document.createElement("div");
-    div.className = "msg typing";
-    div.id = "typing";
-    div.textContent = "Cata está escribiendo…";
-    messagesEl.appendChild(div);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-    return div;
-  }
+  // ── Cargar propiedad y renderizar ────────────────────
+  async function init() {
+    let prop = null;
 
-  function removeTyping() {
-    const el = document.getElementById("typing");
-    if (el) el.remove();
-  }
-
-  // ── Cargar propiedad desde Supabase ──────────────────
-  async function cargarPropiedad() {
-    if (!propId) {
-      saludar();
-      return;
-    }
-    try {
-      // Si es número busca por id, si es texto busca por título
-      const esNumero = /^\d+$/.test(propId);
-      const filtro   = esNumero ? `id=eq.${propId}` : `titulo=ilike.*${encodeURIComponent(propId)}*`;
-      const res  = await fetch(`${SUPABASE_URL}/rest/v1/inmuebles?${filtro}&select=*&limit=1`, {
-        headers: {
-          "apikey":        SUPABASE_ANON,
-          "Authorization": "Bearer " + SUPABASE_ANON
-        }
-      });
-      const data = await res.json();
-      if (data && data[0]) {
-        propiedad = data[0];
-        mostrarCardPropiedad();
+    if (propId && /^\d+$/.test(propId)) {
+      try {
+        const res  = await fetch(`${SUPABASE_URL}/rest/v1/inmuebles?id=eq.${propId}&select=titulo,zona,precio,moneda,imagenes,tipo_operacion&limit=1`, {
+          headers: { "apikey": SUPABASE_ANON, "Authorization": "Bearer " + SUPABASE_ANON }
+        });
+        const data = await res.json();
+        if (data && data[0]) prop = data[0];
+      } catch(e) {
+        console.warn("No se pudo cargar propiedad:", e.message);
       }
-    } catch(e) {
-      console.warn("No se pudo cargar propiedad:", e.message);
-    }
-    saludar();
-  }
-
-  function mostrarCardPropiedad() {
-    if (!propiedad) return;
-    const card   = document.getElementById("propCard");
-    const thumb  = document.getElementById("propThumb");
-    const titulo = document.getElementById("propTitulo");
-    const precio = document.getElementById("propPrecio");
-
-    const imgs = Array.isArray(propiedad.imagenes) ? propiedad.imagenes : [];
-    if (imgs[0]) {
-      thumb.src = imgs[0];
-      thumb.style.display = "block";
-    } else {
-      thumb.style.display = "none";
     }
 
-    titulo.textContent = propiedad.titulo || "Propiedad";
-    const p = propiedad.precio ? ((propiedad.moneda || "USD") + " " + Number(propiedad.precio).toLocaleString("es-AR")) : "Consultar";
-    precio.textContent = p + (propiedad.zona ? " · " + propiedad.zona : "");
-    card.classList.add("visible");
+    render(prop);
   }
 
-  // ── Mensaje de bienvenida ─────────────────────────────
-  function saludar() {
-    const nombre = propiedad?.titulo;
-    if (nombre) {
-      addMsg("bot", `¡Hola! Soy Cata 👋 Estoy acá para ayudarte con la propiedad: "${nombre}". ¿Qué querés saber? Podés preguntarme sobre el precio, la zona, las características, o coordinar una visita.`);
-    } else {
-      addMsg("bot", "¡Hola! Soy Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto 👋 ¿En qué te puedo ayudar hoy?");
-    }
-  }
+  function render(prop) {
+    const titulo    = prop?.titulo    || "Visita coordinada";
+    const zona      = prop?.zona      || "";
+    const precio    = prop?.precio    ? `${prop.moneda || "USD"} ${Number(prop.precio).toLocaleString("es-AR")}` : "";
+    const imgs      = Array.isArray(prop?.imagenes) ? prop.imagenes : [];
+    const imgSrc    = imgs[0] || null;
+    const fechaStr  = formatearFecha(fecha);
 
-  // ── Construir system prompt ───────────────────────────
-  function buildSystem() {
-    if (propiedad) {
-      const p = propiedad;
-      const precio = p.precio ? `${p.moneda || "USD"} ${Number(p.precio).toLocaleString("es-AR")}` : "a consultar";
-      return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina.
-Estás atendiendo una consulta sobre esta propiedad:
-- Título: ${p.titulo || ""}
-- Zona: ${p.zona || ""}
-- Tipo: ${p.tipo_propiedad || ""} · ${p.tipo_operacion || ""}
-- Precio: ${precio}
-- Dormitorios: ${p.dormitorios || "no especificado"} · Baños: ${p.banos || "no especificado"}
-- m² cubiertos: ${p.m2_cubiertos || "no especificado"} · m² totales: ${p.m2_totales || "no especificado"}
-- Descripción: ${p.descripcion || "no especificada"}
-
-Tu objetivo es responder preguntas sobre esta propiedad, generar interés y capturar el contacto del potencial cliente.
-Respondé en español, de forma cálida y profesional, máximo 3-4 oraciones por respuesta.
-Cuando el cliente muestre interés concreto o pida más info, ofrecele dejarle sus datos.
-Si el cliente da su nombre y contacto (teléfono o email), incluí al final de tu respuesta exactamente: LEAD_CAPTURADO`;
-    }
-    return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina.
-Respondé en español, de forma cálida y profesional, máximo 3-4 oraciones.
-Si el cliente da su nombre y contacto, incluí al final: LEAD_CAPTURADO`;
-  }
-
-  // ── Enviar mensaje ────────────────────────────────────
-  async function enviar() {
-    const text = inputEl.value.trim();
-    if (!text) return;
-
-    inputEl.value = "";
-    inputEl.style.height = "auto";
-    btnSend.disabled = true;
-
-    addMsg("user", text);
-    historial.push({ role: "user", content: text });
-
-    const typing = addTyping();
-
-    try {
-      const res = await fetch(`${API_BASE}/api/cata-chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system:   buildSystem(),
-          messages: historial.map(m => ({ role: m.role, content: m.content }))
-        })
-      });
-
-      const data = await res.json();
-      removeTyping();
-
-      // Extraer texto — formato Anthropic { content: [{type:"text", text:"..."}] }
-      let respuesta = "";
-      if (data.content && Array.isArray(data.content)) {
-        respuesta = data.content.filter(b => b.type === "text").map(b => b.text).join("");
-      } else if (data.respuesta) {
-        respuesta = data.respuesta;
-      } else if (data.error) {
-        respuesta = "Hubo un error: " + data.error;
+    card.innerHTML = `
+      ${imgSrc
+        ? `<img class="prop-img" src="${imgSrc}" alt="${titulo}" onerror="this.style.display='none'">`
+        : `<div class="prop-img-placeholder">🏡</div>`
       }
 
-      // Detectar lead capturado
-      if (respuesta.includes("LEAD_CAPTURADO")) {
-        respuesta = respuesta.replace("LEAD_CAPTURADO", "").trim();
-        if (!leadCapturado) mostrarFormLead();
-      }
+      <div class="header">
+        <div class="badge">Visita programada</div>
+        <div class="prop-titulo">${titulo}</div>
+        ${zona || precio ? `<div class="prop-subtitulo">${[zona, precio].filter(Boolean).join(" · ")}</div>` : ""}
+      </div>
 
-      addMsg("bot", respuesta);
-      historial.push({ role: "assistant", content: respuesta });
+      <div class="visita-box">
+        <div class="visita-icon">📅</div>
+        <div class="visita-data">
+          <div class="label">Fecha y hora propuesta</div>
+          <div class="fecha">${fechaStr}</div>
+          <div class="hora">${hora ? "a las " + hora + " hs" : ""}</div>
+          ${agente !== "el equipo" ? `<div class="agente">Con ${agente}</div>` : ""}
+        </div>
+      </div>
 
-    } catch(e) {
-      removeTyping();
-      addMsg("bot", "Ups, hubo un problema de conexión. Intentá de nuevo en un momento.");
-      console.error(e);
-    }
+      <div class="divider"></div>
 
-    btnSend.disabled = false;
-    inputEl.focus();
+      <div class="pregunta">
+        <p>¿Podés asistir a esta visita?</p>
+      </div>
+
+      <div class="btns">
+        <button class="btn btn-confirmar" onclick="confirmar('${titulo}', '${fechaStr}', '${hora}', '${agente}')">
+          ✅ Sí, confirmo la visita
+        </button>
+        <button class="btn btn-otro" onclick="pedirOtro('${titulo}')">
+          🔄 Necesito otro horario
+        </button>
+      </div>
+    `;
   }
 
-  // ── Lead capture ──────────────────────────────────────
-  function mostrarFormLead() {
-    document.getElementById("leadForm").classList.add("visible");
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+  // ── Confirmar ─────────────────────────────────────────
+  function confirmar(titulo, fechaStr, hora, agente) {
+    // Mostrar estado OK
+    card.innerHTML = `
+      <div class="estado-ok" style="display:block">
+        <span class="big-icon">🎉</span>
+        <h2>¡Visita confirmada!</h2>
+        <p>Perfecto, te esperamos el <strong>${fechaStr}</strong>${hora ? " a las <strong>" + hora + " hs</strong>" : ""}.<br><br>
+        Si necesitás cancelar o cambiar el horario, escribinos por WhatsApp.</p>
+      </div>
+      <div class="btns">
+        <a class="btn btn-confirmar" href="${waConfirmar(titulo, fechaStr, hora)}" target="_blank">
+          💬 Avisarle al equipo por WhatsApp
+        </a>
+      </div>
+    `;
+
+    // Abrir WhatsApp automáticamente
+    setTimeout(() => {
+      window.open(waConfirmar(titulo, fechaStr, hora), "_blank");
+    }, 800);
   }
 
-  async function enviarLead() {
-    const nombre   = document.getElementById("leadNombre").value.trim();
-    const contacto = document.getElementById("leadContacto").value.trim();
-
-    if (!nombre || !contacto) {
-      alert("Por favor completá nombre y contacto.");
-      return;
-    }
-
-    leadCapturado = true;
-
-    const lead = {
-      nombre,
-      contacto,
-      propiedad_id: propId || null,
-      propiedad_titulo: propiedad?.titulo || null,
-      origen: "cata-chat",
-      estado: "nuevo",
-      created_at: new Date().toISOString()
-    };
-
-    try {
-      await fetch(`${API_BASE}/api/leads`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lead)
-      });
-    } catch(e) {
-      console.warn("Error guardando lead:", e.message);
-    }
-
-    document.getElementById("leadNombre").style.display   = "none";
-    document.getElementById("leadContacto").style.display = "none";
-    document.querySelector(".btn-lead").style.display     = "none";
-    document.getElementById("leadOk").style.display       = "block";
-
-    addMsg("bot", `¡Perfecto ${nombre}! 🙌 Vanina o alguien del equipo te va a contactar pronto al ${contacto}. ¡Gracias por tu interés!`);
+  // ── Pedir otro horario ────────────────────────────────
+  function pedirOtro(titulo) {
+    const texto = `Hola! Quería coordinar una visita para la propiedad *${titulo}*. El horario propuesto no me viene bien, ¿podemos ver otro?`;
+    window.open(`https://wa.me/${WA_EQUIPO}?text=${encodeURIComponent(texto)}`, "_blank");
   }
 
-  // ── Init ──────────────────────────────────────────────
-  cargarPropiedad();
+  // ── Armar link WhatsApp confirmación ─────────────────
+  function waConfirmar(titulo, fechaStr, hora) {
+    const texto = `✅ *Visita confirmada*\n\n📍 Propiedad: ${titulo}\n📅 Fecha: ${fechaStr}${hora ? "\n🕐 Hora: " + hora + " hs" : ""}\n\n¡Nos vemos ahí!`;
+    return `https://wa.me/${WA_EQUIPO}?text=${encodeURIComponent(texto)}`;
+  }
+
+  init();
 </script>
 
 </body>
