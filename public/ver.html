@@ -497,6 +497,138 @@
 
     /* ── LEAFLET DARK TILES override ── */
     .leaflet-tile-pane { filter: brightness(.85) saturate(.7); }
+
+    /* ── GENERADOR VISITA ── */
+    .visita-gen {
+      background: var(--dark-2);
+      border: 1px solid rgba(201,168,76,.2);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 0 40px 16px;
+      max-width: 1100px;
+    }
+    .visita-gen-titulo {
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .visita-gen-titulo::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(201,168,76,.18);
+    }
+    .visita-gen-campos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .visita-gen-campo {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1 1 140px;
+    }
+    .visita-gen-campo label {
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+    }
+    .visita-gen-campo input,
+    .visita-gen-campo select {
+      background: var(--dark-3);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 6px;
+      padding: 8px 10px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 13px;
+      outline: none;
+      transition: border-color .2s;
+      min-width: 0;
+    }
+    .visita-gen-campo input:focus,
+    .visita-gen-campo select:focus { border-color: rgba(201,168,76,.4); }
+    .visita-gen-campo input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.5); }
+    .btn-genlink {
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      border-radius: 6px;
+      padding: 9px 16px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .18s;
+      align-self: flex-end;
+    }
+    .btn-genlink:hover { opacity: .85; }
+    .visita-link-result {
+      display: none;
+      margin-top: 12px;
+      background: var(--dark-3);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .visita-link-result.visible { display: flex; }
+    .visita-link-url {
+      flex: 1;
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      word-break: break-all;
+      font-family: monospace;
+      min-width: 0;
+    }
+    .btn-copiar {
+      background: rgba(37,211,102,.15);
+      border: 1px solid rgba(37,211,102,.3);
+      color: #25d366;
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+      font-family: var(--font-body);
+    }
+    .btn-copiar:hover { background: rgba(37,211,102,.25); }
+    .btn-wa-visita {
+      background: #25d366;
+      color: #0d0d0d;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity .15s;
+      font-family: var(--font-body);
+    }
+    .btn-wa-visita:hover { opacity: .88; }
+    @media (max-width: 680px) {
+      .visita-gen { margin: 0 18px 16px; padding: 14px 16px; }
+    }
   </style>
 </head>
 <body>
@@ -535,6 +667,31 @@
       <a href="/visita.html?id=${inmueble.id}" class="btn-agendar">
   📅 Confirmar Visita
 </a>
+    </div>
+
+    <!-- GENERADOR LINK VISITA -->
+    <div class="visita-gen">
+      <div class="visita-gen-titulo">📅 Generar link de visita</div>
+      <div class="visita-gen-campos">
+        <div class="visita-gen-campo">
+          <label>Fecha</label>
+          <input type="date" id="visita-fecha" />
+        </div>
+        <div class="visita-gen-campo">
+          <label>Hora</label>
+          <input type="time" id="visita-hora" />
+        </div>
+        <div class="visita-gen-campo">
+          <label>Agente</label>
+          <input type="text" id="visita-agente" placeholder="Ej: Vanina" />
+        </div>
+        <button class="btn-genlink" onclick="generarLinkVisita()">🔗 Generar link</button>
+      </div>
+      <div class="visita-link-result" id="visita-result">
+        <span class="visita-link-url" id="visita-link-url"></span>
+        <button class="btn-copiar" id="btn-copiar" onclick="copiarLink()">📋 Copiar</button>
+        <a class="btn-wa-visita" id="btn-wa-visita" href="#" target="_blank">💬 Enviar por WA</a>
+      </div>
     </div>
 
     <!-- CUERPO -->
@@ -830,6 +987,46 @@
     }
 
     cargar();
+
+    // ── Generador link visita ─────────────────────────────
+    (function() {
+      const hoy  = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm   = String(hoy.getMonth() + 1).padStart(2, "0");
+      const dd   = String(hoy.getDate()).padStart(2, "0");
+      document.getElementById("visita-fecha").value = `${yyyy}-${mm}-${dd}`;
+      const h1 = String((hoy.getHours() + 1) % 24).padStart(2, "0");
+      document.getElementById("visita-hora").value  = `${h1}:00`;
+    })();
+
+    function generarLinkVisita() {
+      const id     = getId();
+      const fecha  = document.getElementById("visita-fecha").value;
+      const hora   = document.getElementById("visita-hora").value;
+      const agente = document.getElementById("visita-agente").value.trim();
+      if (!fecha || !hora) { alert("Completá fecha y hora."); return; }
+      const base   = window.location.origin;
+      const params = new URLSearchParams({ id, fecha, hora });
+      if (agente) params.set("agente", agente);
+      const url = `${base}/visita.html?${params.toString()}`;
+      document.getElementById("visita-link-url").textContent = url;
+      const propTitulo = document.getElementById("prop-titulo").textContent;
+      const [y, m, d]  = fecha.split("-");
+      const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+      const fechaLeg   = `${d} de ${meses[parseInt(m)-1]}`;
+      const waText = encodeURIComponent("Hola! Te comparto el link para confirmar la visita a *"+propTitulo+"* 📅\n\nFecha: "+fechaLeg+" a las "+hora+" hs"+(agente ? "\nCon: "+agente : "")+"\n\nConfirmá acá 👉 "+url);
+      document.getElementById("btn-wa-visita").href = "https://wa.me/?text="+waText;
+      document.getElementById("visita-result").classList.add("visible");
+    }
+
+    function copiarLink() {
+      const url = document.getElementById("visita-link-url").textContent;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById("btn-copiar");
+        btn.textContent = "✅ Copiado";
+        setTimeout(() => btn.textContent = "📋 Copiar", 2000);
+      });
+    }
   </script>
 
   <!-- PWA Service Worker -->
