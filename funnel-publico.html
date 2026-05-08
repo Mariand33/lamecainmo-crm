@@ -244,6 +244,8 @@
     .cata-send:disabled{opacity:.35;cursor:default;transform:none}
     .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;font-size:12px;color:#4ade80;display:none}
     .btn-cata{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
+    .btn-share{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.3);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;width:44px}
+    .btn-share:hover{background:rgba(37,211,102,.25);border-color:rgba(37,211,102,.5);transform:scale(1.05)}
     .btn-cata:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));transform:translateY(-1px)}
     /* === FIN CATA === */
 
@@ -626,11 +628,16 @@
 
   function getImage(item) {
     if (item.imagenes && item.imagenes.length > 0) {
-      const img = item.imagenes[0];
-      if (img.startsWith("http")) return img;
-      return IMG_BASE + img;
+      // Buscar la primera imagen válida (no vacía)
+      for (const img of item.imagenes) {
+        if (!img) continue;
+        // URL completa (Supabase Storage o externa)
+        if (img.startsWith("http://") || img.startsWith("https://")) return img;
+        // Path relativo local
+        return IMG_BASE + img;
+      }
     }
-    return "https://placehold.co/900x620/e8e0d0/6f6a63?text=Propiedad";
+    return "https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad";
   }
 
   function isNew(item) {
@@ -703,12 +710,16 @@
             ${banosText ? `<span class="meta-pill">${banosText}</span>` : ""}
           </div>
           <div class="card-desc">${shortDesc}...</div>
-          <div class="card-actions">
+          <div class="card-actions" style="grid-template-columns:1fr 1fr auto">
             <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
             ${isConcretada
               ? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
               : `<a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>`
             }
+            <button class="btn-card btn-share" title="Compartir por WhatsApp"
+              onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\'").replace(/"/g,'\"')}','${formatPrice(item).replace(/'/g,"\'")}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm5.954 14.454c-.242.67-.886 1.227-1.59 1.406-.464.12-1.068.153-1.63.058-.764-.132-1.537-.44-2.437-.88C9.433 15.27 7.58 12.91 7.215 12.42c-.365-.488-1.232-1.64-1.232-3.127 0-1.486.78-2.216 1.057-2.516.276-.3.605-.376.806-.376.202 0 .404.002.58.01.186.01.436-.07.682.52.251.605.854 2.084.929 2.235.075.152.124.33.025.53-.1.2-.15.325-.299.5-.148.173-.312.387-.446.52-.149.148-.304.308-.13.607.173.298.77 1.27 1.653 2.058 1.135 1.012 2.093 1.325 2.39 1.475.297.148.47.124.644-.075.173-.198.743-.867.94-1.164.198-.297.397-.248.67-.149.272.1 1.733.818 2.03.967.297.149.496.223.57.347.075.124.075.72-.173 1.413z"/></svg>
+            </button>
           </div>
           ${!isConcretada ? `<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,'\\`')}')">💬 Hablar con Cata</button>` : ''}
         </div>
@@ -782,6 +793,16 @@
       }
     }
     loader.innerHTML = "No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
+  }
+
+  // ===================== COMPARTIR PROPIEDAD =====================
+  function compartirPropiedad(e, id, titulo, precio) {
+    e.preventDefault();
+    e.stopPropagation();
+    const url  = `${location.origin}/propiedad.html?id=${id}`;
+    const text = `🏠 *${titulo}*\n💰 ${precio}\n\nMirá esta propiedad en Vanina Buzzacchi:\n${url}\n\n¿Te interesa? Hay más propiedades disponibles en el catálogo. 👆`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank");
   }
 
   // ===================== WHATSAPP =====================
