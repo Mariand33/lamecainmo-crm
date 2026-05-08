@@ -4,138 +4,518 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cata | Asistente Inmobiliario</title>
-
   <style>
-    body{
-      margin:0;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
       font-family: Arial, sans-serif;
-      background:#0f1a14;
-      color:#fff;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
+      background: #0f1a14;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
     }
 
-    .box{
-      width:92%;
-      max-width:520px;
-      background:#143d2f;
-      padding:24px;
-      border-radius:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.3);
+    .chat-wrapper {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      max-height: 100dvh;
+      padding: 16px 0;
     }
 
-    h1{
-      margin:0 0 10px 0;
-      font-size:20px;
+    /* ── Header ── */
+    .header {
+      background: #143d2f;
+      border-radius: 14px 14px 0 0;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      flex-shrink: 0;
     }
 
-    .contexto{
-      font-size:13px;
-      opacity:.8;
-      margin-bottom:16px;
+    .avatar {
+      width: 44px;
+      height: 44px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
     }
 
-    input{
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:10px;
-      margin-top:10px;
-      font-size:14px;
+    .header-info h1 {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 2px;
     }
 
-    button{
-      width:100%;
-      margin-top:12px;
-      padding:12px;
-      border:none;
-      border-radius:10px;
-      background:#25D366;
-      color:#fff;
-      font-weight:bold;
-      cursor:pointer;
+    .header-info p {
+      font-size: 12px;
+      opacity: .65;
     }
 
-    .hint{
-      font-size:12px;
-      opacity:.6;
-      margin-top:10px;
+    /* ── Propiedad card ── */
+    .prop-card {
+      background: #1a4a35;
+      padding: 12px 16px;
+      display: none;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-shrink: 0;
+    }
+
+    .prop-card.visible { display: flex; }
+
+    .prop-thumb {
+      width: 52px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #0f1a14;
+      flex-shrink: 0;
+    }
+
+    .prop-info { flex: 1; min-width: 0; }
+    .prop-info strong { font-size: 13px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prop-info span   { font-size: 11px; opacity: .7; }
+
+    /* ── Mensajes ── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      background: #0f2318;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.15) transparent;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 10px 13px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .msg.bot {
+      background: #1e4d37;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.user {
+      background: #25D366;
+      color: #0f1a14;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      font-weight: 500;
+    }
+
+    .msg.typing {
+      background: #1e4d37;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      color: rgba(255,255,255,.5);
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    /* ── Input area ── */
+    .input-area {
+      background: #143d2f;
+      border-radius: 0 0 14px 14px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      border-top: 1px solid rgba(255,255,255,.1);
+      flex-shrink: 0;
+    }
+
+    .input-area textarea {
+      flex: 1;
+      background: #0f2318;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 14px;
+      resize: none;
+      min-height: 42px;
+      max-height: 120px;
+      font-family: Arial, sans-serif;
+      line-height: 1.4;
+      overflow-y: auto;
+    }
+
+    .input-area textarea::placeholder { color: rgba(255,255,255,.35); }
+    .input-area textarea:focus { outline: none; border-color: rgba(37,211,102,.4); }
+
+    .btn-send {
+      width: 42px;
+      height: 42px;
+      background: #25D366;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .btn-send:hover   { background: #1ebe5a; }
+    .btn-send:disabled { background: #2a5e3f; cursor: not-allowed; }
+    .btn-send svg { fill: #fff; width: 18px; height: 18px; }
+
+    /* ── Lead capture form ── */
+    .lead-form {
+      background: #1a4a35;
+      border: 1px solid rgba(37,211,102,.3);
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .lead-form.visible { display: block; }
+
+    .lead-form p {
+      font-size: 13px;
+      margin-bottom: 10px;
+      opacity: .85;
+    }
+
+    .lead-form input {
+      width: 100%;
+      background: #0f2318;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      padding: 9px 11px;
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .lead-form input::placeholder { color: rgba(255,255,255,.3); }
+
+    .btn-lead {
+      width: 100%;
+      background: #25D366;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: #0f1a14;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-lead:hover { background: #1ebe5a; }
+
+    .lead-ok {
+      font-size: 13px;
+      color: #25D366;
+      text-align: center;
+      padding: 8px 0 4px;
+      display: none;
     }
   </style>
 </head>
-
 <body>
 
-<div class="box">
-  <h1>💬 Cata - Asistente Inmobiliario</h1>
+<div class="chat-wrapper">
 
-  <div class="contexto" id="contexto">
-    Cargando propiedad...
+  <!-- Header -->
+  <div class="header">
+    <div class="avatar">🏡</div>
+    <div class="header-info">
+      <h1>Cata · Asistente IA</h1>
+      <p>Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto</p>
+    </div>
   </div>
 
-  <input id="mensaje" placeholder="Contame qué estás buscando..." />
-
-<button onclick="enviar()">Enviar consulta</button>
-
-  <div class="hint">
-    Te voy a ayudar a filtrar la mejor propiedad para vos antes de que pierdas tiempo.
+  <!-- Prop card -->
+  <div class="prop-card" id="propCard">
+    <img class="prop-thumb" id="propThumb" src="" alt="">
+    <div class="prop-info">
+      <strong id="propTitulo"></strong>
+      <span id="propPrecio"></span>
+    </div>
   </div>
+
+  <!-- Mensajes -->
+  <div class="messages" id="messages"></div>
+
+  <!-- Lead form -->
+  <div class="lead-form" id="leadForm">
+    <p>📋 Para enviarte más información dejame tu nombre y contacto:</p>
+    <input type="text"  id="leadNombre"    placeholder="Tu nombre" />
+    <input type="text"  id="leadContacto"  placeholder="WhatsApp o email" />
+    <button class="btn-lead" onclick="enviarLead()">Enviar datos ✉️</button>
+    <div class="lead-ok" id="leadOk">✅ ¡Gracias! Te contactamos pronto.</div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <textarea id="inputMsg" placeholder="Escribí tu consulta…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();enviar();}"></textarea>
+    <button class="btn-send" id="btnSend" onclick="enviar()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
 </div>
+
 <script>
+  const API_BASE = "https://inmocreador-crm.onrender.com";
+  const SUPABASE_URL  = "https://nniivhebocgdsynlpuhf.supabase.co";
+  const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70";
 
-const params = new URLSearchParams(window.location.search);
-const property = params.get("property");
+  const params = new URLSearchParams(window.location.search);
+  const propId = params.get("id") || params.get("property");
 
-const contexto = document.getElementById("contexto");
+  let propiedad    = null;
+  let historial    = []; // {role, content}
+  let leadCapturado = false;
 
-if(property){
-  contexto.innerText = "Analizando propiedad: " + property;
-} else {
-  contexto.innerText = "Asistente activo para búsqueda inmobiliaria";
-}
+  const messagesEl = document.getElementById("messages");
+  const inputEl    = document.getElementById("inputMsg");
+  const btnSend    = document.getElementById("btnSend");
 
-async function enviar(){
+  // ── Auto-resize textarea ──────────────────────────────
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+  });
 
-  try {
+  // ── Agregar mensaje al chat ───────────────────────────
+  function addMsg(role, text) {
+    const div = document.createElement("div");
+    div.className = "msg " + (role === "user" ? "user" : "bot");
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
 
-    const msg = document.getElementById("mensaje").value;
+  function addTyping() {
+    const div = document.createElement("div");
+    div.className = "msg typing";
+    div.id = "typing";
+    div.textContent = "Cata está escribiendo…";
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return div;
+  }
 
-    if(!msg){
-      alert("Escribí un mensaje");
+  function removeTyping() {
+    const el = document.getElementById("typing");
+    if (el) el.remove();
+  }
+
+  // ── Cargar propiedad desde Supabase ──────────────────
+  async function cargarPropiedad() {
+    if (!propId) {
+      saludar();
+      return;
+    }
+    try {
+      // Si es número busca por id, si es texto busca por título
+      const esNumero = /^\d+$/.test(propId);
+      const filtro   = esNumero ? `id=eq.${propId}` : `titulo=ilike.*${encodeURIComponent(propId)}*`;
+      const res  = await fetch(`${SUPABASE_URL}/rest/v1/inmuebles?${filtro}&select=*&limit=1`, {
+        headers: {
+          "apikey":        SUPABASE_ANON,
+          "Authorization": "Bearer " + SUPABASE_ANON
+        }
+      });
+      const data = await res.json();
+      if (data && data[0]) {
+        propiedad = data[0];
+        mostrarCardPropiedad();
+      }
+    } catch(e) {
+      console.warn("No se pudo cargar propiedad:", e.message);
+    }
+    saludar();
+  }
+
+  function mostrarCardPropiedad() {
+    if (!propiedad) return;
+    const card   = document.getElementById("propCard");
+    const thumb  = document.getElementById("propThumb");
+    const titulo = document.getElementById("propTitulo");
+    const precio = document.getElementById("propPrecio");
+
+    const imgs = Array.isArray(propiedad.imagenes) ? propiedad.imagenes : [];
+    if (imgs[0]) {
+      thumb.src = imgs[0];
+      thumb.style.display = "block";
+    } else {
+      thumb.style.display = "none";
+    }
+
+    titulo.textContent = propiedad.titulo || "Propiedad";
+    const p = propiedad.precio ? ((propiedad.moneda || "USD") + " " + Number(propiedad.precio).toLocaleString("es-AR")) : "Consultar";
+    precio.textContent = p + (propiedad.zona ? " · " + propiedad.zona : "");
+    card.classList.add("visible");
+  }
+
+  // ── Mensaje de bienvenida ─────────────────────────────
+  function saludar() {
+    const nombre = propiedad?.titulo;
+    if (nombre) {
+      addMsg("bot", `¡Hola! Soy Cata 👋 Estoy acá para ayudarte con la propiedad: "${nombre}". ¿Qué querés saber? Podés preguntarme sobre el precio, la zona, las características, o coordinar una visita.`);
+    } else {
+      addMsg("bot", "¡Hola! Soy Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto 👋 ¿En qué te puedo ayudar hoy?");
+    }
+  }
+
+  // ── Construir system prompt ───────────────────────────
+  function buildSystem() {
+    if (propiedad) {
+      const p = propiedad;
+      const precio = p.precio ? `${p.moneda || "USD"} ${Number(p.precio).toLocaleString("es-AR")}` : "a consultar";
+      return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina.
+Estás atendiendo una consulta sobre esta propiedad:
+- Título: ${p.titulo || ""}
+- Zona: ${p.zona || ""}
+- Tipo: ${p.tipo_propiedad || ""} · ${p.tipo_operacion || ""}
+- Precio: ${precio}
+- Dormitorios: ${p.dormitorios || "no especificado"} · Baños: ${p.banos || "no especificado"}
+- m² cubiertos: ${p.m2_cubiertos || "no especificado"} · m² totales: ${p.m2_totales || "no especificado"}
+- Descripción: ${p.descripcion || "no especificada"}
+
+Tu objetivo es responder preguntas sobre esta propiedad, generar interés y capturar el contacto del potencial cliente.
+Respondé en español, de forma cálida y profesional, máximo 3-4 oraciones por respuesta.
+Cuando el cliente muestre interés concreto o pida más info, ofrecele dejarle sus datos.
+Si el cliente da su nombre y contacto (teléfono o email), incluí al final de tu respuesta exactamente: LEAD_CAPTURADO`;
+    }
+    return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto, Argentina.
+Respondé en español, de forma cálida y profesional, máximo 3-4 oraciones.
+Si el cliente da su nombre y contacto, incluí al final: LEAD_CAPTURADO`;
+  }
+
+  // ── Enviar mensaje ────────────────────────────────────
+  async function enviar() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    btnSend.disabled = true;
+
+    addMsg("user", text);
+    historial.push({ role: "user", content: text });
+
+    const typing = addTyping();
+
+    try {
+      const res = await fetch(`${API_BASE}/api/cata-chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system:   buildSystem(),
+          messages: historial.map(m => ({ role: m.role, content: m.content }))
+        })
+      });
+
+      const data = await res.json();
+      removeTyping();
+
+      // Extraer texto — formato Anthropic { content: [{type:"text", text:"..."}] }
+      let respuesta = "";
+      if (data.content && Array.isArray(data.content)) {
+        respuesta = data.content.filter(b => b.type === "text").map(b => b.text).join("");
+      } else if (data.respuesta) {
+        respuesta = data.respuesta;
+      } else if (data.error) {
+        respuesta = "Hubo un error: " + data.error;
+      }
+
+      // Detectar lead capturado
+      if (respuesta.includes("LEAD_CAPTURADO")) {
+        respuesta = respuesta.replace("LEAD_CAPTURADO", "").trim();
+        if (!leadCapturado) mostrarFormLead();
+      }
+
+      addMsg("bot", respuesta);
+      historial.push({ role: "assistant", content: respuesta });
+
+    } catch(e) {
+      removeTyping();
+      addMsg("bot", "Ups, hubo un problema de conexión. Intentá de nuevo en un momento.");
+      console.error(e);
+    }
+
+    btnSend.disabled = false;
+    inputEl.focus();
+  }
+
+  // ── Lead capture ──────────────────────────────────────
+  function mostrarFormLead() {
+    document.getElementById("leadForm").classList.add("visible");
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  async function enviarLead() {
+    const nombre   = document.getElementById("leadNombre").value.trim();
+    const contacto = document.getElementById("leadContacto").value.trim();
+
+    if (!nombre || !contacto) {
+      alert("Por favor completá nombre y contacto.");
       return;
     }
 
-    const response = await fetch("https://inmocreador-crm.onrender.com/api/cata-chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        mensaje: msg,
-        propiedad: property
-      })
-    });
+    leadCapturado = true;
 
-    const data = await response.json();
+    const lead = {
+      nombre,
+      contacto,
+      propiedad_id: propId || null,
+      propiedad_titulo: propiedad?.titulo || null,
+      origen: "cata-chat",
+      estado: "nuevo",
+      created_at: new Date().toISOString()
+    };
 
-    alert(data.respuesta || data.error);
+    try {
+      await fetch(`${API_BASE}/api/leads`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead)
+      });
+    } catch(e) {
+      console.warn("Error guardando lead:", e.message);
+    }
 
-  } catch(e){
+    document.getElementById("leadNombre").style.display   = "none";
+    document.getElementById("leadContacto").style.display = "none";
+    document.querySelector(".btn-lead").style.display     = "none";
+    document.getElementById("leadOk").style.display       = "block";
 
-    console.error(e);
-
-    alert("ERROR: " + e.message);
-
+    addMsg("bot", `¡Perfecto ${nombre}! 🙌 Vanina o alguien del equipo te va a contactar pronto al ${contacto}. ¡Gracias por tu interés!`);
   }
 
-}
-
+  // ── Init ──────────────────────────────────────────────
+  cargarPropiedad();
 </script>
-
-
-
 
 </body>
 </html>
