@@ -1,856 +1,420 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tu visita está confirmada</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmar Visita · Buzzacchi Inmobiliaria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:    #c9a84c;
+      --gold-lt: #e8d49a;
+      --dark:    #0d0d0d;
+      --dark-2:  #141414;
+      --dark-3:  #1c1c1c;
+      --green:   #25D366;
+      --green-d: #1ebe5a;
+      --off:     rgba(255,255,255,.78);
+      --muted:   rgba(255,255,255,.42);
+      --border:  rgba(255,255,255,.09);
+    }
 
-  :root {
-    --cream: #F7F3EE;
-    --warm-white: #FDFAF7;
-    --charcoal: #1C1C1C;
-    --charcoal-soft: #2E2E2E;
-    --gold: #B8945A;
-    --gold-light: #D4AD78;
-    --stone: #8A8177;
-    --stone-light: #C4BDB5;
-    --border: rgba(184,148,90,0.2);
-    --card-bg: #FFFFFF;
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--charcoal);
-    min-height: 100vh;
-  }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: #fff;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
 
-  /* ── HERO BANNER ── */
-  .hero {
-    background: var(--charcoal);
-    padding: 56px 24px 48px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 40px,
-      rgba(184,148,90,0.04) 40px,
-      rgba(184,148,90,0.04) 41px
-    );
-  }
-  .hero-eyebrow {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 16px;
-    position: relative;
-  }
-  .hero-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(36px, 7vw, 60px);
-    font-weight: 600;
-    color: #FFFFFF;
-    line-height: 1.1;
-    position: relative;
-  }
-  .hero-title span {
-    color: var(--gold-light);
-  }
-  .hero-sub {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    color: var(--stone-light);
-    margin-top: 14px;
-    font-weight: 300;
-    position: relative;
-  }
-  #nombre-hero {
-    color: #fff;
-    font-weight: 500;
-  }
+    /* Fondo decorativo */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201,168,76,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(37,211,102,.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-  /* ── WRAPPER ── */
-  .wrapper {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 20px 80px;
-  }
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      animation: slideUp .5s cubic-bezier(.22,1,.36,1) both;
+    }
 
-  /* ── TARJETA RECORDATORIO ── */
-  .card-recordatorio {
-    background: var(--card-bg);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    margin-top: -28px;
-    position: relative;
-    z-index: 2;
-    overflow: hidden;
-    box-shadow: 0 8px 40px rgba(28,28,28,0.12);
-  }
-  .card-gold-bar {
-    height: 4px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
-  }
-  .card-body {
-    padding: 32px 32px 28px;
-  }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
 
-  .card-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 20px;
-  }
+    /* ── Foto propiedad ── */
+    .prop-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      background: var(--dark-3);
+    }
 
-  .visita-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-  }
-  @media (max-width: 480px) { .visita-grid { grid-template-columns: 1fr; } }
+    .prop-img-placeholder {
+      width: 100%;
+      height: 200px;
+      background: var(--dark-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      opacity: .3;
+    }
 
-  .visita-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .visita-item-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--stone);
-    font-weight: 500;
-  }
-  .visita-item-value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--charcoal);
-    line-height: 1.2;
-  }
-  .visita-item-value.big {
-    font-size: 28px;
-  }
+    /* ── Header ── */
+    .header {
+      padding: 20px 22px 0;
+    }
 
-  .visita-lugar {
-    background: var(--cream);
-    border-radius: 10px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .lugar-icon {
-    font-size: 20px;
-    margin-top: 2px;
-    flex-shrink: 0;
-    color: var(--gold);
-  }
-  .lugar-text {
-    font-size: 14px;
-    color: var(--charcoal-soft);
-    line-height: 1.5;
-    font-weight: 400;
-  }
-  .lugar-text strong {
-    display: block;
-    font-weight: 500;
-    font-size: 15px;
-    margin-bottom: 2px;
-    color: var(--charcoal);
-  }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(201,168,76,.1);
+      border: 1px solid rgba(201,168,76,.22);
+      border-radius: 999px;
+      padding: 3px 10px;
+      margin-bottom: 10px;
+    }
 
-  /* agente row */
-  .agente-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .agente-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .agente-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--charcoal);
-    color: #fff;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .agente-nombre {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--charcoal);
-  }
-  .agente-rol {
-    font-size: 12px;
-    color: var(--stone);
-  }
-  .btn-contactar {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #25D366;
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 9px 18px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-  .btn-contactar:hover { opacity: 0.85; }
-  .btn-contactar svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .prop-titulo {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 5px;
+    }
 
-  /* ── SECCIÓN PROPIEDADES ── */
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin: 40px 0 20px;
-  }
-  .section-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 600;
-    color: var(--charcoal);
-  }
-  .section-sub {
-    font-size: 13px;
-    color: var(--stone);
-  }
+    .prop-subtitulo {
+      font-size: 13px;
+      color: var(--muted);
+    }
 
-  .props-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
+    /* ── Visita info ── */
+    .visita-box {
+      margin: 18px 22px;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
-  .prop-card {
-    background: var(--card-bg);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    transition: transform 0.25s, box-shadow 0.25s;
-    cursor: pointer;
-    text-decoration: none;
-    display: block;
-    color: inherit;
-  }
-  .prop-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(28,28,28,0.14);
-  }
-  .prop-img {
-    width: 100%;
-    height: 190px;
-    object-fit: cover;
-    display: block;
-    background: var(--stone-light);
-  }
-  .prop-img-placeholder {
-    width: 100%;
-    height: 190px;
-    background: linear-gradient(135deg, #E8E3DC 0%, #D4CCC2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--stone);
-    font-size: 13px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .prop-body {
-    padding: 16px 18px 18px;
-  }
-  .prop-tipo {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
-  .prop-titulo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 19px;
-    font-weight: 600;
-    line-height: 1.25;
-    color: var(--charcoal);
-    margin-bottom: 6px;
-  }
-  .prop-ubicacion {
-    font-size: 13px;
-    color: var(--stone);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 12px;
-  }
-  .prop-ubicacion svg { width: 12px; height: 12px; flex-shrink: 0; }
-  .prop-precio {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--charcoal);
-  }
-  .prop-precio sup {
-    font-size: 14px;
-    font-weight: 500;
-    vertical-align: super;
-  }
-  .prop-features {
-    display: flex;
-    gap: 14px;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
-  }
-  .prop-feat {
-    font-size: 12px;
-    color: var(--stone);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .prop-feat svg { width: 13px; height: 13px; }
+    .visita-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(201,168,76,.12);
+      border: 1px solid rgba(201,168,76,.22);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
 
-  /* skeleton loader */
-  .skeleton {
-    background: linear-gradient(90deg, #EBE5DE 25%, #F5F0EA 50%, #EBE5DE 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-    border-radius: 4px;
-  }
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .visita-data { flex: 1; }
 
-  .skeleton-card {
-    background: var(--card-bg);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-  .skeleton-img { height: 190px; }
-  .skeleton-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; }
-  .skeleton-line { height: 12px; border-radius: 4px; }
+    .visita-data .label {
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
 
-  /* ── NOTA / MENSAJE PERSONALIZADO ── */
-  .nota-card {
-    background: var(--charcoal);
-    border-radius: 14px;
-    padding: 24px 28px;
-    margin-top: 32px;
-    position: relative;
-    overflow: hidden;
-  }
-  .nota-card::before {
-    content: '"';
-    position: absolute;
-    top: -10px;
-    right: 20px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 120px;
-    color: var(--gold);
-    opacity: 0.15;
-    line-height: 1;
-  }
-  .nota-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    font-weight: 400;
-    color: #F7F3EE;
-    line-height: 1.6;
-    position: relative;
-  }
-  .nota-firma {
-    font-size: 13px;
-    color: var(--gold-light);
-    margin-top: 12px;
-    position: relative;
-  }
+    .visita-data .fecha {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--gold-lt);
+      line-height: 1.1;
+    }
 
-  /* ── ADMIN PANEL (link-gen) ── */
-  #admin-panel {
-    display: none;
-    background: var(--card-bg);
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    padding: 28px;
-    margin: 40px 0 0;
-  }
-  #admin-panel.visible { display: block; }
-  .admin-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--charcoal);
-  }
-  .admin-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-  @media (max-width: 480px) { .admin-grid { grid-template-columns: 1fr; } }
-  .admin-field label {
-    display: block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--stone);
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-  .admin-field input, .admin-field textarea {
-    width: 100%;
-    padding: 9px 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    border: 1px solid var(--stone-light);
-    border-radius: 8px;
-    background: var(--cream);
-    color: var(--charcoal);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .admin-field input:focus, .admin-field textarea:focus {
-    border-color: var(--gold);
-  }
-  .admin-field.full { grid-column: 1 / -1; }
-  .btn-generar {
-    width: 100%;
-    padding: 13px;
-    background: var(--charcoal);
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-bottom: 16px;
-  }
-  .btn-generar:hover { background: var(--charcoal-soft); }
-  .link-output {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .link-output.visible { display: flex; }
-  .link-box {
-    background: var(--cream);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--charcoal);
-    word-break: break-all;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .link-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .btn-copy, .btn-wa {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 9px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-    transition: opacity 0.2s;
-  }
-  .btn-copy { background: var(--cream); border: 1px solid var(--border); color: var(--charcoal); }
-  .btn-wa { background: #25D366; color: #fff; }
-  .btn-copy:hover, .btn-wa:hover { opacity: 0.8; }
-  .btn-copy svg, .btn-wa svg { width: 15px; height: 15px; }
+    .visita-data .hora {
+      font-size: 13px;
+      color: var(--off);
+      margin-top: 3px;
+    }
 
-  /* ── ADMIN TOGGLE ── */
-  .admin-toggle {
-    text-align: center;
-    margin-top: 40px;
-  }
-  .btn-admin-toggle {
-    font-size: 12px;
-    color: var(--stone);
-    background: none;
-    border: none;
-    cursor: pointer;
-    text-decoration: underline;
-    font-family: 'DM Sans', sans-serif;
-  }
+    .visita-data .agente {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
 
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 32px 20px;
-    font-size: 12px;
-    color: var(--stone);
-  }
-  footer a { color: var(--gold); text-decoration: none; }
-</style>
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 22px;
+    }
+
+    /* ── Pregunta ── */
+    .pregunta {
+      padding: 18px 22px 8px;
+      text-align: center;
+    }
+
+    .pregunta p {
+      font-size: 14px;
+      color: var(--off);
+      line-height: 1.5;
+    }
+
+    /* ── Botones ── */
+    .btns {
+      padding: 14px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .12s, filter .15s;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: scale(.97); }
+
+    .btn-confirmar {
+      background: var(--green);
+      color: #0d0d0d;
+      font-weight: 700;
+    }
+
+    .btn-confirmar:hover { filter: brightness(1.08); }
+
+    .btn-otro {
+      background: transparent;
+      color: var(--off);
+      border: 1px solid var(--border);
+    }
+
+    .btn-otro:hover { background: rgba(255,255,255,.04); }
+
+    /* ── Estado confirmado ── */
+    .estado-ok {
+      display: none;
+      padding: 28px 22px;
+      text-align: center;
+      animation: fadeIn .4s ease both;
+    }
+
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .estado-ok .big-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .estado-ok h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .estado-ok p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,.22);
+      letter-spacing: .05em;
+      text-align: center;
+      animation: slideUp .5s .15s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 40px 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <p class="hero-eyebrow">📅 Recordatorio de visita</p>
-  <h1 class="hero-title">Te <span>esperamos</span></h1>
-  <p class="hero-sub">Hola, <span id="nombre-hero">estimado cliente</span> — confirmamos tu visita</p>
+<div class="card" id="card">
+  <div class="loading">Cargando visita…</div>
 </div>
 
-<div class="wrapper">
-
-  <!-- TARJETA RECORDATORIO -->
-  <div class="card-recordatorio">
-    <div class="card-gold-bar"></div>
-    <div class="card-body">
-      <p class="card-label">📌 Detalles de tu visita</p>
-
-      <div class="visita-grid">
-        <div class="visita-item">
-          <span class="visita-item-label">Fecha</span>
-          <span class="visita-item-value big" id="v-fecha">—</span>
-        </div>
-        <div class="visita-item">
-          <span class="visita-item-label">Hora</span>
-          <span class="visita-item-value big" id="v-hora">—</span>
-        </div>
-      </div>
-
-      <div class="visita-lugar">
-        <span class="lugar-icon">📍</span>
-        <div class="lugar-text">
-          <strong id="v-lugar-titulo">Dirección de encuentro</strong>
-          <span id="v-lugar">—</span>
-        </div>
-      </div>
-
-      <div class="agente-row">
-        <div class="agente-info">
-          <div class="agente-avatar" id="agente-avatar">?</div>
-          <div>
-            <div class="agente-nombre" id="v-agente">Tu agente</div>
-            <div class="agente-rol">Asesor inmobiliario</div>
-          </div>
-        </div>
-        <a id="btn-wa-agente" href="#" class="btn-contactar" target="_blank">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Contactar
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- NOTA PERSONALIZADA -->
-  <div class="nota-card" id="nota-card" style="display:none;">
-    <p class="nota-text" id="v-nota"></p>
-    <p class="nota-firma" id="v-nota-firma"></p>
-  </div>
-
-  <!-- PROPIEDADES DESTACADAS -->
-  <div class="section-header">
-    <h2 class="section-title">Mientras tanto…</h2>
-    <span class="section-sub">Propiedades destacadas</span>
-  </div>
-
-  <div class="props-grid" id="props-grid">
-    <!-- skeletons -->
-    <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line" style="width:40%;"></div><div class="skeleton skeleton-line" style="width:80%;height:18px;"></div><div class="skeleton skeleton-line" style="width:60%;"></div></div></div>
-    <div class="skeleton-card"><div class="skeleton skeleton-img"></div><div class="skeleton-body"><div class="skeleton skeleton-line" style="width:40%;"></div><div class="skeleton skeleton-line" style="width:80%;height:18px;"></div><div class="skeleton skeleton-line" style="width:60%;"></div></div></div>
-  </div>
-
-  <!-- PANEL GENERADOR DE LINKS (visible si ?admin=1) -->
-  <div id="admin-panel">
-    <h3 class="admin-title">🔗 Generar link de recordatorio</h3>
-    <div class="admin-grid">
-      <div class="admin-field">
-        <label>Nombre del cliente</label>
-        <input type="text" id="f-nombre" placeholder="Ej: Juan García">
-      </div>
-      <div class="admin-field">
-        <label>Fecha de visita</label>
-        <input type="text" id="f-fecha" placeholder="Ej: Miércoles 15 de Mayo">
-      </div>
-      <div class="admin-field">
-        <label>Hora</label>
-        <input type="text" id="f-hora" placeholder="Ej: 10:30hs">
-      </div>
-      <div class="admin-field">
-        <label>Título del lugar</label>
-        <input type="text" id="f-lugar-titulo" placeholder="Ej: Propiedad en Río Cuarto">
-      </div>
-      <div class="admin-field full">
-        <label>Dirección / Descripción del lugar</label>
-        <input type="text" id="f-lugar" placeholder="Ej: Sobremonte 456, Río Cuarto, Córdoba">
-      </div>
-      <div class="admin-field">
-        <label>Nombre del agente</label>
-        <input type="text" id="f-agente" placeholder="Ej: Marcos Rodríguez">
-      </div>
-      <div class="admin-field">
-        <label>Teléfono del agente (sin +)</label>
-        <input type="text" id="f-tel" placeholder="Ej: 5493584001234">
-      </div>
-      <div class="admin-field full">
-        <label>Nota personalizada (opcional)</label>
-        <textarea id="f-nota" rows="2" placeholder="Ej: Fue un placer conocerte, te esperamos con muchas sorpresas..."></textarea>
-      </div>
-    </div>
-    <button class="btn-generar" onclick="generarLink()">✨ Generar link</button>
-
-    <div class="link-output" id="link-output">
-      <div class="link-box" id="link-result"></div>
-      <div class="link-actions">
-        <button class="btn-copy" onclick="copiarLink()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          Copiar link
-        </button>
-        <button class="btn-wa" onclick="compartirWA()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Enviar por WhatsApp
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="admin-toggle">
-    <button class="btn-admin-toggle" onclick="toggleAdmin()">Panel de administrador</button>
-  </div>
-
-</div>
-
-<footer>
-  <p>¿Preguntas? <a href="#" id="footer-wa">Contactanos por WhatsApp</a></p>
-</footer>
+<div class="footer">Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto</div>
 
 <script>
-// ── LEER PARAMS DE URL ──────────────────────────────────────
-const p = new URLSearchParams(window.location.search);
+  const SUPABASE_URL  = "https://nniivhebocgdsynlpuhf.supabase.co";
+  const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70";
 
-const nombre    = p.get('nombre')      || '';
-const fecha     = p.get('fecha')       || '';
-const hora      = p.get('hora')        || '';
-const lugarTit  = p.get('lugar_titulo')|| '';
-const lugar     = p.get('lugar')       || '';
-const agente    = p.get('agente')      || '';
-const tel       = p.get('tel')         || '';
-const nota      = p.get('nota')        || '';
-const isAdmin   = p.get('admin')       === '1';
+  // Número de WhatsApp del equipo (sin + ni espacios)
+  const WA_EQUIPO = "5493584000000"; // ← REEMPLAZÁ con el número real
 
-// ── SUPABASE CONFIG ─────────────────────────────────────────
-// ⚠️ REEMPLAZAR con tus valores reales
-const SUPABASE_URL = window.SUPABASE_URL || 'https://TU_PROYECTO.supabase.co';
-const SUPABASE_KEY = window.SUPABASE_KEY || 'TU_ANON_KEY';
+  const params  = new URLSearchParams(window.location.search);
+  const propId  = params.get("id");
+  const fecha   = params.get("fecha");   // ej: 2026-05-15
+  const hora    = params.get("hora");    // ej: 11:00
+  const agente  = params.get("agente") || "el equipo";
 
-// ── RENDERIZAR TARJETA ──────────────────────────────────────
-function renderVisita() {
-  if (nombre) {
-    document.getElementById('nombre-hero').textContent = nombre;
-    document.title = `Visita confirmada — ${nombre}`;
-  }
-  document.getElementById('v-fecha').textContent = fecha || 'A confirmar';
-  document.getElementById('v-hora').textContent  = hora  || '—';
-  document.getElementById('v-lugar-titulo').textContent = lugarTit || 'Punto de encuentro';
-  document.getElementById('v-lugar').textContent = lugar || 'A confirmar';
-  document.getElementById('v-agente').textContent = agente || 'Nuestro equipo';
+  const card = document.getElementById("card");
 
-  // avatar con iniciales
-  const av = document.getElementById('agente-avatar');
-  if (agente) {
-    const partes = agente.trim().split(' ');
-    av.textContent = (partes[0][0] + (partes[1] ? partes[1][0] : '')).toUpperCase();
+  // ── Formatear fecha legible ───────────────────────────
+  function formatearFecha(str) {
+    if (!str) return "—";
+    const [y, m, d] = str.split("-");
+    const dias   = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    const meses  = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    const date   = new Date(y, m - 1, d);
+    return `${dias[date.getDay()]} ${d} de ${meses[m - 1]}`;
   }
 
-  // botón WhatsApp agente
-  if (tel) {
-    const msg = encodeURIComponent(`Hola ${agente || ''}, tengo una consulta sobre mi visita del ${fecha} a las ${hora}.`);
-    document.getElementById('btn-wa-agente').href = `https://wa.me/${tel}?text=${msg}`;
-    document.getElementById('footer-wa').href     = `https://wa.me/${tel}`;
-  }
+  // ── Cargar propiedad y renderizar ────────────────────
+  async function init() {
+    let prop = null;
 
-  // nota personalizada
-  if (nota) {
-    const nc = document.getElementById('nota-card');
-    nc.style.display = 'block';
-    document.getElementById('v-nota').textContent = nota;
-    document.getElementById('v-nota-firma').textContent = `— ${agente || 'Tu asesor'}`;
-  }
-
-  if (isAdmin) {
-    document.getElementById('admin-panel').classList.add('visible');
-    // pre-fill form
-    ['nombre','fecha','hora','lugar','agente','tel','nota'].forEach(k => {
-      const el = document.getElementById('f-'+k);
-      if (el) el.value = p.get(k) || '';
-    });
-    if (lugarTit) document.getElementById('f-lugar-titulo').value = lugarTit;
-  }
-}
-
-// ── CARGAR PROPIEDADES ──────────────────────────────────────
-async function cargarPropiedades() {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/inmuebles?select=id,titulo,tipo,precio,moneda,barrio,ciudad,dormitorios,banos,imagen_principal,imagenes&estado=eq.disponible&order=created_at.desc&limit=4`,
-      { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }
-    );
-    if (!res.ok) throw new Error('Fetch failed');
-    const data = await res.json();
-    renderPropiedades(data);
-  } catch (e) {
-    console.warn('Supabase:', e);
-    document.getElementById('props-grid').innerHTML =
-      `<p style="color:var(--stone);font-size:14px;grid-column:1/-1;text-align:center;padding:20px 0;">
-        Las propiedades no están disponibles en este momento.
-      </p>`;
-  }
-}
-
-function getImagen(inm) {
-  // Intenta todas las posibles ubicaciones de imagen
-  if (inm.imagen_principal) return inm.imagen_principal;
-  if (inm.imagenes) {
-    let imgs = inm.imagenes;
-    if (typeof imgs === 'string') {
-      try { imgs = JSON.parse(imgs); } catch { return null; }
+    if (propId && /^\d+$/.test(propId)) {
+      try {
+        const res  = await fetch(`${SUPABASE_URL}/rest/v1/inmuebles?id=eq.${propId}&select=titulo,zona,precio,moneda,imagenes,tipo_operacion&limit=1`, {
+          headers: { "apikey": SUPABASE_ANON, "Authorization": "Bearer " + SUPABASE_ANON }
+        });
+        const data = await res.json();
+        if (data && data[0]) prop = data[0];
+      } catch(e) {
+        console.warn("No se pudo cargar propiedad:", e.message);
+      }
     }
-    if (Array.isArray(imgs) && imgs.length > 0) {
-      const first = imgs[0];
-      if (typeof first === 'string') return first;
-      if (first.url) return first.url;
-      if (first.path) return `${SUPABASE_URL}/storage/v1/object/public/propiedades/${first.path}`;
-    }
+
+    render(prop);
   }
-  return null;
-}
 
-function formatPrecio(precio, moneda) {
-  if (!precio) return '';
-  const sym = moneda === 'USD' ? 'USD' : '$';
-  return `${sym} ${Number(precio).toLocaleString('es-AR')}`;
-}
+  function render(prop) {
+    const titulo    = prop?.titulo    || "Visita coordinada";
+    const zona      = prop?.zona      || "";
+    const precio    = prop?.precio    ? `${prop.moneda || "USD"} ${Number(prop.precio).toLocaleString("es-AR")}` : "";
+    const imgs      = Array.isArray(prop?.imagenes) ? prop.imagenes : [];
+    const imgSrc    = imgs[0] || null;
+    const fechaStr  = formatearFecha(fecha);
 
-function renderPropiedades(items) {
-  if (!items || items.length === 0) {
-    document.getElementById('props-grid').innerHTML =
-      `<p style="color:var(--stone);font-size:14px;grid-column:1/-1;">Sin propiedades disponibles.</p>`;
-    return;
-  }
-  const grid = document.getElementById('props-grid');
-  grid.innerHTML = items.map(inm => {
-    const img = getImagen(inm);
-    const imgHTML = img
-      ? `<img class="prop-img" src="${img}" alt="${inm.titulo||''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'prop-img-placeholder\\'>Sin imagen</div>'">`
-      : `<div class="prop-img-placeholder">Sin imagen</div>`;
+    card.innerHTML = `
+      ${imgSrc
+        ? `<img class="prop-img" src="${imgSrc}" alt="${titulo}" onerror="this.style.display='none'">`
+        : `<div class="prop-img-placeholder">🏡</div>`
+      }
 
-    const feats = [];
-    if (inm.dormitorios) feats.push(`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${inm.dormitorios} dorm.</span>`);
-    if (inm.banos)       feats.push(`<span class="prop-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>${inm.banos} baños</span>`);
+      <div class="header">
+        <div class="badge">Visita programada</div>
+        <div class="prop-titulo">${titulo}</div>
+        ${zona || precio ? `<div class="prop-subtitulo">${[zona, precio].filter(Boolean).join(" · ")}</div>` : ""}
+      </div>
 
-    return `
-      <a class="prop-card" href="/inmueble/${inm.id || ''}" target="_blank">
-        ${imgHTML}
-        <div class="prop-body">
-          <div class="prop-tipo">${inm.tipo || 'Inmueble'}</div>
-          <div class="prop-titulo">${inm.titulo || 'Propiedad destacada'}</div>
-          <div class="prop-ubicacion">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            ${[inm.barrio, inm.ciudad].filter(Boolean).join(', ') || 'Consultar ubicación'}
-          </div>
-          <div class="prop-precio">${formatPrecio(inm.precio, inm.moneda)}</div>
-          ${feats.length ? `<div class="prop-features">${feats.join('')}</div>` : ''}
+      <div class="visita-box">
+        <div class="visita-icon">📅</div>
+        <div class="visita-data">
+          <div class="label">Fecha y hora propuesta</div>
+          <div class="fecha">${fechaStr}</div>
+          <div class="hora">${hora ? "a las " + hora + " hs" : ""}</div>
+          ${agente !== "el equipo" ? `<div class="agente">Con ${agente}</div>` : ""}
         </div>
-      </a>`;
-  }).join('');
-}
+      </div>
 
-// ── GENERADOR DE LINKS ──────────────────────────────────────
-let linkGenerado = '';
+      <div class="divider"></div>
 
-function generarLink() {
-  const base = window.location.origin + window.location.pathname;
-  const params = new URLSearchParams();
-  const fields = {
-    nombre: 'f-nombre', fecha: 'f-fecha', hora: 'f-hora',
-    lugar_titulo: 'f-lugar-titulo', lugar: 'f-lugar',
-    agente: 'f-agente', tel: 'f-tel', nota: 'f-nota'
-  };
-  Object.entries(fields).forEach(([k, id]) => {
-    const v = document.getElementById(id)?.value?.trim();
-    if (v) params.set(k, v);
-  });
-  linkGenerado = `${base}?${params.toString()}`;
-  document.getElementById('link-result').textContent = linkGenerado;
-  document.getElementById('link-output').classList.add('visible');
-}
+      <div class="pregunta">
+        <p>¿Podés asistir a esta visita?</p>
+      </div>
 
-function copiarLink() {
-  if (!linkGenerado) return;
-  navigator.clipboard.writeText(linkGenerado).then(() => {
-    const btn = document.querySelector('.btn-copy');
-    const orig = btn.innerHTML;
-    btn.innerHTML = '✓ Copiado!';
-    setTimeout(() => btn.innerHTML = orig, 2000);
-  });
-}
+      <div class="btns">
+        <button class="btn btn-confirmar" onclick="confirmar('${titulo}', '${fechaStr}', '${hora}', '${agente}')">
+          ✅ Sí, confirmo la visita
+        </button>
+        <button class="btn btn-otro" onclick="pedirOtro('${titulo}')">
+          🔄 Necesito otro horario
+        </button>
+      </div>
+    `;
+  }
 
-function compartirWA() {
-  if (!linkGenerado) return;
-  const nombre = document.getElementById('f-nombre')?.value?.trim() || 'cliente';
-  const fecha  = document.getElementById('f-fecha')?.value?.trim()  || '';
-  const hora   = document.getElementById('f-hora')?.value?.trim()   || '';
-  const msg = encodeURIComponent(
-    `Hola ${nombre}! 👋\n\nTe recordamos que te esperamos${fecha ? ` el *${fecha}*` : ''}${hora ? ` a las *${hora}*`:''}.\n\nEntrá a este link para ver todos los detalles de tu visita y nuestras propiedades:\n${linkGenerado}`
-  );
-  window.open(`https://wa.me/?text=${msg}`, '_blank');
-}
+  // ── Confirmar ─────────────────────────────────────────
+  function confirmar(titulo, fechaStr, hora, agente) {
+    // Mostrar estado OK
+    card.innerHTML = `
+      <div class="estado-ok" style="display:block">
+        <span class="big-icon">🎉</span>
+        <h2>¡Visita confirmada!</h2>
+        <p>Perfecto, te esperamos el <strong>${fechaStr}</strong>${hora ? " a las <strong>" + hora + " hs</strong>" : ""}.<br><br>
+        Si necesitás cancelar o cambiar el horario, escribinos por WhatsApp.</p>
+      </div>
+      <div class="btns">
+        <a class="btn btn-confirmar" href="${waConfirmar(titulo, fechaStr, hora)}" target="_blank">
+          💬 Avisarle al equipo por WhatsApp
+        </a>
+      </div>
+    `;
 
-function toggleAdmin() {
-  const panel = document.getElementById('admin-panel');
-  panel.classList.toggle('visible');
-}
+    // Abrir WhatsApp automáticamente
+    setTimeout(() => {
+      window.open(waConfirmar(titulo, fechaStr, hora), "_blank");
+    }, 800);
+  }
 
-// ── INIT ───────────────────────────────────────────────────
-renderVisita();
-cargarPropiedades();
+  // ── Pedir otro horario ────────────────────────────────
+  function pedirOtro(titulo) {
+    const texto = `Hola! Quería coordinar una visita para la propiedad *${titulo}*. El horario propuesto no me viene bien, ¿podemos ver otro?`;
+    window.open(`https://wa.me/${WA_EQUIPO}?text=${encodeURIComponent(texto)}`, "_blank");
+  }
+
+  // ── Armar link WhatsApp confirmación ─────────────────
+  function waConfirmar(titulo, fechaStr, hora) {
+    const texto = `✅ *Visita confirmada*\n\n📍 Propiedad: ${titulo}\n📅 Fecha: ${fechaStr}${hora ? "\n🕐 Hora: " + hora + " hs" : ""}\n\n¡Nos vemos ahí!`;
+    return `https://wa.me/${WA_EQUIPO}?text=${encodeURIComponent(texto)}`;
+  }
+
+  init();
 </script>
+
 </body>
 </html>
