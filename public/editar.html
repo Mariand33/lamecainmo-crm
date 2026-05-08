@@ -457,7 +457,7 @@
       imagenesActuales = [...items].map(item => item.dataset.nombre);
     }
 
-    // ── Submit: primero sube fotos a Supabase, luego guarda el form ─
+    // ── Submit: sube fotos a Supabase y guarda todo directamente en Supabase ─
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -465,7 +465,10 @@
       btnGuardar.disabled = true;
       btnGuardar.textContent = "Guardando…";
 
-      // 1. Subir fotos nuevas a Supabase si hay
+      // 1. Sincronizar orden actual del DOM (fotos existentes) ANTES de agregar nuevas
+      syncArrayFromDOM();
+
+      // 2. Subir fotos nuevas a Supabase y agregarlas al array
       if (archivos && archivos.length > 0) {
         uploadProgress.classList.add("visible");
         let done = 0;
@@ -498,29 +501,7 @@
         uploadLabel.textContent = `${done} foto(s) subidas ✓`;
       }
 
-      // 2. Sincronizar orden actual del DOM
-      syncArrayFromDOM();
-
-      // 3. Inyectar campos ocultos con nombres/orden para el backend de Render
-      [...form.querySelectorAll("input[name='nombresImagenes'], input[name='ordenImagenes']")]
-        .forEach(el => el.remove());
-
-      imagenesActuales.forEach((nombre, idx) => {
-        const inputNombre = document.createElement("input");
-        inputNombre.type  = "hidden";
-        inputNombre.name  = "nombresImagenes";
-        inputNombre.value = nombre;
-
-        const inputOrden  = document.createElement("input");
-        inputOrden.type   = "hidden";
-        inputOrden.name   = "ordenImagenes";
-        inputOrden.value  = String(idx + 1);
-
-        form.appendChild(inputNombre);
-        form.appendChild(inputOrden);
-      });
-
-      // 4. Trim campos de texto
+      // 3. Trim campos de texto
       const t = document.getElementById("campoTitulo");
       const d = document.getElementById("campoDescripcion");
       if (t) t.value = t.value.trim();
@@ -528,21 +509,35 @@
 
       saveStatus.className = "status";
       saveStatus.textContent = "Guardando…";
-const { error: updateError } = await sb
-  .from("inmuebles")
-  .update({
-    imagenes: imagenesActuales
-  })
-  .eq("id", id);
 
-if (updateError) {
-  console.error(updateError);
-  saveStatus.className = "status err";
-  saveStatus.textContent = "Error guardando imágenes.";
-  return;
-}
-      // 5. Enviar el form normalmente al backend de Render
-      form.submit();
+      // 4. Guardar TODO en Supabase directamente (título, precio, descripción, imágenes)
+      const { error: updateError } = await sb
+        .from("inmuebles")
+        .update({
+          titulo:      t ? t.value : undefined,
+          precio:      document.getElementById("campoPrecio").value || null,
+          descripcion: d ? d.value : undefined,
+          imagenes:    imagenesActuales
+        })
+        .eq("id", id);
+
+      if (updateError) {
+        console.error(updateError);
+        saveStatus.className = "status err";
+        saveStatus.textContent = "Error guardando: " + updateError.message;
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = "Guardar cambios";
+        return;
+      }
+
+      saveStatus.className = "status ok";
+      saveStatus.textContent = "✅ Guardado correctamente.";
+      renderThumbs();
+      btnGuardar.disabled = false;
+      btnGuardar.textContent = "Guardar cambios";
+      document.getElementById("inputFotos").value = "";
+      uploadProgress.classList.remove("visible");
+      progressFill.style.width = "0%";
     });
   </script>
 </body>
