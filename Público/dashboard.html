@@ -352,7 +352,25 @@
       background: var(--dark-2);
       border: 1px solid var(--border);
       border-radius: 10px;
+      /* Scroll horizontal con scrollbar SIEMPRE visible arriba del contenedor */
       overflow-x: auto;
+      /* Firefox */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(201,168,76,.45) var(--dark-3);
+    }
+
+    /* Chrome/Safari: scrollbar dorada siempre visible */
+    .table-wrap::-webkit-scrollbar        { height: 5px; }
+    .table-wrap::-webkit-scrollbar-track  { background: var(--dark-3); border-radius: 0 0 10px 10px; }
+    .table-wrap::-webkit-scrollbar-thumb  { background: rgba(201,168,76,.45); border-radius: 4px; }
+    .table-wrap::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,.75); }
+
+    /* Header fijo para que las columnas siempre se vean al hacer scroll */
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--dark-3);
     }
 
     table {
@@ -673,7 +691,9 @@
       <div class="section-line"></div>
     </div>
 
-    <div class="table-wrap">
+    <!-- Contenedor con altura máxima: el scrollbar horizontal siempre queda visible sin bajar -->
+    <div style="overflow:hidden; border-radius:10px;">
+    <div class="table-wrap" style="max-height: calc(100vh - 280px); overflow-y: auto; overflow-x: auto;">
       <table>
         <thead>
           <tr>
@@ -689,6 +709,7 @@
         </thead>
         <tbody id="tablaBody"></tbody>
       </table>
+    </div>
     </div>
 
   </main>
