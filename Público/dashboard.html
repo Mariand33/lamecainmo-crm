@@ -57,7 +57,7 @@
     /* ══════════════ SIDEBAR ══════════════ */
     .sidebar {
       width: var(--sidebar-w);
-      min-height: 100vh;
+      height: 100vh;
       background: var(--dark-2);
       border-right: 1px solid var(--border);
       display: flex;
@@ -129,22 +129,41 @@
 
     .sidebar nav {
       flex: 1;
-      overflow-y: auto;
+      overflow-y: scroll;
       padding: 6px 10px 16px;
       scrollbar-width: thin;
-      scrollbar-color: var(--dark-4) transparent;
+      scrollbar-color: rgba(255,255,255,.15) transparent;
+      min-height: 0;
+    }
+
+    .sidebar nav::-webkit-scrollbar { width: 4px; }
+    .sidebar nav::-webkit-scrollbar-track { background: transparent; }
+    .sidebar nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 4px; }
+    .sidebar nav::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.3); }
+
+    .nav-section-label {
+      font-size: 9px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      padding: 13px 12px 4px;
+      pointer-events: none;
+      display: block;
     }
 
     .sidebar nav a {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       color: rgba(255,255,255,.5);
       text-decoration: none;
       padding: 9px 12px;
-      margin: 2px 0;
+      margin: 1px 0;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .06em;
+      text-transform: uppercase;
       border-left: 2px solid transparent;
       transition: color .18s, background .18s, border-color .18s;
       white-space: nowrap;
@@ -596,21 +615,32 @@
 
     <nav id="menuLinks">
       <a href="/dashboard.html" data-fixed="1">🏠 Dashboard</a>
+
+      <span class="nav-section-label">Inmuebles</span>
+      <a href="/form.html">➕ Nuevo Inmueble</a>
+      <a href="/dashboard.html">🏠 Todos los Inmuebles</a>
       <a href="/funnel.html">⚡ Funnel Inmuebles</a>
-      <a href="/whatsapp-ia.html">💬 WhatsApp IA</a>
+      <a href="/filtros.html">🔍 Filtros y Búsqueda</a>
+      <a href="/oportunidad.html">🟡 Nueva Oportunidad</a>
+
+      <span class="nav-section-label">Propiedades / Radar</span>
       <a href="/radar.html">📡 Radar Calle</a>
       <a href="/radar-ia.html">🧠 Radar IA</a>
-      <a href="/radar-leads.html">🎯 Radar Leads</a>
-      <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
       <a href="/radar-mercado.html">🤝 Radar Mercado</a>
-      <a href="/inbox-ia.html">🎙 Inbox IA</a>
-      <a href="/oportunidad.html">🟡 Nueva Oportunidad</a>
+      <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
       <a href="/radar-historial.html">📚 Historial Radar</a>
-      <a href="/form.html">➕ Nuevo Inmueble</a>
+
+      <span class="nav-section-label">Leads y Contactos</span>
       <a href="/compradores.html">👥 Compradores</a>
-      <a href="/filtros.html">🔍 Filtros y Búsqueda</a>
+      <a href="/radar-leads.html">🎯 Radar Leads</a>
+      <a href="/whatsapp-ia.html">💬 WhatsApp IA</a>
+      <a href="/inbox-ia.html">🎙 Inbox IA</a>
+
+      <span class="nav-section-label">Marketing</span>
       <a href="/marketing.html">📣 Panel Marketing</a>
-      <a href="/logout" data-fixed="1">🚪 Cerrar sesión</a>
+
+      <span class="nav-section-label">Sistema</span>
+      <a href="/logout" data-fixed="1">🚪 Cerrar Sesión</a>
     </nav>
 
     <div class="sidebar-footer">Equipo Buzzacchi · Río Cuarto</div>
