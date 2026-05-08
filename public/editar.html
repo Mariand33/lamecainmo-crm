@@ -528,7 +528,19 @@
 
       saveStatus.className = "status";
       saveStatus.textContent = "Guardando…";
+const { error: updateError } = await sb
+  .from("inmuebles")
+  .update({
+    imagenes: imagenesActuales
+  })
+  .eq("id", id);
 
+if (updateError) {
+  console.error(updateError);
+  saveStatus.className = "status err";
+  saveStatus.textContent = "Error guardando imágenes.";
+  return;
+}
       // 5. Enviar el form normalmente al backend de Render
       form.submit();
     });
