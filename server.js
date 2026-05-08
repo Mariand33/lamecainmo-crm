@@ -100,11 +100,19 @@ const upload = multer({ storage: multer.memoryStorage() });
 const BUCKET = "Subidas"; // nombre exacto del bucket en Supabase (case-sensitive)
 
 async function subirASupabase(buffer, name, type) {
-  const filename = `${Date.now()}-${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  // Sanitizar nombre y guardarlo dentro de la subcarpeta "Subidas/"
+  const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filename  = `Subidas/${Date.now()}-${safeName}`;
+
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(filename, buffer, { contentType: type, upsert: false });
-  if (error) { console.error("Storage error:", error.message); return null; }
+    .upload(filename, buffer, { contentType: type, upsert: true });
+
+  if (error) {
+    console.error("Storage error:", error.message);
+    return null;
+  }
+
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
   return data.publicUrl;
 }
