@@ -573,6 +573,11 @@ app.post("/api/cata-chat", async (req, res) => {
   if (anthropicKey) {
     try {
       const { system, messages } = req.body;
+
+      if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: "messages es requerido y debe ser un array" });
+      }
+
       const data = await httpsPost(
         "api.anthropic.com",
         "/v1/messages",
@@ -581,12 +586,19 @@ app.post("/api/cata-chat", async (req, res) => {
           "x-api-key":         anthropicKey,
           "anthropic-version": "2023-06-01"
         },
-        { model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages }
+        { model: "claude-haiku-4-5-20251001", max_tokens: 600, system, messages }
       );
-      if (!data.error) return res.json(data);
-      console.error("Anthropic error:", data.error.message);
+
+      console.log("Anthropic response type:", data && data.type, "| error:", data && data.error);
+
+      if (data && !data.error) return res.json(data);
+
+      console.error("Anthropic API error completo:", JSON.stringify(data && data.error || data));
+      return res.status(500).json({ error: (data && data.error && data.error.message) || "Error en Anthropic API" });
+
     } catch (e) {
       console.error("Anthropic https error:", e.message);
+      return res.status(500).json({ error: "Error conectando con Anthropic: " + e.message });
     }
   }
 
