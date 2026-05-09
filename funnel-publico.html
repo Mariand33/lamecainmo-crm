@@ -200,7 +200,6 @@
     .cata-quick{padding:8px 16px;border-top:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
     .cata-qlabel{font-size:10px;color:rgba(240,238,255,.35);text-transform:uppercase;letter-spacing:.08em}
     .cata-qbtns{display:flex;flex-wrap:wrap;gap:6px}
-<<<<<<< HEAD
     .cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold2);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
     .cata-qq:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.45)}
     .cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
@@ -229,20 +228,6 @@
       .hero{padding:40px 0 32px}
       .searchbox input{min-width:120px}
     }
-=======
-    .cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:#a78bfa;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .cata-qq:hover{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.5)}
-    .cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.07);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
-    .cata-inp{flex:1;font-size:13px;padding:9px 14px;border:1px solid rgba(255,255,255,.1);border-radius:20px;background:rgba(255,255,255,.07);color:#f0eeff;resize:none;font-family:'DM Sans',sans-serif;line-height:1.4;outline:none;max-height:80px}
-    .cata-inp::placeholder{color:rgba(240,238,255,.3)}
-    .cata-inp:focus{border-color:rgba(167,139,250,.4)}
-    .cata-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#a78bfa);border:none;cursor:pointer;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;box-shadow:0 4px 12px rgba(167,139,250,.3)}
-    .cata-send:hover{transform:scale(1.08)}
-    .cata-send:disabled{opacity:.4;cursor:default;transform:none}
-    .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:12px;font-size:12px;color:#4ade80;display:none}
-    .btn-cata{background:linear-gradient(135deg,#f472b6,#a78bfa);color:#fff;border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.15s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
-    .btn-cata:hover{opacity:.88;transform:translateY(-1px)}
->>>>>>> 28e4dac (fix supabase image urls)
     /* === FIN CATA === */
 
     @media(max-width:980px){
@@ -855,7 +840,6 @@ async function openCata(propId, propTitulo) {
   document.getElementById('cataOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-<<<<<<< HEAD
   // Cargar FAQs y objeciones desde el server (no Supabase directo)
   let faqs = [], objs = [];
   try {
@@ -872,35 +856,14 @@ async function openCata(propId, propTitulo) {
   // Buscar los datos del inmueble en allProperties (ya cargado en el funnel)
   const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
 
-=======
-  // Cargar inmueble + FAQs y objeciones con manejo de errores
-  let props = [], faqs = [], objs = [];
-  try {
-    [props, faqs, objs] = await Promise.all([
-      sbGet(`inmuebles?id=eq.${encodeURIComponent(propId)}&select=*`).catch(()=>[]),
-      sbGet(`Preguntas%20frecuentes?select=*&limit=8`).catch(()=>[]),
-      sbGet(`Objeciones?select=*&limit=8`).catch(()=>[])
-    ]);
-  } catch(e) { console.warn('Cata data error:', e); }
-
-  // Garantizar arrays siempre
-  if (!Array.isArray(props)) props = [];
-  if (!Array.isArray(faqs))  faqs  = [];
-  if (!Array.isArray(objs))  objs  = [];
-
->>>>>>> 28e4dac (fix supabase image urls)
   cataProp = {
     ...(props[0] || { id: propId, titulo: propTitulo }),
     id: propId,
-<<<<<<< HEAD
     titulo: propTitulo || prop.titulo || propId,
     zona: prop.zona || '',
     precio: prop.precio || '',
     moneda: prop.moneda || 'USD',
     descripcion: prop.descripcion || '',
-=======
-    titulo: propTitulo || props[0]?.titulo || propId,
->>>>>>> 28e4dac (fix supabase image urls)
     faqs,
     objections: objs
   };
@@ -938,17 +901,12 @@ function closeCata() {
 
 function buildCataSystem() {
   const p = cataProp || {};
-<<<<<<< HEAD
   const faqsText = p.faqs?.length
     ? p.faqs.map(f => `P: ${f.pregunta || f.question || f.p || ''}\nR: ${f.respuesta || f.answer || f.r || ''}`).join('\n\n')
     : 'Sin FAQs.';
   const objText = p.objections?.length
     ? p.objections.map(o => `Objeción: ${o.objecion || o.objection || o.o || ''}\nRespuesta: ${o.respuesta || o.answer || o.r || ''}`).join('\n\n')
     : 'Sin objeciones.';
-=======
-  const faqsText = p.faqs?.length ? p.faqs.map(f=>`P: ${f.pregunta}\nR: ${f.respuesta}`).join('\n\n') : 'Sin FAQs.';
-  const objText  = p.objections?.length ? p.objections.map(o=>`Objeción: ${o.objecion}\nRespuesta: ${o.respuesta}`).join('\n\n') : 'Sin objeciones.';
->>>>>>> 28e4dac (fix supabase image urls)
   return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
 
 PROPIEDAD:
