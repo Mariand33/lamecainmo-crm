@@ -27,6 +27,50 @@
     .container{width:min(1180px,92%);margin:0 auto}
 
     /* TOPBAR */
+    /* ── TICKER ── */
+    .ticker-wrap{
+      background: linear-gradient(90deg, #0a1e12, #1a3a1f, #0a1e12);
+      border-bottom: 1px solid rgba(201,168,76,.3);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 7px 0;
+      position: relative;
+      z-index: 51;
+    }
+    .ticker-wrap::before, .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 60px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ticker-wrap::before { left: 0;  background: linear-gradient(to right, #0a1e12, transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(to left,  #0a1e12, transparent); }
+    .ticker-track {
+      display: inline-block;
+      animation: ticker-scroll 35s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: #e8d49a;
+      padding: 0 6px;
+    }
+    .ticker-sep {
+      display: inline-block;
+      color: rgba(201,168,76,.4);
+      font-size: 14px;
+      padding: 0 4px;
+    }
+
     .topbar{background:linear-gradient(135deg,#0a1e12,#143d2f);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 4px 18px rgba(0,0,0,.2)}
     .topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0}
     .brand-title{font-family:'Playfair Display',serif;font-size:clamp(20px,3vw,32px);color:var(--gold);letter-spacing:.5px}
@@ -245,6 +289,36 @@
   </style>
 </head>
 <body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">🏡 Vanina Buzzacchi Negocios Inmobiliarios</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📍 Río Cuarto, Córdoba</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📞 3586005903 / 3585701632</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">✨ Proyectos Inmobiliarios con Propósito</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">🏠 Inversiones · Hogar · Nuevas oportunidades</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📲 @inmobiliaria.vaninabuzzacchi</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">🏡 Vanina Buzzacchi Negocios Inmobiliarios</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📍 Río Cuarto, Córdoba</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📞 3586005903 / 3585701632</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">✨ Proyectos Inmobiliarios con Propósito</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">🏠 Inversiones · Hogar · Nuevas oportunidades</span>
+    <span class="ticker-sep">·</span>
+    <span class="ticker-item">📲 @inmobiliaria.vaninabuzzacchi</span>
+    <span class="ticker-sep">·</span>
+  </div>
+</div>
 
 <header class="topbar">
   <div class="container topbar-inner">
@@ -857,7 +931,7 @@ async function openCata(propId, propTitulo) {
   const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
 
   cataProp = {
-    ...(props[0] || { id: propId, titulo: propTitulo }),
+    ...prop,
     id: propId,
     titulo: propTitulo || prop.titulo || propId,
     zona: prop.zona || '',
