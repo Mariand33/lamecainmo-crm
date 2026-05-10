@@ -181,12 +181,16 @@ function inmToSb(i) {
 // AUTH
 // =========================
 const USUARIOS = [
-  { email: "admin@inmo.com", password: process.env.ADMIN_PASSWORD || "1234", rol: "admin" }
+  { email: "admin@inmo.com",     password: process.env.ADMIN_PASSWORD || "1234", rol: "admin"     },
+  { email: "mariano@inmo.com",   password: "1234",                               rol: "admin"     },
+  { email: "vanina@inmo.com",    password: "1234",                               rol: "admin"     },
+  { email: "catalina@inmo.com",  password: "1234",                               rol: "agente"    },
+  { email: "marketing@inmo.com", password: "1234",                               rol: "marketing" },
 ];
 
 app.post("/login", (req, res) => {
   const u = USUARIOS.find(x => x.email === req.body.email && x.password === req.body.password);
-  if (!u) return res.status(401).json({ ok: false, error: "Credenciales incorrectas" });
+  if (!u) return res.redirect("/login?error=1");
   req.session.user = u;
   res.redirect("/dashboard");
 });
