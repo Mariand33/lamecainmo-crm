@@ -59,34 +59,168 @@
     .btn-wa{background:var(--wa);color:#fff;box-shadow:0 8px 24px rgba(37,211,102,.25)}
     .btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
 
-    /* ── HERO ── */
-    .hero{background:linear-gradient(160deg,#0a1e12 0%,#143d2f 60%,#1a5c3f 100%);color:#fff;padding:64px 0 48px;position:relative;overflow:hidden}
-    .hero::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
-    /* AI grid overlay */
-    .hero::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 49px,rgba(124,58,237,.04) 49px,rgba(124,58,237,.04) 50px),repeating-linear-gradient(90deg,transparent,transparent 49px,rgba(124,58,237,.04) 49px,rgba(124,58,237,.04) 50px);pointer-events:none}
-    .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center;position:relative;z-index:1}
-    .eyebrow{color:var(--gold2);letter-spacing:3px;text-transform:uppercase;font-size:12px;margin-bottom:16px;font-weight:500}
-    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5.5vw,68px);line-height:1;font-weight:400;margin-bottom:20px}
-    .hero h1 .gold{color:var(--gold)}
-    .hero p{color:rgba(255,255,255,.8);font-size:17px;line-height:1.6;max-width:580px;margin-bottom:28px}
-    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px}
-    .hero-badges{display:flex;gap:10px;flex-wrap:wrap}
-    .hero-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.85);padding:9px 14px;border-radius:999px;font-size:12px;font-weight:500}
-    /* AI badge especial */
-    .hero-badge-ai{background:rgba(124,58,237,.15);border:1px solid rgba(167,139,250,.3);color:#c4b5fd;padding:9px 14px;border-radius:999px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+    /* ── HERO PREMIUM ── */
+    @keyframes hero-float{0%,100%{transform:translateY(0) scale(1.05)}50%{transform:translateY(-12px) scale(1.08)}}
+    @keyframes hero-glow{0%,100%{opacity:.5}50%{opacity:.9}}
+    @keyframes hero-reveal{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes hero-line{from{width:0}to{width:100%}}
+    @keyframes float-orb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(.95)}}
+    @keyframes scroll-bounce{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(6px);opacity:1}}
+    @keyframes counter-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* hero card mejorada */
-    .hero-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:26px;border-radius:24px;backdrop-filter:blur(10px);position:relative;overflow:hidden}
-    .hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,58,237,.08),transparent 60%);pointer-events:none}
-    .hero-card h3{font-size:15px;color:var(--gold2);margin-bottom:6px;font-weight:500}
-    .hero-card .metric{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;line-height:1;margin-bottom:8px;color:#fff}
-    .hero-card p{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:16px}
-    .stats-mini{display:flex;gap:10px;flex-wrap:wrap}
-    .mini{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);padding:9px 13px;border-radius:12px;color:rgba(255,255,255,.9);font-size:13px}
-    .mini strong{display:block;font-size:20px;font-weight:700;color:#fff}
-    /* AI status en hero card */
-    .ai-status-row{display:flex;align-items:center;gap:8px;margin-top:14px;padding:8px 12px;background:rgba(124,58,237,.1);border:1px solid rgba(167,139,250,.2);border-radius:10px}
+    .hero{
+      position:relative;min-height:92vh;display:flex;align-items:center;
+      background:#060f0a;color:#fff;overflow:hidden;padding:100px 0 60px;
+    }
+
+    /* Fondo KB con propiedades reales */
+    .hero-bg-stage{position:absolute;inset:0;z-index:0}
+    .hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 2s ease;filter:brightness(.38) saturate(1.1)}
+    .hero-bg-img.hb-active{opacity:1}
+    @keyframes hb-kb1{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.1) translate(-3%,-2%)}}
+    @keyframes hb-kb2{0%{transform:scale(1.08) translate(2%,1%)}100%{transform:scale(1) translate(-2%,-1%)}}
+    @keyframes hb-kb3{0%{transform:scale(1) translate(-2%,2%)}100%{transform:scale(1.1) translate(2%,-1%)}}
+    .hero-bg-img.hb-active.hb-a1{animation:hb-kb1 12s ease-in-out forwards}
+    .hero-bg-img.hb-active.hb-a2{animation:hb-kb2 12s ease-in-out forwards}
+    .hero-bg-img.hb-active.hb-a3{animation:hb-kb3 12s ease-in-out forwards}
+
+    /* Overlay cinematográfico */
+    .hero::before{
+      content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+      background:
+        linear-gradient(to bottom, rgba(6,15,10,.7) 0%, rgba(6,15,10,.2) 40%, rgba(6,15,10,.5) 100%),
+        linear-gradient(to right, rgba(6,15,10,.8) 0%, transparent 60%);
+    }
+    /* Vignette */
+    .hero::after{
+      content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+      background:radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,.55) 100%);
+    }
+
+    /* Orbs decorativos */
+    .hero-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:1}
+    .hero-orb-1{width:600px;height:600px;top:-200px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);animation:float-orb 18s ease-in-out infinite}
+    .hero-orb-2{width:400px;height:400px;bottom:-100px;left:-50px;background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 70%);animation:float-orb 14s ease-in-out infinite reverse}
+
+    .hero-inner{position:relative;z-index:2;width:100%}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+
+    /* Texto hero */
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-size:11px;
+      margin-bottom:20px;font-weight:600;
+      background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);
+      padding:6px 14px;border-radius:999px;
+      animation:hero-reveal .8s ease both;
+    }
+    .eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:hero-glow 2s ease-in-out infinite}
+
+    .hero h1{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(42px,6vw,82px);
+      line-height:.95;font-weight:400;margin-bottom:8px;
+      animation:hero-reveal .8s .15s ease both;
+    }
+    .hero h1 .gold{
+      color:var(--gold);font-style:italic;
+      background:linear-gradient(120deg,#c9a84c,#f0d882,#c9a84c);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      background-size:200%;animation:shimmer 4s linear infinite;
+    }
+    @keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
+
+    .hero-tagline{
+      font-size:clamp(15px,1.8vw,19px);color:rgba(255,255,255,.75);
+      line-height:1.65;max-width:520px;margin:20px 0 32px;
+      animation:hero-reveal .8s .3s ease both;
+    }
+    .hero-tagline strong{color:rgba(255,255,255,.95)}
+
+    .hero-divider{
+      width:0;height:2px;
+      background:linear-gradient(90deg,var(--gold),transparent);
+      margin:20px 0;border-radius:2px;
+      animation:hero-line 1s .4s ease both;
+    }
+
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;animation:hero-reveal .8s .45s ease both}
+    .btn-hero-primary{
+      background:linear-gradient(120deg,#c9a84c,#e3c067);color:#0a1e12;
+      border:none;border-radius:999px;padding:14px 28px;font-size:15px;font-weight:700;
+      cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;
+      box-shadow:0 8px 28px rgba(201,168,76,.35);display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(201,168,76,.45)}
+    .btn-hero-ghost{
+      background:rgba(255,255,255,.07);color:#fff;
+      border:1.5px solid rgba(255,255,255,.2);border-radius:999px;
+      padding:13px 24px;font-size:15px;font-weight:600;
+      cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn-hero-ghost:hover{background:rgba(255,255,255,.13);transform:translateY(-2px)}
+
+    .hero-badges{display:flex;gap:8px;flex-wrap:wrap;animation:hero-reveal .8s .6s ease both}
+    .hero-badge{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.8);padding:7px 13px;border-radius:999px;font-size:12px;font-weight:500;
+    }
+    .hero-badge-ai{
+      background:rgba(124,58,237,.15);border:1px solid rgba(167,139,250,.3);
+      color:#c4b5fd;padding:7px 13px;border-radius:999px;font-size:12px;font-weight:600;
+      display:inline-flex;align-items:center;gap:6px;
+    }
+
+    /* Hero card glassmorphism */
+    .hero-card{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      padding:28px;border-radius:28px;
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      position:relative;overflow:hidden;
+      box-shadow:0 24px 64px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1);
+      animation:hero-reveal .8s .3s ease both;
+    }
+    .hero-card::before{
+      content:"";position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(201,168,76,.5),rgba(167,139,250,.5),transparent);
+    }
+    .hero-card::after{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(145deg,rgba(201,168,76,.04),transparent 60%,rgba(124,58,237,.04));
+      pointer-events:none;
+    }
+    .hero-card-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-bottom:16px;opacity:.8}
+    .hero-card .metric{
+      font-family:'Playfair Display',serif;font-size:58px;font-weight:700;
+      line-height:1;color:#fff;
+      background:linear-gradient(120deg,#fff,rgba(255,255,255,.75));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .hero-card-sub{font-size:13px;color:rgba(255,255,255,.5);margin:6px 0 20px;font-weight:400}
+    .stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .mini{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+      padding:12px 14px;border-radius:14px;color:rgba(255,255,255,.85);font-size:12px;
+    }
+    .mini strong{display:block;font-size:22px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;margin-bottom:2px}
+    .ai-status-row{
+      display:flex;align-items:center;gap:8px;margin-top:2px;
+      padding:10px 14px;background:rgba(124,58,237,.1);
+      border:1px solid rgba(167,139,250,.2);border-radius:12px;
+    }
     .ai-status-row span{font-size:11px;color:#c4b5fd;font-weight:500}
+
+    /* Scroll indicator */
+    .hero-scroll{
+      position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+      z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;
+      opacity:.6;cursor:pointer;transition:.2s;
+    }
+    .hero-scroll:hover{opacity:1}
+    .hero-scroll span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6)}
+    .hero-scroll-arrow{width:20px;height:20px;border-right:1.5px solid rgba(255,255,255,.5);border-bottom:1.5px solid rgba(255,255,255,.5);transform:rotate(45deg);animation:scroll-bounce 1.8s ease-in-out infinite}
 
     /* ── IA MATCH ── */
     .ia-section{padding:42px 0 0}
@@ -340,9 +474,17 @@
       .card-actions{grid-template-columns:1fr}
       .agenda-slots{grid-template-columns:repeat(3,1fr)}
     }
+    @media(max-width:980px){
+      .hero{min-height:auto;padding:120px 0 60px}
+      .hero-card{display:none}
+    }
     @media(max-width:640px){
       .properties-grid{grid-template-columns:1fr}
-      .hero{padding:40px 0 32px}
+      .hero{padding:100px 0 60px;min-height:auto}
+      .hero h1{font-size:clamp(38px,11vw,56px)}
+      .hero-tagline{font-size:15px}
+      .hero-card{display:none}
+      .hero-scroll{display:none}
       .searchbox input{min-width:120px}
       .agenda-slots{grid-template-columns:1fr 1fr}
       .cata-float-label{display:none}
@@ -398,35 +540,67 @@
 </header>
 
 <section class="hero">
-  <div class="container hero-grid">
-    <div>
-      <div class="eyebrow">Rio Cuarto · Córdoba</div>
-      <h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1>
-      <p>Explorá casas, departamentos, locales y oportunidades reales. Nuestra IA analiza tu búsqueda y encuentra el match perfecto.</p>
-      <div class="hero-cta">
-        <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a>
-        <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
+  <!-- Fondo cinematográfico con fotos de propiedades -->
+  <div class="hero-bg-stage" id="heroBgStage">
+    <!-- Las fotos se inyectan desde JS cuando carga el catálogo -->
+  </div>
+
+  <!-- Orbs decorativos -->
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="container hero-inner">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Río Cuarto · Córdoba · 2026
+        </div>
+        <h1>Tu próxima<br><span class="gold">propiedad</span><br>te espera.</h1>
+        <div class="hero-divider"></div>
+        <p class="hero-tagline">
+          Explorá casas, departamentos y oportunidades reales.<br>
+          <strong>La IA encuentra el match perfecto</strong> — describí lo que buscás.
+        </p>
+        <div class="hero-cta">
+          <a class="btn-hero-primary" id="heroWhatsApp" href="#" target="_blank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+            Hablar por WhatsApp
+          </a>
+          <a class="btn-hero-ghost" href="#propiedades">
+            Ver propiedades
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="hero-badges">
+          <div class="hero-badge">✓ Atención personalizada</div>
+          <div class="hero-badge">✓ Consultas por WhatsApp</div>
+          <div class="hero-badge-ai"><span class="ai-live-dot"></span> Cata IA 24/7</div>
+        </div>
       </div>
-      <div class="hero-badges">
-        <div class="hero-badge">✓ Atención personalizada</div>
-        <div class="hero-badge">✓ Consultas reales por WhatsApp</div>
-        <div class="hero-badge-ai"><span class="ai-live-dot"></span> Cata IA disponible 24/7</div>
+
+      <div class="hero-card">
+        <div class="hero-card-label">Catálogo activo</div>
+        <div class="metric" id="visitCounter">2.169</div>
+        <div class="hero-card-sub">visitas estimadas este mes</div>
+        <div class="stats-mini">
+          <div class="mini"><strong id="miniTotal">—</strong>visibles</div>
+          <div class="mini"><strong id="miniVenta">—</strong>en venta</div>
+          <div class="mini"><strong id="miniAlquiler">—</strong>en alquiler</div>
+          <div class="mini"><strong id="miniNew">—</strong>nuevas</div>
+        </div>
+        <div class="ai-status-row">
+          <span class="ai-live-dot"></span>
+          <span>Motor IA activo · Cata en línea</span>
+        </div>
       </div>
     </div>
-    <div class="hero-card">
-      <h3>Actividad del catálogo</h3>
-      <div class="metric" id="visitCounter">2.169</div>
-      <p>Visitas estimadas este mes</p>
-      <div class="stats-mini">
-        <div class="mini"><strong id="miniTotal">0</strong> visibles</div>
-        <div class="mini"><strong id="miniVenta">0</strong> en venta</div>
-        <div class="mini"><strong id="miniAlquiler">0</strong> en alquiler</div>
-      </div>
-      <div class="ai-status-row">
-        <span class="ai-live-dot"></span>
-        <span>Motor IA activo · Cata en línea</span>
-      </div>
-    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="hero-scroll" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">
+    <span>Explorar</span>
+    <div class="hero-scroll-arrow"></div>
   </div>
 </section>
 
@@ -895,6 +1069,44 @@
       </article>`;
     }).join("");
     setTimeout(initKenBurns, 50);
+    setTimeout(initHeroBg, 100);
+  }
+
+  // ── HERO BG CINEMATOGRÁFICO ──
+  function initHeroBg() {
+    const stage = document.getElementById('heroBgStage');
+    if (!stage || !allProperties.length) return;
+
+    // Recopilar fotos de las primeras propiedades publicadas
+    const srcs = [];
+    for (const p of allProperties) {
+      if (!p.imagenes || !p.imagenes.length) continue;
+      for (const img of p.imagenes) {
+        if (!img) continue;
+        const src = img.startsWith('http') ? img : IMG_BASE + img;
+        if (!srcs.includes(src)) srcs.push(src);
+        if (srcs.length >= 6) break;
+      }
+      if (srcs.length >= 6) break;
+    }
+    if (!srcs.length) return;
+
+    const anims = ['hb-a1','hb-a2','hb-a3'];
+    stage.innerHTML = srcs.map((src,i) =>
+      `<img class="hero-bg-img ${anims[i%3]}${i===0?' hb-active':''}" src="${src}" loading="${i===0?'eager':'lazy'}" onerror="this.remove()">`
+    ).join('');
+
+    // Ciclar cada 9 segundos
+    let cur = 0;
+    const imgs = stage.querySelectorAll('.hero-bg-img');
+    setInterval(() => {
+      imgs[cur].classList.remove('hb-active');
+      cur = (cur + 1) % imgs.length;
+      imgs[cur].style.animation = 'none';
+      imgs[cur].offsetHeight;
+      imgs[cur].style.animation = '';
+      imgs[cur].classList.add('hb-active');
+    }, 9000);
   }
 
   // ── KEN BURNS ENGINE ──
