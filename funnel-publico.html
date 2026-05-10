@@ -103,7 +103,7 @@
     .hero-orb-1{width:600px;height:600px;top:-200px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);animation:float-orb 18s ease-in-out infinite}
     .hero-orb-2{width:400px;height:400px;bottom:-100px;left:-50px;background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 70%);animation:float-orb 14s ease-in-out infinite reverse}
 
-    .hero-inner{position:relative;z-index:2;width:100%}
+    .hero-inner{position:relative;z-index:2;width:min(1180px,90%);margin:0 auto}
     .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
 
     /* Texto hero */
@@ -527,6 +527,35 @@
     .map-geocoding{position:absolute;top:12px;right:12px;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:600;color:#333;border:1px solid #e4dccf;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
     .map-geocoding-spinner{width:14px;height:14px;border:2px solid rgba(20,61,47,.2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
 
+
+    /* ── RANKING ── */
+    .badge-top1{background:linear-gradient(120deg,#c9a84c,#f0d882);color:#0a1e12;font-weight:800}
+    .badge-trend{background:linear-gradient(120deg,#ef4444,#f97316);color:#fff;font-weight:700;animation:pulse-badge 2s ease-in-out infinite}
+    .badge-hot{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.35);font-weight:700}
+    @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
+
+    .card-views{
+      position:absolute;bottom:10px;left:10px;z-index:4;
+      background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+      color:rgba(255,255,255,.9);font-size:11px;font-weight:600;
+      padding:4px 9px;border-radius:999px;
+      display:flex;align-items:center;gap:4px;
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    /* Sección ranking top */
+    .ranking-section{margin-bottom:32px}
+    .ranking-section .section-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;margin-bottom:14px;letter-spacing:.5px}
+    .ranking-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+    .ranking-strip::-webkit-scrollbar{display:none}
+    .ranking-pill{flex-shrink:0;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e8dcc8;border-radius:14px;padding:10px 14px;cursor:pointer;transition:.2s;text-decoration:none;min-width:220px}
+    .ranking-pill:hover{border-color:#c9a84c;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
+    .ranking-pill-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#c9a84c;min-width:28px}
+    .ranking-pill-img{width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0}
+    .ranking-pill-info{min-width:0}
+    .ranking-pill-title{font-size:13px;font-weight:600;color:#1b1b1b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+    .ranking-pill-views{font-size:11px;color:#888;margin-top:2px}
+
   </style>
 </head>
 <body>
@@ -708,6 +737,12 @@
         <input type="text" id="searchInput" placeholder="Zona, calle, tipo..."/>
       </div>
     </div>
+    <!-- RANKING TOP -->
+    <div class="ranking-section" id="rankingSection" style="display:none">
+      <div class="section-tag">🔥 Más vistas esta semana</div>
+      <div class="ranking-strip" id="rankingStrip"></div>
+    </div>
+
     <div id="loader" class="loader">Cargando propiedades...</div>
     <div id="propertiesGrid" class="properties-grid" style="display:none"></div>
     <div id="emptyState" class="empty-state" style="display:none">No encontramos propiedades con esos filtros.<br><small>Dejá tu búsqueda abajo y te avisamos.</small></div>
@@ -1087,13 +1122,24 @@
       const waText    = `Hola, vi esta propiedad y quiero más información:%0A%0A${item.titulo||"Propiedad"}%0AZona: ${item.zona||"-"}%0APrecio: ${formatPrice(item)}`;
       const shortDesc = (item.descripcion || "Propiedad disponible.").replace(/\r?\n/g, " ").slice(0, 110);
 
+      // Ranking
+      const vistas     = getViewCount(item.id);
+      const rankPos    = (window.rankingIds||[]).indexOf(item.id);
+      const isTop1     = rankPos === 0 && vistas > 0;
+      const isTrend    = rankPos >= 1 && rankPos <= 2 && vistas > 0;
+      const isHot      = rankPos >= 3 && rankPos <= 4 && vistas > 0;
+
       return `<article class="card${isHl ? " ia-highlight" : ""}${isConcretada ? " card-concretada" : ""}" id="prop-${item.id}">
         <div class="card-image-wrap">
           <div class="badge-top">
             <span class="badge ${isSale ? "badge-sale" : "badge-rent"}">${isSale ? "Venta" : "Alquiler"}</span>
             ${isNew(item) ? '<span class="badge badge-new">Nueva</span>' : ""}
             ${isHl && score ? `<span class="badge badge-ai-match">🤖 ${score}% match</span>` : (isHl ? '<span class="badge badge-new">✨ IA</span>' : "")}
+            ${isTop1 ? '<span class="badge badge-top1">🥇 Más vista</span>' : ''}
+            ${isTrend ? '<span class="badge badge-trend">🔥 Tendencia</span>' : ''}
+            ${isHot ? '<span class="badge badge-hot">📈 Popular</span>' : ''}
           </div>
+          ${vistas > 0 ? `<div class="card-views">👁 ${vistas} vista${vistas!==1?'s':''}</div>` : ''}
           <button class="card-fav fav-btn" data-id="${item.id}" onclick="toggleFav(${item.id})">${isFav ? "❤️" : "🤍"}</button>
           ${isConcretada ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:3;display:flex;align-items:center;justify-content:center;">
             <span style="background:${isVendida?"#7c3aed":"#0891b2"};color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:999px;letter-spacing:1px;transform:rotate(-8deg);box-shadow:0 4px 16px rgba(0,0,0,.3)">
@@ -1136,8 +1182,15 @@
         </div>
       </article>`;
     }).join("");
+    // Calcular ranking antes de renderizar
+    const rankingTop = calcRanking(items);
+    window.rankingIds = rankingTop.map(p => p.id);
+
     setTimeout(initKenBurns, 50);
     setTimeout(initHeroBg, 100);
+    setTimeout(initViewTracking, 200);
+    setTimeout(() => renderRankingStrip(allProperties), 300);
+
     // Activar observer del mapa
     const mapEl = document.getElementById('propMap');
     if (mapEl) mapObserver.observe(mapEl);
@@ -1217,6 +1270,91 @@
       });
     });
   }
+
+
+  // ── SISTEMA DE RANKING / VISTAS ──
+  const LS_VIEWS   = 'vb_views';
+  const LS_SESSION = 'vb_session_' + new Date().toDateString();
+
+  function getViews(){ try{ return JSON.parse(localStorage.getItem(LS_VIEWS)||'{}'); }catch{ return {}; } }
+  function saveViews(d){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(d)); }catch{} }
+
+  function registrarVista(id){
+    const sessionKey = LS_SESSION + '_' + id;
+    if (sessionStorage.getItem(sessionKey)) return; // ya se contó en esta sesión
+    sessionStorage.setItem(sessionKey, '1');
+
+    const views = getViews();
+    if (!views[id]) views[id] = { total:0, week:0, lastSeen:'' };
+    views[id].total++;
+    views[id].week++;
+    views[id].lastSeen = new Date().toISOString().split('T')[0];
+    saveViews(views);
+  }
+
+  function getViewCount(id){
+    const views = getViews();
+    return views[id] ? views[id].total : 0;
+  }
+
+  function calcRanking(props){
+    const views = getViews();
+    // Ordenar por vistas semanales (tendencia)
+    return [...props]
+      .filter(p => p.estadoPublicacion !== 'vendida' && p.estadoPublicacion !== 'alquilada')
+      .sort((a,b) => {
+        const wa = views[a.id]?.week || 0;
+        const wb = views[b.id]?.week || 0;
+        return wb - wa;
+      })
+      .slice(0, 5);
+  }
+
+  function renderRankingStrip(props){
+    const views = getViews();
+    const top   = calcRanking(props);
+    const strip = document.getElementById('rankingStrip');
+    const sec   = document.getElementById('rankingSection');
+
+    // Solo mostrar si hay propiedades con vistas
+    const hayVistas = top.some(p => views[p.id]?.total > 0);
+    if (!hayVistas){ sec.style.display = 'none'; return; }
+    sec.style.display = 'block';
+
+    strip.innerHTML = top.map((p,i) => {
+      const img = (p.imagenes&&p.imagenes.length>0)
+        ? (p.imagenes[0].startsWith('http') ? p.imagenes[0] : IMG_BASE+p.imagenes[0])
+        : '';
+      const vistas = views[p.id]?.total || 0;
+      const medals = ['🥇','🥈','🥉','4°','5°'];
+      return `
+        <a class="ranking-pill" href="#prop-${p.id}" onclick="document.getElementById('prop-${p.id}').scrollIntoView({behavior:'smooth'})">
+          <div class="ranking-pill-num">${medals[i]}</div>
+          ${img ? `<img class="ranking-pill-img" src="${img}" loading="lazy" onerror="this.remove()">` : ''}
+          <div class="ranking-pill-info">
+            <div class="ranking-pill-title">${p.titulo||'Propiedad'}</div>
+            <div class="ranking-pill-views">👁 ${vistas} vista${vistas!==1?'s':''} · ${p.zona||''}</div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  // Inicializar IntersectionObserver para contar vistas al entrar al viewport
+  function initViewTracking(){
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const id = e.target.id?.replace('prop-','');
+        if (id) { registrarVista(id); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('article.card[id^="prop-"]').forEach(card => {
+      observer.observe(card);
+    });
+  }
+
 
   // ── FILTERS ──
   function applyFilters() {
