@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Administración de Alquileres · Buzzacchi</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#c9a84c"/>
+  <link rel="apple-touch-icon" href="/icon-192x192.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold:       #c9a84c;
+      --gold-light: #e8d49a;
+      --gold-dim:   rgba(201,168,76,.13);
+      --gold-dim2:  rgba(201,168,76,.22);
+      --dark:       #0d0d0d;
+      --dark-2:     #141414;
+      --dark-3:     #1c1c1c;
+      --dark-4:     #242424;
+      --border:     rgba(255,255,255,.08);
+      --border-2:   rgba(255,255,255,.14);
+      --muted:      #666;
+      --muted-2:    #444;
+      --white:      #ffffff;
+      --off:        rgba(255,255,255,.78);
+      --rojo:       #e05252;
+      --ok:         #3ecf8e;
+      --azul:       #4a9eff;
+      --naranja:    #f59e0b;
+      --font-d:     'Cormorant Garamond', Georgia, serif;
+      --font-b:     'DM Sans', system-ui, sans-serif;
+      --sidebar-w:  252px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-b);background:var(--dark);color:var(--white);display:flex;min-height:100vh}
+
+    /* ══ SIDEBAR ══ */
+    .sidebar{width:var(--sidebar-w);height:100vh;background:var(--dark-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow:hidden}
+    .logo-buzzacchi{padding:24px 20px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .logo-buzzacchi img{max-width:120px;height:auto;display:block;margin-bottom:7px}
+    .logo-frase{font-size:10px;letter-spacing:.05em;color:var(--muted);line-height:1.45}
+    .side-top{padding:14px 16px 8px;flex-shrink:0}
+    .side-search{position:relative}
+    .side-search .icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.5;pointer-events:none}
+    .side-search input{width:100%;padding:8px 10px 8px 30px;background:var(--dark-4);border:1px solid var(--border);border-radius:6px;color:var(--white);font-family:var(--font-b);font-size:12px;outline:none;transition:border-color .2s}
+    .side-search input::placeholder{color:var(--muted)}
+    .side-search input:focus{border-color:rgba(201,168,76,.4)}
+    .sidebar nav{flex:1;overflow-y:scroll;padding:6px 10px 16px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent;min-height:0}
+    .sidebar nav::-webkit-scrollbar{width:4px}
+    .sidebar nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px}
+    .nav-section-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-2);padding:13px 12px 4px;pointer-events:none;display:block}
+    .sidebar nav a{display:flex;align-items:center;gap:9px;color:rgba(255,255,255,.5);text-decoration:none;padding:9px 12px;margin:1px 0;border-radius:6px;font-size:11px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;border-left:2px solid transparent;transition:color .18s,background .18s,border-color .18s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar nav a:hover{color:var(--off);background:rgba(255,255,255,.05)}
+    .sidebar nav a.active{color:var(--gold);background:var(--gold-dim);border-left-color:var(--gold);font-weight:500}
+    .sidebar-footer{padding:13px 18px;border-top:1px solid var(--border);flex-shrink:0;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2)}
+
+    /* ══ MAIN ══ */
+    .content{margin-left:var(--sidebar-w);flex:1;padding:28px 30px 60px;min-height:100vh;overflow:auto}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    .topbar h1{font-family:var(--font-d);font-size:28px;font-weight:400;color:var(--white)}
+    .topbar-right{display:flex;align-items:center;gap:10px}
+
+    /* ══ TABS ══ */
+    .tabs{display:flex;gap:4px;margin-bottom:28px;background:var(--dark-2);padding:4px;border-radius:10px;border:1px solid var(--border);width:fit-content}
+    .tab-btn{padding:8px 20px;border-radius:7px;border:none;background:transparent;color:rgba(255,255,255,.5);font-family:var(--font-b);font-size:13px;font-weight:500;cursor:pointer;transition:.18s}
+    .tab-btn:hover{color:var(--off);background:rgba(255,255,255,.05)}
+    .tab-btn.active{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    /* ══ CARDS MÉTRICAS ══ */
+    .cards{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+    .card{background:var(--dark-2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;min-width:150px;flex:1 1 150px;position:relative;overflow:hidden;transition:border-color .25s}
+    .card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+    .card:hover{border-color:var(--border-2)}
+    .card:hover::after{transform:scaleX(1)}
+    .card h3{font-family:var(--font-d);font-size:32px;font-weight:500;color:var(--white);line-height:1;margin-bottom:8px}
+    .card h3.ok{color:var(--ok)}
+    .card h3.warn{color:var(--naranja)}
+    .card h3.danger{color:var(--rojo)}
+    .card p{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+    /* ══ TABLA ══ */
+    .section-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+    .section-header h2{font-family:var(--font-d);font-size:20px;font-weight:400;color:var(--white);white-space:nowrap}
+    .section-line{flex:1;height:1px;background:var(--border)}
+    .table-wrap{background:var(--dark-2);border:1px solid var(--border);border-radius:10px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.45) var(--dark-3)}
+    .table-wrap::-webkit-scrollbar{height:5px}
+    .table-wrap::-webkit-scrollbar-thumb{background:rgba(201,168,76,.45);border-radius:4px}
+    table{width:100%;border-collapse:collapse;white-space:nowrap}
+    th,td{padding:11px 14px;border-bottom:1px solid var(--border);text-align:left;font-size:12px;vertical-align:middle}
+    td{color:var(--off)}
+    thead{background:var(--dark-3)}
+    th{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:500}
+    tbody tr:last-child td{border-bottom:none}
+    tbody tr{transition:background .15s}
+    tbody tr:hover{background:rgba(255,255,255,.02)}
+
+    /* ══ BOTONES ══ */
+    .btn{border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:var(--font-b);font-size:12px;font-weight:500;color:#fff;transition:opacity .15s,transform .1s}
+    .btn:hover{opacity:.85}
+    .btn:active{transform:scale(.97)}
+    .btn-gold{background:linear-gradient(120deg,#c9a84c,#e3c067);color:#0a1e12;font-weight:700}
+    .btn-ok{background:rgba(62,207,142,.7);border:1px solid rgba(62,207,142,.3);color:#052}
+    .btn-warn{background:rgba(245,158,11,.7);border:1px solid rgba(245,158,11,.3);color:#000}
+    .btn-del{background:rgba(224,82,82,.75);border:1px solid rgba(224,82,82,.35)}
+    .btn-az{background:rgba(74,158,255,.65);border:1px solid rgba(74,158,255,.3)}
+    .btn-wa{background:#25d366;color:#fff;display:inline-flex;align-items:center;gap:6px}
+    .btn-sm{padding:4px 9px;font-size:11px;border-radius:4px}
+
+    /* ══ BADGE ESTADO PAGO ══ */
+    .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .badge-pagado{background:rgba(62,207,142,.15);color:#6ee7b7;border:1px solid rgba(62,207,142,.3)}
+    .badge-pendiente{background:rgba(245,158,11,.12);color:#fde68a;border:1px solid rgba(245,158,11,.3)}
+    .badge-vencido{background:rgba(224,82,82,.13);color:#fca5a5;border:1px solid rgba(224,82,82,.3)}
+    .badge-activo{background:rgba(74,158,255,.12);color:#93c5fd;border:1px solid rgba(74,158,255,.3)}
+
+    /* ══ GRID PAGOS MES ══ */
+    .pagos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .pago-card{background:var(--dark-2);border:1px solid var(--border);border-radius:12px;padding:18px;transition:border-color .2s}
+    .pago-card:hover{border-color:var(--border-2)}
+    .pago-card.pagado{border-left:3px solid var(--ok)}
+    .pago-card.pendiente{border-left:3px solid var(--naranja)}
+    .pago-card.vencido{border-left:3px solid var(--rojo)}
+    .pago-card-title{font-weight:600;font-size:14px;color:var(--white);margin-bottom:4px}
+    .pago-card-sub{font-size:12px;color:var(--muted);margin-bottom:12px}
+    .pago-card-monto{font-family:var(--font-d);font-size:22px;color:var(--gold);font-weight:500;margin-bottom:12px}
+    .pago-card-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .mes-selector{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    .mes-selector label{font-size:13px;color:var(--muted)}
+    .mes-selector input{background:var(--dark-3);border:1px solid var(--border-2);color:var(--white);border-radius:6px;padding:7px 12px;font-family:var(--font-b);font-size:13px;outline:none}
+    .mes-selector input:focus{border-color:rgba(201,168,76,.4)}
+
+    /* ══ MODAL ══ */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--dark-2);border:1px solid var(--border-2);border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+    .modal-header{padding:22px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .modal-header h3{font-family:var(--font-d);font-size:22px;font-weight:400;color:var(--white)}
+    .modal-close{background:transparent;border:none;color:rgba(255,255,255,.4);font-size:22px;cursor:pointer;transition:color .15s;line-height:1}
+    .modal-close:hover{color:var(--white)}
+    .modal-body{padding:20px 24px 24px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .form-row.full{grid-template-columns:1fr}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+    .form-group input,.form-group select,.form-group textarea{background:var(--dark-3);border:1px solid var(--border);border-radius:8px;color:var(--white);padding:9px 12px;font-family:var(--font-b);font-size:13px;outline:none;transition:border-color .2s;width:100%}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:rgba(201,168,76,.4);background:var(--dark-4)}
+    .form-group select option{background:var(--dark-3)}
+    .form-group textarea{resize:vertical;min-height:70px}
+    .modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+    /* ══ RECIBO ══ */
+    @media print{
+      body>*:not(#reciboImprimible){display:none!important}
+      #reciboImprimible{display:block!important;position:static!important}
+    }
+    #reciboImprimible{display:none}
+
+    /* ══ TOASTS ══ */
+    .toast-wrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:9999;pointer-events:none}
+    .toast{width:min(360px,calc(100vw - 32px));background:var(--dark-3);color:var(--white);border-radius:10px;padding:12px 14px;box-shadow:0 16px 40px rgba(0,0,0,.45);border:1px solid var(--border-2);border-left:3px solid var(--gold);transform:translateY(14px);opacity:0;animation:toastIn .3s ease forwards;pointer-events:auto}
+    .toast .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .toast .ttl{font-weight:600;font-size:12px}
+    .toast .x{background:transparent;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:17px;line-height:1;flex-shrink:0}
+    .toast .x:hover{color:var(--white)}
+    @keyframes toastIn{to{transform:translateY(0);opacity:1}}
+
+    /* ══ EMPTY STATE ══ */
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state .emoji{font-size:48px;margin-bottom:12px}
+    .empty-state p{font-size:14px}
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:820px){
+      :root{--sidebar-w:0px}
+      body{flex-direction:column}
+      .sidebar{position:relative;width:100%;min-height:auto;border-right:none;border-bottom:1px solid var(--border)}
+      .sidebar nav{max-height:200px}
+      .content{padding:18px 16px 40px}
+      .form-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="logo-buzzacchi">
+    <img src="/logo.png" alt="Vanina Buzzacchi"/>
+    <div class="logo-frase">Confianza, trayectoria y resultados en Río Cuarto</div>
+  </div>
+  <div class="side-top">
+    <div class="side-search">
+      <span class="icon">🔎</span>
+      <input type="text" id="menuSearch" placeholder="Buscar en menú…" autocomplete="off"/>
+    </div>
+  </div>
+  <nav id="menuLinks">
+    <a href="/dashboard.html" data-fixed="1">🏠 Dashboard</a>
+
+    <span class="nav-section-label">Inmuebles</span>
+    <a href="/form.html">➕ Nuevo Inmueble</a>
+    <a href="/dashboard.html">🏠 Todos los Inmuebles</a>
+    <a href="/funnel.html">⚡ Funnel Inmuebles</a>
+    <a href="/filtros.html">🔍 Filtros y Búsqueda</a>
+    <a href="/oportunidad.html">🟡 Nueva Oportunidad</a>
+    <a href="/visita.html">📅 Agendario de Visitas</a>
+
+    <span class="nav-section-label">Propiedades / Radar</span>
+    <a href="/radar.html">📡 Radar Calle</a>
+    <a href="/radar-ia.html">🧠 Radar IA</a>
+    <a href="/radar-mercado.html">🤝 Radar Mercado</a>
+    <a href="/radar-vendedores.html">📡 Radar Vendedores</a>
+    <a href="/radar-historial.html">📚 Historial Radar</a>
+
+    <span class="nav-section-label">Leads y Contactos</span>
+    <a href="/compradores.html">👥 Compradores</a>
+    <a href="/radar-leads.html">🎯 Radar Leads</a>
+    <a href="/whatsapp-ia.html">💬 WhatsApp IA</a>
+    <a href="/inbox-ia.html">🎙 Inbox IA</a>
+
+    <span class="nav-section-label">Administración Alquileres</span>
+    <a href="/alquileres.html" class="active">🏘 Contratos Activos</a>
+    <a href="/alquileres.html#pagos">💰 Pagos del Mes</a>
+    <a href="/alquileres.html#historial">📋 Historial de Pagos</a>
+
+    <span class="nav-section-label">Marketing</span>
+    <a href="/marketing.html">📣 Panel Marketing</a>
+
+    <span class="nav-section-label">Sistema</span>
+    <a href="/logout" data-fixed="1">🚪 Cerrar Sesión</a>
+  </nav>
+  <div class="sidebar-footer">Equipo Buzzacchi · Río Cuarto</div>
+</aside>
+
+<!-- ═══ CONTENT ═══ -->
+<main class="content">
+  <div class="topbar">
+    <h1>Administración de Alquileres</h1>
+    <div class="topbar-right">
+      <button class="btn btn-gold" onclick="abrirModalContrato()">+ Nuevo Contrato</button>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="cards">
+    <div class="card"><h3 id="metTotal">0</h3><p>Contratos activos</p></div>
+    <div class="card"><h3 id="metPagados" class="ok">0</h3><p>Pagados este mes</p></div>
+    <div class="card"><h3 id="metPendientes" class="warn">0</h3><p>Pendientes</p></div>
+    <div class="card"><h3 id="metVencidos" class="danger">0</h3><p>Vencidos</p></div>
+    <div class="card"><h3 id="metRecaudado">$0</h3><p>Recaudado este mes</p></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="contratos">🏘 Contratos</button>
+    <button class="tab-btn" data-tab="pagos">💰 Pagos del Mes</button>
+    <button class="tab-btn" data-tab="historial">📋 Historial</button>
+  </div>
+
+  <!-- TAB: CONTRATOS -->
+  <div class="tab-panel active" id="tab-contratos">
+    <div class="section-header">
+      <h2>Contratos activos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Inquilino</th>
+            <th>Dirección</th>
+            <th>Propietario</th>
+            <th>Monto</th>
+            <th>Vence día</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaContratos">
+          <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Cargando contratos...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB: PAGOS DEL MES -->
+  <div class="tab-panel" id="tab-pagos">
+    <div class="mes-selector">
+      <label>Mes:</label>
+      <input type="month" id="mesPagos"/>
+      <button class="btn btn-gold btn-sm" onclick="renderPagosMes()">Ver pagos</button>
+    </div>
+    <div class="section-header">
+      <h2 id="pagosMesTitle">Pagos del mes</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="pagos-grid" id="pagosMesGrid">
+      <div class="empty-state"><div class="emoji">💰</div><p>Seleccioná un mes para ver los pagos</p></div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORIAL -->
+  <div class="tab-panel" id="tab-historial">
+    <div class="section-header">
+      <h2>Historial completo de pagos</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Inquilino</th>
+            <th>Dirección</th>
+            <th>Mes</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Nº Recibo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaHistorial">
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">Sin registros aún.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══ MODAL CONTRATO ═══ -->
+<div class="modal-overlay" id="modalContrato">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalContratoTitle">Nuevo Contrato</h3>
+      <button class="modal-close" onclick="cerrarModalContrato()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="contratoEditId"/>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Inquilino *</label>
+          <input type="text" id="cInquilino" placeholder="Nombre completo"/>
+        </div>
+        <div class="form-group">
+          <label>Tel. Inquilino</label>
+          <input type="tel" id="cTelInquilino" placeholder="+54 358 ..."/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Propietario *</label>
+          <input type="text" id="cPropietario" placeholder="Nombre completo"/>
+        </div>
+        <div class="form-group">
+          <label>Tel. Propietario</label>
+          <input type="tel" id="cTelPropietario" placeholder="+54 358 ..."/>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Dirección de la propiedad *</label>
+          <input type="text" id="cDireccion" placeholder="Belgrano 1234, Centro, Río Cuarto"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Monto mensual *</label>
+          <input type="number" id="cMonto" placeholder="150000"/>
+        </div>
+        <div class="form-group">
+          <label>Moneda</label>
+          <select id="cMoneda">
+            <option value="ARS">ARS (Pesos)</option>
+            <option value="USD">USD (Dólares)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Día de vencimiento</label>
+          <input type="number" id="cDiaVenc" min="1" max="31" value="5"/>
+        </div>
+        <div class="form-group">
+          <label>Ajuste</label>
+          <select id="cAjuste">
+            <option value="ICL trimestral">ICL trimestral</option>
+            <option value="ICL cuatrimestral">ICL cuatrimestral</option>
+            <option value="IPC mensual">IPC mensual</option>
+            <option value="Acuerdo de partes">Acuerdo de partes</option>
+            <option value="Sin ajuste">Sin ajuste</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Inicio del contrato</label>
+          <input type="date" id="cInicio"/>
+        </div>
+        <div class="form-group">
+          <label>Fin del contrato</label>
+          <input type="date" id="cFin"/>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Observaciones</label>
+          <textarea id="cObs" placeholder="Expensas incluidas, mascotas permitidas, etc..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--dark-4);color:var(--muted)" onclick="cerrarModalContrato()">Cancelar</button>
+      <button class="btn btn-gold" onclick="guardarContrato()">Guardar Contrato</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL REGISTRAR PAGO ═══ -->
+<div class="modal-overlay" id="modalPago">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Registrar Pago</h3>
+      <button class="modal-close" onclick="cerrarModalPago()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pagoContratoId"/>
+      <div id="pagoContratoInfo" style="background:var(--dark-3);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--off)"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Mes que se paga *</label>
+          <input type="month" id="pagoMes"/>
+        </div>
+        <div class="form-group">
+          <label>Fecha de pago *</label>
+          <input type="date" id="pagoFecha"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Monto recibido *</label>
+          <input type="number" id="pagoMonto" placeholder="0"/>
+        </div>
+        <div class="form-group">
+          <label>Método de pago</label>
+          <select id="pagoMetodo">
+            <option value="Transferencia">Transferencia bancaria</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Cheque">Cheque</option>
+            <option value="Mercado Pago">Mercado Pago</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group">
+          <label>Observaciones del pago</label>
+          <input type="text" id="pagoObs" placeholder="Pago parcial, con recargo, etc."/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--dark-4);color:var(--muted)" onclick="cerrarModalPago()">Cancelar</button>
+      <button class="btn btn-ok" onclick="guardarPago()">✓ Confirmar Pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RECIBO IMPRIMIBLE ═══ -->
+<div id="reciboImprimible" style="display:none;font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:40px;border:2px solid #ccc;color:#000">
+  <div style="text-align:center;border-bottom:2px solid #c9a84c;padding-bottom:16px;margin-bottom:20px">
+    <div style="font-size:22px;font-weight:700;letter-spacing:.1em">VANINA BUZZACCHI</div>
+    <div style="font-size:12px;color:#666;letter-spacing:.2em">NEGOCIOS INMOBILIARIOS · RÍO CUARTO</div>
+    <div style="font-size:28px;font-weight:700;margin-top:8px;color:#c9a84c">RECIBO DE ALQUILER</div>
+  </div>
+  <table style="width:100%;font-size:13px;border-collapse:collapse">
+    <tr><td style="padding:6px 0;color:#666;width:40%">Nº Recibo</td><td id="rNumero" style="font-weight:700"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Fecha</td><td id="rFecha"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Inquilino</td><td id="rInquilino" style="font-weight:700"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Propiedad</td><td id="rDireccion"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Propietario</td><td id="rPropietario"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Período</td><td id="rPeriodo"></td></tr>
+    <tr><td style="padding:6px 0;color:#666">Método</td><td id="rMetodo"></td></tr>
+  </table>
+  <div style="margin:20px 0;padding:16px;background:#f9f6ee;border:1px solid #e8d49a;border-radius:8px;text-align:center">
+    <div style="font-size:12px;color:#666;letter-spacing:.1em;margin-bottom:4px">MONTO RECIBIDO</div>
+    <div id="rMonto" style="font-size:36px;font-weight:700;color:#c9a84c"></div>
+  </div>
+  <div id="rObs" style="font-size:12px;color:#666;margin-bottom:20px"></div>
+  <div style="border-top:1px solid #ccc;padding-top:16px;display:flex;justify-content:space-between;font-size:12px;color:#666">
+    <div>Administrado por: <strong>Vanina Buzzacchi Negocios Inmobiliarios</strong></div>
+    <div id="rFirma">___________________________<br>Firma y sello</div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ══════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════
+const LS_CONTRATOS = 'vb_alq_contratos';
+const LS_PAGOS     = 'vb_alq_pagos';
+
+function getContratos(){ try{ return JSON.parse(localStorage.getItem(LS_CONTRATOS)||'[]'); }catch{ return []; } }
+function getPagos(){     try{ return JSON.parse(localStorage.getItem(LS_PAGOS)||'[]');    }catch{ return []; } }
+function saveContratos(d){ localStorage.setItem(LS_CONTRATOS, JSON.stringify(d)); }
+function savePagos(d){     localStorage.setItem(LS_PAGOS,     JSON.stringify(d)); }
+
+function uuid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'pagos')    renderPagosMes();
+    if (btn.dataset.tab === 'historial') renderHistorial();
+  });
+});
+
+// Activar tab desde hash
+function activarTabHash(){
+  const hash = location.hash.replace('#','');
+  if (hash === 'pagos' || hash === 'historial'){
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === hash);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => {
+      p.classList.toggle('active', p.id === 'tab-' + hash);
+    });
+    if (hash === 'pagos')    renderPagosMes();
+    if (hash === 'historial') renderHistorial();
+  }
+}
+
+// ══════════════════════════════════════
+// MÉTRICAS
+// ══════════════════════════════════════
+function getMesActual(){
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+}
+
+function actualizarMetricas(){
+  const contratos = getContratos().filter(c => c.activo);
+  const pagos     = getPagos();
+  const mes       = getMesActual();
+
+  let pagados=0, pendientes=0, vencidos=0, recaudado=0;
+
+  contratos.forEach(c => {
+    const pago = pagos.find(p => p.contratoId === c.id && p.mes === mes);
+    if (pago) {
+      pagados++;
+      recaudado += Number(pago.monto||0);
+    } else {
+      const hoy = new Date();
+      const diaVenc = Number(c.diaVencimiento||5);
+      if (hoy.getDate() > diaVenc) vencidos++;
+      else pendientes++;
+    }
+  });
+
+  document.getElementById('metTotal').textContent       = contratos.length;
+  document.getElementById('metPagados').textContent     = pagados;
+  document.getElementById('metPendientes').textContent  = pendientes;
+  document.getElementById('metVencidos').textContent    = vencidos;
+  document.getElementById('metRecaudado').textContent   =
+    '$' + recaudado.toLocaleString('es-AR');
+}
+
+// ══════════════════════════════════════
+// CONTRATOS
+// ══════════════════════════════════════
+function renderContratos(){
+  const tbody = document.getElementById('tablaContratos');
+  const contratos = getContratos();
+
+  if (!contratos.length){
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="emoji">🏘</div><p>No hay contratos cargados aún.<br>Hacé clic en <strong>+ Nuevo Contrato</strong> para empezar.</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = contratos.map(c => `
+    <tr>
+      <td>
+        <div style="font-weight:600;font-size:13px;color:var(--white)">${c.inquilino}</div>
+        <div style="font-size:11px;color:var(--muted)">${c.telInquilino||''}</div>
+      </td>
+      <td>${c.direccion}</td>
+      <td>
+        <div>${c.propietario}</div>
+        <div style="font-size:11px;color:var(--muted)">${c.telPropietario||''}</div>
+      </td>
+      <td style="color:var(--gold);font-weight:600">${c.moneda||'ARS'} ${Number(c.monto||0).toLocaleString('es-AR')}</td>
+      <td>Día ${c.diaVencimiento||5}</td>
+      <td>${formatFecha(c.inicio)}</td>
+      <td>${formatFecha(c.fin)}</td>
+      <td><span class="badge ${c.activo ? 'badge-activo' : 'badge-vencido'}">${c.activo ? 'ACTIVO' : 'INACTIVO'}</span></td>
+      <td>
+        <button class="btn btn-ok btn-sm" onclick="abrirModalPago('${c.id}')">💰 Pago</button>
+        <button class="btn btn-wa btn-sm" onclick="enviarWA('${c.id}')">WhatsApp</button>
+        <button class="btn btn-az btn-sm" onclick="abrirModalContrato('${c.id}')">Editar</button>
+        <button class="btn btn-del btn-sm" onclick="eliminarContrato('${c.id}')">✕</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function formatFecha(f){
+  if (!f) return '—';
+  const [y,m,d] = f.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function formatMes(m){
+  if (!m) return '';
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y,mo] = m.split('-');
+  return `${meses[Number(mo)-1]} ${y}`;
+}
+
+// ══════════════════════════════════════
+// MODAL CONTRATO
+// ══════════════════════════════════════
+function abrirModalContrato(id){
+  document.getElementById('modalContratoTitle').textContent = id ? 'Editar Contrato' : 'Nuevo Contrato';
+  document.getElementById('contratoEditId').value = id || '';
+
+  if (id){
+    const c = getContratos().find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('cInquilino').value    = c.inquilino||'';
+    document.getElementById('cTelInquilino').value = c.telInquilino||'';
+    document.getElementById('cPropietario').value  = c.propietario||'';
+    document.getElementById('cTelPropietario').value = c.telPropietario||'';
+    document.getElementById('cDireccion').value    = c.direccion||'';
+    document.getElementById('cMonto').value        = c.monto||'';
+    document.getElementById('cMoneda').value       = c.moneda||'ARS';
+    document.getElementById('cDiaVenc').value      = c.diaVencimiento||5;
+    document.getElementById('cAjuste').value       = c.ajuste||'ICL trimestral';
+    document.getElementById('cInicio').value       = c.inicio||'';
+    document.getElementById('cFin').value          = c.fin||'';
+    document.getElementById('cObs').value          = c.observaciones||'';
+  } else {
+    ['cInquilino','cTelInquilino','cPropietario','cTelPropietario','cDireccion','cMonto','cObs'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('cMoneda').value  = 'ARS';
+    document.getElementById('cDiaVenc').value = 5;
+    document.getElementById('cAjuste').value  = 'ICL trimestral';
+    document.getElementById('cInicio').value  = '';
+    document.getElementById('cFin').value     = '';
+  }
+
+  document.getElementById('modalContrato').classList.add('open');
+}
+
+function cerrarModalContrato(){
+  document.getElementById('modalContrato').classList.remove('open');
+}
+
+function guardarContrato(){
+  const inquilino  = document.getElementById('cInquilino').value.trim();
+  const propietario = document.getElementById('cPropietario').value.trim();
+  const direccion  = document.getElementById('cDireccion').value.trim();
+  const monto      = document.getElementById('cMonto').value;
+
+  if (!inquilino || !propietario || !direccion || !monto){
+    toast('Completá los campos obligatorios (*)', 'error');
+    return;
+  }
+
+  const contratos = getContratos();
+  const editId = document.getElementById('contratoEditId').value;
+
+  const contrato = {
+    id:             editId || uuid(),
+    inquilino,
+    telInquilino:   document.getElementById('cTelInquilino').value.trim(),
+    propietario,
+    telPropietario: document.getElementById('cTelPropietario').value.trim(),
+    direccion,
+    monto:          Number(monto),
+    moneda:         document.getElementById('cMoneda').value,
+    diaVencimiento: Number(document.getElementById('cDiaVenc').value)||5,
+    ajuste:         document.getElementById('cAjuste').value,
+    inicio:         document.getElementById('cInicio').value,
+    fin:            document.getElementById('cFin').value,
+    observaciones:  document.getElementById('cObs').value.trim(),
+    activo:         true,
+  };
+
+  if (editId){
+    const idx = contratos.findIndex(c => c.id === editId);
+    if (idx >= 0) contratos[idx] = { ...contratos[idx], ...contrato };
+  } else {
+    contratos.push(contrato);
+  }
+
+  saveContratos(contratos);
+  cerrarModalContrato();
+  renderContratos();
+  actualizarMetricas();
+  toast(editId ? '✅ Contrato actualizado' : '✅ Contrato creado', 'ok');
+}
+
+function eliminarContrato(id){
+  if (!confirm('¿Eliminar este contrato? Los pagos registrados se conservarán en el historial.')) return;
+  const contratos = getContratos().filter(c => c.id !== id);
+  saveContratos(contratos);
+  renderContratos();
+  actualizarMetricas();
+  toast('Contrato eliminado', 'ok');
+}
+
+// ══════════════════════════════════════
+// PAGOS DEL MES
+// ══════════════════════════════════════
+function renderPagosMes(){
+  const mes  = document.getElementById('mesPagos').value || getMesActual();
+  const contratos = getContratos().filter(c => c.activo);
+  const pagos = getPagos();
+  const grid  = document.getElementById('pagosMesGrid');
+
+  document.getElementById('pagosMesTitle').textContent = `Pagos de ${formatMes(mes)}`;
+
+  if (!contratos.length){
+    grid.innerHTML = `<div class="empty-state"><div class="emoji">🏘</div><p>No hay contratos activos.</p></div>`;
+    return;
+  }
+
+  const hoy = new Date();
+
+  grid.innerHTML = contratos.map(c => {
+    const pago = pagos.find(p => p.contratoId === c.id && p.mes === mes);
+    let estado = 'pendiente';
+    if (pago) estado = 'pagado';
+    else if (hoy.getDate() > Number(c.diaVencimiento||5) && mes <= getMesActual()) estado = 'vencido';
+
+    const badgeClass = estado === 'pagado' ? 'badge-pagado' : estado === 'vencido' ? 'badge-vencido' : 'badge-pendiente';
+    const estadoLabel = estado === 'pagado' ? '✓ PAGADO' : estado === 'vencido' ? '⚠ VENCIDO' : '⏳ PENDIENTE';
+
+    return `
+      <div class="pago-card ${estado}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div class="pago-card-title">${c.inquilino}</div>
+            <div class="pago-card-sub">📍 ${c.direccion}</div>
+          </div>
+          <span class="badge ${badgeClass}">${estadoLabel}</span>
+        </div>
+        <div class="pago-card-monto">${c.moneda||'ARS'} ${Number(c.monto||0).toLocaleString('es-AR')}</div>
+        ${pago ? `
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">
+            Pagado el ${formatFecha(pago.fechaPago)} · ${pago.metodo} · Recibo #${pago.recibo}
+          </div>
+          <div class="pago-card-actions">
+            <button class="btn btn-az btn-sm" onclick="imprimirRecibo('${pago.id}')">🖨 Recibo</button>
+            <button class="btn btn-del btn-sm" onclick="eliminarPago('${pago.id}')">Anular</button>
+          </div>
+        ` : `
+          <div class="pago-card-actions">
+            <button class="btn btn-ok btn-sm" onclick="abrirModalPago('${c.id}','${mes}')">💰 Registrar pago</button>
+            <button class="btn btn-wa btn-sm" onclick="enviarWA('${c.id}')">📲 Recordatorio</button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// MODAL PAGO
+// ══════════════════════════════════════
+function abrirModalPago(contratoId, mes){
+  const c = getContratos().find(x => x.id === contratoId);
+  if (!c) return;
+
+  document.getElementById('pagoContratoId').value = contratoId;
+  document.getElementById('pagoContratoInfo').innerHTML = `
+    <strong>${c.inquilino}</strong> · ${c.direccion}<br>
+    <span style="color:var(--gold)">${c.moneda||'ARS'} ${Number(c.monto||0).toLocaleString('es-AR')}</span> / mes
+  `;
+  document.getElementById('pagoMes').value   = mes || getMesActual();
+  document.getElementById('pagoFecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('pagoMonto').value = c.monto || '';
+  document.getElementById('pagoObs').value   = '';
+  document.getElementById('modalPago').classList.add('open');
+}
+
+function cerrarModalPago(){
+  document.getElementById('modalPago').classList.remove('open');
+}
+
+function guardarPago(){
+  const contratoId = document.getElementById('pagoContratoId').value;
+  const mes        = document.getElementById('pagoMes').value;
+  const fecha      = document.getElementById('pagoFecha').value;
+  const monto      = document.getElementById('pagoMonto').value;
+
+  if (!mes || !fecha || !monto){
+    toast('Completá todos los campos', 'error');
+    return;
+  }
+
+  const pagos = getPagos();
+  const yaExiste = pagos.find(p => p.contratoId === contratoId && p.mes === mes);
+  if (yaExiste){
+    toast('Ya existe un pago registrado para ese mes. Anulalo primero.', 'error');
+    return;
+  }
+
+  const ultimo = pagos.reduce((max,p) => Math.max(max, p.recibo||1000), 1000);
+
+  const pago = {
+    id:         uuid(),
+    contratoId,
+    mes,
+    fechaPago:  fecha,
+    monto:      Number(monto),
+    metodo:     document.getElementById('pagoMetodo').value,
+    observaciones: document.getElementById('pagoObs').value.trim(),
+    recibo:     ultimo + 1,
+    fechaRegistro: new Date().toISOString(),
+  };
+
+  pagos.push(pago);
+  savePagos(pagos);
+  cerrarModalPago();
+  renderPagosMes();
+  renderHistorial();
+  actualizarMetricas();
+  toast(`✅ Pago registrado · Recibo #${pago.recibo}`, 'ok');
+}
+
+function eliminarPago(pagoId){
+  if (!confirm('¿Anular este pago? Esta acción no se puede deshacer.')) return;
+  const pagos = getPagos().filter(p => p.id !== pagoId);
+  savePagos(pagos);
+  renderPagosMes();
+  renderHistorial();
+  actualizarMetricas();
+  toast('Pago anulado', 'ok');
+}
+
+// ══════════════════════════════════════
+// HISTORIAL
+// ══════════════════════════════════════
+function renderHistorial(){
+  const pagos     = getPagos().sort((a,b) => b.fechaRegistro?.localeCompare(a.fechaRegistro));
+  const contratos = getContratos();
+  const tbody     = document.getElementById('tablaHistorial');
+
+  if (!pagos.length){
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">Sin pagos registrados aún.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = pagos.map(p => {
+    const c = contratos.find(x => x.id === p.contratoId);
+    return `
+      <tr>
+        <td>${formatFecha(p.fechaPago)}</td>
+        <td style="font-weight:600;color:var(--white)">${c?.inquilino||'—'}</td>
+        <td>${c?.direccion||'—'}</td>
+        <td>${formatMes(p.mes)}</td>
+        <td style="color:var(--gold);font-weight:600">${c?.moneda||'ARS'} ${Number(p.monto||0).toLocaleString('es-AR')}</td>
+        <td>${p.metodo||'—'}</td>
+        <td style="color:var(--muted)">#${p.recibo}</td>
+        <td>
+          <button class="btn btn-az btn-sm" onclick="imprimirRecibo('${p.id}')">🖨 Recibo</button>
+          <button class="btn btn-del btn-sm" onclick="eliminarPago('${p.id}')">Anular</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// RECIBO
+// ══════════════════════════════════════
+function imprimirRecibo(pagoId){
+  const pago      = getPagos().find(p => p.id === pagoId);
+  if (!pago) return;
+  const contrato  = getContratos().find(c => c.id === pago.contratoId);
+  if (!contrato) return;
+
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y,mo] = pago.mes.split('-');
+
+  document.getElementById('rNumero').textContent   = pago.recibo;
+  document.getElementById('rFecha').textContent    = formatFecha(pago.fechaPago);
+  document.getElementById('rInquilino').textContent = contrato.inquilino;
+  document.getElementById('rDireccion').textContent = contrato.direccion;
+  document.getElementById('rPropietario').textContent = contrato.propietario;
+  document.getElementById('rPeriodo').textContent  = `${meses[Number(mo)-1]} ${y}`;
+  document.getElementById('rMetodo').textContent   = pago.metodo;
+  document.getElementById('rMonto').textContent    = `${contrato.moneda||'ARS'} ${Number(pago.monto||0).toLocaleString('es-AR')}`;
+  document.getElementById('rObs').textContent      = pago.observaciones ? `Nota: ${pago.observaciones}` : '';
+
+  document.getElementById('reciboImprimible').style.display = 'block';
+  window.print();
+  setTimeout(() => {
+    document.getElementById('reciboImprimible').style.display = 'none';
+  }, 1000);
+}
+
+// ══════════════════════════════════════
+// WHATSAPP
+// ══════════════════════════════════════
+function enviarWA(contratoId){
+  const c = getContratos().find(x => x.id === contratoId);
+  if (!c) return;
+  const tel = (c.telInquilino||'').replace(/\D/g,'');
+  if (!tel){ toast('El contrato no tiene teléfono del inquilino cargado', 'error'); return; }
+
+  const mes = formatMes(getMesActual());
+  const msg = encodeURIComponent(
+    `Hola ${c.inquilino.split(' ')[0]}! 👋\n\nTe recordamos que el alquiler de *${c.direccion}* correspondiente a *${mes}* vence el día *${c.diaVencimiento}*.\n\nMonto: *${c.moneda||'ARS'} ${Number(c.monto||0).toLocaleString('es-AR')}*\n\nCualquier consulta estamos disponibles.\n\n_Vanina Buzzacchi Negocios Inmobiliarios · Río Cuarto_`
+  );
+  window.open(`https://wa.me/${tel}?text=${msg}`, '_blank');
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+function toast(msg, tipo='ok'){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.style.borderLeftColor = tipo === 'ok' ? 'var(--ok)' : 'var(--rojo)';
+  t.innerHTML = `<div class="top"><div class="ttl">${msg}</div><button class="x" onclick="this.closest('.toast').remove()">×</button></div>`;
+  wrap.appendChild(t);
+  setTimeout(() => { if(t.parentNode) t.remove(); }, 5000);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+// Buscador de menú
+(function(){
+  const search = document.getElementById('menuSearch');
+  const links  = Array.from(document.querySelectorAll('#menuLinks a'));
+  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  search.addEventListener('input', () => {
+    const f = norm(search.value);
+    links.forEach(a => {
+      if (a.dataset.fixed === '1'){ a.style.display='flex'; return; }
+      a.style.display = (!f || norm(a.textContent).includes(f)) ? 'flex' : 'none';
+    });
+  });
+})();
+
+// Mes por defecto en selector
+document.getElementById('mesPagos').value = getMesActual();
+
+// Render inicial
+renderContratos();
+actualizarMetricas();
+activarTabHash();
+
+// Service Worker
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+</script>
+</body>
+</html>
