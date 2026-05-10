@@ -39,7 +39,7 @@ app.get("/ver",                (_, res) => res.sendFile(path.join(__dirname, "P�
 app.get("/ver.html",           (_, res) => res.sendFile(path.join(__dirname, "Público", "ver.html")));
 app.get("/editar",             (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
 app.get("/editar.html",        (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
-app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/"); });
+app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
 app.get("/:page.html", (req, res) => {
@@ -186,7 +186,7 @@ app.post("/login", (req, res) => {
   const u = USUARIOS.find(x => x.email === req.body.email && x.password === req.body.password);
   if (!u) return res.status(401).json({ ok: false, error: "Credenciales incorrectas" });
   req.session.user = u;
-  res.json({ ok: true });
+  res.redirect("/dashboard");
 });
 
 // =========================
@@ -244,7 +244,7 @@ app.put("/api/inmuebles/:id", async (req, res) => {
   try {
     const { error } = await supabase.from("inmuebles").update(inmToSb(req.body)).eq("id", req.params.id);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -301,7 +301,7 @@ app.post("/editar/:id/fotos/eliminar", async (req, res) => {
     const localPath = path.join(__dirname, "uploads", nombreFoto);
     if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
 
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -309,7 +309,7 @@ app.delete("/api/inmuebles/:id", async (req, res) => {
   try {
     const { error } = await supabase.from("inmuebles").delete().eq("id", req.params.id);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -379,7 +379,7 @@ app.post("/api/leads", async (req, res) => {
     const { error } = await supabase.from("leads").insert([lead]);
     if (error) return res.status(500).json({ ok: false, error: error.message });
     pushNotif({ tipo: "nuevo_lead", titulo: lead.nombre || "Lead nuevo" });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ ok: false, error: e.message }); }
 });
 
@@ -395,7 +395,7 @@ app.put("/api/leads/:id", async (req, res) => {
   try {
     const { error } = await supabase.from("leads").update(req.body).eq("id", req.params.id);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -414,7 +414,7 @@ app.post("/api/compradores", async (req, res) => {
   try {
     const { error } = await supabase.from("compradores").insert([req.body]);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -422,7 +422,7 @@ app.put("/api/compradores/:id", async (req, res) => {
   try {
     const { error } = await supabase.from("compradores").update(req.body).eq("id", req.params.id);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -441,7 +441,7 @@ app.post("/api/demandas", async (req, res) => {
   try {
     const { error } = await supabase.from("demandas").insert([req.body]);
     if (error) return res.status(500).json({ error: error.message });
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -466,7 +466,7 @@ app.get("/api/notificaciones", (req, res) => {
 app.post("/api/notificaciones/leer", (req, res) => {
   notificaciones = notificaciones.map(n => ({ ...n, leida: true }));
   guardarNotifs();
-  res.json({ ok: true });
+  res.redirect("/dashboard");
 });
 
 // =========================
@@ -476,7 +476,7 @@ app.post("/api/rating", async (req, res) => {
   try {
     const { propiedad_id, rating } = req.body;
     await supabase.from("inmuebles").update({ rating }).eq("id", propiedad_id);
-    res.json({ ok: true });
+    res.redirect("/dashboard");
   } catch (e) { res.status(500).json({ ok: false }); }
 });
 
@@ -484,7 +484,7 @@ app.post("/api/rating", async (req, res) => {
 // RADAR IA
 // =========================
 const radarIA = [];
-app.post("/api/radar-ia", (req, res) => { radarIA.push({ ...req.body, ts: Date.now() }); res.json({ ok: true }); });
+app.post("/api/radar-ia", (req, res) => { radarIA.push({ ...req.body, ts: Date.now() }); res.redirect("/dashboard"); });
 app.get("/api/radar-ia",  (_, res) => res.json(radarIA));
 
 // =========================
