@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="VB Inmuebles"/>
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png"/>
   <meta name="description" content="Explora propiedades en venta y alquiler en Rio Cuarto."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -491,6 +492,41 @@
       .cata-float-btn{padding:10px;right:90px;border-radius:50%;width:56px;height:56px;justify-content:center}
       .cata-float-av{width:34px;height:34px}
     }
+
+    /* ── MAPA INTERACTIVO ── */
+    .map-section{padding:48px 0}
+    .map-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+    .map-title-block h2{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:400;color:#17261f;margin-bottom:6px}
+    .map-title-block p{color:var(--muted);font-size:15px}
+    .map-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;background:rgba(20,61,47,.08);border:1px solid rgba(20,61,47,.15);color:var(--green)}
+    .map-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .map-chip{border:1.5px solid #cfc4b1;background:transparent;color:#766f66;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
+    .map-chip.active,.map-chip:hover{background:#0f1a14;color:#fff;border-color:#0f1a14}
+    .map-wrap{border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.12);border:1.5px solid #e4dccf;position:relative}
+    #propMap{height:520px;width:100%}
+    .map-status{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--muted)}
+    .map-status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
+    /* Leaflet popup premium */
+    .leaflet-popup-content-wrapper{border-radius:16px!important;box-shadow:0 12px 40px rgba(0,0,0,.18)!important;border:1.5px solid #e4dccf!important;padding:0!important;overflow:hidden}
+    .leaflet-popup-content{margin:0!important;width:240px!important}
+    .map-popup{font-family:'DM Sans',sans-serif}
+    .map-popup-img{width:100%;height:140px;object-fit:cover;display:block}
+    .map-popup-body{padding:14px}
+    .map-popup-op{display:inline-block;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;margin-bottom:8px;letter-spacing:.3px}
+    .map-popup-op.venta{background:#111;color:#fff}
+    .map-popup-op.alquiler{background:var(--gold);color:#0a1e12}
+    .map-popup-title{font-size:14px;font-weight:700;color:#1b1b1b;margin-bottom:4px;line-height:1.3}
+    .map-popup-zone{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+    .map-popup-price{font-family:'Playfair Display',serif;font-size:18px;color:var(--green);font-weight:700;margin-bottom:12px}
+    .map-popup-btn{display:block;text-align:center;background:#0f1a14;color:#fff;border-radius:10px;padding:9px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s}
+    .map-popup-btn:hover{background:#1a3d2f;color:#fff}
+    /* Pin custom */
+    .map-pin{background:linear-gradient(135deg,#0f1a14,#1a4a38);color:#fff;border:2px solid var(--gold);border-radius:10px;padding:5px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;font-family:'DM Sans',sans-serif}
+    .map-pin.venta{border-color:#fff;background:#0f1a14}
+    .map-pin.alquiler{border-color:var(--gold);background:#0a2e1f}
+    .map-geocoding{position:absolute;top:12px;right:12px;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:600;color:#333;border:1px solid #e4dccf;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+    .map-geocoding-spinner{width:14px;height:14px;border:2px solid rgba(20,61,47,.2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+
   </style>
 </head>
 <body>
@@ -675,6 +711,38 @@
     <div id="loader" class="loader">Cargando propiedades...</div>
     <div id="propertiesGrid" class="properties-grid" style="display:none"></div>
     <div id="emptyState" class="empty-state" style="display:none">No encontramos propiedades con esos filtros.<br><small>Dejá tu búsqueda abajo y te avisamos.</small></div>
+  </div>
+</section>
+
+
+<!-- MAPA INTERACTIVO -->
+<section class="map-section" id="mapa">
+  <div class="container">
+    <div class="map-header">
+      <div class="map-title-block">
+        <h2>Explorá Río Cuarto</h2>
+        <p>Encontrá propiedades por zona — hacé clic en cada pin para ver la ficha</p>
+      </div>
+      <div class="map-tag">📍 Mapa interactivo en vivo</div>
+    </div>
+    <div class="map-filters">
+      <button class="map-chip active" data-mf="todos">Todos</button>
+      <button class="map-chip" data-mf="venta">Venta</button>
+      <button class="map-chip" data-mf="alquiler">Alquiler</button>
+      <button class="map-chip" data-mf="casa">Casas</button>
+      <button class="map-chip" data-mf="depto">Deptos.</button>
+    </div>
+    <div class="map-wrap">
+      <div id="propMap"></div>
+      <div class="map-geocoding" id="mapGeocoding">
+        <div class="map-geocoding-spinner"></div>
+        <span id="mapGeoText">Ubicando propiedades...</span>
+      </div>
+    </div>
+    <div class="map-status">
+      <div class="map-status-dot"></div>
+      <span id="mapStatusText">Cargando mapa...</span>
+    </div>
   </div>
 </section>
 
@@ -1070,6 +1138,9 @@
     }).join("");
     setTimeout(initKenBurns, 50);
     setTimeout(initHeroBg, 100);
+    // Activar observer del mapa
+    const mapEl = document.getElementById('propMap');
+    if (mapEl) mapObserver.observe(mapEl);
   }
 
   // ── HERO BG CINEMATOGRÁFICO ──
@@ -1587,8 +1658,215 @@ async function cataSend() {
   document.getElementById('cataInp').focus();
 }
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
+
+  // ── MAPA INTERACTIVO ──
+  let propMap = null;
+  let mapMarkers = [];
+  let mapFilter = 'todos';
+  let geocodeCache = {};
+
+  // Coordenadas base de zonas conocidas de Río Cuarto
+  const ZONA_COORDS = {
+    'banda norte':    [-33.110, -64.345],
+    'banda sur':      [-33.155, -64.350],
+    'centro':         [-33.130, -64.348],
+    'centro norte':   [-33.120, -64.348],
+    'centro sur':     [-33.138, -64.348],
+    'alberdi':        [-33.125, -64.360],
+    'san martin':     [-33.133, -64.340],
+    'santa rosa':     [-33.145, -64.355],
+    'jorge newbery':  [-33.118, -64.338],
+    'las delicias':   [-33.148, -64.338],
+    'general paz':    [-33.135, -64.362],
+    'quintas':        [-33.160, -64.330],
+    'jardin':         [-33.115, -64.360],
+    'jardín':         [-33.115, -64.360],
+    'villa del lago': [-33.105, -64.345],
+    'kilometro 8':    [-33.155, -64.380],
+    'km 8':           [-33.155, -64.380],
+    'el dorado':      [-33.108, -64.352],
+    'rio cuarto':     [-33.130, -64.348],
+    'río cuarto':     [-33.130, -64.348],
+  };
+
+  function getZoneCoords(zona) {
+    const z = (zona || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    for (const [key, coords] of Object.entries(ZONA_COORDS)) {
+      const k = key.normalize('NFD').replace(/[̀-ͯ]/g,'');
+      if (z.includes(k) || k.includes(z)) return coords;
+    }
+    return null;
+  }
+
+  async function geocodeAddress(address, zona) {
+    const key = (address || zona || '').trim();
+    if (!key) return null;
+    if (geocodeCache[key]) return geocodeCache[key];
+
+    // 1. Intentar por zona conocida primero (sin API)
+    const zc = getZoneCoords(zona);
+    if (zc) {
+      // Agregar jitter para que pins de misma zona no se superpongan
+      const jitter = () => (Math.random() - 0.5) * 0.008;
+      const coords = [zc[0] + jitter(), zc[1] + jitter()];
+      geocodeCache[key] = coords;
+      return coords;
+    }
+
+    // 2. Nominatim para direcciones específicas
+    try {
+      const query = address
+        ? `${address}, Río Cuarto, Córdoba, Argentina`
+        : `${zona}, Río Cuarto, Córdoba, Argentina`;
+      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
+      const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
+      const data = await res.json();
+      if (data && data[0]) {
+        const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+        geocodeCache[key] = coords;
+        return coords;
+      }
+    } catch(e) {}
+
+    // 3. Fallback: centro de Río Cuarto con jitter
+    const fallback = [-33.130 + (Math.random()-.5)*.02, -64.348 + (Math.random()-.5)*.02];
+    geocodeCache[key] = fallback;
+    return fallback;
+  }
+
+  function formatPrice(item) {
+    const p = Number(item.precio || 0);
+    if (!p) return 'Consultar';
+    return `${item.moneda||'USD'} ${p.toLocaleString('es-AR')}`;
+  }
+
+  function createMarker(item, coords) {
+    const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
+    const img = (item.imagenes&&item.imagenes.length>0)
+      ? (item.imagenes[0].startsWith('http') ? item.imagenes[0] : IMG_BASE+item.imagenes[0])
+      : 'https://placehold.co/240x140/0f2318/c9a84c?text=Propiedad';
+
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="map-pin ${op}">${op==='venta'?'🏠':'🔑'} ${formatPrice(item)}</div>`,
+      iconAnchor: [0, 10],
+    });
+
+    const marker = L.marker(coords, { icon });
+
+    marker.bindPopup(`
+      <div class="map-popup">
+        <img class="map-popup-img" src="${img}" loading="lazy" onerror="this.src='https://placehold.co/240x140/e8e0d0/6f6a63?text=Propiedad'">
+        <div class="map-popup-body">
+          <span class="map-popup-op ${op}">${op==='venta'?'VENTA':'ALQUILER'}</span>
+          <div class="map-popup-title">${item.titulo||'Propiedad'}</div>
+          <div class="map-popup-zone">📍 ${item.zona||'Río Cuarto'}</div>
+          <div class="map-popup-price">${formatPrice(item)}</div>
+          <a class="map-popup-btn" href="/propiedad.html?id=${item.id}">Ver ficha completa →</a>
+        </div>
+      </div>
+    `, { maxWidth: 260 });
+
+    marker._propData = item;
+    return marker;
+  }
+
+  function applyMapFilter() {
+    mapMarkers.forEach(({ marker, item }) => {
+      const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
+      const tipo = (item.tipoPropiedad||item.titulo||'').toLowerCase();
+      let show = true;
+      if (mapFilter === 'venta')    show = op === 'venta';
+      if (mapFilter === 'alquiler') show = op === 'alquiler';
+      if (mapFilter === 'casa')     show = tipo.includes('casa');
+      if (mapFilter === 'depto')    show = tipo.includes('depto')||tipo.includes('departamento');
+      if (show) marker.addTo(propMap);
+      else      propMap.removeLayer(marker);
+    });
+    const visible = mapMarkers.filter(({item}) => {
+      const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
+      const tipo = (item.tipoPropiedad||item.titulo||'').toLowerCase();
+      if (mapFilter==='venta')    return op==='venta';
+      if (mapFilter==='alquiler') return op==='alquiler';
+      if (mapFilter==='casa')     return tipo.includes('casa');
+      if (mapFilter==='depto')    return tipo.includes('depto')||tipo.includes('departamento');
+      return true;
+    });
+    document.getElementById('mapStatusText').textContent =
+      `${visible.length} propiedades visibles en el mapa · Río Cuarto, Córdoba`;
+  }
+
+  async function initMap() {
+    if (propMap || !allProperties.length) return;
+
+    // Cargar cache de geocoding
+    try { geocodeCache = JSON.parse(localStorage.getItem('vb_geocache')||'{}'); } catch {}
+
+    propMap = L.map('propMap', {
+      center: [-33.130, -64.348],
+      zoom: 13,
+      zoomControl: true,
+    });
+
+    // Tiles oscuros premium (CartoDB Dark)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap © CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(propMap);
+
+    // Geocodificar propiedades
+    const geo = document.getElementById('mapGeocoding');
+    const geoText = document.getElementById('mapGeoText');
+    geo.style.display = 'flex';
+
+    const props = allProperties.filter(p => p.estadoPublicacion !== 'vendida' && p.estadoPublicacion !== 'alquilada');
+    let done = 0;
+
+    for (const item of props) {
+      geoText.textContent = `Ubicando ${++done}/${props.length}...`;
+      const coords = await geocodeAddress(item.direccion, item.zona);
+      if (coords) {
+        const marker = createMarker(item, coords);
+        marker.addTo(propMap);
+        mapMarkers.push({ marker, item });
+      }
+      // Rate limit Nominatim: 1 req/seg
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    // Guardar cache
+    try { localStorage.setItem('vb_geocache', JSON.stringify(geocodeCache)); } catch {}
+
+    geo.style.display = 'none';
+    document.getElementById('mapStatusText').textContent =
+      `${mapMarkers.length} propiedades en el mapa · Río Cuarto, Córdoba`;
+
+    // Filtros del mapa
+    document.querySelectorAll('.map-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.map-chip').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mapFilter = btn.dataset.mf;
+        applyMapFilter();
+      });
+    });
+  }
+
+  // Inicializar mapa cuando el usuario hace scroll hasta él
+  const mapObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && allProperties.length) {
+        initMap();
+        mapObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.1 });
+
+
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw-funnel.js").catch(() => {});
