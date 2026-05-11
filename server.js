@@ -88,18 +88,21 @@ function pushNotif(n) {
 // KEEP-ALIVE — Render no duerme
 // =========================
 // Proxy de imágenes (para canvas CORS en generador de posts)
-app.get("/api/proxy-image", async (req, res) => {
+app.get("/api/proxy-image", (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send("Falta url");
-  try {
-    const fetch = (await import("node-fetch")).default;
-    const r = await fetch(url);
-    const buf = await r.buffer();
+  let parsedUrl;
+  try { parsedUrl = new URL(url); } catch(e) { return res.status(400).send("URL inválida"); }
+  const lib = parsedUrl.protocol === "https:" ? https : http;
+  const proxyReq = lib.get(url, (r) => {
+    if (r.statusCode !== 200) return res.status(r.statusCode || 502).send("Error origen");
     res.set("Access-Control-Allow-Origin", "*");
-    res.set("Content-Type", r.headers.get("content-type") || "image/jpeg");
+    res.set("Content-Type", r.headers["content-type"] || "image/jpeg");
     res.set("Cache-Control", "public, max-age=86400");
-    res.send(buf);
-  } catch(e) { res.status(500).send("Error: " + e.message); }
+    r.pipe(res);
+  });
+  proxyReq.on("error", (e) => { if (!res.headersSent) res.status(500).send("Error proxy"); });
+  proxyReq.setTimeout(10000, () => { proxyReq.destroy(); if (!res.headersSent) res.status(504).send("Timeout"); });
 });
 
 // Generador de posts Instagram
@@ -656,6 +659,111 @@ app.post("/api/cata-chat", async (req, res) => {
 
   return res.status(500).json({ error: "No hay API key configurada" });
 });
+
+// =========================
+// IMPORTAR DESDE GOOGLE DRIVE
+// =========================
+
+function extraerFolderIdDrive(url) {
+  const m = url.match(/\/folders\/([a-zA-Z0-9_-]{10,})/);
+  if (m) return m[1];
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+  if (m2) return m2[1];
+  return null;
+}
+
+app.post("/api/drive-listar", async (req, res) => {
+  const { linkDrive } = req.body;
+  if (!linkDrive) return res.status(400).json({ ok: false, error: "Falta el link de Drive" });
+
+  const folderId = extraerFolderIdDrive(linkDrive);
+  if (!folderId) return res.status(400).json({ ok: false, error: "No se pudo extraer el ID de la carpeta." });
+
+  try {
+    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
+    const url = `https://drive.google.com/drive/folders/${folderId}`;
+    const resp = await (await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; CRM-Buzzacchi/1.0)" }
+    })).text();
+
+    const imageIds = [];
+    const seen = new Set();
+    const re2 = /\/file\/d\/([a-zA-Z0-9_-]{25,})\//g;
+    const re3 = /\["([a-zA-Z0-9_-]{25,})","[^"]*","(?:image\/jpeg|image\/png|image\/webp)"/g;
+    let m;
+    while ((m = re2.exec(resp)) !== null) {
+      if (!seen.has(m[1])) { seen.add(m[1]); imageIds.push(m[1]); }
+    }
+    while ((m = re3.exec(resp)) !== null) {
+      if (!seen.has(m[1])) { seen.add(m[1]); imageIds.push(m[1]); }
+    }
+
+    if (imageIds.length === 0) {
+      return res.json({ ok: true, folderId, fotos: [], mensaje: "La carpeta está vacía o no es pública." });
+    }
+
+    const fotos = imageIds.slice(0, 20).map(id => ({
+      id,
+      thumbUrl:    `https://drive.google.com/thumbnail?id=${id}&sz=w400`,
+      downloadUrl: `https://drive.google.com/uc?export=download&id=${id}`
+    }));
+
+    // Extraer nombre sugerido de la carpeta desde el HTML
+    const tituloMatch = resp.match(/<title>([^<]+)<\/title>/);
+    const tituloSugerido = tituloMatch ? tituloMatch[1].replace(" - Google Drive", "").trim() : "";
+
+    res.json({ ok: true, folderId, fotos, total: imageIds.length, tituloSugerido });
+  } catch (e) {
+    console.error("Drive listar error:", e.message);
+    res.status(500).json({ ok: false, error: "Error accediendo a Drive: " + e.message });
+  }
+});
+
+app.post("/api/drive-importar", async (req, res) => {
+  const { fotoIds, titulo, zona, tipoOperacion, tipoPropiedad, precio, moneda, dormitorios, banos, descripcion } = req.body;
+  if (!fotoIds || !fotoIds.length) return res.status(400).json({ ok: false, error: "No hay fotos seleccionadas" });
+
+  try {
+    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
+    const imagenesSubidas = [];
+
+    for (const fileId of fotoIds.slice(0, 15)) {
+      try {
+        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        const r = await fetch(downloadUrl, { headers: { "User-Agent": "Mozilla/5.0" }, redirect: "follow" });
+        if (!r.ok) continue;
+        const buffer = await r.buffer();
+        const contentType = r.headers.get("content-type") || "image/jpeg";
+        const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
+        const filename = `drive-${fileId}-${Date.now()}.${ext}`;
+        const uploadUrl = await subirASupabase(buffer, filename, contentType);
+        if (uploadUrl) imagenesSubidas.push(uploadUrl);
+      } catch (e) { console.warn("Error foto", fileId, e.message); }
+    }
+
+    if (!imagenesSubidas.length) return res.status(400).json({ ok: false, error: "No se pudo importar ninguna foto." });
+
+    const payload = inmToSb({
+      titulo: titulo || "Inmueble importado desde Drive",
+      zona: zona || "", tipoOperacion: tipoOperacion || "venta",
+      tipoPropiedad: tipoPropiedad || "casa", precio: precio || null,
+      moneda: moneda || "USD", dormitorios: dormitorios || null,
+      banos: banos || null, descripcion: descripcion || "",
+      imagenes: imagenesSubidas, estadoPublicacion: "borrador"
+    });
+
+    const { data, error } = await supabase.from("inmuebles").insert([payload]).select().single();
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+
+    pushNotif({ tipo: "nuevo_inmueble", titulo: payload.titulo, zona: payload.zona });
+    res.json({ ok: true, inmuebleId: data.id, fotosImportadas: imagenesSubidas.length });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+app.get("/importar-drive",      (_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
+app.get("/importar-drive.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
 
 // =========================
 // RADAR PROSPECTOS
