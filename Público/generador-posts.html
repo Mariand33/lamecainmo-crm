@@ -349,11 +349,21 @@ function cambiarImagen(){
 
 function cargarImagen(src){
   if (!src){ imagenActual = null; render(); return; }
+  // Usar proxy para evitar CORS en canvas (imágenes de Supabase)
+  const proxySrc = src.startsWith('http')
+    ? `/api/proxy-image?url=${encodeURIComponent(src)}`
+    : src;
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.onload = () => { imagenActual = img; render(); };
-  img.onerror = () => { imagenActual = null; render(); };
-  img.src = src;
+  img.onload  = () => { imagenActual = img; render(); setStatus('✅ Imagen cargada · Listo para descargar'); };
+  img.onerror = () => {
+    // Fallback: intentar sin proxy
+    const img2 = new Image();
+    img2.onload  = () => { imagenActual = img2; render(); };
+    img2.onerror = () => { imagenActual = null; render(); setStatus('⚠ No se pudo cargar la imagen'); };
+    img2.src = src;
+  };
+  img.src = proxySrc;
 }
 
 // ══════════════════════════════════════
@@ -665,11 +675,16 @@ function roundRect(ctx, x, y, w, h, r){
 function descargar(){
   render();
   const titulo = document.getElementById('ctrlTitulo').value || 'post';
-  const a = document.createElement('a');
-  a.download = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-  setStatus('✅ Post descargado · ' + a.download);
+  try {
+    const a = document.createElement('a');
+    a.download = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    setStatus('✅ Post descargado · ' + a.download);
+  } catch(e) {
+    setStatus('❌ Error al descargar: ' + e.message + ' — recargá la página e intentá de nuevo');
+    alert('No se pudo exportar la imagen.\n\nCausa: ' + e.message + '\n\nSolución: recargá la página con F5 e intentá de nuevo.');
+  }
 }
 
 function setStatus(msg){
