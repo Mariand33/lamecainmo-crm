@@ -212,6 +212,12 @@
       color: var(--white);
     }
 
+    .btn-tour {
+      background: linear-gradient(135deg, #c9a84c, #e8d49a);
+      color: #0d0d0d;
+      font-weight: 600;
+    }
+
     /* ── CUERPO ── */
     .body-wrap {
       max-width: 1100px;
@@ -664,6 +670,7 @@
       <a class="btn btn-editar" id="btn-editar" href="#">Editar</a>
       <a class="btn btn-pdf" id="btn-pdf" href="#" target="_blank">Descargar PDF</a>
       <a class="btn btn-wa" id="btn-wa" href="#" target="_blank">Compartir por WhatsApp</a>
+      <a class="btn btn-tour" id="btn-tour" href="#" target="_blank">🏠 Tour 360°</a>
       <a href="/visita.html?id=${inmueble.id}" class="btn-agendar">
   📅 Confirmar Visita
 </a>
@@ -937,6 +944,7 @@
         document.getElementById("btn-pdf").href    = `/api/ficha-pdf/${data.id}`;
         const waText = encodeURIComponent(`Hola! Te comparto esta propiedad: ${data.titulo} — ${formatPrecio(data)}\n${window.location.href}`);
         document.getElementById("btn-wa").href     = `https://wa.me/?text=${waText}`;
+        document.getElementById("btn-tour").href   = `/tour-virtual.html?id=${data.id}`;
 
         // ── STATS ──
         renderStats(data);
