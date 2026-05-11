@@ -587,7 +587,58 @@
 
     .shake { animation: bellShake .5s ease; }
 
-    /* ══════════════ RESPONSIVE ══════════════ */
+    /* ══════════════ TOOL CARDS ══════════════ */
+    .tool-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .tool-card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--off);
+      transition: border-color .2s, background .2s, transform .15s;
+      cursor: pointer;
+    }
+
+    .tool-card:hover {
+      border-color: rgba(201,168,76,.4);
+      background: var(--dark-3);
+      transform: translateY(-1px);
+    }
+
+    .tool-card .icon {
+      font-size: 26px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    .tool-card .info .label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--white);
+      letter-spacing: .04em;
+    }
+
+    .tool-card .info .sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: .05em;
+    }
+
+    .tool-card.gold {
+      border-color: rgba(201,168,76,.25);
+      background: linear-gradient(135deg, rgba(201,168,76,.07), transparent);
+    }
     @media (max-width: 820px) {
       :root { --sidebar-w: 0px; }
 
@@ -664,7 +715,12 @@
 
       <span class="nav-section-label">Marketing</span>
       <a href="/generador-posts.html">📸 Generador Instagram</a>
+      <a href="/programador-posts.html">📅 Programador de Posts</a>
       <a href="/marketing.html">📣 Panel Marketing</a>
+
+      <span class="nav-section-label">Herramientas</span>
+      <a href="/importar-drive.html">📂 Importar desde Drive</a>
+      <a href="/tour-virtual.html">🏠 Tour Virtual 360°</a>
 
       <span class="nav-section-label">Sistema</span>
       <a href="/logout" data-fixed="1">🚪 Cerrar Sesión</a>
@@ -693,6 +749,56 @@
       <div class="card"><h3 id="precioPromedio">$0</h3><p>Precio promedio</p></div>
       <div class="card"><h3 id="totalLeads">0</h3><p>Interesados</p></div>
       <div class="card"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
+    </div>
+
+    <div class="section-header" style="margin-bottom:14px;">
+      <h2>Accesos rápidos</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="tool-cards">
+      <a href="/importar-drive.html" class="tool-card gold">
+        <div class="icon">📂</div>
+        <div class="info">
+          <div class="label">Importar desde Drive</div>
+          <div class="sub">Pegá el link y cargá fotos</div>
+        </div>
+      </a>
+      <a href="/tour-virtual.html" class="tool-card">
+        <div class="icon">🏠</div>
+        <div class="info">
+          <div class="label">Tour Virtual 360°</div>
+          <div class="sub">Crear tour inmersivo</div>
+        </div>
+      </a>
+      <a href="/generador-posts.html" class="tool-card">
+        <div class="icon">📸</div>
+        <div class="info">
+          <div class="label">Generador Instagram</div>
+          <div class="sub">Post con IA + descarga</div>
+        </div>
+      </a>
+      <a href="/programador-posts.html" class="tool-card">
+        <div class="icon">📅</div>
+        <div class="info">
+          <div class="label">Programador de Posts</div>
+          <div class="sub">Cola y calendario semanal</div>
+        </div>
+      </a>
+      <a href="/form.html" class="tool-card">
+        <div class="icon">➕</div>
+        <div class="info">
+          <div class="label">Nuevo Inmueble</div>
+          <div class="sub">Cargar manualmente</div>
+        </div>
+      </a>
+      <a href="/whatsapp-ia.html" class="tool-card">
+        <div class="icon">💬</div>
+        <div class="info">
+          <div class="label">WhatsApp IA</div>
+          <div class="sub">Respuestas automáticas</div>
+        </div>
+      </a>
     </div>
 
     <div class="section-header">
@@ -991,6 +1097,7 @@
           <td>
             <a href="${verLink}" class="link-ver">Ver</a>
             <a href="/editar.html?id=${id}" class="link-ver">Editar</a>
+            <a href="/tour-virtual.html?id=${id}" class="link-ver" title="Ver tour virtual">🏠 Tour</a>
             <button class="btn btn-ok"   style="margin-left:4px;" data-action="publicar"   data-id="${id}">Marcar lista</button>
             <button class="btn btn-az"   style="margin-left:4px;" data-action="publicada"  data-id="${id}">Marcar publicada</button>
             <button class="btn btn-vend" style="margin-left:4px;" data-action="vendida"    data-id="${id}">Vendida</button>
