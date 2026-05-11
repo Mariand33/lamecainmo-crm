@@ -87,6 +87,25 @@ function pushNotif(n) {
 // =========================
 // KEEP-ALIVE — Render no duerme
 // =========================
+// Proxy de imágenes (para canvas CORS en generador de posts)
+app.get("/api/proxy-image", async (req, res) => {
+  const url = req.query.url;
+  if (!url) return res.status(400).send("Falta url");
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const r = await fetch(url);
+    const buf = await r.buffer();
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Content-Type", r.headers.get("content-type") || "image/jpeg");
+    res.set("Cache-Control", "public, max-age=86400");
+    res.send(buf);
+  } catch(e) { res.status(500).send("Error: " + e.message); }
+});
+
+// Generador de posts Instagram
+app.get("/generador-posts", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-posts.html")));
+app.get("/generador-posts.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-posts.html")));
+
 app.get("/ping", (_, res) => res.json({ ok: true, ts: Date.now(), uptime: process.uptime() }));
 
 setInterval(() => {
