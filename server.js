@@ -261,6 +261,24 @@ app.get("/api/inmuebles/:id", async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Crear inmueble vía JSON (para importar-drive — fotos ya son URLs públicas)
+app.post("/api/inmuebles-crear", async (req, res) => {
+  try {
+    const payload = inmToSb({
+      ...req.body,
+      estadoPublicacion: req.body.estadoPublicacion || "borrador",
+    });
+    if (Array.isArray(req.body.imagenes)) payload.imagenes = req.body.imagenes;
+    const { error } = await supabase.from("inmuebles").insert([payload]);
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    pushNotif({ tipo: "nuevo_inmueble", titulo: req.body.titulo, zona: req.body.zona });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error("Error /api/inmuebles-crear:", e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "video" }]), async (req, res) => {
   try {
     const imgs = [];
@@ -672,6 +690,136 @@ app.post("/api/cata-chat", async (req, res) => {
   }
 
   return res.status(500).json({ error: "No hay API key configurada" });
+});
+
+// =========================
+// IMPORTAR DESDE GOOGLE DRIVE
+// =========================
+// Sirve la página
+app.get("/importar-drive",     (_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
+app.get("/importar-drive.html",(_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
+
+// Extrae fotos de una carpeta Drive pública y las sube a Supabase
+// POST /api/importar-drive  { driveUrl: "https://drive.google.com/drive/folders/..." }
+app.post("/api/importar-drive", async (req, res) => {
+  try {
+    const { driveUrl } = req.body;
+    if (!driveUrl) return res.status(400).json({ ok: false, error: "Falta driveUrl" });
+
+    // Extraer folder ID del link
+    const matchFolder = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    const matchFolderQ = driveUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    const folderId = (matchFolder && matchFolder[1]) || (matchFolderQ && matchFolderQ[1]);
+    if (!folderId) return res.status(400).json({ ok: false, error: "No se pudo extraer el ID de la carpeta. Asegurate de compartir una carpeta (no un archivo)." });
+
+    // Scrappear el HTML de Drive para obtener los thumbnails/IDs de archivos
+    const drivePageUrl = `https://drive.google.com/drive/folders/${folderId}`;
+
+    // Usamos la API pública de exportación de Drive para listar archivos
+    // (sin credenciales — solo funciona con carpetas públicas)
+    const apiUrl = `https://drive.google.com/drive/folders/${folderId}`;
+
+    // Fetch del HTML de la carpeta Drive
+    const htmlContent = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: "drive.google.com",
+        path: `/drive/folders/${folderId}`,
+        method: "GET",
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "es-AR,es;q=0.9",
+        }
+      };
+      const req2 = https.get(options, (r) => {
+        let raw = "";
+        r.on("data", c => raw += c);
+        r.on("end", () => resolve(raw));
+      });
+      req2.on("error", reject);
+      req2.setTimeout(15000, () => { req2.destroy(); reject(new Error("Timeout")); });
+    });
+
+    // Extraer IDs de archivos de imagen del HTML de Drive
+    // Drive embeds file IDs in data attributes and src urls
+    const fileIdPattern = /\/file\/d\/([a-zA-Z0-9_-]{20,})/g;
+    const ids = new Set();
+    let m;
+    while ((m = fileIdPattern.exec(htmlContent)) !== null) {
+      ids.add(m[1]);
+    }
+
+    // También buscar en formato alternativo
+    const altPattern = /"([a-zA-Z0-9_-]{33,})" *,/g;
+    while ((m = altPattern.exec(htmlContent)) !== null) {
+      ids.add(m[1]);
+    }
+
+    if (ids.size === 0) {
+      return res.status(422).json({
+        ok: false,
+        error: "No se encontraron imágenes. Verificá que la carpeta sea pública (Cualquiera con el link) y contenga fotos JPG/PNG.",
+        folderId
+      });
+    }
+
+    // Descargar y subir cada imagen a Supabase (máx 20)
+    const fileIds = [...ids].slice(0, 20);
+    const urls = [];
+    const errores = [];
+
+    for (const fileId of fileIds) {
+      try {
+        // URL de descarga directa de Google Drive
+        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+        const imgBuffer = await new Promise((resolve, reject) => {
+          const follow = (url, redirects = 0) => {
+            if (redirects > 5) return reject(new Error("Demasiados redirects"));
+            const parsedUrl = new URL(url);
+            const lib = parsedUrl.protocol === "https:" ? https : http;
+            lib.get(url, { headers: { "User-Agent": "Mozilla/5.0" } }, (r) => {
+              if (r.statusCode === 301 || r.statusCode === 302) {
+                return follow(r.headers.location, redirects + 1);
+              }
+              if (r.statusCode !== 200) return reject(new Error("HTTP " + r.statusCode));
+              const contentType = r.headers["content-type"] || "";
+              if (!contentType.startsWith("image/")) return reject(new Error("No es imagen: " + contentType));
+              const chunks = [];
+              r.on("data", c => chunks.push(c));
+              r.on("end", () => resolve({ buffer: Buffer.concat(chunks), contentType }));
+            }).on("error", reject).setTimeout(10000, () => reject(new Error("Timeout")));
+          };
+          follow(downloadUrl);
+        });
+
+        const url = await subirASupabase(imgBuffer.buffer, `drive-${fileId}.jpg`, imgBuffer.contentType);
+        if (url) urls.push(url);
+      } catch (e) {
+        errores.push({ fileId, error: e.message });
+      }
+    }
+
+    // Extraer nombre sugerido de la carpeta desde el <title> del HTML
+    const titleMatch = htmlContent.match(/<title>([^<]+)<\/title>/);
+    const tituloSugerido = titleMatch
+      ? titleMatch[1].replace(" - Google Drive", "").replace(" – Google Drive", "").trim()
+      : "";
+
+    res.json({
+      ok: true,
+      total: fileIds.length,
+      importadas: urls.length,
+      errores: errores.length,
+      urls,
+      tituloSugerido,
+      folderId,
+    });
+
+  } catch (e) {
+    console.error("Error importar-drive:", e.message);
+    res.status(500).json({ ok: false, error: "Error interno: " + e.message });
+  }
 });
 
 // =========================
