@@ -322,6 +322,8 @@
     .card-actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:auto}
     .btn-card{border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.15s;font-family:'DM Sans',sans-serif}
     .btn-card:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-tour-card{background:linear-gradient(135deg,#c9a84c,#e8d49a);color:#0d0d0d;text-decoration:none;border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;display:block;transition:.15s;}
+    .btn-tour-card:hover{opacity:.9;transform:translateY(-1px)}
     .btn-view{background:#0f1a14;color:#fff}
     .btn-contact{background:var(--wa);color:#fff}
     .btn-share{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.3);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;width:44px}
@@ -1169,6 +1171,7 @@
           <div class="card-desc">${shortDesc}...</div>
           <div class="card-actions">
             <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
+            <a class="btn-card btn-tour-card" href="/tour-virtual.html?id=${item.id}" target="_blank">🏠 Tour 360°</a>
             ${isConcretada
               ? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
               : `<a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>`
