@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Importar desde Drive · Buzzacchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --dark:   #0d0d0d;
+      --dark-2: #141414;
+      --dark-3: #1c1c1c;
+      --border: rgba(255,255,255,.08);
+      --gold:   #c9a84c;
+      --green:  #0f2318;
+      --muted:  #666;
+      --sidebar-w: 252px;
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+    body { font-family:'Montserrat',sans-serif; background:var(--dark); color:#fff; display:flex; min-height:100vh }
+
+    /* SIDEBAR — igual al generador */
+    .sidebar{width:var(--sidebar-w);height:100vh;background:var(--dark-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100}
+    .logo-buzzacchi{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
+    .logo-buzzacchi .logo-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;letter-spacing:.08em;color:var(--gold)}
+    .logo-frase{font-size:10px;letter-spacing:.05em;color:var(--muted);line-height:1.45;margin-top:4px}
+    .sidebar nav{flex:1;overflow-y:auto;padding:10px 10px 16px}
+    .sidebar nav a{display:flex;align-items:center;gap:9px;color:rgba(255,255,255,.5);text-decoration:none;padding:9px 12px;border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-left:2px solid transparent;transition:.18s}
+    .sidebar nav a:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.05)}
+    .sidebar nav a.active{color:var(--gold);background:rgba(201,168,76,.1);border-left-color:var(--gold)}
+    .sidebar-footer{padding:13px 18px;border-top:1px solid var(--border);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#444}
+
+    /* MAIN */
+    .content { margin-left:var(--sidebar-w); flex:1; padding:28px 30px 60px; max-width:860px; }
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+    .topbar h1 { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:400; }
+    .topbar p { font-size:12px; color:var(--muted); margin-top:4px; line-height:1.6 }
+
+    /* STEPS */
+    .steps { display:flex; gap:0; margin-bottom:28px; }
+    .step { display:flex; align-items:center; gap:8px; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    .step.active { color:var(--gold); }
+    .step.done { color:#2ecc71; }
+    .step-num { width:24px; height:24px; border-radius:50%; border:1.5px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; flex-shrink:0; }
+    .step-sep { width:32px; height:1px; background:var(--border); margin:0 8px; }
+
+    /* CARD */
+    .card { background:var(--dark-2); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:20px; }
+    .card h3 { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+
+    /* DRIVE INPUT */
+    .drive-input-wrap { display:flex; gap:10px; }
+    .drive-input-wrap input {
+      flex:1; background:var(--dark-3); border:1px solid var(--border); border-radius:8px;
+      color:#fff; padding:12px 16px; font-family:'Montserrat',sans-serif; font-size:13px; outline:none;
+    }
+    .drive-input-wrap input:focus { border-color:rgba(201,168,76,.4); }
+    .drive-input-wrap input::placeholder { color:var(--muted); }
+    .btn-importar {
+      background:var(--gold); color:#000; border:none; border-radius:8px;
+      padding:12px 20px; font-family:'Montserrat',sans-serif; font-size:11px;
+      font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+      white-space:nowrap; transition:.15s;
+    }
+    .btn-importar:hover { background:#e0b84e; }
+    .btn-importar:disabled { opacity:.5; cursor:not-allowed; }
+
+    /* INSTRUCCIONES */
+    .instrucciones { font-size:12px; color:var(--muted); line-height:1.8; margin-top:12px; }
+    .instrucciones b { color:rgba(255,255,255,.6); }
+    .instrucciones code { background:var(--dark-3); padding:2px 6px; border-radius:4px; font-size:11px; color:var(--gold); }
+
+    /* ESTADO */
+    #estado { display:none; padding:12px 16px; border-radius:8px; font-size:12px; margin-top:14px; }
+    #estado.loading { background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2); color:var(--gold); }
+    #estado.error   { background:rgba(220,80,80,.08); border:1px solid rgba(220,80,80,.2); color:#e57373; }
+    #estado.success { background:rgba(46,204,113,.08); border:1px solid rgba(46,204,113,.2); color:#2ecc71; }
+    .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(201,168,76,.3); border-top-color:var(--gold); border-radius:50%; animation:spin .7s linear infinite; margin-right:8px; vertical-align:middle; }
+    @keyframes spin { to { transform:rotate(360deg) } }
+
+    /* PREVIEW FOTOS */
+    #preview-section { display:none; }
+    .preview-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:8px; margin-bottom:16px; }
+    .preview-thumb { position:relative; aspect-ratio:1; border-radius:8px; overflow:hidden; background:var(--dark-3); border:2px solid transparent; cursor:pointer; transition:.15s; }
+    .preview-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .preview-thumb.selected { border-color:var(--gold); }
+    .preview-thumb .check { position:absolute; top:5px; right:5px; width:20px; height:20px; border-radius:50%; background:var(--gold); display:none; align-items:center; justify-content:center; font-size:11px; color:#000; font-weight:700; }
+    .preview-thumb.selected .check { display:flex; }
+    .preview-hint { font-size:11px; color:var(--muted); margin-bottom:14px; }
+    .preview-actions { display:flex; gap:8px; margin-bottom:6px; }
+    .btn-sel { background:transparent; border:1px solid var(--border); color:rgba(255,255,255,.5); border-radius:6px; padding:6px 12px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:.15s; font-family:'Montserrat',sans-serif; }
+    .btn-sel:hover { border-color:rgba(201,168,76,.4); color:var(--gold); }
+
+    /* FORMULARIO INMUEBLE */
+    #form-section { display:none; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-full { grid-column:1/-1; }
+    .ctrl label { display:block; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+    .ctrl input, .ctrl select, .ctrl textarea {
+      width:100%; background:var(--dark-3); border:1px solid var(--border); border-radius:8px;
+      color:#fff; padding:9px 12px; font-family:'Montserrat',sans-serif; font-size:12px; outline:none;
+    }
+    .ctrl input:focus, .ctrl select:focus, .ctrl textarea:focus { border-color:rgba(201,168,76,.4); }
+    .ctrl textarea { resize:vertical; min-height:80px; }
+    .ctrl select option { background:var(--dark-3); }
+
+    .btn-guardar {
+      width:100%; background:var(--gold); color:#000; border:none; border-radius:10px;
+      padding:14px; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase; cursor:pointer; transition:.15s; margin-top:8px;
+    }
+    .btn-guardar:hover { background:#e0b84e; }
+    .btn-guardar:disabled { opacity:.5; cursor:not-allowed; }
+
+    #msg-final { display:none; text-align:center; padding:40px 20px; }
+    #msg-final .icon { font-size:48px; margin-bottom:12px; }
+    #msg-final h2 { font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:400; margin-bottom:8px; }
+    #msg-final p { color:var(--muted); font-size:13px; }
+    #msg-final .btn-ir { display:inline-block; margin-top:20px; background:var(--gold); color:#000; padding:12px 28px; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; text-decoration:none; transition:.15s; }
+    #msg-final .btn-ir:hover { background:#e0b84e; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-buzzacchi">
+    <div class="logo-title">BUZZACCHI</div>
+    <div class="logo-frase">Negocios Inmobiliarios · Río Cuarto</div>
+  </div>
+  <nav>
+    <a href="/dashboard">🏠 Dashboard</a>
+    <a href="/dashboard#nueva">➕ Nueva propiedad</a>
+    <a href="/importar-drive" class="active">📁 Importar de Drive</a>
+    <a href="/generador-posts">✨ Generador posts</a>
+    <a href="/dashboard#leads">👤 Leads</a>
+  </nav>
+  <div class="sidebar-footer">CRM v2.1</div>
+</aside>
+
+<!-- CONTENIDO -->
+<main class="content">
+  <div class="topbar">
+    <div>
+      <h1>Importar desde Google Drive</h1>
+      <p>Pegá el link de una carpeta pública de Drive y las fotos se importan solas.</p>
+    </div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step active" id="step1-ind"><div class="step-num">1</div> Link Drive</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step2-ind"><div class="step-num">2</div> Seleccionar fotos</div>
+    <div class="step-sep"></div>
+    <div class="step" id="step3-ind"><div class="step-num">3</div> Datos del inmueble</div>
+  </div>
+
+  <!-- PASO 1: Link -->
+  <div class="card" id="paso1">
+    <h3>Paso 1 — Link de carpeta de Google Drive</h3>
+
+    <div class="drive-input-wrap">
+      <input type="url" id="drive-url" placeholder="https://drive.google.com/drive/folders/..." />
+      <button class="btn-importar" id="btn-importar" onclick="importarDrive()">
+        Importar fotos
+      </button>
+    </div>
+
+    <div id="estado"></div>
+
+    <div class="instrucciones">
+      <b>¿Cómo compartir la carpeta?</b><br>
+      1. En Google Drive, click derecho en la carpeta → <b>Compartir</b><br>
+      2. En "Acceso general" elegí <b>Cualquiera con el link</b><br>
+      3. Copiá el link y pegalo arriba<br><br>
+      <b>Estructura recomendada del nombre:</b><br>
+      <code>Zona - Tipo propiedad Nro dormitorios dorm</code><br>
+      Ej: <code>Banda Norte - Casa 3 dorm</code> → se usa como título del inmueble
+    </div>
+  </div>
+
+  <!-- PASO 2: Preview fotos -->
+  <div class="card" id="preview-section">
+    <h3>Paso 2 — Seleccioná las fotos a usar</h3>
+    <p class="preview-hint">Hacé clic para marcar/desmarcar. Se cargan <b id="preview-count">0</b> fotos.</p>
+    <div class="preview-actions">
+      <button class="btn-sel" onclick="seleccionarTodas()">✓ Todas</button>
+      <button class="btn-sel" onclick="deseleccionarTodas()">✗ Ninguna</button>
+    </div>
+    <div class="preview-grid" id="preview-grid"></div>
+    <button class="btn-guardar" style="margin-top:0" onclick="continuarAFormulario()">
+      Continuar con fotos seleccionadas →
+    </button>
+  </div>
+
+  <!-- PASO 3: Formulario inmueble -->
+  <div class="card" id="form-section">
+    <h3>Paso 3 — Completá los datos del inmueble</h3>
+    <form id="form-inmueble" onsubmit="guardarInmueble(event)">
+      <div class="form-grid">
+        <div class="ctrl form-full">
+          <label>Título</label>
+          <input type="text" name="titulo" id="f-titulo" required placeholder="Ej: Casa 3 dormitorios en Banda Norte" />
+        </div>
+        <div class="ctrl">
+          <label>Zona</label>
+          <input type="text" name="zona" id="f-zona" placeholder="Ej: Banda Norte" />
+        </div>
+        <div class="ctrl">
+          <label>Operación</label>
+          <select name="tipoOperacion">
+            <option value="">— Seleccionar —</option>
+            <option>Venta</option>
+            <option>Alquiler</option>
+            <option>Alquiler temporario</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Tipo de propiedad</label>
+          <select name="tipoPropiedad">
+            <option value="">— Seleccionar —</option>
+            <option>Casa</option>
+            <option>Departamento</option>
+            <option>PH</option>
+            <option>Terreno</option>
+            <option>Local comercial</option>
+            <option>Oficina</option>
+            <option>Campo</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Precio</label>
+          <input type="number" name="precio" placeholder="Ej: 85000" />
+        </div>
+        <div class="ctrl">
+          <label>Moneda</label>
+          <select name="moneda">
+            <option value="USD">USD</option>
+            <option value="ARS">ARS</option>
+          </select>
+        </div>
+        <div class="ctrl">
+          <label>Dormitorios</label>
+          <input type="number" name="dormitorios" min="0" max="20" />
+        </div>
+        <div class="ctrl">
+          <label>Baños</label>
+          <input type="number" name="banos" min="0" max="10" />
+        </div>
+        <div class="ctrl">
+          <label>M² totales</label>
+          <input type="number" name="m2Totales" />
+        </div>
+        <div class="ctrl">
+          <label>M² cubiertos</label>
+          <input type="number" name="m2Cubiertos" />
+        </div>
+        <div class="ctrl">
+          <label>Dirección</label>
+          <input type="text" name="direccion" placeholder="Ej: Laprida 456" />
+        </div>
+        <div class="ctrl">
+          <label>Propietario</label>
+          <input type="text" name="propietario" />
+        </div>
+        <div class="ctrl form-full">
+          <label>Teléfono propietario</label>
+          <input type="text" name="telefonoPropietario" />
+        </div>
+        <div class="ctrl form-full">
+          <label>Descripción</label>
+          <textarea name="descripcion" rows="4" placeholder="Describí la propiedad..."></textarea>
+        </div>
+      </div>
+
+      <!-- Fotos ocultas (se llenan con JS) -->
+      <div id="imagenes-hidden"></div>
+
+      <button type="submit" class="btn-guardar" id="btn-guardar">
+        💾 Guardar inmueble
+      </button>
+    </form>
+  </div>
+
+  <!-- ÉXITO FINAL -->
+  <div id="msg-final">
+    <div class="icon">🏠</div>
+    <h2>¡Inmueble guardado!</h2>
+    <p>Las fotos fueron importadas desde Drive y el inmueble quedó en borrador.</p>
+    <a href="/dashboard" class="btn-ir">Ver en dashboard →</a>
+  </div>
+</main>
+
+<script>
+  let fotosImportadas = [];   // todas las URLs devueltas por el servidor
+  let fotosSeleccionadas = new Set();
+
+  async function importarDrive() {
+    const url = document.getElementById('drive-url').value.trim();
+    if (!url) return mostrarEstado('error', 'Pegá el link de la carpeta primero.');
+
+    mostrarEstado('loading', '<span class="spinner"></span> Importando fotos desde Drive…');
+    document.getElementById('btn-importar').disabled = true;
+
+    try {
+      const res = await fetch('/api/importar-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ driveUrl: url })
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        mostrarEstado('error', '❌ ' + data.error);
+        document.getElementById('btn-importar').disabled = false;
+        return;
+      }
+
+      if (!data.urls || data.urls.length === 0) {
+        mostrarEstado('error', '⚠️ Se encontraron archivos pero no se pudo descargar ninguna imagen. Verificá los permisos de la carpeta.');
+        document.getElementById('btn-importar').disabled = false;
+        return;
+      }
+
+      mostrarEstado('success', `✅ ${data.importadas} foto${data.importadas !== 1 ? 's' : ''} importada${data.importadas !== 1 ? 's' : ''} correctamente.`);
+      fotosImportadas = data.urls;
+
+      // Autocompletar título desde el nombre de la carpeta Drive
+      if (data.tituloSugerido) {
+        document.getElementById('f-titulo').value = data.tituloSugerido;
+        // Intentar extraer zona del nombre
+        const partes = data.tituloSugerido.split(' - ');
+        if (partes.length >= 2) {
+          document.getElementById('f-zona').value = partes[0].trim();
+        }
+      }
+
+      // Mostrar step 2
+      setStep(2);
+      mostrarPreview(data.urls);
+
+    } catch (e) {
+      mostrarEstado('error', '❌ Error de red: ' + e.message);
+      document.getElementById('btn-importar').disabled = false;
+    }
+  }
+
+  function mostrarPreview(urls) {
+    const section = document.getElementById('preview-section');
+    const grid    = document.getElementById('preview-grid');
+    const count   = document.getElementById('preview-count');
+
+    section.style.display = 'block';
+    grid.innerHTML = '';
+    count.textContent = urls.length;
+
+    urls.forEach((url, i) => {
+      fotosSeleccionadas.add(i); // seleccionar todas por defecto
+      const div = document.createElement('div');
+      div.className = 'preview-thumb selected';
+      div.dataset.idx = i;
+      div.innerHTML = `
+        <img src="${url}" loading="lazy" onerror="this.parentElement.style.opacity='.4'" />
+        <div class="check">✓</div>
+      `;
+      div.onclick = () => toggleFoto(div, i);
+      grid.appendChild(div);
+    });
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function toggleFoto(el, idx) {
+    if (fotosSeleccionadas.has(idx)) {
+      fotosSeleccionadas.delete(idx);
+      el.classList.remove('selected');
+    } else {
+      fotosSeleccionadas.add(idx);
+      el.classList.add('selected');
+    }
+  }
+
+  function seleccionarTodas() {
+    document.querySelectorAll('.preview-thumb').forEach((el, i) => {
+      fotosSeleccionadas.add(i);
+      el.classList.add('selected');
+    });
+  }
+
+  function deseleccionarTodas() {
+    fotosSeleccionadas.clear();
+    document.querySelectorAll('.preview-thumb').forEach(el => el.classList.remove('selected'));
+  }
+
+  function continuarAFormulario() {
+    if (fotosSeleccionadas.size === 0) {
+      alert('Seleccioná al menos una foto.');
+      return;
+    }
+    setStep(3);
+    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('form-section').scrollIntoView({ behavior:'smooth' });
+  }
+
+  async function guardarInmueble(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-guardar');
+    btn.disabled = true;
+    btn.textContent = 'Guardando…';
+
+    const form = document.getElementById('form-inmueble');
+    const fd   = new FormData(form);
+
+    // Inyectar las URLs de fotos seleccionadas como campos ocultos
+    const selUrls = [...fotosSeleccionadas].map(i => fotosImportadas[i]);
+    const hidden = document.getElementById('imagenes-hidden');
+    hidden.innerHTML = '';
+
+    // Enviamos las URLs como campo especial que el servidor procesará
+    selUrls.forEach(url => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'nombresImagenes';
+      inp.value = url;
+      hidden.appendChild(inp);
+    });
+
+    // Convertir FormData a objeto plano para JSON
+    const payload = {};
+    for (const [k, v] of new FormData(form).entries()) {
+      if (k === 'nombresImagenes') {
+        if (!payload.imagenes) payload.imagenes = [];
+        payload.imagenes.push(v);
+      } else {
+        payload[k] = v;
+      }
+    }
+    // Agregar las fotos seleccionadas
+    payload.imagenes = selUrls;
+    payload.estadoPublicacion = 'borrador';
+
+    try {
+      // Llamar a un endpoint JSON para crear el inmueble sin subir archivos
+      const res = await fetch('/api/inmuebles-crear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.redirected) {
+        document.getElementById('form-section').style.display   = 'none';
+        document.getElementById('preview-section').style.display = 'none';
+        document.getElementById('paso1').style.display          = 'none';
+        document.querySelector('.steps').style.display          = 'none';
+        document.getElementById('msg-final').style.display      = 'block';
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert('Error al guardar: ' + (data.error || res.status));
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar inmueble';
+      }
+    } catch (err) {
+      alert('Error de red: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = '💾 Guardar inmueble';
+    }
+  }
+
+  function mostrarEstado(tipo, html) {
+    const el = document.getElementById('estado');
+    el.style.display = 'block';
+    el.className = tipo;
+    el.innerHTML = html;
+  }
+
+  function setStep(n) {
+    ['step1-ind','step2-ind','step3-ind'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (i + 1 < n)     { el.className = 'step done'; el.querySelector('.step-num').textContent = '✓'; }
+      else if (i + 1 === n) el.className = 'step active';
+      else                  el.className = 'step';
+    });
+  }
+
+  // Permitir pegar con Enter
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('drive-url').addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); importarDrive(); }
+    });
+  });
+</script>
+</body>
+</html>
