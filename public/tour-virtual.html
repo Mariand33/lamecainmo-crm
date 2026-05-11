@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Tour Virtual · Buzzacchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c96a;--glass:rgba(10,10,10,.65);--border:rgba(255,255,255,.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;font-family:'Barlow',sans-serif;color:#fff;-webkit-tap-highlight-color:transparent}
+#canvas-360{position:fixed;inset:0;display:none;z-index:0}
+#visor-normal{position:fixed;inset:0;overflow:hidden;cursor:grab;display:none;z-index:0}
+#visor-normal.dragging{cursor:grabbing}
+#fondo-normal{position:absolute;inset:-8% -15%;width:130%;height:116%;background-size:cover;background-position:center;will-change:transform}
+.overlay-grad{position:fixed;inset:0;pointer-events:none;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,transparent 35%,transparent 55%,rgba(0,0,0,.78) 100%)}
+.overlay-vig{position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.55) 100%)}
+#badge-modo{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:30;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);backdrop-filter:blur(10px);border-radius:20px;padding:5px 14px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:none}
+#gyro-prompt{display:none;position:fixed;bottom:150px;left:50%;transform:translateX(-50%);z-index:40;background:rgba(10,10,10,.92);border:1px solid var(--gold);backdrop-filter:blur(16px);border-radius:14px;padding:18px 22px;text-align:center;width:min(320px,88vw)}
+#gyro-prompt p{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:14px;line-height:1.6}
+.btn-gyro{background:var(--gold);color:#000;border:none;border-radius:8px;padding:11px 20px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%}
+#hotspots{position:fixed;inset:0;z-index:10;pointer-events:none}
+.hotspot{position:absolute;pointer-events:all;transform:translate(-50%,-50%);cursor:pointer}
+.hotspot-inner{display:flex;flex-direction:column;align-items:center;gap:5px;animation:float 3s ease-in-out infinite}
+.hotspot-circle{width:54px;height:54px;border-radius:50%;border:1.5px solid rgba(201,168,76,.7);background:rgba(201,168,76,.12);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:20px;transition:.2s;box-shadow:0 0 20px rgba(201,168,76,.2)}
+.hotspot:hover .hotspot-circle{background:rgba(201,168,76,.3);box-shadow:0 0 30px rgba(201,168,76,.5);transform:scale(1.1)}
+.hotspot-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.9);text-shadow:0 1px 8px rgba(0,0,0,.8);white-space:nowrap;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);padding:3px 8px;border-radius:4px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+#medidas-layer{position:fixed;inset:0;z-index:11;pointer-events:none;transition:opacity .4s;opacity:0}
+body.medidas-mode #medidas-layer{opacity:1}
+body.medidas-mode .hotspot{opacity:.25}
+.medida-tag{position:absolute;transform:translate(-50%,-50%);cursor:default}
+.medida-pill{background:rgba(10,10,10,.82);backdrop-filter:blur(10px);border:1px solid rgba(201,168,76,.4);border-radius:20px;padding:6px 14px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;color:#fff;white-space:nowrap;box-shadow:0 2px 12px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;gap:1px}
+.medida-pill .dim-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.medida-pill .dim-value{font-size:15px;font-weight:700}
+.medida-tag:hover .medida-pill{border-color:var(--gold);box-shadow:0 0 18px rgba(201,168,76,.3)}
+#header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(to bottom,rgba(0,0,0,.88) 0%,transparent 100%)}
+.logo-h{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.65)}
+.prop-h{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:2px}
+.header-btns{display:flex;gap:6px}
+.btn-h{background:rgba(255,255,255,.07);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.65);padding:7px 12px;font-family:'Barlow',sans-serif;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:.18s;display:flex;align-items:center;gap:5px}
+.btn-h:hover{background:rgba(255,255,255,.13);color:#fff}
+.btn-h.active{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.4);color:var(--gold)}
+#panel-inf{position:fixed;bottom:0;left:0;right:150px;z-index:20;padding:18px 24px 24px;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.6) 70%,transparent 100%)}
+.amb-nombre{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3.5vw,32px);font-weight:300;font-style:italic;letter-spacing:.02em;margin-bottom:3px}
+.amb-desc{font-size:12px;color:rgba(255,255,255,.5);max-width:480px;line-height:1.6}
+.amb-m2tag{display:inline-block;margin-top:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:12px;padding:3px 10px}
+#nav-thumbs{position:fixed;bottom:0;right:0;z-index:20;display:flex;flex-direction:column;gap:5px;padding:0 12px 24px;max-height:80vh;overflow-y:auto;scrollbar-width:none}
+#nav-thumbs::-webkit-scrollbar{display:none}
+.thumb-item{width:60px;height:46px;border-radius:6px;overflow:hidden;cursor:pointer;border:2px solid transparent;opacity:.45;transition:.2s;flex-shrink:0;position:relative}
+.thumb-item img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-item.active{border-color:var(--gold);opacity:1;box-shadow:0 0 10px rgba(201,168,76,.4)}
+.thumb-item:hover:not(.active){opacity:.8}
+.thumb-360{position:absolute;top:2px;right:2px;background:rgba(201,168,76,.88);border-radius:3px;font-size:7px;font-weight:700;letter-spacing:.04em;padding:1px 3px;color:#000}
+#contador{position:fixed;top:50%;left:16px;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;gap:3px}
+.cnt-n{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:300;color:rgba(255,255,255,.7);line-height:1}
+.cnt-s{width:1px;height:16px;background:rgba(255,255,255,.18)}
+.cnt-t{font-size:11px;color:rgba(255,255,255,.28)}
+#hint{position:fixed;bottom:112px;left:50%;transform:translateX(-50%);z-index:20;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:7px;animation:fadeHint 6s ease forwards}
+@keyframes fadeHint{0%,60%{opacity:1}100%{opacity:0;pointer-events:none}}
+#transition-ov{position:fixed;inset:0;z-index:100;background:#0a0a0a;opacity:0;pointer-events:none;transition:opacity .3s ease}
+#transition-ov.fade-in{opacity:1;pointer-events:all}
+#btn-contacto{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:30;background:var(--gold);color:#000;border:none;border-radius:30px;padding:12px 28px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 24px rgba(201,168,76,.35);transition:.2s;display:none}
+#btn-contacto:hover{background:#e0b84e;transform:translateX(-50%) translateY(-2px);box-shadow:0 6px 30px rgba(201,168,76,.5)}
+#modal-ed{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);align-items:center;justify-content:center}
+#modal-ed.open{display:flex}
+.m-box{background:#111;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:26px;width:min(480px,90vw);max-height:85vh;overflow-y:auto}
+.m-box h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:18px;color:var(--gold)}
+.m-ctrl{margin-bottom:12px}
+.m-ctrl label{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:5px}
+.m-ctrl input,.m-ctrl select,.m-ctrl textarea{width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:9px 12px;font-family:'Barlow',sans-serif;font-size:13px;outline:none}
+.m-ctrl input:focus{border-color:rgba(201,168,76,.4)}
+.m-ctrl textarea{resize:vertical;min-height:55px}
+.m-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.m-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 12px;background:#1a1a1a;border-radius:8px;border:1px solid rgba(255,255,255,.07)}
+.m-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--gold);cursor:pointer}
+.m-row label{font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;line-height:1.4}
+.btn-gold{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:11px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:6px;transition:.15s}
+.btn-gold:hover{background:#e0b84e}
+.btn-cancel{width:100%;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.45);border-radius:8px;padding:9px;font-size:12px;cursor:pointer;margin-top:6px;font-family:'Barlow',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.btn-cancel:hover{border-color:rgba(255,255,255,.25);color:#fff}
+@media(max-width:600px){#nav-thumbs,#contador{display:none}#panel-inf{right:0}.amb-nombre{font-size:20px}#btn-contacto{bottom:84px}}
+</style>
+</head>
+<body>
+<div id="transition-ov"></div>
+<canvas id="canvas-360"></canvas>
+<div id="visor-normal"><div id="fondo-normal"></div></div>
+<div class="overlay-grad"></div>
+<div class="overlay-vig"></div>
+<div id="badge-modo"></div>
+<div id="gyro-prompt">
+  <p>Para la experiencia 360° completa el tour necesita acceder al giroscopio de tu iPhone.</p>
+  <button class="btn-gyro" onclick="pedirPermiso360()">🌐 Activar experiencia 360°</button>
+</div>
+<div id="hotspots"></div>
+<div id="medidas-layer"></div>
+<header id="header">
+  <div>
+    <div class="logo-h">Buzzacchi</div>
+    <div class="prop-h" id="prop-h">Cargando…</div>
+  </div>
+  <div class="header-btns">
+    <button class="btn-h" id="btn-med" onclick="toggleMedidas()">📐 Medidas</button>
+    <button class="btn-h" id="btn-fs"  onclick="toggleFS()">⛶ Pantalla completa</button>
+    <button class="btn-h" onclick="window.history.back()">← Volver</button>
+  </div>
+</header>
+<div id="contador"><span class="cnt-n" id="cnt-n">1</span><span class="cnt-s"></span><span class="cnt-t" id="cnt-t">1</span></div>
+<div id="panel-inf">
+  <div class="amb-nombre" id="amb-nombre">Cargando…</div>
+  <div class="amb-desc"   id="amb-desc"></div>
+  <div class="amb-m2tag"  id="amb-m2" style="display:none"></div>
+</div>
+<nav id="nav-thumbs"></nav>
+<div id="hint">↔ Arrastrá · deslizá para explorar</div>
+<button id="btn-contacto" onclick="consultarProp()">Me interesa esta propiedad</button>
+<div id="modal-ed">
+  <div class="m-box">
+    <h3 id="m-titulo">Editar ambiente</h3>
+    <div class="m-ctrl"><label>Nombre del ambiente</label><input type="text" id="me-nombre" placeholder="Ej: Living comedor"/></div>
+    <div class="m-ctrl"><label>Descripción</label><textarea id="me-desc" rows="2" placeholder="Orientación, terminaciones, detalles…"></textarea></div>
+    <div class="m-row">
+      <input type="checkbox" id="me-es360"/>
+      <label for="me-es360">📸 Foto 360° — tomada con Google Street View / fotosfera del iPhone. Activa el visor esférico con giroscopio.</label>
+    </div>
+    <div class="m-grid">
+      <div class="m-ctrl"><label>Ancho (m)</label><input type="number" id="me-ancho" step="0.1" placeholder="4.2"/></div>
+      <div class="m-ctrl"><label>Largo (m)</label><input type="number" id="me-largo" step="0.1" placeholder="5.8"/></div>
+      <div class="m-ctrl"><label>Altura (m)</label><input type="number" id="me-alto" step="0.05" placeholder="2.60"/></div>
+      <div class="m-ctrl"><label>M² (auto)</label><input type="text" id="me-m2" readonly/></div>
+    </div>
+    <button class="btn-gold"   onclick="guardarAmbiente()">Guardar</button>
+    <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+  </div>
+</div>
+<script>
+const params  = new URLSearchParams(location.search);
+const propId  = params.get('id');
+const isAdmin = params.get('admin') === '1';
+let ambientes = [], ambienteActual = 0, tourData = null;
+
+// THREE.JS 360
+let renderer360,scene360,camera360,sphere360;
+let gyroActivo=false,lon=0,lat=0,lonVel=0;
+let isDragging360=false,dragLastX=0,gyroPromptMostrado=false;
+
+function init360(){
+  const canvas=document.getElementById('canvas-360');
+  renderer360=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer360.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer360.setSize(innerWidth,innerHeight);
+  scene360=new THREE.Scene();
+  camera360=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,1000);
+  camera360.position.set(0,0,.01);
+  const geo=new THREE.SphereGeometry(500,60,40);
+  geo.scale(-1,1,1);
+  sphere360=new THREE.Mesh(geo,new THREE.MeshBasicMaterial());
+  scene360.add(sphere360);
+  window.addEventListener('resize',()=>{renderer360.setSize(innerWidth,innerHeight);camera360.aspect=innerWidth/innerHeight;camera360.updateProjectionMatrix()});
+  canvas.addEventListener('mousedown', e=>{isDragging360=true;dragLastX=e.clientX;lonVel=0});
+  canvas.addEventListener('touchstart',e=>{isDragging360=true;dragLastX=e.touches[0].clientX;lonVel=0},{passive:true});
+  window.addEventListener('mousemove', e=>{if(isDragging360){const dx=e.clientX-dragLastX;lon-=dx*.2;lat=Math.max(-85,Math.min(85,lat+(e.movementY||0)*.1));lonVel=dx*.2;dragLastX=e.clientX}});
+  window.addEventListener('touchmove', e=>{if(isDragging360){const dx=e.touches[0].clientX-dragLastX;lon-=dx*.2;lonVel=dx*.2;dragLastX=e.touches[0].clientX}},{passive:true});
+  window.addEventListener('mouseup', ()=>{isDragging360=false});
+  window.addEventListener('touchend',()=>{isDragging360=false});
+  canvas.addEventListener('wheel',e=>{camera360.fov=Math.max(30,Math.min(100,camera360.fov+e.deltaY*.05));camera360.updateProjectionMatrix()},{passive:true});
+  animate360();
+}
+
+function animate360(){
+  requestAnimationFrame(animate360);
+  if(!gyroActivo){
+    if(!isDragging360){lon-=lonVel*.9;lonVel*=.92}
+    const phi=THREE.MathUtils.degToRad(90-lat);
+    const theta=THREE.MathUtils.degToRad(lon);
+    camera360.lookAt(500*Math.sin(phi)*Math.cos(theta),500*Math.cos(phi),500*Math.sin(phi)*Math.sin(theta));
+  }
+  renderer360.render(scene360,camera360);
+}
+
+function cargar360Texture(url){
+  new THREE.TextureLoader().load(url,tex=>{tex.mapping=THREE.EquirectangularReflectionMapping;sphere360.material.map=tex;sphere360.material.needsUpdate=true});
+}
+
+function verificarGyro(es360){
+  if(!es360||gyroActivo) return;
+  if(typeof DeviceOrientationEvent!=='undefined'){
+    if(typeof DeviceOrientationEvent.requestPermission==='function'){
+      if(!gyroPromptMostrado){gyroPromptMostrado=true;document.getElementById('gyro-prompt').style.display='block'}
+    } else {activarGyro()}
+  }
+}
+
+window.pedirPermiso360=function(){
+  document.getElementById('gyro-prompt').style.display='none';
+  DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')activarGyro();else alert('Podés explorar arrastrando.')}).catch(activarGyro);
+}
+
+function activarGyro(){
+  gyroActivo=true;
+  mostrarBadge('🌐 360° · Giroscopio activo — mové el iPhone');
+  window.addEventListener('deviceorientation',e=>{
+    if(!gyroActivo||!e.alpha) return;
+    const portrait=innerHeight>innerWidth;
+    const lonG=portrait?-e.alpha:-(e.gamma||0)*2;
+    const latG=portrait?Math.min(85,Math.max(-85,e.beta-90)):Math.min(85,Math.max(-85,e.beta));
+    const phi=THREE.MathUtils.degToRad(90-latG);
+    const theta=THREE.MathUtils.degToRad(lonG);
+    camera360.lookAt(500*Math.sin(phi)*Math.cos(theta),500*Math.cos(phi),500*Math.sin(phi)*Math.sin(theta));
+  },true);
+}
+
+// VISOR NORMAL
+let drag={active:false,startX:0,startY:0,offX:0,offY:0,curX:0,curY:0};
+const visorN=document.getElementById('visor-normal');
+const fondoN=document.getElementById('fondo-normal');
+const DRAG_F=.035,MAX_OFF=8;
+visorN.addEventListener('mousedown', e=>{drag.active=true;drag.startX=e.clientX;drag.startY=e.clientY;visorN.classList.add('dragging')});
+visorN.addEventListener('touchstart',e=>{drag.active=true;drag.startX=e.touches[0].clientX;drag.startY=e.touches[0].clientY;visorN.classList.add('dragging')},{passive:true});
+window.addEventListener('mousemove', e=>{if(drag.active){drag.curX=Math.max(-MAX_OFF,Math.min(MAX_OFF,drag.offX+(e.clientX-drag.startX)*DRAG_F));drag.curY=Math.max(-MAX_OFF,Math.min(MAX_OFF,drag.offY+(e.clientY-drag.startY)*DRAG_F));fondoN.style.transform=`translate(${drag.curX}%,${drag.curY}%)`}});
+window.addEventListener('touchmove', e=>{if(drag.active){drag.curX=Math.max(-MAX_OFF,Math.min(MAX_OFF,drag.offX+(e.touches[0].clientX-drag.startX)*DRAG_F));drag.curY=Math.max(-MAX_OFF,Math.min(MAX_OFF,drag.offY+(e.touches[0].clientY-drag.startY)*DRAG_F));fondoN.style.transform=`translate(${drag.curX}%,${drag.curY}%)`}},{passive:true});
+function stopDragN(){drag.active=false;drag.offX=drag.curX;drag.offY=drag.curY;visorN.classList.remove('dragging');setTimeout(()=>{fondoN.style.transition='transform 3s cubic-bezier(.16,1,.3,1)';fondoN.style.transform='translate(0,0)';setTimeout(()=>{fondoN.style.transition='';drag.offX=drag.offY=0},3000)},1200)}
+window.addEventListener('mouseup',stopDragN);
+window.addEventListener('touchend',stopDragN);
+
+// CARGAR PROPIEDAD
+async function cargar(){
+  if(!propId){cargarDemo();return}
+  try{const res=await fetch('/api/inmuebles/'+propId);const prop=await res.json();construirTour(prop)}catch{cargarDemo()}
+}
+
+function construirTour(prop){
+  tourData=prop;
+  document.getElementById('prop-h').textContent=prop.titulo||'Propiedad';
+  const imgs=Array.isArray(prop.imagenes)?prop.imagenes:[];
+  if(!imgs.length){cargarDemo();return}
+  const meta=prop.tour_meta?(typeof prop.tour_meta==='string'?JSON.parse(prop.tour_meta):prop.tour_meta):{};
+  ambientes=imgs.map((url,i)=>{const m=meta[i]||{};return{id:i,foto:url,nombre:m.nombre||nombreAuto(i),desc:m.desc||'',es360:m.es360||false,ancho:m.ancho||null,largo:m.largo||null,alto:m.alto||2.60,hotspots:construirHotspots(i,imgs.length)}});
+  iniciar();
+}
+
+function cargarDemo(){
+  document.getElementById('prop-h').textContent='Casa 3 dorm · Banda Norte';
+  ambientes=[
+    {id:0,nombre:'Living comedor',desc:'Amplio con orientacion Norte. Piso de madera flotante.',foto:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1600&q=80',es360:false,ancho:5.8,largo:4.2,alto:2.60,hotspots:[{targetIdx:1,x:82,y:50,label:'Cocina',icon:'▶'},{targetIdx:2,x:16,y:50,label:'Dormitorio',icon:'◀'}]},
+    {id:1,nombre:'Cocina',desc:'Mesada de granito, alacenas hasta el techo.',foto:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600&q=80',es360:false,ancho:3.2,largo:2.8,alto:2.60,hotspots:[{targetIdx:0,x:16,y:50,label:'Living',icon:'◀'},{targetIdx:3,x:82,y:50,label:'Banio',icon:'▶'}]},
+    {id:2,nombre:'Dormitorio principal',desc:'En suite con vestidor y vista al jardin.',foto:'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=1600&q=80',es360:false,ancho:4.5,largo:3.8,alto:2.60,hotspots:[{targetIdx:0,x:82,y:50,label:'Living',icon:'▶'},{targetIdx:3,x:16,y:50,label:'Banio',icon:'◀'}]},
+    {id:3,nombre:'Banio en suite',desc:'Ducha doble con mampara de vidrio.',foto:'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1600&q=80',es360:false,ancho:2.4,largo:1.8,alto:2.60,hotspots:[{targetIdx:2,x:16,y:50,label:'Dormitorio',icon:'◀'},{targetIdx:4,x:82,y:50,label:'Patio',icon:'▶'}]},
+    {id:4,nombre:'Patio y jardin',desc:'Parquizado, galeria cubierta y parrilla.',foto:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80',es360:false,ancho:8.0,largo:6.5,alto:null,hotspots:[{targetIdx:3,x:16,y:50,label:'Banio',icon:'◀'},{targetIdx:0,x:82,y:50,label:'Living',icon:'▶'}]}
+  ];
+  iniciar();
+}
+
+function construirHotspots(idx,total){const h=[];if(idx>0)h.push({targetIdx:idx-1,x:14,y:50,label:'Anterior',icon:'◀'});if(idx<total-1)h.push({targetIdx:idx+1,x:86,y:50,label:'Siguiente',icon:'▶'});return h}
+const NOMBRES=['Living','Comedor','Cocina','Dormitorio principal','Dormitorio 2','Dormitorio 3','Banio principal','Banio 2','Garage','Patio','Jardin','Estudio','Hall','Lavadero'];
+function nombreAuto(i){return NOMBRES[i]||'Ambiente '+(i+1)}
+
+function iniciar(){
+  document.getElementById('cnt-t').textContent=ambientes.length;
+  init360();
+  construirThumbs();
+  irAmbiente(0,false);
+  if(!isAdmin)setTimeout(()=>document.getElementById('btn-contacto').style.display='block',4000);
+  if(isAdmin)document.getElementById('canvas-360').ondblclick=()=>abrirEditor(ambienteActual);
+  if(isAdmin)document.getElementById('visor-normal').ondblclick=()=>abrirEditor(ambienteActual);
+}
+
+function construirThumbs(){
+  const nav=document.getElementById('nav-thumbs');nav.innerHTML='';
+  ambientes.forEach((a,i)=>{const d=document.createElement('div');d.className='thumb-item';d.id='th-'+i;d.innerHTML='<img src="'+a.foto+'" loading="lazy"/>'+(a.es360?'<span class="thumb-360">360</span>':'');d.onclick=()=>irAmbiente(i);nav.appendChild(d)});
+}
+
+function irAmbiente(idx,animado=true){
+  if(idx<0||idx>=ambientes.length)return;
+  const ov=document.getElementById('transition-ov');
+  const go=()=>{
+    ambienteActual=idx;
+    const a=ambientes[idx];
+    const c360=document.getElementById('canvas-360');
+    if(a.es360){c360.style.display='block';visorN.style.display='none';cargar360Texture(a.foto);lon=0;lat=0;lonVel=0;mostrarBadge('Arrastra para explorar en 360');setTimeout(()=>hideBadge(),4000);verificarGyro(true)}
+    else{c360.style.display='none';visorN.style.display='block';fondoN.style.backgroundImage='url('+a.foto+')';drag.offX=drag.offY=0;fondoN.style.transform='translate(0,0)';hideBadge()}
+    document.getElementById('cnt-n').textContent=idx+1;
+    document.getElementById('amb-nombre').textContent=a.nombre;
+    document.getElementById('amb-desc').textContent=a.desc;
+    const m2el=document.getElementById('amb-m2');
+    if(a.ancho&&a.largo){m2el.textContent=(a.ancho*a.largo).toFixed(1)+' m²';m2el.style.display='inline-block'}else{m2el.style.display='none'}
+    document.querySelectorAll('.thumb-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
+    renderHotspots(a);renderMedidas(a);
+  };
+  if(animado){ov.classList.add('fade-in');setTimeout(()=>{go();ov.classList.remove('fade-in')},300)}else{go()}
+}
+
+function renderHotspots(a){
+  const c=document.getElementById('hotspots');c.innerHTML='';
+  (a.hotspots||[]).forEach(h=>{const d=document.createElement('div');d.className='hotspot';d.style.cssText='left:'+h.x+'%;top:'+h.y+'%';d.innerHTML='<div class="hotspot-inner"><div class="hotspot-circle">'+(h.icon||'>')+'</div><div class="hotspot-label">'+h.label+'</div></div>';d.onclick=e=>{e.stopPropagation();irAmbiente(h.targetIdx)};c.appendChild(d)});
+}
+
+function renderMedidas(a){
+  const layer=document.getElementById('medidas-layer');layer.innerHTML='';
+  const tags=[];
+  if(a.ancho)tags.push({x:50,y:82,label:'Ancho',val:a.ancho.toFixed(1)+' m'});
+  if(a.largo)tags.push({x:76,y:68,label:'Largo',val:a.largo.toFixed(1)+' m'});
+  if(a.alto)tags.push({x:88,y:38,label:'Altura',val:a.alto.toFixed(2)+' m'});
+  if(a.ancho&&a.largo)tags.push({x:50,y:68,label:'Superficie',val:(a.ancho*a.largo).toFixed(1)+' m\xb2'});
+  tags.forEach(t=>{const d=document.createElement('div');d.className='medida-tag';d.style.cssText='left:'+t.x+'%;top:'+t.y+'%';d.innerHTML='<div class="medida-pill"><span class="dim-label">'+t.label+'</span><span class="dim-value">'+t.val+'</span></div>';layer.appendChild(d)});
+}
+
+let badgeTimer;
+function mostrarBadge(txt){const b=document.getElementById('badge-modo');b.textContent=txt;b.style.display='block';clearTimeout(badgeTimer)}
+function hideBadge(){badgeTimer=setTimeout(()=>document.getElementById('badge-modo').style.display='none',2000)}
+
+function toggleMedidas(){document.body.classList.toggle('medidas-mode');document.getElementById('btn-med').classList.toggle('active')}
+function toggleFS(){if(!document.fullscreenElement){document.documentElement.requestFullscreen?.();document.getElementById('btn-fs').textContent='Salir pantalla'}else{document.exitFullscreen?.();document.getElementById('btn-fs').textContent='Pantalla completa'}}
+
+let tStart=0;
+document.addEventListener('touchstart',e=>tStart=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tStart;if(Math.abs(dx)>65&&!isDragging360){if(dx<0)irAmbiente(ambienteActual+1);else irAmbiente(ambienteActual-1)}});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')irAmbiente(ambienteActual+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')irAmbiente(ambienteActual-1);if(e.key==='m'||e.key==='M')toggleMedidas();if(e.key==='Escape')cerrarModal()});
+
+let editIdx=-1;
+function abrirEditor(idx){
+  editIdx=idx;const a=ambientes[idx];
+  document.getElementById('me-nombre').value=a.nombre||'';
+  document.getElementById('me-desc').value=a.desc||'';
+  document.getElementById('me-es360').checked=a.es360||false;
+  document.getElementById('me-ancho').value=a.ancho||'';
+  document.getElementById('me-largo').value=a.largo||'';
+  document.getElementById('me-alto').value=a.alto||2.60;
+  calcM2();
+  document.getElementById('m-titulo').textContent='Editar: '+a.nombre;
+  document.getElementById('modal-ed').classList.add('open');
+}
+['me-ancho','me-largo'].forEach(id=>document.getElementById(id).addEventListener('input',calcM2));
+function calcM2(){const a=parseFloat(document.getElementById('me-ancho').value)||0;const l=parseFloat(document.getElementById('me-largo').value)||0;document.getElementById('me-m2').value=a&&l?(a*l).toFixed(2)+' m\xb2':''}
+
+function guardarAmbiente(){
+  if(editIdx<0)return;
+  const a=ambientes[editIdx];
+  a.nombre=document.getElementById('me-nombre').value.trim()||a.nombre;
+  a.desc=document.getElementById('me-desc').value.trim();
+  a.es360=document.getElementById('me-es360').checked;
+  a.ancho=parseFloat(document.getElementById('me-ancho').value)||null;
+  a.largo=parseFloat(document.getElementById('me-largo').value)||null;
+  a.alto=parseFloat(document.getElementById('me-alto').value)||2.60;
+  renderMedidas(a);
+  document.getElementById('amb-nombre').textContent=a.nombre;
+  document.getElementById('amb-desc').textContent=a.desc;
+  const m2el=document.getElementById('amb-m2');
+  if(a.ancho&&a.largo){m2el.textContent=(a.ancho*a.largo).toFixed(1)+' m\xb2';m2el.style.display='inline-block'}else{m2el.style.display='none'}
+  construirThumbs();document.querySelector('#th-'+editIdx)?.classList.add('active');
+  if(propId)guardarMeta();
+  cerrarModal();
+}
+function cerrarModal(){document.getElementById('modal-ed').classList.remove('open');editIdx=-1}
+async function guardarMeta(){const meta={};ambientes.forEach((a,i)=>meta[i]={nombre:a.nombre,desc:a.desc,es360:a.es360,ancho:a.ancho,largo:a.largo,alto:a.alto});await fetch('/api/inmuebles/'+propId+'/tour-meta',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tourMeta:meta})}).catch(()=>{})}
+
+function consultarProp(){const titulo=tourData?.titulo||document.getElementById('prop-h').textContent;window.open('https://wa.me/5493584000000?text='+encodeURIComponent('Hola Vanina! Vi el tour virtual de "'+titulo+'" y me gustaria mas informacion.'),'_blank')}
+
+cargar();
+<\/script>
+</body>
+</html>
