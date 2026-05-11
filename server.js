@@ -88,18 +88,35 @@ function pushNotif(n) {
 // KEEP-ALIVE — Render no duerme
 // =========================
 // Proxy de imágenes (para canvas CORS en generador de posts)
-app.get("/api/proxy-image", async (req, res) => {
+// Usa https/http nativo — sin node-fetch, compatible con cualquier versión de Node
+app.get("/api/proxy-image", (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send("Falta url");
-  try {
-    const fetch = (await import("node-fetch")).default;
-    const r = await fetch(url);
-    const buf = await r.buffer();
+
+  let parsedUrl;
+  try { parsedUrl = new URL(url); } catch(e) { return res.status(400).send("URL inválida"); }
+
+  const lib = parsedUrl.protocol === "https:" ? https : http;
+
+  const proxyReq = lib.get(url, (r) => {
+    if (r.statusCode !== 200) {
+      return res.status(r.statusCode || 502).send("Error origen: " + r.statusCode);
+    }
     res.set("Access-Control-Allow-Origin", "*");
-    res.set("Content-Type", r.headers.get("content-type") || "image/jpeg");
+    res.set("Content-Type", r.headers["content-type"] || "image/jpeg");
     res.set("Cache-Control", "public, max-age=86400");
-    res.send(buf);
-  } catch(e) { res.status(500).send("Error: " + e.message); }
+    r.pipe(res);
+  });
+
+  proxyReq.on("error", (e) => {
+    console.error("Proxy image error:", e.message);
+    if (!res.headersSent) res.status(500).send("Error proxy: " + e.message);
+  });
+
+  proxyReq.setTimeout(10000, () => {
+    proxyReq.destroy();
+    if (!res.headersSent) res.status(504).send("Timeout");
+  });
 });
 
 // Generador de posts Instagram
