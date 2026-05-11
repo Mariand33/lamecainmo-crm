@@ -88,35 +88,18 @@ function pushNotif(n) {
 // KEEP-ALIVE — Render no duerme
 // =========================
 // Proxy de imágenes (para canvas CORS en generador de posts)
-// Usa https/http nativo — sin node-fetch, compatible con cualquier versión de Node
-app.get("/api/proxy-image", (req, res) => {
+app.get("/api/proxy-image", async (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send("Falta url");
-
-  let parsedUrl;
-  try { parsedUrl = new URL(url); } catch(e) { return res.status(400).send("URL inválida"); }
-
-  const lib = parsedUrl.protocol === "https:" ? https : http;
-
-  const proxyReq = lib.get(url, (r) => {
-    if (r.statusCode !== 200) {
-      return res.status(r.statusCode || 502).send("Error origen: " + r.statusCode);
-    }
+  try {
+    const fetch = (await import("node-fetch")).default;
+    const r = await fetch(url);
+    const buf = await r.buffer();
     res.set("Access-Control-Allow-Origin", "*");
-    res.set("Content-Type", r.headers["content-type"] || "image/jpeg");
+    res.set("Content-Type", r.headers.get("content-type") || "image/jpeg");
     res.set("Cache-Control", "public, max-age=86400");
-    r.pipe(res);
-  });
-
-  proxyReq.on("error", (e) => {
-    console.error("Proxy image error:", e.message);
-    if (!res.headersSent) res.status(500).send("Error proxy: " + e.message);
-  });
-
-  proxyReq.setTimeout(10000, () => {
-    proxyReq.destroy();
-    if (!res.headersSent) res.status(504).send("Timeout");
-  });
+    res.send(buf);
+  } catch(e) { res.status(500).send("Error: " + e.message); }
 });
 
 // Generador de posts Instagram
@@ -231,29 +214,6 @@ app.post("/login", (req, res) => {
   res.redirect("/dashboard");
 });
 
-
-// =========================
-// MIDDLEWARE — PROTECCIÓN DE RUTAS
-// =========================
-const RUTAS_PUBLICAS = new Set([
-  '/', '/funnel', '/funnel-publico.html',
-  '/login', '/login.html',
-  '/ping', '/health',
-  '/api/inmuebles-publicos',
-  '/api/leads',
-  '/api/cata-chat',
-]);
-
-function requireLogin(req, res, next) {
-  if (RUTAS_PUBLICAS.has(req.path)) return next();
-  if (/.(css|js|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|map)$/i.test(req.path)) return next();
-  if (req.session && req.session.user) return next();
-  if (req.path.startsWith('/api/')) return res.status(401).json({ ok: false, error: 'No autorizado. Iniciá sesión.' });
-  res.redirect('/login?next=' + encodeURIComponent(req.originalUrl));
-}
-
-app.use(requireLogin);
-
 // =========================
 // INMUEBLES
 // =========================
@@ -282,24 +242,6 @@ app.get("/api/inmuebles/:id", async (req, res) => {
     if (error) return res.status(404).json({ error: "No encontrado" });
     res.json(sbToInm(data));
   } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-// Crear inmueble vía JSON (para importar-drive — fotos ya son URLs públicas)
-app.post("/api/inmuebles-crear", async (req, res) => {
-  try {
-    const payload = inmToSb({
-      ...req.body,
-      estadoPublicacion: req.body.estadoPublicacion || "borrador",
-    });
-    if (Array.isArray(req.body.imagenes)) payload.imagenes = req.body.imagenes;
-    const { error } = await supabase.from("inmuebles").insert([payload]);
-    if (error) return res.status(500).json({ ok: false, error: error.message });
-    pushNotif({ tipo: "nuevo_inmueble", titulo: req.body.titulo, zona: req.body.zona });
-    res.json({ ok: true });
-  } catch (e) {
-    console.error("Error /api/inmuebles-crear:", e.message);
-    res.status(500).json({ ok: false, error: e.message });
-  }
 });
 
 app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "video" }]), async (req, res) => {
@@ -716,158 +658,171 @@ app.post("/api/cata-chat", async (req, res) => {
 });
 
 // =========================
-// IMPORTAR DESDE GOOGLE DRIVE
+// RADAR PROSPECTOS
 // =========================
-// Sirve la página
-app.get("/importar-drive",     (_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
-app.get("/importar-drive.html",(_, res) => res.sendFile(path.join(__dirname, "Público", "importar-drive.html")));
 
-// Extrae fotos de una carpeta Drive pública y las sube a Supabase
-// POST /api/importar-drive  { driveUrl: "https://drive.google.com/drive/folders/..." }
-app.post("/api/importar-drive", async (req, res) => {
-  try {
-    const { driveUrl } = req.body;
-    if (!driveUrl) return res.status(400).json({ ok: false, error: "Falta driveUrl" });
+// Perfiles predefinidos de búsqueda
+const PERFILES_PROSPECTOS = {
+  propietarios: [
+    "inmobiliaria", "escribanía", "estudio juridico", "contador", "arquitecto",
+    "constructora", "empresa constructora", "desarrolladora inmobiliaria"
+  ],
+  servicios: [
+    "constructora", "desarrolladora", "empresa construccion", "carpinteria",
+    "electricista", "plomero", "pintor", "decoradora", "muebleria", "cerrajeria",
+    "empresa de mudanzas", "storage deposito"
+  ]
+};
 
-    // Extraer folder ID del link
-    const matchFolder = driveUrl.match(/\/folders\/([a-zA-Z0-9_-]+)/);
-    const matchFolderQ = driveUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    const folderId = (matchFolder && matchFolder[1]) || (matchFolderQ && matchFolderQ[1]);
-    if (!folderId) return res.status(400).json({ ok: false, error: "No se pudo extraer el ID de la carpeta. Asegurate de compartir una carpeta (no un archivo)." });
+// Buscar prospectos usando Google Places API
+app.post("/api/radar-prospectos/buscar", async (req, res) => {
+  const { sector, perfil, radio = 5000, lat = -33.1232, lng = -64.3493 } = req.body;
+  // lat/lng default = Río Cuarto centro
 
-    // Scrappear el HTML de Drive para obtener los thumbnails/IDs de archivos
-    const drivePageUrl = `https://drive.google.com/drive/folders/${folderId}`;
-
-    // Usamos la API pública de exportación de Drive para listar archivos
-    // (sin credenciales — solo funciona con carpetas públicas)
-    const apiUrl = `https://drive.google.com/drive/folders/${folderId}`;
-
-    // Fetch del HTML de la carpeta Drive
-    const htmlContent = await new Promise((resolve, reject) => {
-      const options = {
-        hostname: "drive.google.com",
-        path: `/drive/folders/${folderId}`,
-        method: "GET",
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-          "Accept-Language": "es-AR,es;q=0.9",
-        }
-      };
-      const req2 = https.get(options, (r) => {
-        let raw = "";
-        r.on("data", c => raw += c);
-        r.on("end", () => resolve(raw));
-      });
-      req2.on("error", reject);
-      req2.setTimeout(15000, () => { req2.destroy(); reject(new Error("Timeout")); });
+  const googleKey = process.env.GOOGLE_PLACES_API_KEY;
+  if (!googleKey) {
+    return res.status(400).json({
+      ok: false,
+      error: "Falta GOOGLE_PLACES_API_KEY en las variables de entorno de Render.",
+      ayuda: "Conseguila gratis en console.cloud.google.com → Places API"
     });
-
-    // Extraer IDs de archivos de imagen del HTML de Drive
-    // Drive embeds file IDs in data attributes and src urls
-    const fileIdPattern = /\/file\/d\/([a-zA-Z0-9_-]{20,})/g;
-    const ids = new Set();
-    let m;
-    while ((m = fileIdPattern.exec(htmlContent)) !== null) {
-      ids.add(m[1]);
-    }
-
-    // También buscar en formato alternativo
-    const altPattern = /"([a-zA-Z0-9_-]{33,})" *,/g;
-    while ((m = altPattern.exec(htmlContent)) !== null) {
-      ids.add(m[1]);
-    }
-
-    if (ids.size === 0) {
-      return res.status(422).json({
-        ok: false,
-        error: "No se encontraron imágenes. Verificá que la carpeta sea pública (Cualquiera con el link) y contenga fotos JPG/PNG.",
-        folderId
-      });
-    }
-
-    // Descargar y subir cada imagen a Supabase (máx 20)
-    const fileIds = [...ids].slice(0, 20);
-    const urls = [];
-    const errores = [];
-
-    for (const fileId of fileIds) {
-      try {
-        // URL de descarga directa de Google Drive
-        const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-
-        const imgBuffer = await new Promise((resolve, reject) => {
-          const follow = (url, redirects = 0) => {
-            if (redirects > 5) return reject(new Error("Demasiados redirects"));
-            const parsedUrl = new URL(url);
-            const lib = parsedUrl.protocol === "https:" ? https : http;
-            lib.get(url, { headers: { "User-Agent": "Mozilla/5.0" } }, (r) => {
-              if (r.statusCode === 301 || r.statusCode === 302) {
-                return follow(r.headers.location, redirects + 1);
-              }
-              if (r.statusCode !== 200) return reject(new Error("HTTP " + r.statusCode));
-              const contentType = r.headers["content-type"] || "";
-              if (!contentType.startsWith("image/")) return reject(new Error("No es imagen: " + contentType));
-              const chunks = [];
-              r.on("data", c => chunks.push(c));
-              r.on("end", () => resolve({ buffer: Buffer.concat(chunks), contentType }));
-            }).on("error", reject).setTimeout(10000, () => reject(new Error("Timeout")));
-          };
-          follow(downloadUrl);
-        });
-
-        const url = await subirASupabase(imgBuffer.buffer, `drive-${fileId}.jpg`, imgBuffer.contentType);
-        if (url) urls.push(url);
-      } catch (e) {
-        errores.push({ fileId, error: e.message });
-      }
-    }
-
-    // Extraer nombre sugerido de la carpeta desde el <title> del HTML
-    const titleMatch = htmlContent.match(/<title>([^<]+)<\/title>/);
-    const tituloSugerido = titleMatch
-      ? titleMatch[1].replace(" - Google Drive", "").replace(" – Google Drive", "").trim()
-      : "";
-
-    res.json({
-      ok: true,
-      total: fileIds.length,
-      importadas: urls.length,
-      errores: errores.length,
-      urls,
-      tituloSugerido,
-      folderId,
-    });
-
-  } catch (e) {
-    console.error("Error importar-drive:", e.message);
-    res.status(500).json({ ok: false, error: "Error interno: " + e.message });
   }
-});
 
+  const query = sector || (PERFILES_PROSPECTOS[perfil] || ["negocio"])[0];
 
-// =========================
-// TOUR VIRTUAL
-// =========================
-app.get('/tour-virtual',     (_, res) => res.sendFile(path.join(__dirname, 'Público', 'tour-virtual.html')));
-app.get('/tour-virtual.html',(_, res) => res.sendFile(path.join(__dirname, 'Público', 'tour-virtual.html')));
-
-// Guardar metadatos del tour (nombres de ambientes + medidas)
-// POST /api/inmuebles/:id/tour-meta  { tourMeta: { 0:{nombre,desc,ancho,largo,alto}, ... } }
-app.post('/api/inmuebles/:id/tour-meta', async (req, res) => {
   try {
-    const { tourMeta } = req.body;
-    if (!tourMeta) return res.status(400).json({ ok: false, error: 'Falta tourMeta' });
-    const { error } = await supabase
-      .from('inmuebles')
-      .update({ tour_meta: tourMeta })
-      .eq('id', req.params.id);
-    if (error) return res.status(500).json({ ok: false, error: error.message });
-    res.json({ ok: true });
-  } catch (e) {
+    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
+
+    // Google Places Text Search
+    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query + " Río Cuarto Córdoba Argentina")}&location=${lat},${lng}&radius=${radio}&key=${googleKey}&language=es`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
+      return res.status(500).json({ ok: false, error: `Google Places error: ${data.status}`, detalle: data.error_message });
+    }
+
+    const resultados = (data.results || []).slice(0, 20).map(p => ({
+      placeId:   p.place_id,
+      nombre:    p.name,
+      direccion: p.formatted_address || p.vicinity || "",
+      rating:    p.rating || null,
+      tipos:     p.types || [],
+      lat:       p.geometry?.location?.lat,
+      lng:       p.geometry?.location?.lng,
+      tieneWeb:  false, // se completa con Place Details
+      telefono:  null,
+      web:       null,
+      estado:    "nuevo"
+    }));
+
+    // Enriquecer con Place Details (teléfono + web) — hasta 10 para no gastar quota
+    for (const r of resultados.slice(0, 10)) {
+      try {
+        const det = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${r.placeId}&fields=formatted_phone_number,website&key=${googleKey}&language=es`);
+        const detData = await det.json();
+        const result = detData.result || {};
+        r.telefono = result.formatted_phone_number || null;
+        r.web      = result.website || null;
+        r.tieneWeb = !!result.website;
+      } catch(e) { /* sigue */ }
+    }
+
+    res.json({ ok: true, total: resultados.length, resultados, query });
+  } catch(e) {
+    console.error("Radar prospectos error:", e.message);
     res.status(500).json({ ok: false, error: e.message });
   }
 });
+
+// Generar mensaje WhatsApp personalizado con IA
+app.post("/api/radar-prospectos/mensaje", async (req, res) => {
+  const { nombre, sector, tieneWeb, perfil, servicio } = req.body;
+  if (!nombre) return res.status(400).json({ ok: false, error: "Falta nombre" });
+
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!anthropicKey) return res.status(400).json({ ok: false, error: "Falta ANTHROPIC_API_KEY" });
+
+  const esServicio = perfil === "servicios";
+
+  const system = `Sos Vanina Buzzacchi, inmobiliaria en Río Cuarto. Escribís mensajes de WhatsApp cortos, cálidos y directos. Sin emojis en exceso. Máximo 4 líneas. Nunca mencionés que sos una IA.`;
+
+  const prompt = esServicio
+    ? `Generá un mensaje de WhatsApp para ofrecerle a "${nombre}" (${sector}) el servicio de tour virtual 360° y publicación en redes sociales para sus propiedades o proyectos. Mencioná que lo hacemos nosotros y que tienen resultados reales en Río Cuarto.`
+    : `Generá un mensaje de WhatsApp para "${nombre}" (${sector}) preguntando si tienen propiedades para vender o alquilar. Ofrecé tasación gratuita y mencioná que trabajamos en Río Cuarto con resultados reales. ${!tieneWeb ? "No tienen página web, así que podés ofrecerles también mayor visibilidad digital." : ""}`;
+
+  try {
+    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        system,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    const mensaje = data.content?.[0]?.text || "Hola! Te contactamos de Buzzacchi Inmuebles.";
+    res.json({ ok: true, mensaje });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// Guardar prospecto en Supabase
+app.post("/api/radar-prospectos/guardar", async (req, res) => {
+  const { nombre, telefono, web, direccion, sector, perfil, mensaje, estado = "nuevo" } = req.body;
+  try {
+    const { data, error } = await supabase
+      .from("radar_prospectos")
+      .insert([{ nombre, telefono, web, direccion, sector, perfil, mensaje, estado, creado_en: new Date().toISOString() }])
+      .select().single();
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    res.json({ ok: true, id: data.id });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// Listar prospectos guardados
+app.get("/api/radar-prospectos/lista", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("radar_prospectos")
+      .select("*")
+      .order("creado_en", { ascending: false })
+      .limit(200);
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    res.json({ ok: true, items: data || [] });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// Actualizar estado de prospecto
+app.post("/api/radar-prospectos/estado", async (req, res) => {
+  const { id, estado } = req.body;
+  try {
+    const { error } = await supabase
+      .from("radar_prospectos")
+      .update({ estado })
+      .eq("id", id);
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// Rutas de página
+app.get("/radar-prospectos",      (_, res) => res.sendFile(path.join(__dirname, "Público", "radar-prospectos.html")));
+app.get("/radar-prospectos.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "radar-prospectos.html")));
 
 // =========================
 // HEALTH CHECK
