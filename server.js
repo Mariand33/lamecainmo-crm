@@ -231,6 +231,29 @@ app.post("/login", (req, res) => {
   res.redirect("/dashboard");
 });
 
+
+// =========================
+// MIDDLEWARE — PROTECCIÓN DE RUTAS
+// =========================
+const RUTAS_PUBLICAS = new Set([
+  '/', '/funnel', '/funnel-publico.html',
+  '/login', '/login.html',
+  '/ping', '/health',
+  '/api/inmuebles-publicos',
+  '/api/leads',
+  '/api/cata-chat',
+]);
+
+function requireLogin(req, res, next) {
+  if (RUTAS_PUBLICAS.has(req.path)) return next();
+  if (/.(css|js|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|map)$/i.test(req.path)) return next();
+  if (req.session && req.session.user) return next();
+  if (req.path.startsWith('/api/')) return res.status(401).json({ ok: false, error: 'No autorizado. Iniciá sesión.' });
+  res.redirect('/login?next=' + encodeURIComponent(req.originalUrl));
+}
+
+app.use(requireLogin);
+
 // =========================
 // INMUEBLES
 // =========================
