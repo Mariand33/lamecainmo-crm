@@ -91,7 +91,7 @@
     /* PREVIEW */
     .preview-panel { display:flex; flex-direction:column; gap:16px; }
     .canvas-wrap { position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--border); background:#111; aspect-ratio:1; max-width:520px; }
-    canvas { display:block; width:100%; height:100%; }
+    canvas { display:block; width:100% !important; height:auto !important; max-width:100%; }
 
     .format-tabs { display:flex; gap:6px; }
     .fmt-tab { border:1.5px solid var(--border); background:transparent; border-radius:8px; padding:7px 14px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; color:rgba(255,255,255,.5); cursor:pointer; transition:.15s; letter-spacing:.05em; }
@@ -180,22 +180,22 @@
 
         <div class="ctrl-group">
           <label>Título / Nombre</label>
-          <input type="text" id="ctrlTitulo" placeholder="Castillo Normando" oninput="render()"/>
+          <input type="text" id="ctrlTitulo" oninput="render();renderLivePreview()" placeholder="Castillo Normando"/>
         </div>
 
         <div class="ctrl-group">
           <label>Subtítulo / Zona</label>
-          <input type="text" id="ctrlSubtitulo" placeholder="Banda Norte · Río Cuarto" oninput="render()"/>
+          <input type="text" id="ctrlSubtitulo" oninput="render();renderLivePreview()" placeholder="Banda Norte · Río Cuarto"/>
         </div>
 
         <div class="ctrl-group">
           <label>Precio</label>
-          <input type="text" id="ctrlPrecio" placeholder="USD 185.000" oninput="render()"/>
+          <input type="text" id="ctrlPrecio" oninput="render();renderLivePreview()" placeholder="USD 185.000"/>
         </div>
 
         <div class="ctrl-group">
           <label>Frase / Descripción corta</label>
-          <textarea id="ctrlFrase" placeholder="Naturaleza y confort" oninput="render()"></textarea>
+          <textarea id="ctrlFrase" oninput="render();renderLivePreview()" placeholder="Naturaleza y confort"></textarea>
         </div>
 
         <div class="ctrl-group">
@@ -231,12 +231,98 @@
           <button class="fmt-tab" data-ratio="916" onclick="setRatio(this,9,16)">Story 9:16</button>
           <button class="fmt-tab" data-ratio="43" onclick="setRatio(this,4,3)">Landscape 4:3</button>
         </div>
-        <div class="canvas-wrap" id="canvasWrap">
-          <canvas id="postCanvas" width="1080" height="1080"></canvas>
-          <div class="loading-overlay" id="loadingOverlay">Generando...</div>
+
+        <!-- VISTA PREVIA HTML (inmediata, sin canvas) -->
+        <div id="livePreview" style="
+          position:relative; border-radius:16px; overflow:hidden;
+          border:1px solid rgba(255,255,255,.08); background:#0a1a10;
+          aspect-ratio:1; max-width:520px; width:100%;
+        ">
+          <!-- Foto de fondo -->
+          <div id="prevFoto" style="
+            position:absolute; inset:0;
+            background-size:cover; background-position:center;
+            transition:background-image .25s;
+          "></div>
+          <!-- Overlay degradado -->
+          <div id="prevOverlay" style="
+            position:absolute; inset:0;
+            background:linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%);
+          "></div>
+          <!-- Verde marca (solo plantilla verde) -->
+          <div id="prevVerde" style="display:none; position:absolute; inset:0;
+            background:linear-gradient(135deg,#0a1e12,#143d2f,#0f2318);">
+            <div style="position:absolute;top:12%;left:7%;width:12%;height:2px;background:#c9a84c;border-radius:2px"></div>
+          </div>
+          <!-- Textos sobre foto -->
+          <div id="prevTextos" style="
+            position:absolute; inset:0;
+            display:flex; flex-direction:column; justify-content:flex-end;
+            padding:6% 7% 5%;
+          ">
+            <div id="prevTitulo" style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(22px,7.5vw,56px);
+              font-style:italic; font-weight:400;
+              color:#fff; line-height:1.1; margin-bottom:2%;
+              text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6);
+            "></div>
+            <div id="prevSubtitulo" style="
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(9px,1.8vw,14px);
+              font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+              color:rgba(255,255,255,.72);
+              text-shadow:0 1px 8px rgba(0,0,0,.8);
+              margin-bottom:1%;
+            "></div>
+            <div id="prevPrecio" style="
+              display:inline-block; align-self:flex-start;
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(10px,2.2vw,17px);
+              font-weight:700; letter-spacing:.06em;
+              background:rgba(201,168,76,.92); color:#0a1e12;
+              padding:.35em .9em; border-radius:30px; margin-bottom:4%;
+            "></div>
+            <!-- LOGO BRANDING abajo izquierda -->
+            <div id="prevBranding" style="margin-top:auto; padding-top:3%;">
+              <div style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:clamp(13px,3.8vw,30px);
+                font-style:italic; font-weight:500; color:#fff;
+                text-shadow:0 2px 12px rgba(0,0,0,.9);
+                line-height:1.1;
+              ">Vanina Buzzacchi</div>
+              <div style="
+                font-family:'Montserrat',sans-serif;
+                font-size:clamp(7px,1.4vw,11px);
+                font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+                color:rgba(255,255,255,.65);
+                text-shadow:0 1px 6px rgba(0,0,0,.8);
+                margin-top:.15em;
+              ">NEGOCIOS INMOBILIARIOS</div>
+            </div>
+          </div>
+          <!-- Frase centrada (plantillas foto-titulo y completo) -->
+          <div id="prevFraseCentro" style="
+            display:none; position:absolute; inset:0;
+            align-items:center; justify-content:center;
+          ">
+            <div id="prevFraseTexto" style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(24px,8vw,64px);
+              font-style:italic; font-weight:300; color:#fff;
+              text-align:center; padding:0 8%;
+              text-shadow:0 2px 20px rgba(0,0,0,.9);
+              line-height:1.15;
+            "></div>
+          </div>
         </div>
+
+        <!-- Canvas oculto — solo para descarga 1080px -->
+        <canvas id="postCanvas" width="1080" height="1080" style="display:none"></canvas>
       </div>
-      <div class="download-row">
+
+      <div class="download-row" style="margin-top:12px">
         <button class="btn btn-gold" onclick="descargar()">⬇ Descargar 1080px PNG</button>
         <span class="hint">Listo para subir a Instagram · Facebook · WhatsApp</span>
       </div>
@@ -254,7 +340,8 @@
 // ══════════════════════════════════════
 let propiedades = [];
 let propSeleccionada = null;
-let imagenActual = null; // HTMLImageElement cargado
+let imagenActual    = null; // HTMLImageElement para canvas (descarga)
+let imagenActualSrc = '';   // URL original para live preview
 let tplActual = 'foto-titulo';
 let overlayColor = 'rgba(0,0,0,0.45)';
 let canvasW = 1080, canvasH = 1080;
@@ -348,9 +435,11 @@ function cambiarImagen(){
 }
 
 async function cargarImagen(src){
-  if (!src){ imagenActual = null; render(); return; }
+  imagenActualSrc = src || '';  // guardar para live preview
+  if (!src){ imagenActual = null; render(); renderLivePreview(); return; }
 
   setStatus('⏳ Cargando imagen…');
+  renderLivePreview(); // mostrar inmediatamente con la URL directa
 
   // Asegurar fuentes cargadas antes de render
   try { await document.fonts.ready; } catch(e){}
@@ -360,27 +449,30 @@ async function cargarImagen(src){
     ? `/api/proxy-image?url=${encodeURIComponent(src)}`
     : src;
 
-  const cargar = (url) => new Promise((res, rej) => {
+  const cargarUrl = (url, usarCors) => new Promise((res, rej) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    if (usarCors) img.crossOrigin = 'anonymous';
     img.onload  = () => res(img);
-    img.onerror = () => rej(new Error('Error cargando: ' + url));
+    img.onerror = () => rej(new Error('fail'));
     img.src = url;
   });
 
-  try {
-    imagenActual = await cargar(proxySrc);
-  } catch {
+  // Estrategia: 1) proxy+cors, 2) directo+cors, 3) directo sin cors (preview ok, descarga puede fallar)
+  let cargada = false;
+  for (const [url, cors] of [[proxySrc, true], [src, true], [src, false]]) {
     try {
-      // Fallback sin proxy
-      imagenActual = await cargar(src);
-    } catch {
-      imagenActual = null;
-      setStatus('⚠ No se pudo cargar la imagen — el post se generará sin foto');
-    }
+      imagenActual = await cargarUrl(url, cors);
+      cargada = true;
+      break;
+    } catch { /* siguiente */ }
+  }
+  if (!cargada) {
+    imagenActual = null;
+    setStatus('⚠ Sin imagen — escribí el texto y descargá igualmente');
   }
   render();
-  setStatus('✅ Imagen cargada · Listo para descargar');
+  renderLivePreview();
+  if (cargada) setStatus('✅ Imagen cargada · Listo para descargar');
 }
 
 // ══════════════════════════════════════
@@ -391,6 +483,7 @@ function setTpl(btn){
   btn.classList.add('active');
   tplActual = btn.dataset.tpl;
   render();
+  renderLivePreview();
 }
 
 function setColor(el){
@@ -398,6 +491,7 @@ function setColor(el){
   el.classList.add('active');
   overlayColor = el.dataset.color;
   render();
+  renderLivePreview();
 }
 
 function setRatio(btn, w, h){
@@ -406,8 +500,8 @@ function setRatio(btn, w, h){
   canvasW = 1080; canvasH = Math.round(1080 * h / w);
   canvas.width  = canvasW;
   canvas.height = canvasH;
-  document.getElementById('canvasWrap').style.aspectRatio = `${w}/${h}`;
   render();
+  renderLivePreview();
 }
 
 // ══════════════════════════════════════
@@ -415,6 +509,9 @@ function setRatio(btn, w, h){
 // ══════════════════════════════════════
 function render(){
   const W = canvasW, H = canvasH;
+  // Asegurar dimensiones correctas del canvas
+  if (canvas.width !== W)  canvas.width  = W;
+  if (canvas.height !== H) canvas.height = H;
   ctx.clearRect(0, 0, W, H);
 
   if (tplActual === 'verde-frase'){
@@ -422,6 +519,79 @@ function render(){
   } else {
     renderFoto(W, H);
   }
+}
+
+// ══════════════════════════════════════
+// LIVE PREVIEW HTML (instantáneo)
+// ══════════════════════════════════════
+function renderLivePreview(){
+  const titulo    = document.getElementById('ctrlTitulo').value    || '';
+  const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
+  const precio    = document.getElementById('ctrlPrecio').value    || '';
+  const frase     = document.getElementById('ctrlFrase').value     || '';
+  const esVerde   = tplActual === 'verde-frase';
+
+  // Foto de fondo
+  const fotaUrl = imagenActualSrc || '';
+  document.getElementById('prevFoto').style.backgroundImage   = fotaUrl ? `url(${fotaUrl})` : 'none';
+  document.getElementById('prevVerde').style.display          = esVerde ? 'block' : 'none';
+  document.getElementById('prevOverlay').style.opacity        = esVerde ? '0' : '1';
+
+  // Overlay de color
+  const ovEl = document.getElementById('prevOverlay');
+  if (!esVerde && overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
+    ovEl.style.background = `linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%)`;
+  }
+
+  // Textos
+  const tituloEl    = document.getElementById('prevTitulo');
+  const subtEl      = document.getElementById('prevSubtitulo');
+  const precioEl    = document.getElementById('prevPrecio');
+
+  // Ajustar posición textos según plantilla
+  const textosEl = document.getElementById('prevTextos');
+
+  if (tplActual === 'foto-titulo') {
+    tituloEl.textContent    = titulo || frase;
+    subtEl.textContent      = '';
+    precioEl.textContent    = '';
+    precioEl.style.display  = 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (tplActual === 'foto-precio') {
+    tituloEl.textContent    = titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (tplActual === 'foto-completo') {
+    tituloEl.textContent    = titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (esVerde) {
+    tituloEl.textContent    = frase || titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    // En verde el precio es dorado texto
+    precioEl.style.background = 'transparent';
+    precioEl.style.color      = '#c9a84c';
+    precioEl.style.padding    = '0';
+    textosEl.style.justifyContent = 'center';
+    // Resetear en otros templates
+    document.getElementById('prevPrecio').style.background = 'rgba(201,168,76,.92)';
+    document.getElementById('prevPrecio').style.color      = '#0a1e12';
+    document.getElementById('prevPrecio').style.padding    = '.35em .9em';
+  }
+
+  // ratio del live preview
+  const ratioMap = {'1':'1/1','916':'9/16','43':'4/3'};
+  const activeRatio = document.querySelector('.fmt-tab.active')?.dataset.ratio || '1';
+  document.getElementById('livePreview').style.aspectRatio = ratioMap[activeRatio] || '1/1';
 }
 
 function renderFoto(W, H){
@@ -439,19 +609,21 @@ function renderFoto(W, H){
     ctx.drawImage(imagenActual, ix, iy, iw, ih);
   }
 
-  // Overlay gradiente
+  // Overlay gradiente oscuro para que el texto sea legible
   const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0,   'rgba(0,0,0,0.15)');
-  grad.addColorStop(0.4, overlayColor.replace(')', ',0.2)').replace('rgba(', 'rgba('));
-  grad.addColorStop(1,   overlayColor);
+  grad.addColorStop(0,   'rgba(0,0,0,0.08)');
+  grad.addColorStop(0.5, 'rgba(0,0,0,0.10)');
+  grad.addColorStop(1,   'rgba(0,0,0,0.72)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Overlay sólido adicional
-  ctx.fillStyle = overlayColor;
-  ctx.globalAlpha = 0.25;
-  ctx.fillRect(0, 0, W, H);
-  ctx.globalAlpha = 1;
+  // Overlay de color seleccionado (sutil)
+  if (overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
+    ctx.fillStyle = overlayColor;
+    ctx.globalAlpha = 0.28;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
 
   const titulo    = document.getElementById('ctrlTitulo').value || '';
   const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
@@ -786,6 +958,10 @@ async function initDemo(){
   ctx.fillText('← Seleccioná una propiedad para empezar', canvasW/2, canvasH*0.7);
 }
 initDemo();
+// Llamar renderLivePreview cuando el usuario escribe (también cubre render tardío de fuentes)
+document.querySelectorAll('#ctrlTitulo,#ctrlSubtitulo,#ctrlPrecio,#ctrlFrase').forEach(el => {
+  el.addEventListener('input', () => { render(); renderLivePreview(); });
+});
 
 cargarPropiedades();
 
