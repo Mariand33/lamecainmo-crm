@@ -347,23 +347,40 @@ function cambiarImagen(){
   if (src) cargarImagen(src);
 }
 
-function cargarImagen(src){
+async function cargarImagen(src){
   if (!src){ imagenActual = null; render(); return; }
-  // Usar proxy para evitar CORS en canvas (imágenes de Supabase)
+
+  setStatus('⏳ Cargando imagen…');
+
+  // Asegurar fuentes cargadas antes de render
+  try { await document.fonts.ready; } catch(e){}
+
+  // Intentar proxy primero (resuelve CORS de Supabase para el canvas)
   const proxySrc = src.startsWith('http')
     ? `/api/proxy-image?url=${encodeURIComponent(src)}`
     : src;
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload  = () => { imagenActual = img; render(); setStatus('✅ Imagen cargada · Listo para descargar'); };
-  img.onerror = () => {
-    // Fallback: intentar sin proxy
-    const img2 = new Image();
-    img2.onload  = () => { imagenActual = img2; render(); };
-    img2.onerror = () => { imagenActual = null; render(); setStatus('⚠ No se pudo cargar la imagen'); };
-    img2.src = src;
-  };
-  img.src = proxySrc;
+
+  const cargar = (url) => new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => res(img);
+    img.onerror = () => rej(new Error('Error cargando: ' + url));
+    img.src = url;
+  });
+
+  try {
+    imagenActual = await cargar(proxySrc);
+  } catch {
+    try {
+      // Fallback sin proxy
+      imagenActual = await cargar(src);
+    } catch {
+      imagenActual = null;
+      setStatus('⚠ No se pudo cargar la imagen — el post se generará sin foto');
+    }
+  }
+  render();
+  setStatus('✅ Imagen cargada · Listo para descargar');
 }
 
 // ══════════════════════════════════════
@@ -442,7 +459,23 @@ function renderFoto(W, H){
   const frase     = document.getElementById('ctrlFrase').value || '';
 
   if (tplActual === 'foto-titulo'){
-    drawTituloScript(titulo || frase, W, H * 0.62, W, 120);
+    // Título en cursiva abajo izquierda (estilo Buzzacchi)
+    const txt = titulo || frase;
+    if (txt) {
+      const padX = W * 0.065;
+      let fs = W * 0.115;
+      ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
+      while (ctx.measureText(txt).width > W * 0.84 && fs > 44) {
+        fs -= 4;
+        ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
+      }
+      ctx.fillStyle   = '#ffffff';
+      ctx.textAlign   = 'left';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur  = 32;
+      ctx.fillText(txt, padX, H * 0.72);
+      ctx.shadowBlur  = 0;
+    }
     drawBranding(W, H);
   }
 
@@ -627,32 +660,39 @@ function drawTituloScript(texto, W, y, maxW, fontSize){
 }
 
 function drawBranding(W, H){
-  // Vanina Buzzacchi abajo
-  const logoY = H * 0.925;
+  // Logo abajo izquierda — igual al estilo de las capturas de Instagram
+  const padX  = W * 0.065;
+  const logoY = H * 0.918;
 
-  ctx.font      = `italic 500 ${W*0.045}px 'Cormorant Garamond'`;
+  // Sombra para legibilidad sobre cualquier foto
+  ctx.shadowColor = 'rgba(0,0,0,0.85)';
+  ctx.shadowBlur  = 24;
+
+  // "Vanina Buzzacchi" en cursiva
+  ctx.font      = `italic 500 ${W*0.046}px 'Cormorant Garamond'`;
   ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'center';
-  ctx.shadowColor = 'rgba(0,0,0,0.9)';
-  ctx.shadowBlur  = 20;
-  ctx.fillText('Vanina Buzzacchi', W/2, logoY);
+  ctx.textAlign = 'left';
+  ctx.fillText('Vanina Buzzacchi', padX, logoY);
 
+  // "NEGOCIOS INMOBILIARIOS" debajo, más pequeño, dorado
   ctx.font      = `500 ${W*0.018}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.65)';
-  ctx.letterSpacing = '0.2em';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS  ·  RÍO CUARTO', W/2, logoY + W*0.032);
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031);
+
   ctx.shadowBlur = 0;
+  ctx.textAlign  = 'left';
 }
 
 function drawBrandingVerde(W, H){
-  ctx.font = `italic 500 ${W*0.042}px 'Cormorant Garamond'`;
+  const padX = W * 0.07;
+  ctx.font      = `italic 500 ${W*0.046}px 'Cormorant Garamond'`;
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
-  ctx.fillText('Vanina Buzzacchi', W*0.07, H*0.875);
+  ctx.fillText('Vanina Buzzacchi', padX, H * 0.878);
 
-  ctx.font      = `500 ${W*0.017}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(201,168,76,0.8)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS  ·  RÍO CUARTO', W*0.07, H*0.905);
+  ctx.font      = `500 ${W*0.018}px 'Montserrat'`;
+  ctx.fillStyle = 'rgba(201,168,76,0.82)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, H * 0.908);
 }
 
 function roundRect(ctx, x, y, w, h, r){
@@ -672,18 +712,45 @@ function roundRect(ctx, x, y, w, h, r){
 // ══════════════════════════════════════
 // DESCARGAR
 // ══════════════════════════════════════
-function descargar(){
+async function descargar(){
   render();
+  await new Promise(r => setTimeout(r, 80)); // dejar que el canvas termine de pintar
   const titulo = document.getElementById('ctrlTitulo').value || 'post';
+  const filename = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
   try {
-    const a = document.createElement('a');
-    a.download = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
-    a.href = canvas.toDataURL('image/png');
-    a.click();
-    setStatus('✅ Post descargado · ' + a.download);
+    // Método 1: toBlob (más robusto que toDataURL)
+    canvas.toBlob(blob => {
+      if (!blob) { fallbackDescarga(filename); return; }
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.download = filename;
+      a.href     = url;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus('✅ Descargado: ' + filename);
+    }, 'image/png', 1.0);
   } catch(e) {
-    setStatus('❌ Error al descargar: ' + e.message + ' — recargá la página e intentá de nuevo');
-    alert('No se pudo exportar la imagen.\n\nCausa: ' + e.message + '\n\nSolución: recargá la página con F5 e intentá de nuevo.');
+    fallbackDescarga(filename);
+  }
+}
+
+function fallbackDescarga(filename){
+  try {
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href     = dataUrl;
+    a.click();
+    setStatus('✅ Descargado (fallback): ' + filename);
+  } catch(e2) {
+    setStatus('❌ Error: ' + e2.message);
+    // Último recurso: abrir en nueva pestaña para guardar manual
+    const w = window.open();
+    w.document.write('<img src="' + canvas.toDataURL('image/png') + '" style="max-width:100%"/>');
+    w.document.title = filename;
+    setStatus('⚠ Abrimos la imagen en nueva pestaña — guardala con clic derecho → Guardar imagen');
   }
 }
 
@@ -694,9 +761,17 @@ function setStatus(msg){
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
-// Render demo vacío al cargar
-(function initDemo(){
-  // Fondo verde de demo
+// Esperar fuentes → luego render demo
+async function initDemo(){
+  try {
+    await document.fonts.ready;
+    // Forzar carga de las fuentes usadas en el canvas
+    await Promise.all([
+      document.fonts.load("italic 500 110px 'Cormorant Garamond'"),
+      document.fonts.load("500 28px 'Montserrat'"),
+    ]);
+  } catch(e){ /* continúa igual */ }
+
   ctx.fillStyle = '#0a1e12';
   ctx.fillRect(0, 0, canvasW, canvasH);
   ctx.font      = `italic 400 110px 'Cormorant Garamond'`;
@@ -709,7 +784,8 @@ function setStatus(msg){
   ctx.font      = `400 22px 'Montserrat'`;
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillText('← Seleccioná una propiedad para empezar', canvasW/2, canvasH*0.7);
-})();
+}
+initDemo();
 
 cargarPropiedades();
 
