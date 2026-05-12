@@ -106,6 +106,36 @@
     /* Loading */
     .loading-overlay { position:absolute; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,.7); display:none; }
 
+    /* SLIDERS */
+    .slider-section { margin-bottom:18px; }
+    .slider-section-title {
+      font-size:9px; letter-spacing:.18em; text-transform:uppercase;
+      color:#555; margin-bottom:10px; display:flex; align-items:center; gap:8px;
+    }
+    .slider-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+    .slider-row { display:grid; grid-template-columns:1fr 42px; align-items:center; gap:8px; margin-bottom:8px; }
+    .slider-row label { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+    .slider-val { font-size:11px; color:var(--gold); text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
+    input[type=range] {
+      -webkit-appearance:none; appearance:none;
+      width:100%; height:4px; border-radius:4px;
+      background:linear-gradient(to right,var(--gold) 0%, var(--gold) 50%,#2a2a2a 50%,#2a2a2a 100%);
+      outline:none; cursor:pointer; grid-column:1/-1;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance:none; width:14px; height:14px;
+      border-radius:50%; background:var(--gold); border:2px solid #fff; cursor:pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width:14px; height:14px; border-radius:50%; background:var(--gold); border:2px solid #fff;
+    }
+    .btn-reset-sliders {
+      background:transparent; border:1px solid var(--border); border-radius:6px;
+      color:var(--muted); font-size:10px; letter-spacing:.08em; padding:5px 10px;
+      cursor:pointer; font-family:'Montserrat',sans-serif; transition:.15s; width:100%;
+    }
+    .btn-reset-sliders:hover { border-color:rgba(201,168,76,.4); color:var(--gold); }
+
     @media(max-width:900px){
       :root{--sidebar-w:0}
       .sidebar{display:none}
@@ -221,6 +251,84 @@
           <button class="btn btn-gold btn-full" onclick="descargar()">⬇ Descargar PNG</button>
         </div>
       </div>
+
+      <!-- PANEL AJUSTES POSICIÓN Y TAMAÑO -->
+      <div class="panel" style="margin-top:16px">
+        <h3>4 · Posición y tamaño</h3>
+
+        <!-- LOGO / BRANDING -->
+        <div class="slider-section">
+          <div class="slider-section-title">Logo · Vanina Buzzacchi</div>
+
+          <div class="slider-row">
+            <label>Tamaño nombre</label>
+            <span class="slider-val" id="valLogoSize">100%</span>
+            <input type="range" id="slLogoSize" min="40" max="180" value="100"
+              oninput="updateSlider(this,'valLogoSize','%');render();renderLivePreview()">
+          </div>
+
+          <div class="slider-row">
+            <label>Posición X</label>
+            <span class="slider-val" id="valLogoX">7%</span>
+            <input type="range" id="slLogoX" min="0" max="60" value="7"
+              oninput="updateSlider(this,'valLogoX','%');render();renderLivePreview()">
+          </div>
+
+          <div class="slider-row">
+            <label>Posición Y</label>
+            <span class="slider-val" id="valLogoY">92%</span>
+            <input type="range" id="slLogoY" min="40" max="98" value="92"
+              oninput="updateSlider(this,'valLogoY','%');render();renderLivePreview()">
+          </div>
+
+          <div class="slider-row">
+            <label>Tamaño subtexto</label>
+            <span class="slider-val" id="valLogoSub">100%</span>
+            <input type="range" id="slLogoSub" min="40" max="200" value="100"
+              oninput="updateSlider(this,'valLogoSub','%');render();renderLivePreview()">
+          </div>
+        </div>
+
+        <!-- TÍTULO -->
+        <div class="slider-section">
+          <div class="slider-section-title">Título principal</div>
+
+          <div class="slider-row">
+            <label>Tamaño fuente</label>
+            <span class="slider-val" id="valTitSize">100%</span>
+            <input type="range" id="slTitSize" min="40" max="200" value="100"
+              oninput="updateSlider(this,'valTitSize','%');render();renderLivePreview()">
+          </div>
+
+          <div class="slider-row">
+            <label>Posición Y</label>
+            <span class="slider-val" id="valTitY">75%</span>
+            <input type="range" id="slTitY" min="20" max="95" value="75"
+              oninput="updateSlider(this,'valTitY','%');render();renderLivePreview()">
+          </div>
+        </div>
+
+        <!-- SUBTÍTULO / PRECIO -->
+        <div class="slider-section">
+          <div class="slider-section-title">Subtítulo y precio</div>
+
+          <div class="slider-row">
+            <label>Tamaño fuente</label>
+            <span class="slider-val" id="valSubSize">100%</span>
+            <input type="range" id="slSubSize" min="40" max="200" value="100"
+              oninput="updateSlider(this,'valSubSize','%');render();renderLivePreview()">
+          </div>
+
+          <div class="slider-row">
+            <label>Posición Y</label>
+            <span class="slider-val" id="valSubY">82%</span>
+            <input type="range" id="slSubY" min="20" max="97" value="82"
+              oninput="updateSlider(this,'valSubY','%');render();renderLivePreview()">
+          </div>
+        </div>
+
+        <button class="btn-reset-sliders" onclick="resetSliders()">↺ Restablecer valores por defecto</button>
+      </div>
     </div>
 
     <!-- PANEL DERECHO - PREVIEW -->
@@ -283,24 +391,25 @@
               background:rgba(201,168,76,.92); color:#0a1e12;
               padding:.35em .9em; border-radius:30px; margin-bottom:4%;
             "></div>
-            <!-- LOGO BRANDING abajo izquierda -->
-            <div id="prevBranding" style="margin-top:auto; padding-top:3%;">
-              <div style="
-                font-family:'Cormorant Garamond',serif;
-                font-size:clamp(13px,3.8vw,30px);
-                font-style:italic; font-weight:500; color:#fff;
-                text-shadow:0 2px 12px rgba(0,0,0,.9);
-                line-height:1.1;
-              ">Vanina Buzzacchi</div>
-              <div style="
-                font-family:'Montserrat',sans-serif;
-                font-size:clamp(7px,1.4vw,11px);
-                font-weight:500; letter-spacing:.18em; text-transform:uppercase;
-                color:rgba(255,255,255,.65);
-                text-shadow:0 1px 6px rgba(0,0,0,.8);
-                margin-top:.15em;
-              ">NEGOCIOS INMOBILIARIOS</div>
-            </div>
+          </div>
+          <!-- LOGO BRANDING — posicionado independientemente -->
+          <div id="prevBranding" style="
+            position:absolute; left:7%; top:88%;
+            text-shadow:0 2px 12px rgba(0,0,0,.9);
+          ">
+            <div style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(13px,3.8vw,30px);
+              font-style:italic; font-weight:500; color:#fff;
+              line-height:1.1;
+            ">Vanina Buzzacchi</div>
+            <div style="
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(7px,1.4vw,11px);
+              font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+              color:rgba(255,255,255,.65);
+              margin-top:.15em;
+            ">NEGOCIOS INMOBILIARIOS</div>
           </div>
           <!-- Frase centrada (plantillas foto-titulo y completo) -->
           <div id="prevFraseCentro" style="
@@ -345,6 +454,44 @@ let imagenActualSrc = '';   // URL original para live preview
 let tplActual = 'foto-titulo';
 let overlayColor = 'rgba(0,0,0,0.45)';
 let canvasW = 1080, canvasH = 1080;
+
+// ── SLIDER DEFAULTS ──────────────────────────────────────────────
+const SLIDER_DEFAULTS = {
+  slLogoSize: 100, slLogoX: 7, slLogoY: 92, slLogoSub: 100,
+  slTitSize: 100, slTitY: 75,
+  slSubSize: 100, slSubY: 82,
+};
+
+function sl(id){ return parseInt(document.getElementById(id)?.value ?? SLIDER_DEFAULTS[id]); }
+
+function updateSlider(input, valId, unit){
+  // Update gradient fill position
+  const min = parseFloat(input.min), max = parseFloat(input.max), val = parseFloat(input.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  input.style.background = `linear-gradient(to right,var(--gold) 0%,var(--gold) ${pct}%,#2a2a2a ${pct}%,#2a2a2a 100%)`;
+  document.getElementById(valId).textContent = input.value + unit;
+}
+
+function resetSliders(){
+  Object.entries(SLIDER_DEFAULTS).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = val;
+    // Trigger update display
+    el.dispatchEvent(new Event('input'));
+  });
+}
+
+// Init slider gradient fills on load
+function initSliders(){
+  Object.keys(SLIDER_DEFAULTS).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    el.style.background = `linear-gradient(to right,var(--gold) 0%,var(--gold) ${pct}%,#2a2a2a ${pct}%,#2a2a2a 100%)`;
+  });
+}
 
 const canvas  = document.getElementById('postCanvas');
 const ctx     = canvas.getContext('2d');
@@ -592,6 +739,50 @@ function renderLivePreview(){
   const ratioMap = {'1':'1/1','916':'9/16','43':'4/3'};
   const activeRatio = document.querySelector('.fmt-tab.active')?.dataset.ratio || '1';
   document.getElementById('livePreview').style.aspectRatio = ratioMap[activeRatio] || '1/1';
+
+  // Aplicar sliders al live preview
+  const logoSizePct = sl('slLogoSize') / 100;
+  const logoSubPct  = sl('slLogoSub')  / 100;
+  const logoXPct    = sl('slLogoX');     // %
+  const logoYPct    = sl('slLogoY');     // % desde arriba
+  const titSizePct  = sl('slTitSize')  / 100;
+  const titYPct     = sl('slTitY');
+  const subSizePct  = sl('slSubSize')  / 100;
+  const subYPct     = sl('slSubY');
+
+  // Branding (logo)
+  const brandEl = document.getElementById('prevBranding');
+  if (brandEl) {
+    brandEl.style.position = 'absolute';
+    brandEl.style.left     = logoXPct + '%';
+    brandEl.style.top      = logoYPct + '%';
+    brandEl.style.marginTop = '0';
+    brandEl.style.paddingTop = '0';
+    const nameEl = brandEl.querySelector('div:first-child');
+    const negEl  = brandEl.querySelector('div:last-child');
+    if (nameEl) nameEl.style.fontSize = `clamp(10px, ${3.8 * logoSizePct}vw, ${30 * logoSizePct}px)`;
+    if (negEl)  negEl.style.fontSize  = `clamp(6px,  ${1.4 * logoSubPct}vw, ${11 * logoSubPct}px)`;
+  }
+
+  // Título
+  const titEl = document.getElementById('prevTitulo');
+  if (titEl) titEl.style.fontSize = `clamp(18px, ${7.5 * titSizePct}vw, ${56 * titSizePct}px)`;
+
+  // Textos posición Y (mover el contenedor de textos usando padding-bottom relativo)
+  const textosEl2 = document.getElementById('prevTextos');
+  if (textosEl2 && tplActual !== 'verde-frase') {
+    // Convertimos titY a padding-bottom: 100% - titY aproximado
+    const pb = Math.max(0, 100 - titYPct - 12);
+    textosEl2.style.paddingBottom = pb + '%';
+    textosEl2.style.justifyContent = 'flex-end';
+  }
+
+  // Subtítulo y precio size
+  const subtElS = document.getElementById('prevSubtitulo');
+  const precioElS = document.getElementById('prevPrecio');
+  if (subtElS) subtElS.style.fontSize = `clamp(8px, ${1.8 * subSizePct}vw, ${14 * subSizePct}px)`;
+  if (precioElS && precioElS.style.display !== 'none')
+    precioElS.style.fontSize = `clamp(9px, ${2.2 * subSizePct}vw, ${17 * subSizePct}px)`;
 }
 
 function renderFoto(W, H){
@@ -635,7 +826,7 @@ function renderFoto(W, H){
     const txt = titulo || frase;
     if (txt) {
       const padX = W * 0.065;
-      let fs = W * 0.115;
+      let fs = W * 0.115 * (sl('slTitSize') / 100);
       ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
       while (ctx.measureText(txt).width > W * 0.84 && fs > 44) {
         fs -= 4;
@@ -645,7 +836,7 @@ function renderFoto(W, H){
       ctx.textAlign   = 'left';
       ctx.shadowColor = 'rgba(0,0,0,0.9)';
       ctx.shadowBlur  = 32;
-      ctx.fillText(txt, padX, H * 0.72);
+      ctx.fillText(txt, padX, H * (sl('slTitY') / 100));
       ctx.shadowBlur  = 0;
     }
     drawBranding(W, H);
@@ -661,25 +852,25 @@ function renderFoto(W, H){
     ctx.fillRect(0, H - fH, W, fH);
 
     if (titulo){
-      ctx.font = `italic 500 ${W*0.072}px 'Cormorant Garamond'`;
+      ctx.font = `italic 500 ${W*0.072*(sl('slTitSize')/100)}px 'Cormorant Garamond'`;
       ctx.fillStyle = '#fff';
       ctx.textAlign = 'left';
       ctx.shadowColor = 'rgba(0,0,0,0.6)';
       ctx.shadowBlur  = 20;
-      ctx.fillText(titulo, W * 0.07, H * 0.75);
+      ctx.fillText(titulo, W * 0.07, H * (sl('slTitY') / 100));
       ctx.shadowBlur = 0;
     }
     if (subtitulo){
-      ctx.font = `500 ${W*0.028}px 'Montserrat'`;
+      ctx.font = `500 ${W*0.028*(sl('slSubSize')/100)}px 'Montserrat'`;
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
       ctx.textAlign = 'left';
-      ctx.fillText(subtitulo.toUpperCase(), W * 0.07, H * 0.81);
+      ctx.fillText(subtitulo.toUpperCase(), W * 0.07, H * (sl('slSubY') / 100));
     }
     if (precio){
       // Pill precio
-      ctx.font = `700 ${W*0.038}px 'Montserrat'`;
+      ctx.font = `700 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
       const pw = ctx.measureText(precio).width + W*0.06;
-      const px = W * 0.07, py = H * 0.87;
+      const px = W * 0.07, py = H * Math.min((sl('slSubY') / 100) + 0.07, 0.97);
       ctx.fillStyle = 'rgba(201,168,76,0.9)';
       roundRect(ctx, px - W*0.02, py - W*0.04, pw, W*0.065, W*0.015);
       ctx.fill();
@@ -694,22 +885,22 @@ function renderFoto(W, H){
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
     ctx.fillRect(0, 0, W, H);
 
-    drawTituloScript(frase || titulo, W, H * 0.48, W, 100);
+    drawTituloScript(frase || titulo, W, H * (sl('slTitY') / 100), W, 100 * (sl('slTitSize') / 100));
 
     if (subtitulo){
-      ctx.font = `500 ${W*0.026}px 'Montserrat'`;
+      ctx.font = `500 ${W*0.026*(sl('slSubSize')/100)}px 'Montserrat'`;
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
       ctx.textAlign = 'center';
-      ctx.fillText(subtitulo.toUpperCase(), W/2, H * 0.58);
+      ctx.fillText(subtitulo.toUpperCase(), W/2, H * (sl('slSubY') / 100));
     }
 
     if (precio){
-      ctx.font = `600 ${W*0.038}px 'Montserrat'`;
+      ctx.font = `600 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
       ctx.fillStyle = '#c9a84c';
       ctx.textAlign = 'center';
       ctx.shadowColor = 'rgba(0,0,0,0.8)';
       ctx.shadowBlur  = 15;
-      ctx.fillText(precio, W/2, H * 0.645);
+      ctx.fillText(precio, W/2, H * Math.min((sl('slSubY') / 100) + 0.07, 0.97));
       ctx.shadowBlur = 0;
     }
 
@@ -833,38 +1024,44 @@ function drawTituloScript(texto, W, y, maxW, fontSize){
 
 function drawBranding(W, H){
   // Logo abajo izquierda — igual al estilo de las capturas de Instagram
-  const padX  = W * 0.065;
-  const logoY = H * 0.918;
+  const padX  = W * (sl('slLogoX') / 100);
+  const logoY = H * (sl('slLogoY') / 100);
+  const sizeScale  = sl('slLogoSize') / 100;
+  const subScale   = sl('slLogoSub') / 100;
 
   // Sombra para legibilidad sobre cualquier foto
   ctx.shadowColor = 'rgba(0,0,0,0.85)';
   ctx.shadowBlur  = 24;
 
   // "Vanina Buzzacchi" en cursiva
-  ctx.font      = `italic 500 ${W*0.046}px 'Cormorant Garamond'`;
+  ctx.font      = `italic 500 ${W*0.046*sizeScale}px 'Cormorant Garamond'`;
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
   ctx.fillText('Vanina Buzzacchi', padX, logoY);
 
   // "NEGOCIOS INMOBILIARIOS" debajo, más pequeño, dorado
-  ctx.font      = `500 ${W*0.018}px 'Montserrat'`;
+  ctx.font      = `500 ${W*0.018*subScale}px 'Montserrat'`;
   ctx.fillStyle = 'rgba(255,255,255,0.72)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031);
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031 * subScale);
 
   ctx.shadowBlur = 0;
   ctx.textAlign  = 'left';
 }
 
 function drawBrandingVerde(W, H){
-  const padX = W * 0.07;
-  ctx.font      = `italic 500 ${W*0.046}px 'Cormorant Garamond'`;
+  const padX      = W * (sl('slLogoX') / 100);
+  const logoY     = H * (sl('slLogoY') / 100);
+  const sizeScale = sl('slLogoSize') / 100;
+  const subScale  = sl('slLogoSub') / 100;
+
+  ctx.font      = `italic 500 ${W*0.046*sizeScale}px 'Cormorant Garamond'`;
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
-  ctx.fillText('Vanina Buzzacchi', padX, H * 0.878);
+  ctx.fillText('Vanina Buzzacchi', padX, logoY);
 
-  ctx.font      = `500 ${W*0.018}px 'Montserrat'`;
+  ctx.font      = `500 ${W*0.018*subScale}px 'Montserrat'`;
   ctx.fillStyle = 'rgba(201,168,76,0.82)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, H * 0.908);
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031 * subScale);
 }
 
 function roundRect(ctx, x, y, w, h, r){
@@ -964,6 +1161,7 @@ document.querySelectorAll('#ctrlTitulo,#ctrlSubtitulo,#ctrlPrecio,#ctrlFrase').f
 });
 
 cargarPropiedades();
+initSliders();
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
