@@ -661,6 +661,80 @@ app.post("/api/cata-chat", async (req, res) => {
 });
 
 // =========================
+// BUSCADOR IA DEL FUNNEL
+// =========================
+app.post("/api/match-ia", async (req, res) => {
+  const { consulta, presupuesto, operacion } = req.body;
+  if (!consulta) return res.status(400).json({ ok: false, error: "Falta consulta" });
+
+  try {
+    // Traer todos los inmuebles publicados
+    const { data: inmuebles, error } = await supabase
+      .from("inmuebles")
+      .select("id, titulo, zona, tipo_operacion, tipo_propiedad, precio, dormitorios, banos, descripcion, superficie_total")
+      .eq("estado_publicacion", "publicado")
+      .limit(100);
+
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    if (!inmuebles || !inmuebles.length) return res.json({ ok: true, ids: [], scores: {} });
+
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (!anthropicKey) {
+      // Sin IA — filtro simple por texto
+      const q = consulta.toLowerCase();
+      const filtrados = inmuebles.filter(p =>
+        (p.titulo       || "").toLowerCase().includes(q) ||
+        (p.zona         || "").toLowerCase().includes(q) ||
+        (p.descripcion  || "").toLowerCase().includes(q)
+      );
+      const scores = {};
+      filtrados.forEach((p, i) => { scores[p.id] = Math.max(70, 95 - i * 4); });
+      return res.json({ ok: true, ids: filtrados.map(p => p.id), scores });
+    }
+
+    // Con IA — Claude analiza y rankea
+    const listaTexto = inmuebles.map(p =>
+      `ID:${p.id} | ${p.titulo} | ${p.zona || "—"} | ${p.tipo_operacion} | ${p.tipo_propiedad} | USD ${p.precio || "consultar"} | ${p.dormitorios || 0} dorm | ${p.descripcion?.slice(0, 80) || ""}`
+    ).join("\n");
+
+    const prompt = `El usuario busca: "${consulta}"${presupuesto ? ` con presupuesto máximo USD ${presupuesto}` : ""}${operacion && operacion !== "todos" ? `, operación: ${operacion}` : ""}.
+
+Lista de propiedades disponibles:
+${listaTexto}
+
+Analizá cuáles propiedades coinciden mejor con lo que busca el usuario. Devolvé SOLO un JSON con este formato exacto, sin texto adicional:
+{"ids":[id1,id2,id3],"scores":{"id1":95,"id2":87,"id3":72}}
+
+Incluí solo las propiedades que realmente coinciden (máximo 8). Los scores son de 0 a 100.`;
+
+    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const aiData = await resp.json();
+    const texto = aiData.content?.[0]?.text || "{}";
+    const clean = texto.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(clean);
+
+    res.json({ ok: true, ids: parsed.ids || [], scores: parsed.scores || {} });
+  } catch(e) {
+    console.error("Match IA error:", e.message);
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// =========================
 // TOUR VIRTUAL — guardar meta
 // =========================
 app.post("/api/inmuebles/:id/tour-meta", async (req, res) => {
