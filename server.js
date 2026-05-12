@@ -661,6 +661,29 @@ app.post("/api/cata-chat", async (req, res) => {
 });
 
 // =========================
+// TOUR VIRTUAL — guardar meta
+// =========================
+app.post("/api/inmuebles/:id/tour-meta", async (req, res) => {
+  const { id } = req.params;
+  const { tourMeta } = req.body;
+  if (!tourMeta) return res.status(400).json({ ok: false, error: "Falta tourMeta" });
+  try {
+    const { error } = await supabase
+      .from("inmuebles")
+      .update({ tour_meta: tourMeta })
+      .eq("id", id);
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    res.json({ ok: true });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+// Ruta de página tour
+app.get("/tour-virtual",      (_, res) => res.sendFile(path.join(__dirname, "Público", "tour-virtual.html")));
+app.get("/tour-virtual.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "tour-virtual.html")));
+
+// =========================
 // IMPORTAR DESDE GOOGLE DRIVE
 // =========================
 
