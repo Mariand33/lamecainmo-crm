@@ -44,11 +44,7 @@ app.get("/editar.html",        (_, res) => res.sendFile(path.join(__dirname, "P�
 app.get('/demo', (req, res) => {
   res.sendFile(path.join(__dirname, 'demo.html'));
 });
-
-app.get('/funnel-demo', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Público', 'funnel-demo-inmocreador.html'));
-});
-app.get("/logout", (req, res) => { req.session.destroy(); res.redirect("/login"); });
+app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
 app.get("/:page.html", (req, res) => {
@@ -473,20 +469,51 @@ app.get("/api/inmuebles/:id", async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "video" }]), async (req, res) => {
+app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "fotos360" }, { name: "video" }]), async (req, res) => {
   try {
+    // Subir fotos normales
     const imgs = [];
     for (const f of (req.files?.imagenes || [])) {
       const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
       if (url) imgs.push(url);
     }
+
+    // Subir fotos 360 y registrar cuáles son 360
+    const fotos360Urls = [];
+    for (const f of (req.files?.fotos360 || [])) {
+      const nombre360 = "360_" + f.originalname;
+      const url = await subirASupabase(f.buffer, nombre360, f.mimetype);
+      if (url) {
+        imgs.push(url);         // también van al array de imágenes
+        fotos360Urls.push(url); // registro cuáles son 360
+      }
+    }
+
+    // Construir tour_meta automático para las fotos 360
+    let tourMeta = {};
+    if (fotos360Urls.length > 0) {
+      imgs.forEach((url, i) => {
+        tourMeta[i] = {
+          nombre: "Ambiente " + (i + 1),
+          desc:   "",
+          es360:  fotos360Urls.includes(url),
+          ancho:  null,
+          largo:  null,
+          alto:   2.60
+        };
+      });
+    }
+
     let videoUrl = null;
     if (req.files?.video?.[0]) {
       const vf = req.files.video[0];
       videoUrl = await subirASupabase(vf.buffer, vf.originalname, vf.mimetype);
     }
+
     const payload = inmToSb({ ...req.body, imagenes: imgs, estadoPublicacion: "borrador" });
     if (videoUrl) payload.video_url = videoUrl;
+    if (Object.keys(tourMeta).length > 0) payload.tour_meta = JSON.stringify(tourMeta);
+
     const { error } = await supabase.from("inmuebles").insert([payload]);
     if (error) { console.error("Error guardando:", error.message); return res.status(500).send("Error: " + error.message); }
     pushNotif({ tipo: "nuevo_inmueble", titulo: req.body.titulo, zona: req.body.zona });
