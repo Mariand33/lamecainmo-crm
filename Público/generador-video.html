@@ -244,7 +244,7 @@ textarea { resize:vertical; min-height:80px }
 
       <div class="form-row">
         <label>Estilo visual</label>
-        <div class="estilo-grid">
+        <div class="estilo-grid" style="grid-template-columns:repeat(2,1fr)">
           <div class="estilo-btn selected" data-estilo="luxury" onclick="selEstilo(this)">
             <div class="estilo-swatch" style="background:linear-gradient(135deg,#0d0d0d,#1c1c1c);border:1px solid #c9a84c"></div>
             <div class="estilo-name">Luxury Dark</div>
@@ -257,7 +257,36 @@ textarea { resize:vertical; min-height:80px }
             <div class="estilo-swatch" style="background:linear-gradient(135deg,#1a2a4a,#2d4a7a)"></div>
             <div class="estilo-name">Modern Blue</div>
           </div>
+          <div class="estilo-btn" data-estilo="neon" onclick="selEstilo(this)">
+            <div class="estilo-swatch" style="background:#0a1a0a;border:2px solid #00f5ff;box-shadow:0 0 8px #00f5ff55;position:relative;overflow:hidden">
+              <svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 80 28">
+                <line x1="40" y1="0" x2="40" y2="28" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/>
+                <line x1="0" y1="14" x2="80" y2="14" stroke="#00f5ff" stroke-width="1.5" opacity=".7"/>
+                <rect x="5" y="3" width="32" height="10" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity=".9"/>
+                <rect x="43" y="3" width="32" height="10" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity=".9"/>
+                <rect x="5" y="15" width="32" height="10" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity=".9"/>
+                <rect x="43" y="15" width="32" height="10" fill="none" stroke="#00f5ff" stroke-width="1.2" opacity=".9"/>
+              </svg>
+            </div>
+            <div class="estilo-name" style="color:#00f5ff">⚡ Neón Aéreo</div>
+          </div>
         </div>
+      </div>
+
+      <!-- Campo metros: solo visible con estilo neón -->
+      <div class="form-row" id="row-neon" style="display:none">
+        <label>🗺️ Configuración de lotes (estilo Neón)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+          <div>
+            <label style="font-size:9px;margin-bottom:4px">M² por lote</label>
+            <input type="number" id="neon-m2" value="2500" min="50" placeholder="Ej: 2500">
+          </div>
+          <div>
+            <label style="font-size:9px;margin-bottom:4px">Cant. de lotes</label>
+            <input type="number" id="neon-lotes" value="6" min="1" max="12" placeholder="Ej: 6">
+          </div>
+        </div>
+        <input type="text" id="neon-palabra" value="OPORTUNIDAD" placeholder="Palabra de impacto (ej: LENTO, VENDIDO, ÚNICO)">
       </div>
 
       <div class="form-row">
@@ -308,18 +337,35 @@ textarea { resize:vertical; min-height:80px }
         <iframe class="preview-iframe" id="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
       <div class="action-row">
-        <button class="btn-action primary" onclick="descargarHTML()">⬇ Descargar HTML</button>
-        <button class="btn-action" onclick="abrirNuevaTab()">↗ Abrir en nueva pestaña</button>
-        <button class="btn-action" onclick="copiarHTML()">📋 Copiar HTML</button>
+        <button class="btn-action primary" id="btn-render-mp4" onclick="renderizarMP4()">🎬 Descargar MP4</button>
+        <button class="btn-action" onclick="descargarHTML()">⬇ Descargar HTML</button>
+        <button class="btn-action" onclick="abrirNuevaTab()">↗ Vista previa</button>
       </div>
-      <div class="instrucciones">
-        <h4>🚀 Para convertir a video (gratis)</h4>
-        <ol>
-          <li>Descargá el HTML con el botón de arriba</li>
-          <li>Instalá HyperFrames: <code>npx hyperframes</code> (requiere Node.js)</li>
-          <li>Ejecutá: <code>hyperframes render video.html --output video.mp4</code></li>
-          <li>¡Listo! Tu video MP4 está listo para subir a Instagram</li>
-        </ol>
+
+      <!-- Barra de progreso del render -->
+      <div id="render-progress" style="display:none;margin-top:16px">
+        <div style="background:var(--dark-3);border:1px solid var(--border);border-radius:8px;padding:16px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="loader-ring" style="width:24px;height:24px;border-width:2px"></div>
+            <span id="render-status-text" style="font-size:12px;color:var(--muted)">Iniciando render…</span>
+          </div>
+          <div style="background:var(--dark);border-radius:4px;height:4px;overflow:hidden">
+            <div id="render-progress-bar" style="height:100%;background:var(--gold);width:0%;transition:width .5s ease"></div>
+          </div>
+          <div style="font-size:10px;color:#444;margin-top:8px;letter-spacing:.05em">El render tarda entre 60 y 90 segundos en el servidor</div>
+        </div>
+      </div>
+
+      <!-- Link de descarga del MP4 -->
+      <div id="mp4-result" style="display:none;margin-top:12px">
+        <div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:8px;padding:14px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">✅</span>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;color:#2ecc71;margin-bottom:4px">¡MP4 listo!</div>
+            <div style="font-size:11px;color:var(--muted)">Tu video está disponible en Supabase Storage</div>
+          </div>
+          <a id="mp4-link" href="#" target="_blank" class="btn-action primary" style="flex-shrink:0">⬇ Descargar</a>
+        </div>
       </div>
     </div>
 
@@ -433,6 +479,7 @@ function selEstilo(el) {
   document.querySelectorAll('.estilo-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   estiloSeleccionado = el.dataset.estilo;
+  document.getElementById('row-neon').style.display = estiloSeleccionado === 'neon' ? 'block' : 'none';
 }
 
 // ── Tabs ──
@@ -480,7 +527,10 @@ async function generarVideo() {
         titulo, zona, precio, descripcion: desc,
         tono, cta, telefono: tel,
         tipo: tipoSeleccionado, estilo: estiloSeleccionado,
-        imagenUrl
+        imagenUrl,
+        neonM2:      parseInt(document.getElementById('neon-m2')?.value)    || 2500,
+        neonLotes:   parseInt(document.getElementById('neon-lotes')?.value) || 6,
+        neonPalabra: document.getElementById('neon-palabra')?.value?.trim() || 'OPORTUNIDAD'
       })
     });
 
@@ -534,6 +584,77 @@ function setStatus(tipo, msg) {
   const dot = document.getElementById('status-dot');
   dot.className = 'status-dot ' + tipo;
   document.getElementById('status-text').textContent = msg;
+}
+
+// ── Renderizar MP4 en servidor ──
+async function renderizarMP4() {
+  if (!htmlGenerado) return;
+
+  const btn = document.getElementById('btn-render-mp4');
+  const progressWrap = document.getElementById('render-progress');
+  const mp4Result    = document.getElementById('mp4-result');
+  const statusText   = document.getElementById('render-status-text');
+  const progressBar  = document.getElementById('render-progress-bar');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Renderizando…';
+  progressWrap.style.display = 'block';
+  mp4Result.style.display    = 'none';
+
+  // Simular progreso visual mientras espera
+  const pasos = [
+    [5,  'Iniciando Puppeteer…'],
+    [15, 'Cargando página HTML…'],
+    [25, 'Capturando frames…'],
+    [50, 'Procesando frames…'],
+    [70, 'Ensamblando con FFmpeg…'],
+    [85, 'Codificando MP4…'],
+    [92, 'Subiendo a Supabase…'],
+  ];
+  let pasoIdx = 0;
+  const intervalo = setInterval(() => {
+    if (pasoIdx < pasos.length) {
+      const [pct, msg] = pasos[pasoIdx++];
+      progressBar.style.width = pct + '%';
+      statusText.textContent = msg;
+    }
+  }, 8000);
+
+  try {
+    const tipo = document.querySelector('.tipo-btn.selected')?.dataset?.tipo || 'story';
+    const resp = await fetch('/api/render-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ html: htmlGenerado, tipo, duracion: 28 })
+    });
+
+    clearInterval(intervalo);
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Error del servidor');
+    }
+
+    const data = await resp.json();
+    if (!data.ok) throw new Error(data.error || 'Error en render');
+
+    progressBar.style.width = '100%';
+    statusText.textContent = '¡Listo!';
+    setTimeout(() => { progressWrap.style.display = 'none'; }, 1500);
+
+    document.getElementById('mp4-link').href = data.url;
+    mp4Result.style.display = 'block';
+    setStatus('ok', '🎬 MP4 generado y subido a Supabase ✓');
+
+  } catch(e) {
+    clearInterval(intervalo);
+    progressWrap.style.display = 'none';
+    setStatus('error', 'Error render: ' + e.message);
+    alert('Error al renderizar: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎬 Descargar MP4';
+  }
 }
 
 // ── Acciones de descarga ──
