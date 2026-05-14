@@ -113,6 +113,431 @@ app.get("/generador-posts", (_, res) => res.sendFile(path.join(__dirname, "Públ
 app.get("/generador-posts.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-posts.html")));
 
 app.get("/ping", (_, res) => res.json({ ok: true, ts: Date.now(), uptime: process.uptime() }));
+// ============================================================
+// GENERADOR DE VIDEO IA — CON MP4 EN SERVIDOR
+// Pegá este bloque ANTES del app.listen en server.js
+// Luego ejecutá: npm install puppeteer-core @sparticuz/chromium
+// ============================================================
+
+const os   = require("os");
+const { spawn } = require("child_process");
+
+// ─── Páginas ───
+app.get("/generador-video",      (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-video.html")));
+app.get("/generador-video.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-video.html")));
+
+// ─── Helpers ───
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function getPaleta(estilo) {
+  const p = {
+    luxury: { bg:"#0d0d0d", bg2:"#141414", accent:"#c9a84c", text:"#ffffff", muted:"#888", overlay:"rgba(0,0,0,0.6)", font:"Georgia,serif", accentText:"#000" },
+    clean:  { bg:"#f8f6f0", bg2:"#ffffff", accent:"#2c3e50", text:"#1a1a1a", muted:"#888", overlay:"rgba(255,255,255,0.7)", font:"Helvetica Neue,Arial,sans-serif", accentText:"#fff" },
+    modern: { bg:"#1a2a4a", bg2:"#0d1a30", accent:"#4a90e2", text:"#ffffff", muted:"#8ab4d8", overlay:"rgba(10,20,40,0.7)", font:"Arial,sans-serif", accentText:"#fff" },
+    neon:   { bg:"#040d04", bg2:"#071207", accent:"#00f5ff", text:"#ffffff", muted:"#4af0b0", overlay:"rgba(0,0,0,0.45)", font:"Arial Black,Impact,sans-serif", accentText:"#000" },
+  };
+  return p[estilo] || p.luxury;
+}
+
+// ─── Template exclusivo estilo Neón Aéreo ───
+function buildNeonHTML({ titulo, zona, precio, cta, telefono, tipo, imagenUrl, content, neonM2 = 2500, neonLotes = 6, neonPalabra = "OPORTUNIDAD" }) {
+  const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
+  const s    = tipo === "story";
+
+  // Calcular distribución de lotes en grilla
+  const cols   = neonLotes <= 4 ? 2 : neonLotes <= 6 ? 2 : neonLotes <= 9 ? 3 : 4;
+  const rows   = Math.ceil(neonLotes / cols);
+  const totalM2 = neonM2 * neonLotes;
+
+  // Generar celdas SVG para la grilla de lotes
+  const padX = 40, padY = s ? 160 : 80;
+  const gridW = dims.w - padX * 2;
+  const gridH = s ? dims.h * 0.55 : dims.h * 0.5;
+  const cellW = gridW / cols;
+  const cellH = gridH / rows;
+
+  let svgLotes = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c;
+      if (idx >= neonLotes) break;
+      const x = padX + c * cellW;
+      const y = padY + r * cellH;
+      const cx = x + cellW / 2;
+      const cy = y + cellH / 2;
+      const fs = s ? 22 : 16;
+      svgLotes += `
+        <rect x="${x+3}" y="${y+3}" width="${cellW-6}" height="${cellH-6}"
+          fill="rgba(0,245,255,0.06)" stroke="#00f5ff" stroke-width="2.5"
+          rx="3" filter="url(#neon)">
+          <animate attributeName="opacity" values="0.85;1;0.85" dur="${1.5 + idx * 0.3}s" repeatCount="indefinite"/>
+        </rect>
+        <text x="${cx}" y="${cy - fs/2}" text-anchor="middle" dominant-baseline="middle"
+          fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs}px"
+          font-weight="900" filter="url(#neonText)"
+          style="text-shadow:0 0 10px #00f5ff">
+          <animate attributeName="opacity" values="0.7;1;0.7" dur="${1.8 + idx * 0.2}s" repeatCount="indefinite"/>
+          ${neonM2.toLocaleString('es-AR')}m²
+        </text>`;
+    }
+  }
+
+  // Líneas divisorias internas
+  let svgLines = '';
+  for (let c = 1; c < cols; c++) {
+    const x = padX + c * cellW;
+    svgLines += `<line x1="${x}" y1="${padY}" x2="${x}" y2="${padY + gridH}" stroke="#00f5ff" stroke-width="2" opacity="0.6"/>`;
+  }
+  for (let r = 1; r < rows; r++) {
+    const y = padY + r * cellH;
+    svgLines += `<line x1="${padX}" y1="${y}" x2="${padX + gridW}" y2="${y}" stroke="#00f5ff" stroke-width="2" opacity="0.6"/>`;
+  }
+
+  const imgBg = imagenUrl
+    ? `<image href="${imagenUrl}" x="0" y="0" width="${dims.w}" height="${dims.h}" preserveAspectRatio="xMidYMid slice" opacity="0.55"/>`
+    : `<rect width="${dims.w}" height="${dims.h}" fill="url(#bgGrad)"/>`;
+
+  const bottomY  = padY + gridH + (s ? 40 : 30);
+  const palabraY = s ? dims.h - 220 : dims.h - 160;
+  const fs2      = s ? 18 : 13;
+  const fs3      = s ? 90 : 62;
+  const fs4      = s ? 24 : 18;
+  const fs5      = s ? 20 : 15;
+
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:${dims.w}px;height:${dims.h}px;overflow:hidden;background:#040d04}
+svg{display:block;width:100%;height:100%}
+</style></head><body>
+<svg viewBox="0 0 ${dims.w} ${dims.h}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#071207"/>
+      <stop offset="100%" stop-color="#020802"/>
+    </linearGradient>
+    <filter id="neon" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="neonText" x="-10%" y="-30%" width="120%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="neonBig" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo / imagen aérea -->
+  ${imgBg}
+  <rect width="${dims.w}" height="${dims.h}" fill="rgba(0,0,0,0.42)"/>
+
+  <!-- Grilla de lotes con neón -->
+  <!-- Rectángulo exterior de toda la grilla -->
+  <rect x="${padX}" y="${padY}" width="${gridW}" height="${gridH}"
+    fill="none" stroke="#00f5ff" stroke-width="3" rx="4" filter="url(#neon)">
+    <animate attributeName="stroke-opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Líneas divisorias -->
+  ${svgLines}
+
+  <!-- Celdas individuales con m² -->
+  ${svgLotes}
+
+  <!-- Total m² -->
+  <text x="${dims.w/2}" y="${bottomY}" text-anchor="middle"
+    fill="#4af0b0" font-family="Arial Black,Impact,sans-serif" font-size="${fs2}px" font-weight="900"
+    filter="url(#neonText)" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="1.2s" fill="freeze"/>
+    TOTAL: ${totalM2.toLocaleString('es-AR')}m²  ·  ${neonLotes} LOTES
+  </text>
+
+  <!-- Zona / título -->
+  <text x="${dims.w/2}" y="${s ? 100 : 60}" text-anchor="middle"
+    fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs2 + 2}px"
+    font-weight="900" letter-spacing="4" filter="url(#neonText)" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.4s" begin="0.3s" fill="freeze"/>
+    ${escapeHtml(zona || 'Río Cuarto').toUpperCase()}
+  </text>
+
+  <!-- Palabra de impacto -->
+  <text x="${dims.w/2}" y="${palabraY}" text-anchor="middle"
+    fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fs3}px"
+    font-weight="900" letter-spacing="6" filter="url(#neonBig)" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.3s" begin="1.8s" fill="freeze"/>
+    <animate attributeName="fill" values="#ffffff;#00f5ff;#ffffff" dur="1.5s" begin="2.1s" repeatCount="indefinite"/>
+    ${escapeHtml(neonPalabra.toUpperCase())}
+  </text>
+
+  <!-- Precio -->
+  ${precio ? `<text x="${dims.w/2}" y="${palabraY + (s?70:50)}" text-anchor="middle"
+    fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs4}px"
+    font-weight="900" filter="url(#neonText)" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.4s" begin="2.2s" fill="freeze"/>
+    ${escapeHtml(precio)}
+  </text>` : ''}
+
+  <!-- CTA + teléfono -->
+  <rect x="${padX}" y="${dims.h - (s?120:90)}" width="${gridW}" height="${s?90:65}"
+    fill="rgba(0,245,255,0.1)" stroke="#00f5ff" stroke-width="1.5" rx="6" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.5s" fill="freeze"/>
+  </rect>
+  <text x="${dims.w/2}" y="${dims.h - (s?88:60)}" text-anchor="middle"
+    fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fs5}px"
+    font-weight="700" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.5s" fill="freeze"/>
+    ${escapeHtml(cta)}
+  </text>
+  ${telefono ? `<text x="${dims.w/2}" y="${dims.h - (s?55:30)}" text-anchor="middle"
+    fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs5 - 2}px"
+    font-weight="900" filter="url(#neonText)" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.6s" fill="freeze"/>
+    ${escapeHtml(telefono)}
+  </text>` : ''}
+
+  <!-- Marca Buzzacchi -->
+  <text x="${dims.w - 20}" y="${s ? 55 : 40}" text-anchor="end"
+    fill="rgba(255,255,255,0.5)" font-family="Arial,sans-serif" font-size="${s?14:11}px"
+    font-weight="400" letter-spacing="2">
+    VANINA BUZZACCHI · INMUEBLES
+  </text>
+</svg>
+</body></html>`;
+}
+
+function buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra }) {
+  // Redirigir al template neón si corresponde
+  if (estilo === 'neon') {
+    return buildNeonHTML({ titulo, zona, precio, cta, telefono, tipo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
+  }
+  const pal  = getPaleta(estilo);
+  const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
+  const s    = tipo === "story";
+
+  const imgTag  = imagenUrl
+    ? `<div class="bgi" style="background-image:url('${imagenUrl}')"></div>`
+    : `<div class="bgg"></div>`;
+
+  const bullets = (content.bullets || []).map(b =>
+    `<div class="bullet"><span class="bi">✓</span><span>${escapeHtml(b)}</span></div>`
+  ).join("\n");
+
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:${pal.font};background:${pal.bg};width:${dims.w}px;height:${dims.h}px;overflow:hidden;position:relative}
+.bgi{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+.bgg{position:absolute;inset:0;background:linear-gradient(135deg,${pal.bg} 0%,${pal.bg2} 100%);z-index:0}
+.ov{position:absolute;inset:0;background:${pal.overlay};z-index:1}
+.cnt{position:relative;z-index:2;width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:${s?"40px 32px 60px":"30px"}}
+.dl{width:0;height:3px;background:${pal.accent};margin-bottom:16px;animation:el .6s ease .1s forwards}
+.badge{display:inline-block;background:${pal.accent};color:${pal.accentText};font-size:${s?"15px":"11px"};font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;border-radius:4px;margin-bottom:16px;opacity:0;animation:fu .6s ease .3s forwards}
+.hl{color:${pal.text};font-size:${s?"44px":"33px"};font-weight:700;line-height:1.05;margin-bottom:12px;opacity:0;animation:fu .6s ease .5s forwards}
+.shl{color:${pal.accent};font-size:${s?"22px":"17px"};margin-bottom:18px;opacity:0;animation:fu .6s ease .7s forwards}
+.bullets{margin-bottom:20px;opacity:0;animation:fu .6s ease .9s forwards}
+.bullet{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bi{color:${pal.accent};font-size:${s?"18px":"13px"};font-weight:700;flex-shrink:0}
+.bullet span:last-child{color:${pal.text};font-size:${s?"17px":"12px"}}
+.pb{margin-bottom:20px;opacity:0;animation:fu .6s ease 1s forwards}
+.pl{font-size:${s?"13px":"10px"};color:${pal.muted};text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
+.pv{font-size:${s?"34px":"25px"};font-weight:700;color:${pal.accent}}
+.ctab{border-top:2px solid ${pal.accent};padding-top:16px;opacity:0;animation:fu .6s ease 1.2s forwards}
+.ctxt{font-size:${s?"19px":"14px"};color:${pal.text};font-weight:600}
+.ctel{font-size:${s?"17px":"12px"};color:${pal.accent};font-weight:700;margin-top:4px}
+.logo{font-size:${s?"13px":"10px"};color:${pal.muted};letter-spacing:.18em;text-transform:uppercase;margin-top:8px}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes el{from{width:0;opacity:0}to{width:50px;opacity:1}}
+</style></head><body>
+${imgTag}
+<div class="ov"></div>
+<div class="cnt">
+  <div class="dl"></div>
+  <div class="badge">${escapeHtml(zona||"Río Cuarto")}</div>
+  <div class="hl">${escapeHtml(content.headline||titulo)}</div>
+  <div class="shl">${escapeHtml(content.subheadline||"")}</div>
+  <div class="bullets">${bullets}</div>
+  ${precio?`<div class="pb"><div class="pl">Precio</div><div class="pv">${escapeHtml(precio)}</div></div>`:""}
+  <div class="ctab">
+    <div class="ctxt">${escapeHtml(cta)}</div>
+    ${telefono?`<div class="ctel">${escapeHtml(telefono)}</div>`:""}
+    <div class="logo">Vanina Buzzacchi · Inmuebles</div>
+  </div>
+</div>
+</body></html>`;
+}
+
+async function llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey }) {
+  const fetch = (...a) => import("node-fetch").then(m => m.default(...a));
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1200,
+      system: "Experto en marketing inmobiliario. Español argentino. Respondés SOLO con JSON válido, sin backticks ni texto extra.",
+      messages: [{ role:"user", content:
+`Video ${tipo==="story"?"Story 9:16":"Post 1:1"} para propiedad:
+Título: ${titulo}, Zona: ${zona||"Río Cuarto"}, Precio: ${precio||"A consultar"}, Descripción: ${descripcion||""}, Tono: ${tono}, CTA: ${cta}, Tel: ${telefono||""}
+
+Respondé con JSON exactamente así:
+{"guion":"80-120 palabras","headline":"max 6 palabras","subheadline":"max 10 palabras","bullets":["feat1","feat2","feat3"],"captions":[{"ts":"0:00","texto":"..."},{"ts":"0:04","texto":"..."},{"ts":"0:08","texto":"..."},{"ts":"0:12","texto":"..."},{"ts":"0:18","texto":"..."},{"ts":"0:24","texto":"CTA"}],"musicaPrompt":"prompt inglés para Suno 30-50 palabras"}`
+      }]
+    })
+  });
+
+  const d = await resp.json();
+  if (d.error) throw new Error("Claude: " + d.error.message);
+  const raw = d.content?.[0]?.text || "{}";
+  return JSON.parse(raw.replace(/```json|```/g,"").trim());
+}
+
+async function renderizarMP4({ html, tipo, duracionSeg, tmpDir }) {
+  let chromium, puppeteer;
+  try {
+    chromium = require("@sparticuz/chromium");
+    puppeteer = require("puppeteer-core");
+  } catch(e) {
+    throw new Error("Dependencias no instaladas. Ejecutá: npm install puppeteer-core @sparticuz/chromium");
+  }
+
+  const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
+  const fps  = 12;
+  const totalFrames = duracionSeg * fps;
+  const msPerFrame  = 1000 / fps;
+
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: { width: dims.w, height: dims.h },
+    executablePath: await chromium.executablePath(),
+    headless: true,
+  });
+
+  const page = await browser.newPage();
+  await page.setViewport({ width: dims.w, height: dims.h, deviceScaleFactor: 1 });
+  await page.setContent(html, { waitUntil: "networkidle0" });
+  await new Promise(r => setTimeout(r, 300)); // dar tiempo a CSS init
+
+  for (let i = 0; i < totalFrames; i++) {
+    const framePath = path.join(tmpDir, `f${String(i).padStart(5,"0")}.png`);
+    await page.screenshot({ path: framePath });
+
+    // Avanzar animaciones CSS manualmente
+    await page.evaluate((ms) => {
+      const anims = document.getAnimations ? document.getAnimations() : [];
+      anims.forEach(a => { try { a.currentTime = (a.currentTime || 0) + ms; } catch{} });
+    }, msPerFrame);
+  }
+
+  await browser.close();
+
+  // Ensamblar con FFmpeg
+  const outMp4 = path.join(tmpDir, "video.mp4");
+  await new Promise((resolve, reject) => {
+    const proc = spawn("ffmpeg", [
+      "-y", "-framerate", String(fps),
+      "-i", path.join(tmpDir, "f%05d.png"),
+      "-c:v", "libx264", "-pix_fmt", "yuv420p",
+      "-crf", "23", "-preset", "fast",
+      outMp4
+    ]);
+    let err = "";
+    proc.stderr.on("data", d => { err += d.toString(); });
+    proc.on("close", code => code === 0 ? resolve() : reject(new Error("FFmpeg code " + code + ": " + err.slice(-300))));
+    proc.on("error", reject);
+  });
+
+  return outMp4;
+}
+
+// ─── RUTA 1: Solo generar guión + HTML (rápido, ~3s) ───
+app.post("/api/generar-video", async (req, res) => {
+  const { titulo, zona, precio, descripcion, tono, cta, telefono, tipo, estilo, imagenUrl, neonM2, neonLotes, neonPalabra } = req.body;
+  if (!titulo) return res.status(400).json({ ok:false, error:"Falta título" });
+
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return res.status(400).json({ ok:false, error:"Falta ANTHROPIC_API_KEY en Render" });
+
+  try {
+    const content = await llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey:key });
+    const html    = buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
+    res.json({ ok:true, html, guion:content.guion||"", captions:content.captions||[], musicaPrompt:content.musicaPrompt||"" });
+  } catch(e) {
+    res.status(500).json({ ok:false, error:e.message });
+  }
+});
+
+// ─── RUTA 2: Renderizar HTML a MP4 y subir a Supabase (~60-90s) ───
+app.post("/api/render-video", async (req, res) => {
+  const { html, tipo = "story", duracion = 28 } = req.body;
+  if (!html) return res.status(400).json({ ok:false, error:"Falta HTML" });
+
+  // Timeout extendido para render
+  res.setTimeout(180000);
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "bvideo-"));
+  try {
+    console.log("[render-video] Iniciando render…");
+    const mp4Path = await renderizarMP4({ html, tipo, duracionSeg: duracion, tmpDir });
+
+    console.log("[render-video] Subiendo a Supabase…");
+    const buffer = fs.readFileSync(mp4Path);
+    const url    = await subirASupabase(buffer, `video-${Date.now()}.mp4`, "video/mp4");
+    if (!url) throw new Error("Error subiendo a Supabase Storage");
+
+    res.json({ ok:true, url });
+  } catch(e) {
+    console.error("[render-video]", e.message);
+    res.status(500).json({ ok:false, error:e.message });
+  } finally {
+    try { fs.rmSync(tmpDir, { recursive:true, force:true }); } catch{}
+  }
+});
+
+// ─── RUTA 3: Todo en uno — generar + renderizar + subir ───
+app.post("/api/generar-y-renderizar", async (req, res) => {
+  const { titulo, zona, precio, descripcion, tono, cta, telefono, tipo="story", estilo="luxury", imagenUrl, duracion=28, neonM2, neonLotes, neonPalabra } = req.body;
+  if (!titulo) return res.status(400).json({ ok:false, error:"Falta título" });
+
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) return res.status(400).json({ ok:false, error:"Falta ANTHROPIC_API_KEY" });
+
+  res.setTimeout(240000);
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "bvideo-"));
+  try {
+    console.log("[generar-y-renderizar] Paso 1: Claude…");
+    const content = await llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey:key });
+    const html    = buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
+
+    console.log("[generar-y-renderizar] Paso 2: Render…");
+    const mp4Path = await renderizarMP4({ html, tipo, duracionSeg:duracion, tmpDir });
+
+    console.log("[generar-y-renderizar] Paso 3: Upload…");
+    const buffer = fs.readFileSync(mp4Path);
+    const url    = await subirASupabase(buffer, `video-${Date.now()}.mp4`, "video/mp4");
+    if (!url) throw new Error("Error subiendo a Supabase");
+
+    res.json({ ok:true, url, html, guion:content.guion||"", captions:content.captions||[], musicaPrompt:content.musicaPrompt||"" });
+  } catch(e) {
+    console.error("[generar-y-renderizar]", e.message);
+    res.status(500).json({ ok:false, error:e.message });
+  } finally {
+    try { fs.rmSync(tmpDir, { recursive:true, force:true }); } catch{}
+  }
+});
+
+// ============================================================
+// FIN — GENERADOR DE VIDEO IA
+// ============================================================
 
 setInterval(() => {
   const port = process.env.PORT || 10000;
