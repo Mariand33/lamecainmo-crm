@@ -113,32 +113,21 @@ app.get("/generador-posts", (_, res) => res.sendFile(path.join(__dirname, "Públ
 app.get("/generador-posts.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-posts.html")));
 
 app.get("/ping", (_, res) => res.json({ ok: true, ts: Date.now(), uptime: process.uptime() }));
+
 // ============================================================
-// GENERADOR DE VIDEO IA — VERSIÓN VERCEL + REPLICATE
-// 
-// Variables de entorno necesarias (ya las tenés en Vercel):
-//   ANTHROPIC_API_KEY     ← ya configurada
-//   SUPABASE_URL          ← ya configurada
-//   SUPABASE_KEY          ← ya configurada
-//   REPLICATE_API_TOKEN   ← recién agregada
-//
-// NO requiere npm install extra — usa fetch nativo de Node 18+
-//
-// Pegá este bloque ANTES del setInterval keep-alive en server.js
+// GENERADOR DE VIDEO IA — VERCEL + REPLICATE
+// Variables necesarias (ya en Vercel):
+//   ANTHROPIC_API_KEY · SUPABASE_URL · SUPABASE_KEY · REPLICATE_API_TOKEN
 // ============================================================
 
 // ─── Páginas ───
 app.get("/generador-video",      (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-video.html")));
 app.get("/generador-video.html", (_, res) => res.sendFile(path.join(__dirname, "Público", "generador-video.html")));
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
+// ─── Helpers visuales ───
 function escapeHtml(str) {
   if (!str) return "";
-  return String(str)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 function getPaleta(estilo) {
@@ -151,239 +140,72 @@ function getPaleta(estilo) {
   return p[estilo] || p.luxury;
 }
 
-// ─────────────────────────────────────────────
-// Template Neón Aéreo (SVG animado con grilla de lotes)
-// ─────────────────────────────────────────────
+// ─── Template Neón Aéreo (SVG con grilla de lotes) ───
 function buildNeonHTML({ titulo, zona, precio, cta, telefono, tipo, imagenUrl, content, neonM2 = 2500, neonLotes = 6, neonPalabra = "OPORTUNIDAD" }) {
   const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
   const s    = tipo === "story";
-
-  const cols     = neonLotes <= 4 ? 2 : neonLotes <= 9 ? 3 : 4;
-  const rows     = Math.ceil(neonLotes / cols);
-  const totalM2  = (neonM2 * neonLotes).toLocaleString("es-AR");
-  const padX     = 40;
-  const padY     = s ? 160 : 80;
-  const gridW    = dims.w - padX * 2;
-  const gridH    = s ? dims.h * 0.52 : dims.h * 0.48;
-  const cellW    = gridW / cols;
-  const cellH    = gridH / rows;
+  const cols    = neonLotes <= 4 ? 2 : neonLotes <= 9 ? 3 : 4;
+  const rows    = Math.ceil(neonLotes / cols);
+  const totalM2 = (neonM2 * neonLotes).toLocaleString("es-AR");
+  const padX = 40, padY = s ? 160 : 80;
+  const gridW = dims.w - padX * 2, gridH = s ? dims.h * 0.52 : dims.h * 0.48;
+  const cellW = gridW / cols, cellH = gridH / rows;
 
   let svgCeldas = "";
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c;
       if (idx >= neonLotes) break;
-      const x = padX + c * cellW;
-      const y = padY + r * cellH;
-      const cx = x + cellW / 2;
-      const cy = y + cellH / 2;
-      const fs = s ? 20 : 14;
-      const delay = (1.0 + idx * 0.15).toFixed(2);
-      svgCeldas += `
-      <rect x="${x+3}" y="${y+3}" width="${cellW-6}" height="${cellH-6}"
-        fill="rgba(0,245,255,0.06)" stroke="#00f5ff" stroke-width="2.5" rx="3" filter="url(#gNeon)">
-        <animate attributeName="opacity" values="0.8;1;0.8" dur="${(1.4+idx*0.25).toFixed(1)}s" repeatCount="indefinite"/>
-      </rect>
-      <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle"
-        fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs}px"
-        font-weight="900" filter="url(#gNeonTxt)" opacity="0">
-        <animate attributeName="opacity" values="0;1" dur="0.4s" begin="${delay}s" fill="freeze"/>
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="${(1.6+idx*0.2).toFixed(1)}s" begin="${(parseFloat(delay)+0.5).toFixed(1)}s" repeatCount="indefinite"/>
-        ${neonM2.toLocaleString("es-AR")}m²
-      </text>`;
+      const x = padX + c * cellW, y = padY + r * cellH;
+      const cx = x + cellW / 2, cy = y + cellH / 2;
+      const fs = s ? 20 : 14, delay = (1.0 + idx * 0.15).toFixed(2);
+      svgCeldas += `<rect x="${x+3}" y="${y+3}" width="${cellW-6}" height="${cellH-6}" fill="rgba(0,245,255,0.06)" stroke="#00f5ff" stroke-width="2.5" rx="3" filter="url(#gNeon)"><animate attributeName="opacity" values="0.8;1;0.8" dur="${(1.4+idx*0.25).toFixed(1)}s" repeatCount="indefinite"/></rect>
+      <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fs}px" font-weight="900" filter="url(#gNeonTxt)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.4s" begin="${delay}s" fill="freeze"/><animate attributeName="opacity" values="0.7;1;0.7" dur="${(1.6+idx*0.2).toFixed(1)}s" begin="${(parseFloat(delay)+0.5).toFixed(1)}s" repeatCount="indefinite"/>${neonM2.toLocaleString("es-AR")}m²</text>`;
     }
   }
-
   let svgLineas = "";
-  for (let c = 1; c < cols; c++) {
-    const x = padX + c * cellW;
-    svgLineas += `<line x1="${x}" y1="${padY}" x2="${x}" y2="${padY+gridH}" stroke="#00f5ff" stroke-width="2" opacity="0.5"/>`;
-  }
-  for (let r = 1; r < rows; r++) {
-    const y = padY + r * cellH;
-    svgLineas += `<line x1="${padX}" y1="${y}" x2="${padX+gridW}" y2="${y}" stroke="#00f5ff" stroke-width="2" opacity="0.5"/>`;
-  }
+  for (let c = 1; c < cols; c++) { const x = padX + c * cellW; svgLineas += `<line x1="${x}" y1="${padY}" x2="${x}" y2="${padY+gridH}" stroke="#00f5ff" stroke-width="2" opacity="0.5"/>`; }
+  for (let r = 1; r < rows; r++) { const y = padY + r * cellH; svgLineas += `<line x1="${padX}" y1="${y}" x2="${padX+gridW}" y2="${y}" stroke="#00f5ff" stroke-width="2" opacity="0.5"/>`; }
 
-  const imgTag   = imagenUrl
-    ? `<image href="${imagenUrl}" x="0" y="0" width="${dims.w}" height="${dims.h}" preserveAspectRatio="xMidYMid slice" opacity="0.55"/>`
-    : `<rect width="${dims.w}" height="${dims.h}" fill="url(#bgGrad)"/>`;
+  const imgTag = imagenUrl ? `<image href="${imagenUrl}" x="0" y="0" width="${dims.w}" height="${dims.h}" preserveAspectRatio="xMidYMid slice" opacity="0.55"/>` : `<rect width="${dims.w}" height="${dims.h}" fill="url(#bgGrad)"/>`;
+  const bottomY = padY + gridH + (s ? 44 : 28), palabraY = s ? dims.h - 210 : dims.h - 150;
+  const fsZona = s?18:13, fsPalabra = s?86:60, fsPrecio = s?26:19, fsCta = s?19:14, fsTel = s?17:13;
 
-  const bottomY  = padY + gridH + (s ? 44 : 28);
-  const palabraY = s ? dims.h - 210 : dims.h - 150;
-  const fsZona   = s ? 18 : 13;
-  const fsPalabra= s ? 86 : 60;
-  const fsPrecio = s ? 26 : 19;
-  const fsCta    = s ? 19 : 14;
-  const fsTel    = s ? 17 : 13;
-
-  return `<!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{width:${dims.w}px;height:${dims.h}px;overflow:hidden;background:#040d04}
-svg{display:block}
-</style></head><body>
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box}body{width:${dims.w}px;height:${dims.h}px;overflow:hidden;background:#040d04}svg{display:block}</style></head><body>
 <svg width="${dims.w}" height="${dims.h}" viewBox="0 0 ${dims.w} ${dims.h}" xmlns="http://www.w3.org/2000/svg">
-<defs>
-  <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#071207"/>
-    <stop offset="100%" stop-color="#020802"/>
-  </linearGradient>
-  <filter id="gNeon" x="-20%" y="-20%" width="140%" height="140%">
-    <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
-  <filter id="gNeonTxt" x="-10%" y="-30%" width="120%" height="160%">
-    <feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
-  <filter id="gNeonBig" x="-15%" y="-15%" width="130%" height="130%">
-    <feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
-</defs>
-
-${imgTag}
-<rect width="${dims.w}" height="${dims.h}" fill="rgba(0,0,0,0.42)"/>
-
-<!-- Zona -->
-<text x="${dims.w/2}" y="${s?100:55}" text-anchor="middle"
-  fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsZona}px"
-  font-weight="900" letter-spacing="4" filter="url(#gNeonTxt)" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.4s" begin="0.3s" fill="freeze"/>
-  ${escapeHtml((zona||"Río Cuarto").toUpperCase())}
-</text>
-
-<!-- Marco exterior grilla -->
-<rect x="${padX}" y="${padY}" width="${gridW}" height="${gridH}"
-  fill="none" stroke="#00f5ff" stroke-width="3" rx="4" filter="url(#gNeon)">
-  <animate attributeName="stroke-opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
-</rect>
-
-${svgLineas}
-${svgCeldas}
-
-<!-- Total m² -->
-<text x="${dims.w/2}" y="${bottomY}" text-anchor="middle"
-  fill="#4af0b0" font-family="Arial Black,Impact,sans-serif" font-size="${fsZona}px"
-  font-weight="900" filter="url(#gNeonTxt)" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.4s" begin="1.5s" fill="freeze"/>
-  TOTAL: ${totalM2}m²  ·  ${neonLotes} LOTES
-</text>
-
-<!-- Palabra de impacto -->
-<text x="${dims.w/2}" y="${palabraY}" text-anchor="middle"
-  fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fsPalabra}px"
-  font-weight="900" letter-spacing="4" filter="url(#gNeonBig)" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.3s" begin="1.9s" fill="freeze"/>
-  <animate attributeName="fill" values="#ffffff;#00f5ff;#ffffff" dur="1.6s" begin="2.2s" repeatCount="indefinite"/>
-  ${escapeHtml(neonPalabra.toUpperCase())}
-</text>
-
-<!-- Precio -->
-${precio ? `<text x="${dims.w/2}" y="${palabraY+(s?64:46)}" text-anchor="middle"
-  fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsPrecio}px"
-  font-weight="900" filter="url(#gNeonTxt)" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.4s" begin="2.3s" fill="freeze"/>
-  ${escapeHtml(precio)}
-</text>` : ""}
-
-<!-- CTA box -->
-<rect x="${padX}" y="${dims.h-(s?118:86)}" width="${gridW}" height="${s?88:62}"
-  fill="rgba(0,245,255,0.08)" stroke="#00f5ff" stroke-width="1.5" rx="6" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.6s" fill="freeze"/>
-</rect>
-<text x="${dims.w/2}" y="${dims.h-(s?84:57)}" text-anchor="middle"
-  fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fsCta}px"
-  font-weight="700" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.6s" fill="freeze"/>
-  ${escapeHtml(cta)}
-</text>
-${telefono ? `<text x="${dims.w/2}" y="${dims.h-(s?52:28)}" text-anchor="middle"
-  fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsTel}px"
-  font-weight="900" filter="url(#gNeonTxt)" opacity="0">
-  <animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.7s" fill="freeze"/>
-  ${escapeHtml(telefono)}
-</text>` : ""}
-
-<!-- Marca -->
-<text x="${dims.w-16}" y="${s?50:36}" text-anchor="end"
-  fill="rgba(255,255,255,0.45)" font-family="Arial,sans-serif" font-size="${s?13:10}px" letter-spacing="2">
-  VANINA BUZZACCHI · INMUEBLES
-</text>
-</svg>
-</body></html>`;
+<defs><linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#071207"/><stop offset="100%" stop-color="#020802"/></linearGradient>
+<filter id="gNeon" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="gNeonTxt" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="gNeonBig" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+${imgTag}<rect width="${dims.w}" height="${dims.h}" fill="rgba(0,0,0,0.42)"/>
+<text x="${dims.w/2}" y="${s?100:55}" text-anchor="middle" fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsZona}px" font-weight="900" letter-spacing="4" filter="url(#gNeonTxt)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.4s" begin="0.3s" fill="freeze"/>${escapeHtml((zona||"Río Cuarto").toUpperCase())}</text>
+<rect x="${padX}" y="${padY}" width="${gridW}" height="${gridH}" fill="none" stroke="#00f5ff" stroke-width="3" rx="4" filter="url(#gNeon)"><animate attributeName="stroke-opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/></rect>
+${svgLineas}${svgCeldas}
+<text x="${dims.w/2}" y="${bottomY}" text-anchor="middle" fill="#4af0b0" font-family="Arial Black,Impact,sans-serif" font-size="${fsZona}px" font-weight="900" filter="url(#gNeonTxt)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.4s" begin="1.5s" fill="freeze"/>TOTAL: ${totalM2}m²  ·  ${neonLotes} LOTES</text>
+<text x="${dims.w/2}" y="${palabraY}" text-anchor="middle" fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fsPalabra}px" font-weight="900" letter-spacing="4" filter="url(#gNeonBig)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.3s" begin="1.9s" fill="freeze"/><animate attributeName="fill" values="#ffffff;#00f5ff;#ffffff" dur="1.6s" begin="2.2s" repeatCount="indefinite"/>${escapeHtml(neonPalabra.toUpperCase())}</text>
+${precio?`<text x="${dims.w/2}" y="${palabraY+(s?64:46)}" text-anchor="middle" fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsPrecio}px" font-weight="900" filter="url(#gNeonTxt)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.4s" begin="2.3s" fill="freeze"/>${escapeHtml(precio)}</text>`:""}
+<rect x="${padX}" y="${dims.h-(s?118:86)}" width="${gridW}" height="${s?88:62}" fill="rgba(0,245,255,0.08)" stroke="#00f5ff" stroke-width="1.5" rx="6" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.6s" fill="freeze"/></rect>
+<text x="${dims.w/2}" y="${dims.h-(s?84:57)}" text-anchor="middle" fill="#ffffff" font-family="Arial Black,Impact,sans-serif" font-size="${fsCta}px" font-weight="700" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.6s" fill="freeze"/>${escapeHtml(cta)}</text>
+${telefono?`<text x="${dims.w/2}" y="${dims.h-(s?52:28)}" text-anchor="middle" fill="#00f5ff" font-family="Arial Black,Impact,sans-serif" font-size="${fsTel}px" font-weight="900" filter="url(#gNeonTxt)" opacity="0"><animate attributeName="opacity" values="0;1" dur="0.5s" begin="2.7s" fill="freeze"/>${escapeHtml(telefono)}</text>`:""}
+<text x="${dims.w-16}" y="${s?50:36}" text-anchor="end" fill="rgba(255,255,255,0.45)" font-family="Arial,sans-serif" font-size="${s?13:10}px" letter-spacing="2">VANINA BUZZACCHI · INMUEBLES</text>
+</svg></body></html>`;
 }
 
-// ─────────────────────────────────────────────
-// Template estándar (luxury / clean / modern)
-// ─────────────────────────────────────────────
+// ─── Template estándar (luxury / clean / modern) ───
 function buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra }) {
-  if (estilo === "neon") {
-    return buildNeonHTML({ titulo, zona, precio, cta, telefono, tipo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
-  }
-
+  if (estilo === "neon") return buildNeonHTML({ titulo, zona, precio, cta, telefono, tipo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
   const pal  = getPaleta(estilo);
   const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
   const s    = tipo === "story";
-
-  const imgTag = imagenUrl
-    ? `<div class="bgi" style="background-image:url('${imagenUrl}')"></div>`
-    : `<div class="bgg"></div>`;
-
-  const bullets = (content.bullets || []).map(b =>
-    `<div class="bullet"><span class="bi">✓</span><span>${escapeHtml(b)}</span></div>`
-  ).join("\n");
-
-  return `<!DOCTYPE html>
-<html><head><meta charset="UTF-8">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:${pal.font};background:${pal.bg};width:${dims.w}px;height:${dims.h}px;overflow:hidden;position:relative}
-.bgi{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
-.bgg{position:absolute;inset:0;background:linear-gradient(135deg,${pal.bg} 0%,${pal.bg2} 100%);z-index:0}
-.ov{position:absolute;inset:0;background:${pal.overlay};z-index:1}
-.cnt{position:relative;z-index:2;width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:${s?"40px 32px 60px":"30px"}}
-.dl{width:0;height:3px;background:${pal.accent};margin-bottom:16px;animation:el .6s ease .1s forwards}
-.badge{display:inline-block;background:${pal.accent};color:${pal.accentText};font-size:${s?"15px":"11px"};font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;border-radius:4px;margin-bottom:16px;opacity:0;animation:fu .6s ease .3s forwards}
-.hl{color:${pal.text};font-size:${s?"44px":"33px"};font-weight:700;line-height:1.05;margin-bottom:12px;opacity:0;animation:fu .6s ease .5s forwards}
-.shl{color:${pal.accent};font-size:${s?"22px":"17px"};margin-bottom:18px;opacity:0;animation:fu .6s ease .7s forwards}
-.bullets{margin-bottom:20px;opacity:0;animation:fu .6s ease .9s forwards}
-.bullet{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.bi{color:${pal.accent};font-size:${s?"18px":"13px"};font-weight:700;flex-shrink:0}
-.bullet span:last-child{color:${pal.text};font-size:${s?"17px":"12px"}}
-.pb{margin-bottom:20px;opacity:0;animation:fu .6s ease 1s forwards}
-.pl{font-size:${s?"13px":"10px"};color:${pal.muted};text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}
-.pv{font-size:${s?"34px":"25px"};font-weight:700;color:${pal.accent}}
-.ctab{border-top:2px solid ${pal.accent};padding-top:16px;opacity:0;animation:fu .6s ease 1.2s forwards}
-.ctxt{font-size:${s?"19px":"14px"};color:${pal.text};font-weight:600}
-.ctel{font-size:${s?"17px":"12px"};color:${pal.accent};font-weight:700;margin-top:4px}
-.logo{font-size:${s?"13px":"10px"};color:${pal.muted};letter-spacing:.18em;text-transform:uppercase;margin-top:8px}
-@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes el{from{width:0;opacity:0}to{width:50px;opacity:1}}
-</style></head><body>
-${imgTag}
-<div class="ov"></div>
-<div class="cnt">
-  <div class="dl"></div>
-  <div class="badge">${escapeHtml(zona||"Río Cuarto")}</div>
-  <div class="hl">${escapeHtml(content.headline||titulo)}</div>
-  <div class="shl">${escapeHtml(content.subheadline||"")}</div>
-  <div class="bullets">${bullets}</div>
-  ${precio?`<div class="pb"><div class="pl">Precio</div><div class="pv">${escapeHtml(precio)}</div></div>`:""}
-  <div class="ctab">
-    <div class="ctxt">${escapeHtml(cta)}</div>
-    ${telefono?`<div class="ctel">${escapeHtml(telefono)}</div>`:""}
-    <div class="logo">Vanina Buzzacchi · Inmuebles</div>
-  </div>
-</div>
-</body></html>`;
+  const imgTag = imagenUrl ? `<div class="bgi" style="background-image:url('${imagenUrl}')"></div>` : `<div class="bgg"></div>`;
+  const bullets = (content.bullets || []).map(b => `<div class="bullet"><span class="bi">✓</span><span>${escapeHtml(b)}</span></div>`).join("\n");
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:${pal.font};background:${pal.bg};width:${dims.w}px;height:${dims.h}px;overflow:hidden;position:relative}.bgi{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}.bgg{position:absolute;inset:0;background:linear-gradient(135deg,${pal.bg} 0%,${pal.bg2} 100%);z-index:0}.ov{position:absolute;inset:0;background:${pal.overlay};z-index:1}.cnt{position:relative;z-index:2;width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:${s?"40px 32px 60px":"30px"}}.dl{width:0;height:3px;background:${pal.accent};margin-bottom:16px;animation:el .6s ease .1s forwards}.badge{display:inline-block;background:${pal.accent};color:${pal.accentText};font-size:${s?"15px":"11px"};font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;border-radius:4px;margin-bottom:16px;opacity:0;animation:fu .6s ease .3s forwards}.hl{color:${pal.text};font-size:${s?"44px":"33px"};font-weight:700;line-height:1.05;margin-bottom:12px;opacity:0;animation:fu .6s ease .5s forwards}.shl{color:${pal.accent};font-size:${s?"22px":"17px"};margin-bottom:18px;opacity:0;animation:fu .6s ease .7s forwards}.bullets{margin-bottom:20px;opacity:0;animation:fu .6s ease .9s forwards}.bullet{display:flex;align-items:center;gap:8px;margin-bottom:8px}.bi{color:${pal.accent};font-size:${s?"18px":"13px"};font-weight:700;flex-shrink:0}.bullet span:last-child{color:${pal.text};font-size:${s?"17px":"12px"}}.pb{margin-bottom:20px;opacity:0;animation:fu .6s ease 1s forwards}.pl{font-size:${s?"13px":"10px"};color:${pal.muted};text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px}.pv{font-size:${s?"34px":"25px"};font-weight:700;color:${pal.accent}}.ctab{border-top:2px solid ${pal.accent};padding-top:16px;opacity:0;animation:fu .6s ease 1.2s forwards}.ctxt{font-size:${s?"19px":"14px"};color:${pal.text};font-weight:600}.ctel{font-size:${s?"17px":"12px"};color:${pal.accent};font-weight:700;margin-top:4px}.logo{font-size:${s?"13px":"10px"};color:${pal.muted};letter-spacing:.18em;text-transform:uppercase;margin-top:8px}@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes el{from{width:0;opacity:0}to{width:50px;opacity:1}}</style></head><body>
+${imgTag}<div class="ov"></div><div class="cnt"><div class="dl"></div><div class="badge">${escapeHtml(zona||"Río Cuarto")}</div><div class="hl">${escapeHtml(content.headline||titulo)}</div><div class="shl">${escapeHtml(content.subheadline||"")}</div><div class="bullets">${bullets}</div>${precio?`<div class="pb"><div class="pl">Precio</div><div class="pv">${escapeHtml(precio)}</div></div>`:""}<div class="ctab"><div class="ctxt">${escapeHtml(cta)}</div>${telefono?`<div class="ctel">${escapeHtml(telefono)}</div>`:""}<div class="logo">Vanina Buzzacchi · Inmuebles</div></div></div></body></html>`;
 }
 
-// ─────────────────────────────────────────────
-// Claude: generar contenido del video
-// ─────────────────────────────────────────────
+// ─── Claude: generar contenido ───
 async function llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey }) {
-  const fetch = (...a) => import("node-fetch").then(m => m.default(...a));
-
-  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01" },
     body: JSON.stringify({
@@ -393,124 +215,72 @@ async function llamarClaude({ titulo, zona, precio, descripcion, tono, cta, tele
       messages: [{ role:"user", content:
 `Video ${tipo==="story"?"Story 9:16":"Post 1:1"} para propiedad:
 Título: ${titulo}, Zona: ${zona||"Río Cuarto"}, Precio: ${precio||"A consultar"}, Descripción: ${descripcion||""}, Tono: ${tono}, CTA: ${cta}, Tel: ${telefono||""}
-
 Respondé con este JSON exacto:
 {"guion":"80-120 palabras","headline":"max 6 palabras","subheadline":"max 10 palabras","bullets":["feat1","feat2","feat3"],"captions":[{"ts":"0:00","texto":"..."},{"ts":"0:04","texto":"..."},{"ts":"0:08","texto":"..."},{"ts":"0:12","texto":"..."},{"ts":"0:18","texto":"..."},{"ts":"0:24","texto":"CTA"}],"musicaPrompt":"prompt inglés Suno 30-50 palabras"}`
       }]
     })
   });
-
   const d = await resp.json();
   if (d.error) throw new Error("Claude: " + d.error.message);
   const raw = d.content?.[0]?.text || "{}";
   return JSON.parse(raw.replace(/```json|```/g,"").trim());
 }
 
-// ─────────────────────────────────────────────
-// Replicate: renderizar HTML → MP4
-// Usa el modelo browserless/chrome para capturar
-// y ffmpeg para ensamblar
-// ─────────────────────────────────────────────
+// ─── Replicate: renderizar HTML → MP4 ───
 async function renderizarConReplicate({ htmlContent, tipo, duracionSeg = 28 }) {
-  const fetch = (...a) => import("node-fetch").then(m => m.default(...a));
-  const token = process.env.REPLICATE_API_TOKEN;
-  if (!token) throw new Error("Falta REPLICATE_API_TOKEN en las variables de entorno");
+    const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) throw new Error("Falta REPLICATE_API_TOKEN en variables de entorno de Vercel");
 
   const dims = tipo === "story" ? { w:540, h:960 } : { w:540, h:540 };
-
-  // Encodar el HTML en base64 para pasarlo como input
   const htmlBase64 = Buffer.from(htmlContent).toString("base64");
 
-  // Usamos el modelo animate-diff o un modelo de renderizado HTML→video
-  // El modelo más confiable para HTML→MP4 es navie/html-video en Replicate
   const prediction = await fetch("https://api.replicate.com/v1/predictions", {
     method: "POST",
-    headers: {
-      "Authorization": `Token ${token}`,
-      "Content-Type":  "application/json"
-    },
+    headers: { "Authorization":`Token ${token}`, "Content-Type":"application/json" },
     body: JSON.stringify({
       version: "5c7d5dc6dd8bf75c1acaa8565735e7986bc5b66206b55cca93cb72c9bf15ccaa",
-      // Modelo: deforum/deforum_stable_diffusion adaptado para HTML
-      // Usamos directamente el endpoint de scripts
-      input: {
-        html_content: htmlBase64,
-        width:        dims.w,
-        height:       dims.h,
-        duration:     duracionSeg,
-        fps:          12,
-        format:       "mp4"
-      }
+      input: { html_content: htmlBase64, width: dims.w, height: dims.h, duration: duracionSeg, fps: 12, format: "mp4" }
     })
   });
 
-  if (!prediction.ok) {
-    const err = await prediction.text();
-    throw new Error("Replicate error al crear predicción: " + err);
-  }
-
+  if (!prediction.ok) throw new Error("Replicate error: " + await prediction.text());
   const predData = await prediction.json();
   const predId   = predData.id;
   if (!predId) throw new Error("Replicate no devolvió ID de predicción");
 
   // Polling hasta que termine (máx 3 minutos)
-  const maxWait  = 180000;
-  const interval = 3000;
-  const start    = Date.now();
-
-  while (Date.now() - start < maxWait) {
-    await new Promise(r => setTimeout(r, interval));
-
-    const poll = await fetch(`https://api.replicate.com/v1/predictions/${predId}`, {
-      headers: { "Authorization": `Token ${token}` }
-    });
-
+  const start = Date.now();
+  while (Date.now() - start < 180000) {
+    await new Promise(r => setTimeout(r, 3000));
+    const poll     = await fetch(`https://api.replicate.com/v1/predictions/${predId}`, { headers:{ "Authorization":`Token ${token}` } });
     const pollData = await poll.json();
-
     if (pollData.status === "succeeded") {
-      const outputUrl = Array.isArray(pollData.output) ? pollData.output[0] : pollData.output;
-      if (!outputUrl) throw new Error("Replicate terminó pero no devolvió URL de video");
-      return outputUrl;
+      const url = Array.isArray(pollData.output) ? pollData.output[0] : pollData.output;
+      if (!url) throw new Error("Replicate terminó sin URL de video");
+      return url;
     }
-
     if (pollData.status === "failed" || pollData.status === "canceled") {
       throw new Error("Replicate falló: " + (pollData.error || pollData.status));
     }
-
-    // status: "starting" | "processing" → seguir esperando
   }
-
-  throw new Error("Replicate timeout — el render tardó más de 3 minutos");
+  throw new Error("Replicate timeout — render tardó más de 3 minutos");
 }
 
-// ─────────────────────────────────────────────
-// Descargar video de Replicate y subirlo a Supabase
-// ─────────────────────────────────────────────
 async function subirVideoASupabase(videoUrl, filename) {
-  const fetch = (...a) => import("node-fetch").then(m => m.default(...a));
-
-  // Descargar el MP4 desde la URL de Replicate
-  const videoResp = await fetch(videoUrl);
+    const videoResp = await fetch(videoUrl);
   if (!videoResp.ok) throw new Error("No se pudo descargar el video de Replicate");
   const buffer = Buffer.from(await videoResp.arrayBuffer());
-
-  // Subir a Supabase (usando la función subirASupabase que ya existe en tu server.js)
   const publicUrl = await subirASupabase(buffer, filename, "video/mp4");
   if (!publicUrl) throw new Error("Error subiendo a Supabase Storage");
   return publicUrl;
 }
 
-// ═══════════════════════════════════════════
-// RUTA 1: Generar guión + HTML (~3s)
-// POST /api/generar-video
-// ═══════════════════════════════════════════
+// ─── RUTA 1: Generar guión + HTML (~3s) ───
 app.post("/api/generar-video", async (req, res) => {
   const { titulo, zona, precio, descripcion, tono, cta, telefono, tipo, estilo, imagenUrl, neonM2, neonLotes, neonPalabra } = req.body;
   if (!titulo) return res.status(400).json({ ok:false, error:"Falta título" });
-
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return res.status(400).json({ ok:false, error:"Falta ANTHROPIC_API_KEY" });
-
   try {
     const content = await llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey:key });
     const html    = buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
@@ -521,22 +291,15 @@ app.post("/api/generar-video", async (req, res) => {
   }
 });
 
-// ═══════════════════════════════════════════
-// RUTA 2: Renderizar HTML → MP4 via Replicate (~60-120s)
-// POST /api/render-video
-// Body: { html, tipo, duracion? }
-// ═══════════════════════════════════════════
+// ─── RUTA 2: Renderizar HTML → MP4 via Replicate (~60-120s) ───
 app.post("/api/render-video", async (req, res) => {
   const { html, tipo = "story", duracion = 28 } = req.body;
   if (!html) return res.status(400).json({ ok:false, error:"Falta HTML" });
-
   try {
     console.log("[render-video] Enviando a Replicate…");
     const replicateUrl = await renderizarConReplicate({ htmlContent: html, tipo, duracionSeg: duracion });
-
     console.log("[render-video] Subiendo a Supabase…");
     const publicUrl = await subirVideoASupabase(replicateUrl, `video-${Date.now()}.mp4`);
-
     res.json({ ok:true, url: publicUrl });
   } catch(e) {
     console.error("[render-video]", e.message);
@@ -544,31 +307,22 @@ app.post("/api/render-video", async (req, res) => {
   }
 });
 
-// ═══════════════════════════════════════════
-// RUTA 3: Todo en uno — Claude + Replicate + Supabase
-// POST /api/generar-y-renderizar
-// ═══════════════════════════════════════════
+// ─── RUTA 3: Todo en uno — Claude + Replicate + Supabase ───
 app.post("/api/generar-y-renderizar", async (req, res) => {
   const { titulo, zona, precio, descripcion, tono, cta, telefono,
           tipo="story", estilo="luxury", imagenUrl, duracion=28,
           neonM2, neonLotes, neonPalabra } = req.body;
-
   if (!titulo) return res.status(400).json({ ok:false, error:"Falta título" });
-
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return res.status(400).json({ ok:false, error:"Falta ANTHROPIC_API_KEY" });
-
   try {
     console.log("[gen-render] Paso 1: Claude…");
     const content = await llamarClaude({ titulo, zona, precio, descripcion, tono, cta, telefono, tipo, anthropicKey:key });
     const html    = buildVideoHTML({ titulo, zona, precio, cta, telefono, tipo, estilo, imagenUrl, content, neonM2, neonLotes, neonPalabra });
-
     console.log("[gen-render] Paso 2: Replicate…");
     const replicateUrl = await renderizarConReplicate({ htmlContent: html, tipo, duracionSeg: duracion });
-
     console.log("[gen-render] Paso 3: Supabase…");
     const publicUrl = await subirVideoASupabase(replicateUrl, `video-${Date.now()}.mp4`);
-
     res.json({ ok:true, url:publicUrl, html, guion:content.guion||"", captions:content.captions||[], musicaPrompt:content.musicaPrompt||"" });
   } catch(e) {
     console.error("[gen-render]", e.message);
@@ -577,9 +331,7 @@ app.post("/api/generar-y-renderizar", async (req, res) => {
 });
 
 // ============================================================
-// FIN — GENERADOR DE VIDEO IA (Vercel + Replicate)
-// ============================================================
-
+// FIN — GENERADOR DE VIDEO IA
 
 setInterval(() => {
   const port = process.env.PORT || 10000;
@@ -1176,8 +928,6 @@ Analizá cuáles propiedades coinciden mejor con lo que busca el usuario. Devolv
 {"ids":[id1,id2,id3],"scores":{"id1":95,"id2":87,"id3":72}}
 
 Incluí solo las propiedades que realmente coinciden (máximo 8). Los scores son de 0 a 100.`;
-
-    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -1247,7 +997,6 @@ app.post("/api/drive-listar", async (req, res) => {
   if (!folderId) return res.status(400).json({ ok: false, error: "No se pudo extraer el ID de la carpeta." });
 
   try {
-    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
     const url = `https://drive.google.com/drive/folders/${folderId}`;
     const resp = await (await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; CRM-Buzzacchi/1.0)" }
@@ -1291,7 +1040,6 @@ app.post("/api/drive-importar", async (req, res) => {
   if (!fotoIds || !fotoIds.length) return res.status(400).json({ ok: false, error: "No hay fotos seleccionadas" });
 
   try {
-    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
     const imagenesSubidas = [];
 
     for (const fileId of fotoIds.slice(0, 15)) {
@@ -1366,7 +1114,6 @@ app.post("/api/radar-prospectos/buscar", async (req, res) => {
   const query = sector || (PERFILES_PROSPECTOS[perfil] || ["negocio"])[0];
 
   try {
-    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
 
     // Google Places Text Search
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query + " Río Cuarto Córdoba Argentina")}&location=${lat},${lng}&radius=${radio}&key=${googleKey}&language=es`;
@@ -1427,7 +1174,6 @@ app.post("/api/radar-prospectos/mensaje", async (req, res) => {
     : `Generá un mensaje de WhatsApp para "${nombre}" (${sector}) preguntando si tienen propiedades para vender o alquilar. Ofrecé tasación gratuita y mencioná que trabajamos en Río Cuarto con resultados reales. ${!tieneWeb ? "No tienen página web, así que podés ofrecerles también mayor visibilidad digital." : ""}`;
 
   try {
-    const fetch = (...args) => import("node-fetch").then(m => m.default(...args));
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
