@@ -292,17 +292,37 @@
           <textarea id="mediaUrls" name="mediaUrls" placeholder="Ej: enlace a YouTube, Matterport, etc."></textarea>
         </div>
 
-        <!-- Imágenes -->
+        <!-- Imágenes normales -->
         <div class="grupo">
-          <label for="imagenes">Imágenes (podés seleccionar varias)</label>
-          <input type="file" id="imagenes" name="imagenes" multiple>
-<label>Video de la propiedad (opcional)</label>
-<input type="file" name="video" accept="video/*">
-          
-<div class="ayuda">Las imágenes se guardan en la carpeta /uploads.</div>
+          <label for="imagenes">📷 Fotos de la propiedad (seleccioná varias)</label>
+          <input type="file" id="imagenes" name="imagenes" multiple accept="image/*">
+          <div class="ayuda">Fotos normales del interior y exterior. Orden: la primera foto será la principal.</div>
         </div>
 
-        <button type="submit">Guardar inmueble</button>
+        <!-- Fotos 360 -->
+        <div class="grupo" style="background:#f0f7ff;border:2px dashed #4b8bca;border-radius:10px;padding:16px;margin-bottom:10px">
+          <label for="fotos360" style="color:#1a5fa8;font-size:14px">🌐 Fotos 360° para Tour Virtual (opcional)</label>
+          <input type="file" id="fotos360" name="fotos360" multiple accept="image/*"
+            style="margin-bottom:8px">
+          <div class="ayuda" style="color:#1a5fa8;font-size:12px;line-height:1.6">
+            <strong>¿Cómo tomar fotos 360°?</strong><br>
+            📱 <strong>iPhone:</strong> Abrí la app Cámara → modo <em>Panorama</em> → girá despacio 360°<br>
+            📱 <strong>Android:</strong> Usá la app <em>Google Street View</em> → ícono de cámara → modo Esfera<br>
+            📸 <strong>Resultado:</strong> Una foto ancha (2:1) que se verá con efecto inmersivo en el tour virtual
+          </div>
+          <div id="preview360" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+        </div>
+
+        <!-- Video -->
+        <div class="grupo">
+          <label>🎬 Video de la propiedad (opcional)</label>
+          <input type="file" name="video" accept="video/*">
+          <div class="ayuda">MP4 recomendado. Máximo 100MB.</div>
+        </div>
+
+        <button type="submit" style="background:#143d2f;font-size:15px;padding:12px 28px;border-radius:8px;width:100%;margin-top:6px">
+          💾 Guardar inmueble
+        </button>
       </form>
     </div>
   </div>
@@ -312,6 +332,29 @@
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
+
+    // Preview fotos 360
+    document.getElementById('fotos360').addEventListener('change', function() {
+      const preview = document.getElementById('preview360');
+      preview.innerHTML = '';
+      Array.from(this.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'position:relative;display:inline-block';
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.cssText = 'width:160px;height:80px;object-fit:cover;border-radius:6px;border:2px solid #4b8bca';
+          const badge = document.createElement('span');
+          badge.textContent = '360°';
+          badge.style.cssText = 'position:absolute;top:4px;right:4px;background:#1a5fa8;color:white;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px';
+          wrap.appendChild(img);
+          wrap.appendChild(badge);
+          preview.appendChild(wrap);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
   </script>
 </body>
 </html>
