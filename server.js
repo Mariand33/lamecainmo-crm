@@ -46,7 +46,7 @@ app.get('/demo', (req, res) => {
 });
 
 app.get('/funnel-demo', (req, res) => {
-  res.sendFile(path.join(__dirname, 'funnel-demo-inmocreador.html'));
+  res.sendFile(path.join(__dirname, 'Público', 'funnel-demo-inmocreador.html'));
 });
 app.get("/logout", (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
