@@ -41,6 +41,9 @@ app.get("/ver",                (_, res) => res.sendFile(path.join(__dirname, "P�
 app.get("/ver.html",           (_, res) => res.sendFile(path.join(__dirname, "Público", "ver.html")));
 app.get("/editar",             (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
 app.get("/editar.html",        (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
+app.get('/demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'demo.html'));
+});
 app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
