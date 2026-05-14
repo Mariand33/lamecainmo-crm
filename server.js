@@ -43,11 +43,12 @@ app.get("/editar",             (_, res) => res.sendFile(path.join(__dirname, "P�
 app.get("/editar.html",        (_, res) => res.sendFile(path.join(__dirname, "Público", "editar.html")));
 app.get('/demo', (req, res) => {
   res.sendFile(path.join(__dirname, 'demo.html'));
-  app.get('/funnel-demo', (req, res) => {
+});
+
+app.get('/funnel-demo', (req, res) => {
   res.sendFile(path.join(__dirname, 'funnel-demo-inmocreador.html'));
 });
-});
-app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/login"); });
+app.get("/logout", (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
 app.get("/:page.html", (req, res) => {
