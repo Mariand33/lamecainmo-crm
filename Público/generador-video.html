@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de Video · Buzzacchi</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark:    #0d0d0d;
+  --dark-2:  #141414;
+  --dark-3:  #1c1c1c;
+  --dark-4:  #222;
+  --border:  rgba(255,255,255,.08);
+  --gold:    #c9a84c;
+  --gold-dim:#a07830;
+  --green:   #0f2318;
+  --muted:   #666;
+  --sidebar-w: 252px;
+  --success: #2ecc71;
+  --error:   #e74c3c;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+body { font-family:'Montserrat',sans-serif; background:var(--dark); color:#fff; display:flex; min-height:100vh }
+
+/* ── SIDEBAR ── */
+.sidebar { width:var(--sidebar-w); height:100vh; background:var(--dark-2); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:100; overflow:hidden }
+.logo-buzzacchi { padding:24px 20px 18px; border-bottom:1px solid var(--border) }
+.logo-buzzacchi img { max-width:120px; height:auto; display:block; margin-bottom:7px }
+.logo-frase { font-size:10px; letter-spacing:.05em; color:var(--muted); line-height:1.45 }
+.sidebar nav { flex:1; overflow-y:auto; padding:10px 10px 16px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent }
+.nav-section-label { font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:#444; padding:12px 12px 4px; display:block }
+.sidebar nav a { display:flex; align-items:center; gap:9px; color:rgba(255,255,255,.5); text-decoration:none; padding:9px 12px; border-radius:6px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; border-left:2px solid transparent; transition:.18s }
+.sidebar nav a:hover { color:rgba(255,255,255,.85); background:rgba(255,255,255,.05) }
+.sidebar nav a.active { color:var(--gold); background:rgba(201,168,76,.1); border-left-color:var(--gold) }
+.sidebar-footer { padding:13px 18px; border-top:1px solid var(--border); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#444 }
+
+/* ── MAIN ── */
+.main { margin-left:var(--sidebar-w); flex:1; padding:36px 40px; max-width:1100px }
+.page-header { margin-bottom:32px }
+.page-header h1 { font-size:22px; font-weight:700; letter-spacing:.04em; color:#fff }
+.page-header p { font-size:12px; color:var(--muted); margin-top:5px; letter-spacing:.03em }
+
+/* ── STEPS ── */
+.steps-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px }
+@media(max-width:860px){ .steps-grid { grid-template-columns:1fr } }
+
+.card { background:var(--dark-2); border:1px solid var(--border); border-radius:12px; padding:24px }
+.card-title { font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:18px; display:flex; align-items:center; gap:8px }
+.card-title span { background:var(--gold); color:#000; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:700 }
+
+/* ── FORM ELEMENTS ── */
+label { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:6px }
+select, input, textarea {
+  width:100%; background:var(--dark-3); border:1px solid var(--border);
+  color:#fff; font-family:'Montserrat',sans-serif; font-size:12px;
+  padding:10px 14px; border-radius:7px; outline:none; transition:.2s;
+}
+select:focus, input:focus, textarea:focus { border-color:var(--gold); background:var(--dark-4) }
+textarea { resize:vertical; min-height:80px }
+.form-row { margin-bottom:16px }
+
+/* ── PROPIEDAD CARD ── */
+.prop-preview { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:10px; display:none }
+.prop-preview.visible { display:block }
+.prop-preview img { width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:10px }
+.prop-preview .prop-title { font-size:13px; font-weight:600; color:#fff; margin-bottom:4px }
+.prop-preview .prop-meta { font-size:11px; color:var(--muted) }
+.prop-preview .prop-price { font-size:14px; font-weight:700; color:var(--gold); margin-top:6px }
+
+/* ── TIPO VIDEO ── */
+.tipo-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px }
+.tipo-btn { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:14px; cursor:pointer; transition:.2s; text-align:center }
+.tipo-btn:hover { border-color:var(--gold-dim) }
+.tipo-btn.selected { border-color:var(--gold); background:rgba(201,168,76,.08) }
+.tipo-btn .icon { font-size:22px; margin-bottom:6px }
+.tipo-btn .name { font-size:11px; font-weight:600; letter-spacing:.05em; color:#fff }
+.tipo-btn .desc { font-size:10px; color:var(--muted); margin-top:3px }
+
+/* ── ESTILO VISUAL ── */
+.estilo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:4px }
+.estilo-btn { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:10px 8px; cursor:pointer; transition:.2s; text-align:center }
+.estilo-btn:hover { border-color:var(--gold-dim) }
+.estilo-btn.selected { border-color:var(--gold); background:rgba(201,168,76,.08) }
+.estilo-btn .estilo-name { font-size:10px; font-weight:600; color:#fff; margin-top:4px }
+.estilo-swatch { width:100%; height:28px; border-radius:4px }
+
+/* ── GENERATE BTN ── */
+.btn-generate {
+  width:100%; padding:16px; background:var(--gold); color:#000;
+  font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700;
+  letter-spacing:.12em; text-transform:uppercase; border:none; border-radius:8px;
+  cursor:pointer; transition:.2s; margin-top:8px;
+}
+.btn-generate:hover { background:#dbb95e; transform:translateY(-1px) }
+.btn-generate:disabled { background:var(--muted); color:#333; cursor:not-allowed; transform:none }
+
+/* ── OUTPUT ── */
+.output-section { margin-top:32px; display:none }
+.output-section.visible { display:block }
+.output-tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0 }
+.tab-btn { background:none; border:none; color:var(--muted); font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; padding:10px 16px; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:.2s }
+.tab-btn.active { color:var(--gold); border-bottom-color:var(--gold) }
+.tab-content { display:none }
+.tab-content.active { display:block }
+
+/* Preview del video animado */
+.video-preview-wrap {
+  background:var(--dark-3); border:1px solid var(--border); border-radius:10px;
+  overflow:hidden; position:relative;
+}
+.preview-iframe { width:100%; height:480px; border:none; display:block }
+
+/* Script / Captions */
+.script-block { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:20px }
+.script-block h3 { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:12px }
+.script-text { font-size:12px; line-height:1.8; color:rgba(255,255,255,.85); white-space:pre-wrap }
+
+/* Captions */
+.captions-list { list-style:none }
+.caption-item { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border) }
+.caption-ts { font-size:10px; font-weight:700; color:var(--gold); min-width:44px; font-variant-numeric:tabular-nums }
+.caption-txt { font-size:12px; color:rgba(255,255,255,.8) }
+
+/* Música */
+.musica-block { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:20px }
+.musica-prompt { font-size:12px; line-height:1.7; color:rgba(255,255,255,.8); background:var(--dark-4); border-radius:6px; padding:12px; margin-top:8px }
+
+/* Código HTML */
+.code-wrap { position:relative }
+.code-block { background:#0a0a0a; border:1px solid var(--border); border-radius:8px; padding:16px; font-family:monospace; font-size:11px; line-height:1.6; color:#a8d8a8; overflow-x:auto; white-space:pre; max-height:360px; overflow-y:auto }
+.btn-copy { position:absolute; top:10px; right:10px; background:var(--dark-3); border:1px solid var(--border); color:var(--gold); font-family:'Montserrat',sans-serif; font-size:10px; letter-spacing:.1em; text-transform:uppercase; padding:6px 12px; border-radius:5px; cursor:pointer; transition:.2s }
+.btn-copy:hover { background:rgba(201,168,76,.15) }
+
+/* Instrucciones HyperFrames */
+.instrucciones { background:rgba(201,168,76,.06); border:1px solid rgba(201,168,76,.2); border-radius:8px; padding:16px; margin-top:16px }
+.instrucciones h4 { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); margin-bottom:10px }
+.instrucciones ol { padding-left:18px }
+.instrucciones li { font-size:12px; color:rgba(255,255,255,.75); line-height:1.7; margin-bottom:4px }
+.instrucciones code { background:var(--dark-3); border-radius:3px; padding:2px 6px; font-size:11px; color:#c8f0c8 }
+
+/* Loader */
+.loader-wrap { text-align:center; padding:40px 20px }
+.loader-ring { width:48px; height:48px; border:3px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px }
+@keyframes spin { to { transform:rotate(360deg) } }
+.loader-status { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted) }
+
+/* Status bar */
+.status-bar { background:var(--dark-3); border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:11px; display:flex; align-items:center; gap:10px }
+.status-dot { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0 }
+.status-dot.ok { background:var(--success) }
+.status-dot.error { background:var(--error) }
+.status-dot.loading { background:var(--gold); animation:pulse 1s ease-in-out infinite }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* Acciones */
+.action-row { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap }
+.btn-action { background:var(--dark-3); border:1px solid var(--border); color:#fff; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:10px 18px; border-radius:7px; cursor:pointer; transition:.2s; text-decoration:none; display:inline-flex; align-items:center; gap:6px }
+.btn-action:hover { border-color:var(--gold); color:var(--gold) }
+.btn-action.primary { background:var(--gold); color:#000; border-color:var(--gold) }
+.btn-action.primary:hover { background:#dbb95e; color:#000 }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-buzzacchi">
+    <img src="/logo.png" alt="Vanina Buzzacchi" onerror="this.style.display='none'">
+    <div class="logo-frase">Confianza, trayectoria y resultados</div>
+  </div>
+  <nav>
+    <span class="nav-section-label">Marketing</span>
+    <a href="/generador-posts.html">📸 Generador Instagram</a>
+    <a href="/generador-video.html" class="active">🎬 Generador de Video</a>
+    <span class="nav-section-label">Administración</span>
+    <a href="/dashboard.html">🏠 Dashboard</a>
+    <a href="/alquileres.html">🏘 Alquileres</a>
+    <span class="nav-section-label">Sistema</span>
+    <a href="/logout">🚪 Cerrar Sesión</a>
+  </nav>
+  <div class="sidebar-footer">Equipo Buzzacchi · Río Cuarto</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="page-header">
+    <h1>🎬 Generador de Video IA</h1>
+    <p>Creá videos profesionales para Instagram y WhatsApp sin abrir ningún editor</p>
+  </div>
+
+  <div class="steps-grid">
+
+    <!-- PASO 1: Propiedad -->
+    <div class="card">
+      <div class="card-title"><span>1</span> Elegí la propiedad</div>
+      <div class="form-row">
+        <label>Propiedad del CRM</label>
+        <select id="sel-propiedad">
+          <option value="">— Cargando propiedades… —</option>
+        </select>
+      </div>
+      <div class="prop-preview" id="prop-preview">
+        <img id="prev-img" src="" alt="">
+        <div class="prop-title" id="prev-titulo"></div>
+        <div class="prop-meta" id="prev-meta"></div>
+        <div class="prop-price" id="prev-precio"></div>
+      </div>
+
+      <div class="form-row" style="margin-top:16px">
+        <label>O ingresá datos manualmente</label>
+        <input type="text" id="man-titulo" placeholder="Ej: Casa 3 dormitorios en Palermo">
+      </div>
+      <div class="form-row">
+        <input type="text" id="man-zona" placeholder="Zona / Barrio">
+      </div>
+      <div class="form-row">
+        <input type="text" id="man-precio" placeholder="Precio (ej: USD 120.000)">
+      </div>
+      <div class="form-row">
+        <textarea id="man-desc" placeholder="Descripción breve de la propiedad…" rows="3"></textarea>
+      </div>
+    </div>
+
+    <!-- PASO 2: Configurar video -->
+    <div class="card">
+      <div class="card-title"><span>2</span> Configurá el video</div>
+
+      <div class="form-row">
+        <label>Tipo de video</label>
+        <div class="tipo-grid">
+          <div class="tipo-btn selected" data-tipo="story" onclick="selTipo(this)">
+            <div class="icon">📱</div>
+            <div class="name">Story / Reel</div>
+            <div class="desc">Vertical 9:16 · 20-30 seg</div>
+          </div>
+          <div class="tipo-btn" data-tipo="post" onclick="selTipo(this)">
+            <div class="icon">🖥️</div>
+            <div class="name">Post cuadrado</div>
+            <div class="desc">1:1 · 30-60 seg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Estilo visual</label>
+        <div class="estilo-grid">
+          <div class="estilo-btn selected" data-estilo="luxury" onclick="selEstilo(this)">
+            <div class="estilo-swatch" style="background:linear-gradient(135deg,#0d0d0d,#1c1c1c);border:1px solid #c9a84c"></div>
+            <div class="estilo-name">Luxury Dark</div>
+          </div>
+          <div class="estilo-btn" data-estilo="clean" onclick="selEstilo(this)">
+            <div class="estilo-swatch" style="background:linear-gradient(135deg,#f8f6f0,#e8e4d8)"></div>
+            <div class="estilo-name">Clean Blanco</div>
+          </div>
+          <div class="estilo-btn" data-estilo="modern" onclick="selEstilo(this)">
+            <div class="estilo-swatch" style="background:linear-gradient(135deg,#1a2a4a,#2d4a7a)"></div>
+            <div class="estilo-name">Modern Blue</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Tono del mensaje</label>
+        <select id="sel-tono">
+          <option value="profesional">Profesional y confiable</option>
+          <option value="aspiracional">Aspiracional / lifestyle</option>
+          <option value="urgente">Urgente / oportunidad</option>
+          <option value="familiar">Cálido y familiar</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Llamada a la acción</label>
+        <input type="text" id="inp-cta" value="Contactá a Vanina Buzzacchi" placeholder="Ej: Contactanos hoy">
+      </div>
+
+      <div class="form-row">
+        <label>Teléfono / WhatsApp</label>
+        <input type="text" id="inp-tel" value="" placeholder="Ej: +54 358 4XXXXXX">
+      </div>
+
+      <button class="btn-generate" id="btn-gen" onclick="generarVideo()">
+        ✨ Generar Video con IA
+      </button>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-section" id="output-section">
+
+    <div class="status-bar" id="status-bar">
+      <div class="status-dot loading" id="status-dot"></div>
+      <span id="status-text">Generando…</span>
+    </div>
+
+    <div class="output-tabs">
+      <button class="tab-btn active" onclick="showTab('preview',this)">▶ Preview</button>
+      <button class="tab-btn" onclick="showTab('script',this)">📝 Guión</button>
+      <button class="tab-btn" onclick="showTab('captions',this)">💬 Captions</button>
+      <button class="tab-btn" onclick="showTab('musica',this)">🎵 Música</button>
+      <button class="tab-btn" onclick="showTab('codigo',this)">{'</>'}  HTML</button>
+    </div>
+
+    <!-- Preview -->
+    <div class="tab-content active" id="tab-preview">
+      <div class="video-preview-wrap">
+        <iframe class="preview-iframe" id="preview-iframe" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+      <div class="action-row">
+        <button class="btn-action primary" onclick="descargarHTML()">⬇ Descargar HTML</button>
+        <button class="btn-action" onclick="abrirNuevaTab()">↗ Abrir en nueva pestaña</button>
+        <button class="btn-action" onclick="copiarHTML()">📋 Copiar HTML</button>
+      </div>
+      <div class="instrucciones">
+        <h4>🚀 Para convertir a video (gratis)</h4>
+        <ol>
+          <li>Descargá el HTML con el botón de arriba</li>
+          <li>Instalá HyperFrames: <code>npx hyperframes</code> (requiere Node.js)</li>
+          <li>Ejecutá: <code>hyperframes render video.html --output video.mp4</code></li>
+          <li>¡Listo! Tu video MP4 está listo para subir a Instagram</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Guión -->
+    <div class="tab-content" id="tab-script">
+      <div class="script-block">
+        <h3>📝 Guión del video</h3>
+        <div class="script-text" id="script-text"></div>
+      </div>
+      <div class="action-row">
+        <button class="btn-action" onclick="copiarTexto('script-text')">📋 Copiar guión</button>
+      </div>
+    </div>
+
+    <!-- Captions -->
+    <div class="tab-content" id="tab-captions">
+      <div class="script-block">
+        <h3>💬 Captions sincronizados</h3>
+        <ul class="captions-list" id="captions-list"></ul>
+      </div>
+    </div>
+
+    <!-- Música -->
+    <div class="tab-content" id="tab-musica">
+      <div class="musica-block">
+        <h3 style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">🎵 Prompt de música para Suno AI</h3>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">Copiá este prompt en <a href="https://suno.com" target="_blank" style="color:var(--gold)">suno.com</a> para generar la música del video</p>
+        <div class="musica-prompt" id="musica-prompt"></div>
+        <div class="action-row" style="margin-top:12px">
+          <button class="btn-action" onclick="copiarTexto('musica-prompt')">📋 Copiar prompt</button>
+          <a class="btn-action" href="https://suno.com" target="_blank">↗ Abrir Suno</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Código HTML -->
+    <div class="tab-content" id="tab-codigo">
+      <div class="code-wrap">
+        <button class="btn-copy" onclick="copiarHTML()">Copiar</button>
+        <pre class="code-block" id="code-block"></pre>
+      </div>
+    </div>
+
+  </div><!-- /output-section -->
+</main>
+
+<script>
+// ── Estado global ──
+let propiedades = [];
+let propSeleccionada = null;
+let htmlGenerado = '';
+let tipoSeleccionado = 'story';
+let estiloSeleccionado = 'luxury';
+
+// ── Cargar propiedades ──
+async function cargarPropiedades() {
+  try {
+    const r = await fetch('/api/inmuebles');
+    if (!r.ok) throw new Error('Error cargando propiedades');
+    propiedades = await r.json();
+    const sel = document.getElementById('sel-propiedad');
+    sel.innerHTML = '<option value="">— Seleccioná una propiedad —</option>';
+    propiedades.forEach(p => {
+      const op = document.createElement('option');
+      op.value = p.id;
+      op.textContent = `${p.titulo || 'Sin título'} — ${p.zona || ''}${p.precio ? ' · ' + formatPrecio(p) : ''}`;
+      sel.appendChild(op);
+    });
+  } catch(e) {
+    document.getElementById('sel-propiedad').innerHTML = '<option>Error cargando (ingresá manualmente)</option>';
+  }
+}
+
+function formatPrecio(p) {
+  if (!p.precio) return '';
+  const m = p.moneda === 'ARS' ? '$' : 'USD';
+  return m + ' ' + Number(p.precio).toLocaleString('es-AR');
+}
+
+// ── Seleccionar propiedad ──
+document.getElementById('sel-propiedad').addEventListener('change', function() {
+  const id = this.value;
+  propSeleccionada = propiedades.find(p => String(p.id) === String(id)) || null;
+  const prev = document.getElementById('prop-preview');
+  if (!propSeleccionada) { prev.classList.remove('visible'); return; }
+
+  const imgs = propSeleccionada.imagenes || [];
+  document.getElementById('prev-img').src = imgs[0] || '';
+  document.getElementById('prev-img').style.display = imgs[0] ? 'block' : 'none';
+  document.getElementById('prev-titulo').textContent = propSeleccionada.titulo || '';
+  document.getElementById('prev-meta').textContent =
+    [propSeleccionada.zona, propSeleccionada.tipoPropiedad, propSeleccionada.tipoOperacion]
+    .filter(Boolean).join(' · ');
+  document.getElementById('prev-precio').textContent = formatPrecio(propSeleccionada);
+  prev.classList.add('visible');
+
+  // Autocompletar campos manuales
+  document.getElementById('man-titulo').value  = propSeleccionada.titulo || '';
+  document.getElementById('man-zona').value    = propSeleccionada.zona || '';
+  document.getElementById('man-precio').value  = propSeleccionada.precio ? formatPrecio(propSeleccionada) : '';
+  document.getElementById('man-desc').value    = propSeleccionada.descripcion || '';
+});
+
+// ── Selección tipo / estilo ──
+function selTipo(el) {
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  tipoSeleccionado = el.dataset.tipo;
+}
+function selEstilo(el) {
+  document.querySelectorAll('.estilo-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  estiloSeleccionado = el.dataset.estilo;
+}
+
+// ── Tabs ──
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Generar video ──
+async function generarVideo() {
+  const titulo  = document.getElementById('man-titulo').value.trim();
+  const zona    = document.getElementById('man-zona').value.trim();
+  const precio  = document.getElementById('man-precio').value.trim();
+  const desc    = document.getElementById('man-desc').value.trim();
+  const tono    = document.getElementById('sel-tono').value;
+  const cta     = document.getElementById('inp-cta').value.trim() || 'Contactá a Vanina Buzzacchi';
+  const tel     = document.getElementById('inp-tel').value.trim();
+
+  if (!titulo && !propSeleccionada) {
+    alert('Por favor ingresá al menos un título de propiedad o seleccioná una del CRM.');
+    return;
+  }
+
+  // Imagen principal
+  let imagenUrl = '';
+  if (propSeleccionada?.imagenes?.length) imagenUrl = propSeleccionada.imagenes[0];
+
+  const btnGen = document.getElementById('btn-gen');
+  btnGen.disabled = true;
+  btnGen.textContent = '⏳ Generando…';
+
+  const outputSection = document.getElementById('output-section');
+  outputSection.classList.add('visible');
+  outputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  setStatus('loading', 'Conectando con Claude IA…');
+
+  try {
+    const response = await fetch('/api/generar-video', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        titulo, zona, precio, descripcion: desc,
+        tono, cta, telefono: tel,
+        tipo: tipoSeleccionado, estilo: estiloSeleccionado,
+        imagenUrl
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error || 'Error del servidor');
+    }
+
+    setStatus('loading', 'Procesando respuesta…');
+    const data = await response.json();
+
+    if (!data.ok) throw new Error(data.error || 'Error generando');
+
+    // Llenar resultados
+    htmlGenerado = data.html;
+
+    // Preview
+    const iframe = document.getElementById('preview-iframe');
+    iframe.srcdoc = data.html;
+
+    // Guión
+    document.getElementById('script-text').textContent = data.guion || '';
+
+    // Captions
+    const captionsList = document.getElementById('captions-list');
+    captionsList.innerHTML = '';
+    (data.captions || []).forEach(c => {
+      const li = document.createElement('li');
+      li.className = 'caption-item';
+      li.innerHTML = `<span class="caption-ts">${c.ts}</span><span class="caption-txt">${c.texto}</span>`;
+      captionsList.appendChild(li);
+    });
+
+    // Música
+    document.getElementById('musica-prompt').textContent = data.musicaPrompt || '';
+
+    // Código
+    document.getElementById('code-block').textContent = data.html;
+
+    setStatus('ok', 'Video generado exitosamente ✓');
+  } catch(e) {
+    setStatus('error', 'Error: ' + e.message);
+    console.error(e);
+  } finally {
+    btnGen.disabled = false;
+    btnGen.textContent = '✨ Generar Video con IA';
+  }
+}
+
+function setStatus(tipo, msg) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + tipo;
+  document.getElementById('status-text').textContent = msg;
+}
+
+// ── Acciones de descarga ──
+function descargarHTML() {
+  if (!htmlGenerado) return;
+  const blob = new Blob([htmlGenerado], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'video-buzzacchi.html';
+  a.click();
+}
+
+function abrirNuevaTab() {
+  if (!htmlGenerado) return;
+  const blob = new Blob([htmlGenerado], { type: 'text/html' });
+  window.open(URL.createObjectURL(blob), '_blank');
+}
+
+function copiarHTML() {
+  if (!htmlGenerado) return;
+  navigator.clipboard.writeText(htmlGenerado).then(() => alert('HTML copiado al portapapeles'));
+}
+
+function copiarTexto(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => alert('Copiado al portapapeles'));
+}
+
+// ── Init ──
+cargarPropiedades();
+</script>
+</body>
+</html>
