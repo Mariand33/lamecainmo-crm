@@ -482,6 +482,7 @@
 <a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a>
 
 <script>
+  https://inmocreador-crm.onrender.com/funnel-publico.html
   const API_URL   = "/api/inmuebles-publicos";
   const LEADS_URL = "/api/leads";
   const MATCH_URL = "/api/match-ia";
@@ -840,10 +841,13 @@
       };
       msg.textContent = "Enviando...";
       try {
-        const res = await fetch(LEADS_URL, {
+                const res = await fetch(LEADS_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            ...payload, // Esto mantiene el nombre, teléfono y búsqueda del cliente
+            procedencia: localStorage.getItem('procedencia_inmocreador') || 'directo' // <--- ESTO DA EL TESTIMONIO
+          })
         });
         if (!res.ok) throw new Error();
         msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
@@ -851,6 +855,7 @@
       } catch {
         msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
       }
+
     });
   }
 
