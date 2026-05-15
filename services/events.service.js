@@ -1,4 +1,5 @@
 // services/events.service.js
+import { updateNeuroScore } from './neuroScore.service.js';
 
 export const addLeadEvent = async (leadId, eventType, metadata = {}) => {
     try {
@@ -7,13 +8,22 @@ export const addLeadEvent = async (leadId, eventType, metadata = {}) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 leadId,
-                type: eventType, // ej: 'whatsapp_click', 'funnel_step_2'
+                type: eventType,
                 data: metadata,
                 timestamp: new Date().toISOString()
             })
         });
-        return await response.json();
+
+        const result = await response.json();
+
+        // Si el evento se guardó bien, disparamos la actualización del puntaje
+        if (response.ok) {
+            await updateNeuroScore(leadId, eventType);
+        }
+
+        return result;
     } catch (error) {
         console.error("Error registrando evento:", error);
     }
 };
+
