@@ -227,7 +227,7 @@ async function llamarClaude({ titulo, zona, precio, descripcion, tono, cta, tele
     method: "POST",
     headers: { "Content-Type":"application/json","x-api-key":anthropicKey,"anthropic-version":"2023-06-01" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-5",
       max_tokens: 1200,
       system: "Experto en marketing inmobiliario. Español argentino. Respondés SOLO con JSON válido, sin backticks ni texto extra.",
       messages: [{ role:"user", content:
