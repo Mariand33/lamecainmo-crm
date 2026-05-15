@@ -182,7 +182,9 @@ function animate360(){
 }
 
 function cargar360Texture(url){
-  new THREE.TextureLoader().load(url,tex=>{tex.mapping=THREE.EquirectangularReflectionMapping;sphere360.material.map=tex;sphere360.material.needsUpdate=true});
+  // Usar proxy para evitar CORS con Supabase
+  const proxyUrl = url.startsWith('http') ? '/api/img-proxy?url=' + encodeURIComponent(url) : url;
+  new THREE.TextureLoader().load(proxyUrl,tex=>{tex.mapping=THREE.EquirectangularReflectionMapping;sphere360.material.map=tex;sphere360.material.needsUpdate=true});
 }
 
 function verificarGyro(es360){
