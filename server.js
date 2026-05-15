@@ -46,6 +46,24 @@ app.get('/demo', (req, res) => {
 });
 app.get("/logout",             (req, res) => { req.session.destroy(); res.redirect("/login"); });
 
+// ─── Proxy de imágenes para Three.js 360° (evita CORS de Supabase) ───
+app.get("/api/img-proxy", async (req, res) => {
+  const url = req.query.url;
+  if (!url || !url.startsWith("https://")) return res.status(400).send("URL inválida");
+  try {
+    const imgRes = await fetch(url);
+    if (!imgRes.ok) return res.status(404).send("Imagen no encontrada");
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
+    const ct = imgRes.headers.get("content-type") || "image/jpeg";
+    res.set("Content-Type", ct);
+    res.set("Cache-Control", "public, max-age=86400");
+    res.set("Access-Control-Allow-Origin", "*");
+    res.send(buffer);
+  } catch(e) {
+    res.status(500).send("Error: " + e.message);
+  }
+});
+
 // Ruta genérica — sirve CUALQUIER .html de /public o /Público
 app.get("/:page.html", (req, res) => {
   const page = req.params.page + ".html";
