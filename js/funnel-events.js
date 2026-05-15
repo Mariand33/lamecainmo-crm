@@ -1,51 +1,34 @@
 import { addLeadEvent } from './services/events.service.js';
 
-/**
- * LÓGICA DE CAPTACIÓN DE EVENTOS - INMOCREADOR
- * Este script identifica al lead y registra sus interacciones 
- * para alimentar el NeuroScore en el CRM.
- */
+// 1. Identificar al Lead (Persistencia en el navegador)
+const leadId = new URLSearchParams(window.location.search).get('leadId') || 
+               localStorage.getItem('crm_lead_id') || 
+               'anonimo_' + Math.random().toString(36).substr(2, 9);
 
-// 1. Identificar al Lead (desde la URL o anónimo)
-const urlParams = new URLSearchParams(window.location.search);
-const currentLeadId = urlParams.get('leadId') || 'lead_anonimo_' + Date.now();
+localStorage.setItem('crm_lead_id', leadId);
 
-// Guardamos en localStorage para persistencia durante la navegación
-if (!localStorage.getItem('crm_lead_id')) {
-    localStorage.setItem('crm_lead_id', currentLeadId);
-}
-
-const activeLeadId = localStorage.getItem('crm_lead_id');
-
-// 2. Trackear clics a WhatsApp (Botones y enlaces)
-document.addEventListener('click', (e) => {
-    const waLink = e.target.closest('a[href*="wa.me"]');
-    if (waLink) {
-        addLeadEvent(activeLeadId, 'clic_whatsapp_funnel', {
-            pagina: document.title,
-            url: window.location.href,
-            texto_boton: waLink.innerText.trim() || 'Botón flotante',
-            timestamp: new Date().toISOString()
+// 2. Escuchar clics en todo el funnel
+document.addEventListener('click', async (e) => {
+    
+    // CASO A: Es un Vendedor (clic en Tasaciones o Vender)
+    // Asegúrate de que tus botones de tasación tengan la clase 'btn-tasar'
+    if (e.target.closest('.btn-tasar')) {
+        await addLeadEvent(leadId, 'solicitud_tasacion', {
+            perfil: 'vendedor',
+            prioridad: 'alta',
+            ubicacion: 'Rio Cuarto'
         });
-        console.log('✅ Evento WhatsApp enviado al CRM');
+        console.log('✅ Evento Vendedor enviado');
+    }
+    
+    // CASO B: Es un Comprador (clic en WhatsApp)
+    if (e.target.closest('a[href*="wa.me"]')) {
+        await addLeadEvent(leadId, 'clic_whatsapp_funnel', {
+            perfil: 'comprador',
+            url_propiedad: window.location.href
+        });
+        console.log('✅ Evento Comprador enviado');
     }
 });
 
-// 3. Función para trackear cuando ven una propiedad específica
-// Usala en tu lógica de "Ver detalle" o "Abrir Modal"
-export const trackPropiedadVista = (idInmueble, tituloInmueble) => {
-    addLeadEvent(activeLeadId, 'propiedad_vista', {
-        inmuebleId: idInmueble,
-        titulo: tituloInmueble,
-        timestamp: new Date().toISOString()
-    });
-    console.log(`🏠 Interés registrado: ${tituloInmueble}`);
-};
-
-// 4. Evento de "Permanencia" (opcional, suma al NeuroScore si se queda > 30s)
-setTimeout(() => {
-    addLeadEvent(activeLeadId, 'lead_lectura_profunda', {
-        tiempo: '30s',
-        url: window.location.href
-    });
-}, 30000);
+    
