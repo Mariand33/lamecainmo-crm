@@ -1,23 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ficha de comprador - INMOCREADOR</title>
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#c9a84c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VB Inmuebles" />
+  <link rel="apple-touch-icon" href="/icon-192x192.png" />
+
+  <style>
+    :root {
+      --morado: #4b3ca7;
+      --morado-oscuro: #2f256e;
+      --verde: #00b894;
+      --naranja: #e67e22;
+      --rojo: #e74c3c;
+      --gris-suave: #f4f6f9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      background: var(--gris-suave);
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(180deg, var(--morado), var(--morado-oscuro));
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      text-align: center;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .sidebar-logo img {
+      width: 130px;
+      height: auto;
+      display: block;
+      margin: 0 auto 6px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .sidebar a:hover { background: rgba(255,255,255,0.18); }
+
+    /* CONTENIDO */
+    .content { flex: 1; padding: 30px; overflow-y: auto; }
+
+    h1 { margin-top: 0; margin-bottom: 6px; font-size: 24px; }
+
+    .subtitulo { margin: 0 0 20px 0; color: #777; font-size: 13px; }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      margin-bottom: 18px;
+    }
+
+    .grid-datos {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px 28px;
+    }
+
+    .campo-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #888;
+      margin-bottom: 2px;
+    }
+
+    .campo-valor { font-size: 14px; font-weight: 600; }
+
+    .campo-valor-muted { font-weight: 400; color: #555; }
+
+    .fila-titulo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .badge-estado {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .estado-frio { background: #95a5a6; }
+    .estado-tibio { background: var(--naranja); }
+    .estado-caliente { background: #e84118; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #ecf0f1;
+      color: #555;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+
+    .pill-verde { background: rgba(0,184,148,0.12); color: var(--verde); font-weight: 600; }
+    .pill-roja { background: rgba(231,76,60,0.12); color: var(--rojo); font-weight: 600; }
+    .pill-morado { background: rgba(75,60,167,0.12); color: var(--morado-oscuro); font-weight: 600; }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .score-bajo { background: rgba(149, 165, 166, 0.12); color: #7f8c8d; }
+    .score-medio { background: rgba(230,126,34,0.12); color: var(--naranja); }
+    .score-alto { background: rgba(231,76,60,0.12); color: var(--rojo); }
+
+    .notas { font-size: 13px; line-height: 1.5; white-space: pre-line; }
+
+    .acciones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+    .btn {
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .btn-primario { background: var(--morado); color: #fff; }
+    .btn-secundario { background: #e0e3f0; color: #333; }
+    .btn-peligro { background: var(--rojo); color: #fff; }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; flex-direction: row; }
+      .grid-datos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="/logo.png" alt="Logo" />
+    </div>
+    <a href="/dashboard.html">Dashboard</a>
+    <a href="/compradores.html">Compradores</a>
+    <a href="/logout">Cerrar sesión</a>
+  </aside>
+
+  <main class="content">
+    <h1>Ficha de comprador</h1>
+    <p class="subtitulo" id="subtituloNombre"></p>
+
+    <!-- Datos principales -->
+    <section class="card">
+      <div class="fila-titulo">
+        <div>
+          <span class="campo-label">Nombre</span>
+          <div class="campo-valor" id="nombre"></div>
+        </div>
+        <div>
+          <span class="badge-estado" id="badgeEstado">-</span>
+        </div>
+      </div>
+
+      <div class="grid-datos">
+        <div>
+          <div class="campo-label">Teléfono</div>
+          <div class="campo-valor" id="telefono"></div>
+        </div>
+        <div>
+          <div class="campo-label">Email</div>
+          <div class="campo-valor" id="email"></div>
+        </div>
         <div>
           <div class="campo-label">Presupuesto máximo</div>
           <div class="campo-valor" id="presupuestoMax"></div>
         </div>
         <div>
           <div class="campo-label">Dormitorios mínimos</div>
-          <div class="campo-valor campo-valor-muted" id="dormitoriosMin"></div>
+          <div class="campo-valor" id="dormitoriosMin"></div>
         </div>
         <div>
           <div class="campo-label">Horizonte de compra</div>
-          <div class="campo-valor campo-valor-muted" id="horizonteCompra"></div>
+          <div class="campo-valor" id="horizonteCompra"></div>
+        </div>
+        <div>
+          <div class="campo-label">Zona preferida</div>
+          <div class="campo-valor" id="zonaPreferida"></div>
         </div>
       </div>
     </section>
 
-    <!-- 🚀 NUEVA SECCIÓN: RASTREO INTELIGENTE DEL FUNNEL -->
+    <!-- 🚀 ACTIVIDAD RECIENTE EN FUNNEL -->
     <section class="card" style="border-left: 4px solid var(--morado); background: linear-gradient(to right, #ffffff, #fcfaff);">
       <div class="fila-titulo">
         <h2 style="margin:0; font-size:18px; color:var(--morado);">Actividad Reciente en Funnel</h2>
-        <span class="pill pill-morado" id="funnelStatus">Sincronizado con IA</span>
+        <span class="pill pill-morado">Sincronizado con IA</span>
       </div>
       
       <div class="grid-datos" style="margin-top: 15px;">
@@ -27,10 +249,9 @@
         </div>
         <div>
           <div class="campo-label">Origen del contacto</div>
-          <div class="campo-valor campo-valor-muted" id="funnelOrigen">Campaña Río Cuarto</div>
+          <div class="campo-valor" id="funnelOrigen">-</div>
         </div>
         <div>
-          <div class="campo-label">Eventos detectados</div>
           <div id="funnelBadges">
             <span class="pill">Analizando comportamiento...</span>
           </div>
@@ -51,17 +272,12 @@
       <div class="grid-datos">
         <div>
           <div class="campo-label">Tipo de jugador</div>
-          <div class="campo-valor campo-valor-muted" id="jugadorTipo"></div>
+          <div class="campo-valor" id="jugadorTipo"></div>
         </div>
         <div>
           <div class="campo-label">Nivel de confianza</div>
-          <div class="campo-valor campo-valor-muted" id="nivelConfianza"></div>
+          <div class="campo-valor" id="nivelConfianza"></div>
         </div>
-        <div>
-          <div class="campo-label">Estado (frío / tibio / caliente)</div>
-          <div class="campo-valor campo-valor-muted" id="estadoTexto"></div>
-        </div>
-
         <div>
           <div class="campo-label">Crédito</div>
           <div id="creditoPills"></div>
@@ -70,10 +286,6 @@
           <div class="campo-label">Permuta</div>
           <div id="permutaPills"></div>
         </div>
-        <div>
-          <div class="campo-label">Ventana de cierre ideal</div>
-          <div class="campo-valor campo-valor-muted" id="ventanaCierre"></div>
-        </div>
       </div>
 
       <div style="margin-top:14px;">
@@ -81,8 +293,76 @@
         <div class="notas" id="notas"></div>
       </div>
 
-      <div class="footer-ficha" id="footerInfo"></div>
-
       <div class="acciones">
         <a href="/compradores.html" class="btn btn-secundario">Volver al listado</a>
         <a id="btnEditar" href="#" class="btn btn-primario">Editar comprador</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function aplicarEstadoChip(estado, badge) {
+      const e = (estado || "").toLowerCase();
+      badge.textContent = e || "-";
+      badge.classList.remove("estado-frio", "estado-tibio", "estado-caliente");
+      if (e.includes("frio")) badge.classList.add("estado-frio");
+      else if (e.includes("caliente")) badge.classList.add("estado-caliente");
+      else badge.classList.add("estado-tibio");
+    }
+
+    function aplicarScore(score, badge) {
+      const s = Number(score) || 0;
+      badge.textContent = "NeuroScore " + s;
+      badge.classList.remove("score-bajo", "score-medio", "score-alto");
+      if (s >= 71) badge.classList.add("score-alto");
+      else if (s >= 31) badge.classList.add("score-medio");
+      else badge.classList.add("score-bajo");
+    }
+
+    function cargarComprador() {
+      const params = new URLSearchParams(window.location.search);
+      const idx = Number(params.get("index"));
+
+      fetch("/api/compradores")
+        .then(res => res.json())
+        .then(data => {
+          const c = data[idx];
+          if (!c) return;
+
+          // Datos Básicos
+          document.getElementById("nombre").textContent = c.nombre || "";
+          document.getElementById("telefono").textContent = c.telefono || "-";
+          document.getElementById("email").textContent = c.email || "-";
+          document.getElementById("presupuestoMax").textContent = (c.moneda || "USD") + " " + (c.presupuestoMax || 0).toLocaleString();
+          document.getElementById("dormitoriosMin").textContent = c.dormitoriosMin || "-";
+          document.getElementById("zonaPreferida").textContent = c.zonaPreferida || "-";
+
+          // 🚀 DATA DEL FUNNEL
+          const currentScore = Number(c.score || c.scoreNivel || 0);
+          document.getElementById("funnelPropiedad").textContent = c.ultima_propiedad_vista || "Catálogo General";
+          document.getElementById("funnelOrigen").textContent = c.fuente_lead || "Instagram Ads";
+
+          const fBadges = document.getElementById("funnelBadges");
+          fBadges.innerHTML = "";
+          if (currentScore >= 71) fBadges.innerHTML += '<span class="pill pill-roja">🔥 MUY INTERESADO</span>';
+          if (c.clic_wa) fBadges.innerHTML += '<span class="pill pill-verde">💬 WhatsApp</span>';
+          if (c.tipo_perfil === 'vendedor') fBadges.innerHTML += '<span class="pill pill-morado">🏠 PROPIETARIO</span>';
+
+          // Score y Perfil
+          aplicarScore(currentScore, document.getElementById("scoreBadge"));
+          aplicarEstadoChip(c.estado || (currentScore >= 71 ? "Caliente" : "Tibio"), document.getElementById("badgeEstado"));
+          
+          document.getElementById("jugadorTipo").textContent = c.jugadorTipo || "Comprador";
+          document.getElementById("jugadorTipoPill").textContent = c.jugadorTipo || "Comprador";
+          document.getElementById("nivelConfianza").textContent = c.nivelConfianza || "Media";
+          document.getElementById("notas").textContent = c.notas || "Sin notas.";
+          
+          document.getElementById("btnEditar").href = "/comprador_editar.html?index=" + idx;
+        });
+    }
+
+    window.addEventListener("load", cargarComprador);
+  </script>
+</body>
+</html>
+
