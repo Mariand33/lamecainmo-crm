@@ -512,19 +512,32 @@
     }
 
     function aplicarScore(score, badge) {
-      const s = Number(score) || 0;
-      badge.textContent = "Score " + s;
+  const s = Number(score) || 0;
+  
+  // Cambiamos el texto para que Vanina y Liz vean que es un puntaje inteligente
+  badge.textContent = "NeuroScore " + s;
 
-      badge.classList.remove("score-bajo", "score-medio", "score-alto");
+  // Limpiamos las clases previas
+  badge.classList.remove("score-bajo", "score-medio", "score-alto");
 
-      if (s >= 70) {
-        badge.classList.add("score-alto");
-      } else if (s >= 40) {
-        badge.classList.add("score-medio");
-      } else {
-        badge.classList.add("score-bajo");
-      }
-    }
+  // Lógica de Temperatura:
+  // 71+ = Caliente (Fuego/Verde éxito)
+  // 31-70 = Tibio (Naranja/Atención)
+  // 0-30 = Frío (Gris/Bajo interés)
+  
+  if (s >= 71) {
+    badge.classList.add("score-alto"); 
+    // En tu CSS .score-alto ya tiene el fondo verde suave, ideal para "éxito"
+  } else if (s >= 31) {
+    badge.classList.add("score-medio");
+    // .score-medio usa el naranja de var(--naranja)
+  } else {
+    badge.classList.add("score-bajo");
+    // .score-bajo usa el rojo suave, pero si preferís que sea "frío", 
+    // podés cambiarle el color en el CSS a un gris o azul.
+  }
+}
+
 
     // 🔔 MOTOR DE MATCH PARA ESTE COMPRADOR
     function cargarMatchesComprador(idx) {
