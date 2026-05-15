@@ -389,8 +389,44 @@
   </main>
 
   <div class="toast-wrap" id="toastWrap"></div>
+  
+  <audio id="notifSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+  </audio>
 
   <script>
+    /* ── CONFIGURACIÓN DE ALERTAS ── */
+    let leadsAlertados = new Set(); 
+
+    function mostrarToastAccion(msg, tipo) {
+      const wrap = document.getElementById("toastWrap");
+      const t = document.createElement("div");
+      t.style.cssText = "background:var(--dark-3); color:white; padding:12px; margin-top:10px; border-radius:8px; border-left:4px solid " + (tipo === "error" ? "var(--rojo)" : "var(--ok)");
+      t.innerHTML = msg;
+      wrap.appendChild(t);
+      setTimeout(() => t.remove(), 6000);
+    }
+
+    function verificarAlertasCriticas(compradores) {
+        if (!Array.isArray(compradores)) return;
+        compradores.forEach(c => {
+            const score = Number(c.score || 0);
+            if (score >= 85 && !leadsAlertados.has(c.id)) {
+                mostrarToastAccion(`🔥 ¡CRÍTICO! ${c.nombre || 'Un lead'} está muy interesado en: ${c.ultima_propiedad_vista || 'una propiedad'}`, "error");
+                
+                if (Notification.permission === "granted") {
+                    new Notification("🔥 Lead Muy Interesado", {
+                        body: `${c.nombre || 'Alguien'} está viendo propiedades ahora.`,
+                        icon: "/icon-192x192.png"
+                    });
+                }
+                const sonido = document.getElementById("notifSound");
+                if (sonido) sonido.play().catch(() => {});
+                leadsAlertados.add(c.id); 
+            }
+        });
+    }
+
     /* ── LÓGICA DEL RADAR IA ── */
     async function actualizarRadar() {
       try {
@@ -398,7 +434,8 @@
         const data = await res.json();
         const body = document.getElementById("radarActividadBody");
         
-        // Filtramos solo los que tienen actividad o score alto
+        verificarAlertasCriticas(data);
+
         const activos = data
           .filter(c => (c.score || 0) > 10 || c.ultima_propiedad_vista)
           .sort((a, b) => (b.score || 0) - (a.score || 0))
@@ -414,8 +451,8 @@
 
           body.innerHTML += `
             <tr>
-              <td><strong>${c.nombre || 'Interesado Anónimo'}</strong></td>
-              <td style="color:var(--gold-light)">${c.ultima_propiedad_vista || 'Navegando catálogo'}</td>
+              <td><strong>${c.nombre || 'Anónimo'}</strong></td>
+              <td style="color:var(--gold-light)">${c.ultima_propiedad_vista || 'Navegando'}</td>
               <td><span class="pill ${pillColor}">${icono} ${score} pts</span></td>
               <td><a href="/comprador.html?index=${index}" class="link-ver">Ver Ficha</a></td>
             </tr>
@@ -424,36 +461,41 @@
       } catch (e) { console.error("Error en Radar:", e); }
     }
 
-    /* ── LÓGICA ORIGINAL DE INMUEBLES ── */
+    /* ── LÓGICA DE INMUEBLES ── */
     async function actualizarDashboard() {
-      const inmuebles = await fetch("/api/inmuebles").then(r => r.json());
-      const compradores = await fetch("/api/compradores").then(r => r.json());
+      try {
+        const inmuebles = await fetch("/api/inmuebles").then(r => r.json());
+        const compradores = await fetch("/api/compradores").then(r => r.json());
 
-      document.getElementById("totalInmuebles").innerText = inmuebles.length;
-      document.getElementById("totalCompradores").innerText = compradores.length;
+        document.getElementById("totalInmuebles").innerText = inmuebles.length;
+        document.getElementById("totalCompradores").innerText = compradores.length;
 
-      const tbody = document.getElementById("tablaBody");
-      tbody.innerHTML = "";
+        const tbody = document.getElementById("tablaBody");
+        tbody.innerHTML = "";
 
-      inmuebles.forEach(i => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${i.titulo}</td>
-            <td style="color:var(--gold)">${i.moneda} ${Number(i.precio).toLocaleString()}</td>
-            <td>${i.estadoPublicacion}</td>
-            <td>
-              <a href="/ver.html?id=${i.id}" class="link-ver">Ver</a>
-              <a href="/editar.html?id=${i.id}" class="link-ver" style="margin-left:10px">Editar</a>
-            </td>
-          </tr>
-        `;
-      });
+        inmuebles.forEach(i => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${i.titulo}</td>
+              <td style="color:var(--gold)">${i.moneda} ${Number(i.precio).toLocaleString()}</td>
+              <td>${i.estadoPublicacion}</td>
+              <td>
+                <a href="/ver.html?id=${i.id}" class="link-ver">Ver</a>
+                <a href="/editar.html?id=${i.id}" class="link-ver" style="margin-left:10px">Editar</a>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (e) { console.error("Error en Dashboard:", e); }
     }
 
+    /* ── INICIO ── */
     window.addEventListener("load", () => {
+      if (Notification.permission !== "granted") {
+          Notification.requestPermission();
+      }
       actualizarDashboard();
       actualizarRadar();
-      // Auto-actualizar el radar cada 30 segundos
       setInterval(actualizarRadar, 30000);
     });
   </script>
