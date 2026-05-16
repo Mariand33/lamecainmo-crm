@@ -20,7 +20,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <style>
     :root {
@@ -28,19 +27,21 @@
       --gold-light: #e8d49a;
       --gold-dim:   rgba(201,168,76,.13);
       --gold-dim2:  rgba(201,168,76,.22);
-      --dark:       #0d0d0d;
-      --dark-2:     #141414;
-      --dark-3:     #1c1c1c;
-      --dark-4:     #242424;
-      --border:     rgba(255,255,255,.08);
-      --border-2:   rgba(255,255,255,.14);
-      --muted:      #666;
-      --muted-2:    #444;
-      --white:      #ffffff;
-      --off:        rgba(255,255,255,.78);
-      --rojo:       #e05252;
-      --ok:         #3ecf8e;
-      --azul:       #4a9eff;
+      --dark:       #060a0f;
+      --dark-2:     #0a0f18;
+      --dark-3:     #0f1622;
+      --dark-4:     #141e2e;
+      --border:     rgba(0,240,255,.12);
+      --border-2:   rgba(0,240,255,.22);
+      --muted:      #4a7a8a;
+      --muted-2:    #2a4a5a;
+      --white:      #e8f8ff;
+      --off:        rgba(200,240,255,.78);
+      --rojo:       #ff4466;
+      --ok:         #00f5aa;
+      --azul:       #00d4ff;
+      --cyan:       #00f5ff;
+      --magenta:    #ff00ff;
       --font-d:     'Cormorant Garamond', Georgia, serif;
       --font-b:     'DM Sans', system-ui, sans-serif;
       --sidebar-w:  252px;
@@ -666,261 +667,263 @@
       }
     }
 
-    /* ══════════════ NEÓN UPGRADES ══════════════ */
+    /* ══════════ NEÓN FUTURISTA ══════════ */
+    body {
+      background: var(--dark);
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(0,100,255,.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,0,255,.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 60% 80%, rgba(0,245,255,.05) 0%, transparent 40%);
+    }
+
+    /* Sidebar neón */
+    .sidebar {
+      background: linear-gradient(180deg, #080e1a 0%, #050810 100%);
+      border-right: 1px solid rgba(0,245,255,.15);
+      box-shadow: 4px 0 30px rgba(0,100,255,.12);
+    }
+    .logo-buzzacchi { border-bottom: 1px solid rgba(0,245,255,.12); }
+    .sidebar nav a:hover {
+      color: var(--cyan);
+      background: rgba(0,245,255,.06);
+      border-left-color: rgba(0,245,255,.4);
+      text-shadow: 0 0 8px rgba(0,245,255,.5);
+    }
+    .sidebar nav a.active {
+      color: var(--cyan);
+      background: rgba(0,245,255,.08);
+      border-left-color: var(--cyan);
+      text-shadow: 0 0 10px rgba(0,245,255,.6);
+      box-shadow: inset 0 0 20px rgba(0,245,255,.04);
+    }
+
+    /* Topbar */
+    .topbar { border-bottom: 1px solid rgba(0,245,255,.1); }
+    .topbar h1 {
+      color: var(--white);
+      text-shadow: 0 0 20px rgba(0,245,255,.3);
+    }
+
+    /* Cards neón */
     .card {
+      background: linear-gradient(135deg, rgba(10,20,40,.9) 0%, rgba(5,12,25,.95) 100%);
+      border: 1px solid rgba(0,245,255,.18);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
       transition: border-color .3s, box-shadow .3s, transform .2s;
     }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: .6;
+    }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .4s;
+    }
     .card:hover {
-      border-color: rgba(74,158,255,.45);
-      box-shadow: 0 0 18px rgba(74,158,255,.15), 0 8px 32px rgba(0,0,0,.4);
-      transform: translateY(-2px);
+      border-color: rgba(0,245,255,.45);
+      box-shadow: 0 0 25px rgba(0,245,255,.15), 0 8px 32px rgba(0,0,0,.5), inset 0 0 40px rgba(0,245,255,.03);
+      transform: translateY(-3px);
     }
+    .card:hover::after { transform: scaleX(1); }
     .card h3 {
-      text-shadow: 0 0 8px rgba(255,255,255,.2);
+      color: var(--cyan);
+      text-shadow: 0 0 15px rgba(0,245,255,.5);
+      font-size: 36px;
     }
-    .card.gold-glow:hover {
-      border-color: rgba(201,168,76,.5);
-      box-shadow: 0 0 20px rgba(201,168,76,.18), 0 8px 32px rgba(0,0,0,.4);
+    .card p { color: var(--muted); letter-spacing: .18em; }
+
+    /* Tool cards neón */
+    .tool-card {
+      background: linear-gradient(135deg, rgba(10,20,40,.85), rgba(5,12,25,.9));
+      border: 1px solid rgba(0,245,255,.14);
+      transition: border-color .3s, box-shadow .3s, transform .2s;
     }
     .tool-card:hover {
-      box-shadow: 0 0 16px rgba(201,168,76,.12);
-    }
-    .neon-section {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    @media(max-width:820px){ .neon-section { grid-template-columns: 1fr; } }
-    .chart-card {
-      background: var(--dark-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
-      transition: border-color .3s, box-shadow .3s;
-    }
-    .chart-card:hover {
-      border-color: rgba(74,158,255,.35);
-      box-shadow: 0 0 20px rgba(74,158,255,.1);
-    }
-    .chart-card h4 {
-      font-size: 10px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 16px;
-      font-weight: 500;
-    }
-    .chart-card canvas { display: block; }
-    .radial-wrap {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-    .radial-item { text-align: center; }
-    .radial-item canvas { margin: 0 auto; display: block; }
-    .radial-label {
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-    .radial-val {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--white);
-      text-shadow: 0 0 8px rgba(255,255,255,.15);
-      margin-top: 2px;
-    }
-    /* Botón generar video en tabla */
-    .btn-video {
-      background: linear-gradient(135deg,rgba(201,168,76,.7),rgba(201,168,76,.5));
-      border: 1px solid rgba(201,168,76,.4);
-      color: #000;
-      font-weight: 600;
-    }
-    .btn-video:hover {
-      box-shadow: 0 0 10px rgba(201,168,76,.4);
-    }
-    /* Modal video */
-    #modal-video {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 500;
-      background: rgba(0,0,0,.85);
-      backdrop-filter: blur(12px);
-      align-items: center;
-      justify-content: center;
-    }
-    #modal-video.open { display: flex; }
-    .mv-box {
-      background: var(--dark-2);
-      border: 1px solid rgba(201,168,76,.3);
-      border-radius: 14px;
-      padding: 28px;
-      width: min(560px, 94vw);
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 0 40px rgba(201,168,76,.15);
-    }
-    .mv-box h3 {
-      font-family: var(--font-d);
-      font-size: 22px;
-      color: var(--gold);
-      margin-bottom: 18px;
-    }
-    .mv-row { margin-bottom: 14px; }
-    .mv-row label {
-      font-size: 10px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 5px;
-    }
-    .mv-row select, .mv-row input {
-      width: 100%;
-      background: var(--dark-3);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      color: var(--white);
-      font-family: var(--font-b);
-      font-size: 12px;
-      padding: 9px 12px;
-      outline: none;
-    }
-    .mv-row select:focus, .mv-row input:focus {
-      border-color: rgba(201,168,76,.4);
-    }
-    .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .tipo-opt {
-      background: var(--dark-3);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: .2s;
-    }
-    .tipo-opt:hover, .tipo-opt.sel {
-      border-color: var(--gold);
-      background: rgba(201,168,76,.08);
-    }
-    .tipo-opt .ico { font-size: 20px; margin-bottom: 4px; }
-    .tipo-opt .nm  { font-size: 11px; font-weight: 600; color: var(--white); }
-    .btn-gen-video {
-      width: 100%;
-      background: var(--gold);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      padding: 13px;
-      font-family: var(--font-b);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: .2s;
-    }
-    .btn-gen-video:hover { background: #dbb95e; transform: translateY(-1px); }
-    .btn-gen-video:disabled { background: var(--muted); color: #333; cursor: not-allowed; transform: none; }
-    .mv-preview {
-      margin-top: 16px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .mv-preview iframe {
-      width: 100%; height: 260px; border: none; display: block;
-    }
-    .mv-status {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 10px;
-      text-align: center;
-      min-height: 16px;
-    }
-    .mv-actions {
-      display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
-    }
-    .mv-btn {
-      background: var(--dark-3);
-      border: 1px solid var(--border);
-      color: var(--off);
-      font-family: var(--font-b);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: .2s;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .mv-btn:hover { border-color: var(--gold); color: var(--gold); }
-    .mv-btn.primary { background: var(--gold); color: #000; border-color: var(--gold); }
-    .mv-btn.primary:hover { background: #dbb95e; }
-
-
-    /* ══════════════ NEÓN UPGRADES ══════════════ */
-    .card.gold-glow { transition: border-color .3s, box-shadow .3s, transform .2s; }
-    .card.gold-glow:hover {
-      border-color: rgba(201,168,76,.5);
-      box-shadow: 0 0 20px rgba(201,168,76,.15), 0 8px 24px rgba(0,0,0,.4);
+      border-color: rgba(0,245,255,.5);
+      box-shadow: 0 0 20px rgba(0,245,255,.12), 0 4px 20px rgba(0,0,0,.4);
       transform: translateY(-2px);
     }
-    .card h3 { text-shadow: 0 0 10px rgba(255,255,255,.15); }
-    .neon-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+    .tool-card.gold {
+      border-color: rgba(201,168,76,.3);
+      background: linear-gradient(135deg, rgba(201,168,76,.08), rgba(5,12,25,.9));
+    }
+    .tool-card.gold:hover {
+      border-color: rgba(201,168,76,.6);
+      box-shadow: 0 0 20px rgba(201,168,76,.15);
+    }
+    .tool-card .info .label { color: var(--white); }
+
+    /* Tabla neón */
+    .table-wrap {
+      background: rgba(6,10,20,.9);
+      border: 1px solid rgba(0,245,255,.15);
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,100,200,.08);
+    }
+    thead { background: linear-gradient(90deg, rgba(0,30,60,.9), rgba(0,20,50,.9)); }
+    th { color: var(--cyan); letter-spacing: .18em; text-shadow: 0 0 8px rgba(0,245,255,.4); }
+    tbody tr:hover { background: rgba(0,245,255,.03); }
+    .table-wrap::-webkit-scrollbar-thumb { background: rgba(0,245,255,.35); }
+
+    /* Estado badges neón */
+    .estado-badge { box-shadow: 0 0 8px currentColor; opacity: .9; }
+
+    /* Bell */
+    .bell {
+      background: rgba(0,245,255,.06);
+      border-color: rgba(0,245,255,.2);
+    }
+    .bell:hover { background: rgba(0,245,255,.12); border-color: rgba(0,245,255,.4); }
+
+    /* Search sidebar */
+    .side-search input { background: rgba(0,20,40,.8); border-color: rgba(0,245,255,.15); color: var(--cyan); }
+    .side-search input:focus { border-color: rgba(0,245,255,.5); box-shadow: 0 0 10px rgba(0,245,255,.1); }
+    .side-search input::placeholder { color: var(--muted); }
+
+    /* Gráficos */
+    .neon-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
     @media(max-width:820px){ .neon-section { grid-template-columns:1fr; } }
     .chart-card {
-      background: var(--dark-2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 20px;
+      background: linear-gradient(135deg, rgba(10,20,40,.9), rgba(5,12,25,.95));
+      border: 1px solid rgba(0,245,255,.15);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
       transition: border-color .3s, box-shadow .3s;
     }
-    .chart-card:hover { border-color: rgba(74,158,255,.35); box-shadow: 0 0 20px rgba(74,158,255,.1); }
-    .chart-card h4 { font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; font-weight:500; }
-    .radial-wrap { display:flex; gap:16px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .chart-card::before {
+      content: '';
+      position: absolute; top:0; left:0; right:0; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,.5), transparent);
+    }
+    .chart-card:hover {
+      border-color: rgba(0,245,255,.4);
+      box-shadow: 0 0 25px rgba(0,245,255,.1);
+    }
+    .chart-card h4 {
+      font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+      color: var(--cyan); margin-bottom:16px; font-weight:500;
+      text-shadow: 0 0 8px rgba(0,245,255,.4);
+    }
+    .radial-wrap { display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:12px; }
     .radial-item { text-align:center; }
     .radial-item canvas { margin:0 auto; display:block; }
-    .radial-label { font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-top:6px; }
-    .radial-val { font-size:18px; font-weight:600; color:var(--white); text-shadow:0 0 8px rgba(255,255,255,.15); margin-top:2px; }
-    .btn-video { background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(201,168,76,.5)); border:1px solid rgba(201,168,76,.4); color:#000; font-weight:600; }
-    .btn-video:hover { box-shadow:0 0 10px rgba(201,168,76,.4); }
-    #modal-video { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.85); backdrop-filter:blur(12px); align-items:center; justify-content:center; }
+    .radial-label { font-size:9px; color:var(--muted); letter-spacing:.14em; text-transform:uppercase; margin-top:6px; }
+    .radial-val {
+      font-size:22px; font-weight:600; color:var(--cyan);
+      text-shadow: 0 0 12px rgba(0,245,255,.6); margin-top:2px;
+    }
+
+    /* Botón Video IA */
+    .btn-video {
+      background: linear-gradient(135deg, rgba(0,245,255,.25), rgba(0,150,255,.2));
+      border: 1px solid rgba(0,245,255,.4);
+      color: var(--cyan);
+      font-weight:600;
+      text-shadow: 0 0 6px rgba(0,245,255,.4);
+    }
+    .btn-video:hover { box-shadow: 0 0 14px rgba(0,245,255,.35); border-color: var(--cyan); }
+
+    /* Toasts neón */
+    .toast {
+      background: rgba(8,16,32,.95);
+      border: 1px solid rgba(0,245,255,.2);
+      border-left: 3px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0,245,255,.1), 0 16px 40px rgba(0,0,0,.5);
+    }
+
+    /* Licencia badge */
+    .licencia-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(0,245,255,.06);
+      border: 1px solid rgba(0,245,255,.2);
+      border-radius: 4px;
+      padding: 2px 8px;
+      text-shadow: 0 0 6px rgba(0,245,255,.4);
+      animation: pulse-badge 3s ease-in-out infinite;
+    }
+    @keyframes pulse-badge {
+      0%,100% { opacity:.7; box-shadow: none; }
+      50% { opacity:1; box-shadow: 0 0 10px rgba(0,245,255,.3); }
+    }
+
+    /* Modal video */
+    #modal-video { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.88); backdrop-filter:blur(16px); align-items:center; justify-content:center; }
     #modal-video.open { display:flex; }
-    .mv-box { background:var(--dark-2); border:1px solid rgba(201,168,76,.3); border-radius:14px; padding:28px; width:min(560px,94vw); max-height:90vh; overflow-y:auto; box-shadow:0 0 40px rgba(201,168,76,.15); }
-    .mv-box h3 { font-family:var(--font-d); font-size:22px; color:var(--gold); margin-bottom:18px; }
+    .mv-box {
+      background: linear-gradient(135deg, rgba(8,16,32,.98), rgba(5,10,22,.98));
+      border: 1px solid rgba(0,245,255,.3);
+      border-radius: 16px; padding:28px;
+      width:min(580px,94vw); max-height:90vh; overflow-y:auto;
+      box-shadow: 0 0 50px rgba(0,245,255,.12), 0 30px 60px rgba(0,0,0,.6);
+    }
+    .mv-box h3 { font-family:var(--font-d); font-size:22px; color:var(--cyan); margin-bottom:18px; text-shadow:0 0 15px rgba(0,245,255,.5); }
     .mv-row { margin-bottom:14px; }
     .mv-row label { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:5px; }
-    .mv-row select, .mv-row input { width:100%; background:var(--dark-3); border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:var(--font-b); font-size:12px; padding:9px 12px; outline:none; }
-    .mv-row select:focus, .mv-row input:focus { border-color:rgba(201,168,76,.4); }
+    .mv-row select, .mv-row input {
+      width:100%; background:rgba(0,20,40,.8); border:1px solid rgba(0,245,255,.2);
+      border-radius:7px; color:var(--white); font-family:var(--font-b); font-size:12px; padding:9px 12px; outline:none;
+    }
+    .mv-row select:focus, .mv-row input:focus { border-color:var(--cyan); box-shadow:0 0 10px rgba(0,245,255,.15); }
     .tipo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .tipo-opt { background:var(--dark-3); border:1px solid var(--border); border-radius:7px; padding:12px; text-align:center; cursor:pointer; transition:.2s; }
-    .tipo-opt:hover, .tipo-opt.sel { border-color:var(--gold); background:rgba(201,168,76,.08); }
+    .tipo-opt {
+      background:rgba(0,20,40,.6); border:1px solid rgba(0,245,255,.15);
+      border-radius:8px; padding:12px; text-align:center; cursor:pointer; transition:.2s;
+    }
+    .tipo-opt:hover, .tipo-opt.sel {
+      border-color:var(--cyan); background:rgba(0,245,255,.08);
+      box-shadow:0 0 12px rgba(0,245,255,.15);
+    }
     .tipo-opt .ico { font-size:20px; margin-bottom:4px; }
     .tipo-opt .nm { font-size:11px; font-weight:600; color:var(--white); }
-    .btn-gen-video { width:100%; background:var(--gold); color:#000; border:none; border-radius:8px; padding:13px; font-family:var(--font-b); font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-top:8px; transition:.2s; }
-    .btn-gen-video:hover { background:#dbb95e; transform:translateY(-1px); }
-    .btn-gen-video:disabled { background:var(--muted); color:#333; cursor:not-allowed; transform:none; }
-    .mv-preview { margin-top:16px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+    .btn-gen-video {
+      width:100%; background:linear-gradient(135deg, rgba(0,245,255,.8), rgba(0,150,255,.8));
+      color:#000; border:none; border-radius:8px; padding:13px;
+      font-family:var(--font-b); font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+      cursor:pointer; margin-top:8px; transition:.2s;
+      box-shadow: 0 0 20px rgba(0,245,255,.3);
+    }
+    .btn-gen-video:hover { transform:translateY(-1px); box-shadow:0 0 30px rgba(0,245,255,.5); }
+    .btn-gen-video:disabled { background:rgba(50,50,70,.5); color:#444; cursor:not-allowed; transform:none; box-shadow:none; }
+    .mv-preview { margin-top:16px; border-radius:8px; overflow:hidden; border:1px solid rgba(0,245,255,.2); }
     .mv-preview iframe { width:100%; height:260px; border:none; display:block; }
     .mv-status { font-size:11px; color:var(--muted); margin-top:10px; text-align:center; min-height:16px; }
     .mv-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-    .mv-btn { background:var(--dark-3); border:1px solid var(--border); color:var(--off); font-family:var(--font-b); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:8px 14px; border-radius:6px; cursor:pointer; transition:.2s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
-    .mv-btn:hover { border-color:var(--gold); color:var(--gold); }
-    .mv-btn.primary { background:var(--gold); color:#000; border-color:var(--gold); }
-    .mv-btn.primary:hover { background:#dbb95e; }
+    .mv-btn {
+      background:rgba(0,20,40,.8); border:1px solid rgba(0,245,255,.2); color:var(--off);
+      font-family:var(--font-b); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+      padding:8px 14px; border-radius:6px; cursor:pointer; transition:.2s;
+      text-decoration:none; display:inline-flex; align-items:center; gap:5px;
+    }
+    .mv-btn:hover { border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 10px rgba(0,245,255,.2); }
+    .mv-btn.primary { background:linear-gradient(135deg,rgba(0,245,255,.7),rgba(0,150,255,.7)); color:#000; border-color:var(--cyan); }
+    .mv-btn.primary:hover { box-shadow:0 0 15px rgba(0,245,255,.4); }
+
+    /* Scan line effect sutil */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,.008) 2px, rgba(0,245,255,.008) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
 
   </style>
 </head>
@@ -1005,11 +1008,11 @@
     </div>
 
     <div class="cards" id="metricsCards">
-      <div class="card gold-glow"><h3 id="totalInmuebles">0</h3><p>Total inmuebles</p></div>
-      <div class="card gold-glow"><h3 id="valorTotal">$0</h3><p>Valor total</p></div>
-      <div class="card gold-glow"><h3 id="precioPromedio">$0</h3><p>Precio promedio</p></div>
-      <div class="card gold-glow"><h3 id="totalLeads">0</h3><p>Interesados</p></div>
-      <div class="card gold-glow"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
+      <div class="card"><h3 id="totalInmuebles">0</h3><p>Total inmuebles</p></div>
+      <div class="card"><h3 id="valorTotal">$0</h3><p>Valor total</p></div>
+      <div class="card"><h3 id="precioPromedio">$0</h3><p>Precio promedio</p></div>
+      <div class="card"><h3 id="totalLeads">0</h3><p>Interesados</p></div>
+      <div class="card"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
     </div>
 
     <div class="section-header" style="margin-bottom:14px;">
@@ -1064,29 +1067,30 @@
 
 
     <div class="section-header" style="margin-bottom:14px;margin-top:4px">
-      <h2>Actividad del negocio</h2>
-      <div class="section-line"></div>
+      <h2 style="text-shadow:0 0 15px rgba(0,245,255,.3)">Actividad del negocio</h2>
+      <div class="section-line" style="background:linear-gradient(90deg,rgba(0,245,255,.3),transparent)"></div>
+      <span class="licencia-badge">Sistema activo · Buzzacchi CRM</span>
     </div>
     <div class="neon-section">
       <div class="chart-card">
-        <h4>📊 Inmuebles por estado</h4>
-        <canvas id="chartEstados" height="140"></canvas>
+        <h4>⚡ Inmuebles por estado</h4>
+        <canvas id="chartEstados" height="150"></canvas>
       </div>
       <div class="chart-card">
         <h4>🎯 Resumen del período</h4>
         <div class="radial-wrap">
           <div class="radial-item">
-            <canvas id="radialPublicadas" width="100" height="100"></canvas>
+            <canvas id="radialPublicadas" width="110" height="110"></canvas>
             <div class="radial-label">Publicadas</div>
             <div class="radial-val" id="radVal1">0</div>
           </div>
           <div class="radial-item">
-            <canvas id="radialListas" width="100" height="100"></canvas>
+            <canvas id="radialListas" width="110" height="110"></canvas>
             <div class="radial-label">Listas</div>
             <div class="radial-val" id="radVal2">0</div>
           </div>
           <div class="radial-item">
-            <canvas id="radialVendidas" width="100" height="100"></canvas>
+            <canvas id="radialVendidas" width="110" height="110"></canvas>
             <div class="radial-label">Vendidas</div>
             <div class="radial-val" id="radVal3">0</div>
           </div>
@@ -1095,7 +1099,7 @@
     </div>
 
     <div class="section-header">
-      <h2>Listado de inmuebles</h2>
+      <h2 style="text-shadow:0 0 15px rgba(0,245,255,.3)">Listado de inmuebles</h2>
       <div class="section-line"></div>
     </div>
 
@@ -1482,9 +1486,9 @@
     <div class="mv-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
         <h3>🎬 Generar Video IA</h3>
-        <button onclick="cerrarModalVideo()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+        <button onclick="cerrarModalVideo()" style="background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;transition:.2s" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--muted)'">×</button>
       </div>
-      <div id="mv-prop-info" style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px;background:var(--dark-3);border-radius:7px"></div>
+      <div id="mv-prop-info" style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px 14px;background:rgba(0,245,255,.04);border:1px solid rgba(0,245,255,.1);border-radius:8px"></div>
       <div class="mv-row">
         <label>Tipo de video</label>
         <div class="tipo-grid">
@@ -1527,103 +1531,100 @@
   </div>
 
   <script>
-    let mvHtml = '', mvTipo = 'story', mvProp = {};
-    function abrirModalVideo(id, titulo, zona, precio) {
-      mvProp = {id, titulo, zona, precio};
-      document.getElementById('mv-prop-info').innerHTML = '<strong>' + (titulo||'Propiedad') + '</strong>' + (zona?' · '+zona:'') + (precio?' · '+precio:'');
-      document.getElementById('mv-preview-wrap').style.display = 'none';
-      document.getElementById('mv-status').textContent = '';
-      document.getElementById('btn-gen-video').disabled = false;
-      document.getElementById('btn-gen-video').textContent = '✨ Generar Video con IA';
+    let mvHtml='', mvTipo='story', mvProp={};
+    function abrirModalVideo(id,titulo,zona,precio) {
+      mvProp={id,titulo,zona,precio};
+      document.getElementById('mv-prop-info').innerHTML='<strong style="color:var(--cyan)">'+(titulo||'Propiedad')+'</strong>'+(zona?' · '+zona:'')+(precio?' · '+precio:'');
+      document.getElementById('mv-preview-wrap').style.display='none';
+      document.getElementById('mv-status').textContent='';
+      document.getElementById('btn-gen-video').disabled=false;
+      document.getElementById('btn-gen-video').textContent='✨ Generar Video con IA';
       document.getElementById('modal-video').classList.add('open');
     }
-    function cerrarModalVideo() { document.getElementById('modal-video').classList.remove('open'); }
-    function selTipoMv(el) { document.querySelectorAll('.tipo-opt').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); mvTipo=el.dataset.tipo; }
-    async function generarVideoDesdeModal() {
-      const btn=document.getElementById('btn-gen-video'), status=document.getElementById('mv-status');
-      btn.disabled=true; btn.textContent='⏳ Generando…'; status.textContent='Conectando con Claude IA…';
-      try {
-        const resp = await fetch('/api/generar-video', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ titulo:mvProp.titulo||'', zona:mvProp.zona||'', precio:mvProp.precio||'',
-            tono:document.getElementById('mv-tono').value, cta:document.getElementById('mv-cta').value,
-            telefono:document.getElementById('mv-tel').value, tipo:mvTipo,
-            estilo:document.getElementById('mv-estilo').value, imagenUrl:'' })
-        });
-        const data = await resp.json();
-        if (!data.ok) throw new Error(data.error||'Error generando');
-        mvHtml = data.html;
-        document.getElementById('mv-iframe').srcdoc = data.html;
-        document.getElementById('mv-preview-wrap').style.display = 'block';
-        status.textContent = '✅ Video generado correctamente';
-      } catch(e) {
-        status.textContent = '❌ Error: ' + e.message;
-      } finally {
-        btn.disabled=false; btn.textContent='✨ Generar Video con IA';
-      }
+    function cerrarModalVideo(){document.getElementById('modal-video').classList.remove('open');}
+    function selTipoMv(el){document.querySelectorAll('.tipo-opt').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');mvTipo=el.dataset.tipo;}
+    async function generarVideoDesdeModal(){
+      const btn=document.getElementById('btn-gen-video'),status=document.getElementById('mv-status');
+      btn.disabled=true;btn.textContent='⏳ Generando…';status.textContent='Conectando con Claude IA…';
+      try{
+        const resp=await fetch('/api/generar-video',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({titulo:mvProp.titulo||'',zona:mvProp.zona||'',precio:mvProp.precio||'',
+            tono:document.getElementById('mv-tono').value,cta:document.getElementById('mv-cta').value,
+            telefono:document.getElementById('mv-tel').value,tipo:mvTipo,
+            estilo:document.getElementById('mv-estilo').value,imagenUrl:''})});
+        const data=await resp.json();
+        if(!data.ok) throw new Error(data.error||'Error generando');
+        mvHtml=data.html;
+        document.getElementById('mv-iframe').srcdoc=data.html;
+        document.getElementById('mv-preview-wrap').style.display='block';
+        status.textContent='✅ Video generado correctamente';
+      }catch(e){status.textContent='❌ Error: '+e.message;}
+      finally{btn.disabled=false;btn.textContent='✨ Generar Video con IA';}
     }
-    function descargarVideoHTML() {
-      if (!mvHtml) return;
+    function descargarVideoHTML(){
+      if(!mvHtml)return;
       const a=document.createElement('a');
       a.href=URL.createObjectURL(new Blob([mvHtml],{type:'text/html'}));
       a.download='video-'+(mvProp.titulo||'propiedad').replace(/\s+/g,'-')+'.html';
       a.click();
     }
-    function abrirVideoNuevaTab() {
-      if (!mvHtml) return;
+    function abrirVideoNuevaTab(){
+      if(!mvHtml)return;
       window.open(URL.createObjectURL(new Blob([mvHtml],{type:'text/html'})),'_blank');
     }
-    document.addEventListener('click', ev => {
-      const btn = ev.target.closest('button[data-action="video"]');
-      if (!btn) return;
+    document.addEventListener('click',ev=>{
+      const btn=ev.target.closest('button[data-action="video"]');
+      if(!btn)return;
       ev.stopPropagation();
-      abrirModalVideo(btn.dataset.id, btn.dataset.titulo, btn.dataset.zona, btn.dataset.precio);
+      abrirModalVideo(btn.dataset.id,btn.dataset.titulo,btn.dataset.zona,btn.dataset.precio);
     });
 
-    // ══ GRÁFICOS ══
-    let chartEstados = null;
-    function buildCharts(inm) {
-      const e = {borrador:0, lista:0, publicada:0, vendida:0, alquilada:0};
-      inm.forEach(i => { const s=(i.estadoPublicacion||'borrador').toLowerCase(); if(e[s]!==undefined)e[s]++; else e.borrador++; });
-      const ctx = document.getElementById('chartEstados');
-      if (!ctx) return;
-      if (chartEstados) chartEstados.destroy();
-      chartEstados = new Chart(ctx, {
+    // GRÁFICOS NEÓN
+    let chartEstados=null;
+    function buildCharts(inm){
+      const e={borrador:0,lista:0,publicada:0,vendida:0,alquilada:0};
+      inm.forEach(i=>{const s=(i.estadoPublicacion||'borrador').toLowerCase();if(e[s]!==undefined)e[s]++;else e.borrador++;});
+      const ctx=document.getElementById('chartEstados');
+      if(!ctx)return;
+      if(chartEstados)chartEstados.destroy();
+      chartEstados=new Chart(ctx,{
         type:'bar',
-        data:{ labels:['Borrador','Lista','Publicada','Vendida','Alquilada'],
-          datasets:[{ data:[e.borrador,e.lista,e.publicada,e.vendida,e.alquilada],
-            backgroundColor:['rgba(102,102,102,.5)','rgba(251,191,36,.55)','rgba(62,207,142,.55)','rgba(167,139,250,.55)','rgba(34,211,238,.55)'],
-            borderColor:['rgba(102,102,102,.8)','rgba(251,191,36,.9)','rgba(62,207,142,.9)','rgba(167,139,250,.9)','rgba(34,211,238,.9)'],
-            borderWidth:1, borderRadius:5 }]
-        },
-        options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}},
-          scales:{ x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#666',font:{size:11}}},
-            y:{grid:{display:false},ticks:{color:'#999',font:{size:11}}} } }
+        data:{labels:['Borrador','Lista','Publicada','Vendida','Alquilada'],
+          datasets:[{data:[e.borrador,e.lista,e.publicada,e.vendida,e.alquilada],
+            backgroundColor:['rgba(74,122,138,.5)','rgba(0,245,255,.4)','rgba(0,245,170,.45)','rgba(167,139,250,.5)','rgba(255,0,255,.4)'],
+            borderColor:['rgba(74,122,138,.8)','rgba(0,245,255,.9)','rgba(0,245,170,.9)','rgba(167,139,250,.9)','rgba(255,0,255,.8)'],
+            borderWidth:1,borderRadius:6}]},
+        options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},
+          scales:{
+            x:{grid:{color:'rgba(0,245,255,.06)'},ticks:{color:'rgba(0,245,255,.5)',font:{size:11}}},
+            y:{grid:{display:false},ticks:{color:'rgba(0,245,255,.7)',font:{size:11}}}
+          }}
       });
-      buildRadial('radialPublicadas', e.publicada, '#3ecf8e');
-      buildRadial('radialListas',     e.lista,     '#c9a84c');
-      buildRadial('radialVendidas',   e.vendida,   '#a78bfa');
-      document.getElementById('radVal1').textContent = e.publicada;
-      document.getElementById('radVal2').textContent = e.lista;
-      document.getElementById('radVal3').textContent = e.vendida;
+      buildRadial('radialPublicadas',e.publicada,'#00f5aa','#003322');
+      buildRadial('radialListas',e.lista,'#00f5ff','#002233');
+      buildRadial('radialVendidas',e.vendida,'#a78bfa','#1a1040');
+      document.getElementById('radVal1').textContent=e.publicada;
+      document.getElementById('radVal2').textContent=e.lista;
+      document.getElementById('radVal3').textContent=e.vendida;
     }
-    function buildRadial(id, value, color) {
-      const ctx=document.getElementById(id); if(!ctx) return;
-      const max = Math.max(value, 5);
-      new Chart(ctx,{ type:'doughnut',
-        data:{ datasets:[{ data:[value, max-value],
-          backgroundColor:[color,'rgba(255,255,255,.05)'], borderWidth:0 }] },
-        options:{ cutout:'72%', responsive:false, plugins:{legend:{display:false},tooltip:{enabled:false}} }
+    function buildRadial(id,value,color,bg){
+      const ctx=document.getElementById(id);if(!ctx)return;
+      const max=Math.max(value,5);
+      new Chart(ctx,{type:'doughnut',
+        data:{datasets:[{data:[value,max-value],
+          backgroundColor:[color,'rgba(0,245,255,.06)'],borderWidth:0}]},
+        options:{cutout:'74%',responsive:false,
+          plugins:{legend:{display:false},tooltip:{enabled:false}}}
       });
     }
-    const observer = new MutationObserver(() => {
-      if (document.querySelectorAll('#tablaBody tr').length > 0) {
-        fetch('/api/inmuebles').then(r=>r.json()).then(data=>{ if(Array.isArray(data)) buildCharts(data); }).catch(()=>{});
+    const observer=new MutationObserver(()=>{
+      if(document.querySelectorAll('#tablaBody tr').length>0){
+        fetch('/api/inmuebles').then(r=>r.json()).then(data=>{if(Array.isArray(data))buildCharts(data);}).catch(()=>{});
         observer.disconnect();
       }
     });
-    const tbody = document.getElementById('tablaBody');
-    if (tbody) observer.observe(tbody, {childList:true});
+    const tbody2=document.getElementById('tablaBody');
+    if(tbody2)observer.observe(tbody2,{childList:true});
   </script>
 
 </body>
