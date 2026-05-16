@@ -19,6 +19,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <style>
     :root {
@@ -663,6 +665,263 @@
         width: auto;
       }
     }
+
+    /* ══════════════ NEÓN UPGRADES ══════════════ */
+    .card {
+      transition: border-color .3s, box-shadow .3s, transform .2s;
+    }
+    .card:hover {
+      border-color: rgba(74,158,255,.45);
+      box-shadow: 0 0 18px rgba(74,158,255,.15), 0 8px 32px rgba(0,0,0,.4);
+      transform: translateY(-2px);
+    }
+    .card h3 {
+      text-shadow: 0 0 8px rgba(255,255,255,.2);
+    }
+    .card.gold-glow:hover {
+      border-color: rgba(201,168,76,.5);
+      box-shadow: 0 0 20px rgba(201,168,76,.18), 0 8px 32px rgba(0,0,0,.4);
+    }
+    .tool-card:hover {
+      box-shadow: 0 0 16px rgba(201,168,76,.12);
+    }
+    .neon-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    @media(max-width:820px){ .neon-section { grid-template-columns: 1fr; } }
+    .chart-card {
+      background: var(--dark-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .chart-card:hover {
+      border-color: rgba(74,158,255,.35);
+      box-shadow: 0 0 20px rgba(74,158,255,.1);
+    }
+    .chart-card h4 {
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    .chart-card canvas { display: block; }
+    .radial-wrap {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .radial-item { text-align: center; }
+    .radial-item canvas { margin: 0 auto; display: block; }
+    .radial-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .radial-val {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--white);
+      text-shadow: 0 0 8px rgba(255,255,255,.15);
+      margin-top: 2px;
+    }
+    /* Botón generar video en tabla */
+    .btn-video {
+      background: linear-gradient(135deg,rgba(201,168,76,.7),rgba(201,168,76,.5));
+      border: 1px solid rgba(201,168,76,.4);
+      color: #000;
+      font-weight: 600;
+    }
+    .btn-video:hover {
+      box-shadow: 0 0 10px rgba(201,168,76,.4);
+    }
+    /* Modal video */
+    #modal-video {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,.85);
+      backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-video.open { display: flex; }
+    .mv-box {
+      background: var(--dark-2);
+      border: 1px solid rgba(201,168,76,.3);
+      border-radius: 14px;
+      padding: 28px;
+      width: min(560px, 94vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 0 40px rgba(201,168,76,.15);
+    }
+    .mv-box h3 {
+      font-family: var(--font-d);
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 18px;
+    }
+    .mv-row { margin-bottom: 14px; }
+    .mv-row label {
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .mv-row select, .mv-row input {
+      width: 100%;
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--white);
+      font-family: var(--font-b);
+      font-size: 12px;
+      padding: 9px 12px;
+      outline: none;
+    }
+    .mv-row select:focus, .mv-row input:focus {
+      border-color: rgba(201,168,76,.4);
+    }
+    .tipo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tipo-opt {
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .tipo-opt:hover, .tipo-opt.sel {
+      border-color: var(--gold);
+      background: rgba(201,168,76,.08);
+    }
+    .tipo-opt .ico { font-size: 20px; margin-bottom: 4px; }
+    .tipo-opt .nm  { font-size: 11px; font-weight: 600; color: var(--white); }
+    .btn-gen-video {
+      width: 100%;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 13px;
+      font-family: var(--font-b);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: .2s;
+    }
+    .btn-gen-video:hover { background: #dbb95e; transform: translateY(-1px); }
+    .btn-gen-video:disabled { background: var(--muted); color: #333; cursor: not-allowed; transform: none; }
+    .mv-preview {
+      margin-top: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .mv-preview iframe {
+      width: 100%; height: 260px; border: none; display: block;
+    }
+    .mv-status {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: center;
+      min-height: 16px;
+    }
+    .mv-actions {
+      display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .mv-btn {
+      background: var(--dark-3);
+      border: 1px solid var(--border);
+      color: var(--off);
+      font-family: var(--font-b);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: .2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mv-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .mv-btn.primary { background: var(--gold); color: #000; border-color: var(--gold); }
+    .mv-btn.primary:hover { background: #dbb95e; }
+
+
+    /* ══════════════ NEÓN UPGRADES ══════════════ */
+    .card.gold-glow { transition: border-color .3s, box-shadow .3s, transform .2s; }
+    .card.gold-glow:hover {
+      border-color: rgba(201,168,76,.5);
+      box-shadow: 0 0 20px rgba(201,168,76,.15), 0 8px 24px rgba(0,0,0,.4);
+      transform: translateY(-2px);
+    }
+    .card h3 { text-shadow: 0 0 10px rgba(255,255,255,.15); }
+    .neon-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+    @media(max-width:820px){ .neon-section { grid-template-columns:1fr; } }
+    .chart-card {
+      background: var(--dark-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .chart-card:hover { border-color: rgba(74,158,255,.35); box-shadow: 0 0 20px rgba(74,158,255,.1); }
+    .chart-card h4 { font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; font-weight:500; }
+    .radial-wrap { display:flex; gap:16px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .radial-item { text-align:center; }
+    .radial-item canvas { margin:0 auto; display:block; }
+    .radial-label { font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-top:6px; }
+    .radial-val { font-size:18px; font-weight:600; color:var(--white); text-shadow:0 0 8px rgba(255,255,255,.15); margin-top:2px; }
+    .btn-video { background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(201,168,76,.5)); border:1px solid rgba(201,168,76,.4); color:#000; font-weight:600; }
+    .btn-video:hover { box-shadow:0 0 10px rgba(201,168,76,.4); }
+    #modal-video { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.85); backdrop-filter:blur(12px); align-items:center; justify-content:center; }
+    #modal-video.open { display:flex; }
+    .mv-box { background:var(--dark-2); border:1px solid rgba(201,168,76,.3); border-radius:14px; padding:28px; width:min(560px,94vw); max-height:90vh; overflow-y:auto; box-shadow:0 0 40px rgba(201,168,76,.15); }
+    .mv-box h3 { font-family:var(--font-d); font-size:22px; color:var(--gold); margin-bottom:18px; }
+    .mv-row { margin-bottom:14px; }
+    .mv-row label { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:5px; }
+    .mv-row select, .mv-row input { width:100%; background:var(--dark-3); border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:var(--font-b); font-size:12px; padding:9px 12px; outline:none; }
+    .mv-row select:focus, .mv-row input:focus { border-color:rgba(201,168,76,.4); }
+    .tipo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .tipo-opt { background:var(--dark-3); border:1px solid var(--border); border-radius:7px; padding:12px; text-align:center; cursor:pointer; transition:.2s; }
+    .tipo-opt:hover, .tipo-opt.sel { border-color:var(--gold); background:rgba(201,168,76,.08); }
+    .tipo-opt .ico { font-size:20px; margin-bottom:4px; }
+    .tipo-opt .nm { font-size:11px; font-weight:600; color:var(--white); }
+    .btn-gen-video { width:100%; background:var(--gold); color:#000; border:none; border-radius:8px; padding:13px; font-family:var(--font-b); font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-top:8px; transition:.2s; }
+    .btn-gen-video:hover { background:#dbb95e; transform:translateY(-1px); }
+    .btn-gen-video:disabled { background:var(--muted); color:#333; cursor:not-allowed; transform:none; }
+    .mv-preview { margin-top:16px; border-radius:8px; overflow:hidden; border:1px solid var(--border); }
+    .mv-preview iframe { width:100%; height:260px; border:none; display:block; }
+    .mv-status { font-size:11px; color:var(--muted); margin-top:10px; text-align:center; min-height:16px; }
+    .mv-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .mv-btn { background:var(--dark-3); border:1px solid var(--border); color:var(--off); font-family:var(--font-b); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; padding:8px 14px; border-radius:6px; cursor:pointer; transition:.2s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+    .mv-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .mv-btn.primary { background:var(--gold); color:#000; border-color:var(--gold); }
+    .mv-btn.primary:hover { background:#dbb95e; }
+
   </style>
 </head>
 <body>
@@ -745,12 +1004,12 @@
       </div>
     </div>
 
-    <div class="cards">
-      <div class="card"><h3 id="totalInmuebles">0</h3><p>Total inmuebles</p></div>
-      <div class="card"><h3 id="valorTotal">$0</h3><p>Valor total</p></div>
-      <div class="card"><h3 id="precioPromedio">$0</h3><p>Precio promedio</p></div>
-      <div class="card"><h3 id="totalLeads">0</h3><p>Interesados</p></div>
-      <div class="card"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
+    <div class="cards" id="metricsCards">
+      <div class="card gold-glow"><h3 id="totalInmuebles">0</h3><p>Total inmuebles</p></div>
+      <div class="card gold-glow"><h3 id="valorTotal">$0</h3><p>Valor total</p></div>
+      <div class="card gold-glow"><h3 id="precioPromedio">$0</h3><p>Precio promedio</p></div>
+      <div class="card gold-glow"><h3 id="totalLeads">0</h3><p>Interesados</p></div>
+      <div class="card gold-glow"><h3 id="totalCompradores">0</h3><p>Compradores en base</p></div>
     </div>
 
     <div class="section-header" style="margin-bottom:14px;">
@@ -801,6 +1060,38 @@
           <div class="sub">Respuestas automáticas</div>
         </div>
       </a>
+    </div>
+
+
+    <div class="section-header" style="margin-bottom:14px;margin-top:4px">
+      <h2>Actividad del negocio</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="neon-section">
+      <div class="chart-card">
+        <h4>📊 Inmuebles por estado</h4>
+        <canvas id="chartEstados" height="140"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>🎯 Resumen del período</h4>
+        <div class="radial-wrap">
+          <div class="radial-item">
+            <canvas id="radialPublicadas" width="100" height="100"></canvas>
+            <div class="radial-label">Publicadas</div>
+            <div class="radial-val" id="radVal1">0</div>
+          </div>
+          <div class="radial-item">
+            <canvas id="radialListas" width="100" height="100"></canvas>
+            <div class="radial-label">Listas</div>
+            <div class="radial-val" id="radVal2">0</div>
+          </div>
+          <div class="radial-item">
+            <canvas id="radialVendidas" width="100" height="100"></canvas>
+            <div class="radial-label">Vendidas</div>
+            <div class="radial-val" id="radVal3">0</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="section-header">
@@ -1105,6 +1396,7 @@
             <button class="btn btn-vend" style="margin-left:4px;" data-action="vendida"    data-id="${id}">Vendida</button>
             <button class="btn btn-alq"  style="margin-left:4px;" data-action="alquilada" data-id="${id}">Alquilada</button>
             <button class="btn btn-del"  style="margin-left:4px;" data-action="eliminar"   data-id="${id}">Eliminar</button>
+            <button class="btn btn-video" style="margin-left:4px;" data-action="video" data-id="${id}" data-titulo="${getCampo(i,'titulo')}" data-zona="${getCampo(i,'zona')}" data-precio="${precioTxt}">🎬 Video IA</button>
           </td>
         `;
 
@@ -1185,5 +1477,154 @@
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
+
+  <div id="modal-video">
+    <div class="mv-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <h3>🎬 Generar Video IA</h3>
+        <button onclick="cerrarModalVideo()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button>
+      </div>
+      <div id="mv-prop-info" style="font-size:12px;color:var(--muted);margin-bottom:16px;padding:10px;background:var(--dark-3);border-radius:7px"></div>
+      <div class="mv-row">
+        <label>Tipo de video</label>
+        <div class="tipo-grid">
+          <div class="tipo-opt sel" data-tipo="story" onclick="selTipoMv(this)"><div class="ico">📱</div><div class="nm">Story / Reel</div></div>
+          <div class="tipo-opt" data-tipo="post" onclick="selTipoMv(this)"><div class="ico">🖥️</div><div class="nm">Post cuadrado</div></div>
+        </div>
+      </div>
+      <div class="mv-row"><label>Estilo visual</label>
+        <select id="mv-estilo">
+          <option value="luxury">Luxury Dark</option>
+          <option value="clean">Clean Blanco</option>
+          <option value="modern">Modern Blue</option>
+          <option value="neon">⚡ Neón Aéreo</option>
+        </select>
+      </div>
+      <div class="mv-row"><label>Tono</label>
+        <select id="mv-tono">
+          <option value="profesional">Profesional y confiable</option>
+          <option value="aspiracional">Aspiracional / lifestyle</option>
+          <option value="urgente">Urgente / oportunidad</option>
+          <option value="familiar">Cálido y familiar</option>
+        </select>
+      </div>
+      <div class="mv-row"><label>Llamada a la acción</label>
+        <input type="text" id="mv-cta" value="Contactá a Vanina Buzzacchi">
+      </div>
+      <div class="mv-row"><label>Teléfono / WhatsApp</label>
+        <input type="text" id="mv-tel" placeholder="+54 358 4XXXXXX">
+      </div>
+      <button class="btn-gen-video" id="btn-gen-video" onclick="generarVideoDesdeModal()">✨ Generar Video con IA</button>
+      <div class="mv-status" id="mv-status"></div>
+      <div id="mv-preview-wrap" style="display:none">
+        <div class="mv-preview"><iframe id="mv-iframe" sandbox="allow-scripts allow-same-origin"></iframe></div>
+        <div class="mv-actions">
+          <button class="mv-btn primary" onclick="descargarVideoHTML()">⬇ Descargar HTML</button>
+          <button class="mv-btn" onclick="abrirVideoNuevaTab()">↗ Vista previa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let mvHtml = '', mvTipo = 'story', mvProp = {};
+    function abrirModalVideo(id, titulo, zona, precio) {
+      mvProp = {id, titulo, zona, precio};
+      document.getElementById('mv-prop-info').innerHTML = '<strong>' + (titulo||'Propiedad') + '</strong>' + (zona?' · '+zona:'') + (precio?' · '+precio:'');
+      document.getElementById('mv-preview-wrap').style.display = 'none';
+      document.getElementById('mv-status').textContent = '';
+      document.getElementById('btn-gen-video').disabled = false;
+      document.getElementById('btn-gen-video').textContent = '✨ Generar Video con IA';
+      document.getElementById('modal-video').classList.add('open');
+    }
+    function cerrarModalVideo() { document.getElementById('modal-video').classList.remove('open'); }
+    function selTipoMv(el) { document.querySelectorAll('.tipo-opt').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); mvTipo=el.dataset.tipo; }
+    async function generarVideoDesdeModal() {
+      const btn=document.getElementById('btn-gen-video'), status=document.getElementById('mv-status');
+      btn.disabled=true; btn.textContent='⏳ Generando…'; status.textContent='Conectando con Claude IA…';
+      try {
+        const resp = await fetch('/api/generar-video', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ titulo:mvProp.titulo||'', zona:mvProp.zona||'', precio:mvProp.precio||'',
+            tono:document.getElementById('mv-tono').value, cta:document.getElementById('mv-cta').value,
+            telefono:document.getElementById('mv-tel').value, tipo:mvTipo,
+            estilo:document.getElementById('mv-estilo').value, imagenUrl:'' })
+        });
+        const data = await resp.json();
+        if (!data.ok) throw new Error(data.error||'Error generando');
+        mvHtml = data.html;
+        document.getElementById('mv-iframe').srcdoc = data.html;
+        document.getElementById('mv-preview-wrap').style.display = 'block';
+        status.textContent = '✅ Video generado correctamente';
+      } catch(e) {
+        status.textContent = '❌ Error: ' + e.message;
+      } finally {
+        btn.disabled=false; btn.textContent='✨ Generar Video con IA';
+      }
+    }
+    function descargarVideoHTML() {
+      if (!mvHtml) return;
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([mvHtml],{type:'text/html'}));
+      a.download='video-'+(mvProp.titulo||'propiedad').replace(/\s+/g,'-')+'.html';
+      a.click();
+    }
+    function abrirVideoNuevaTab() {
+      if (!mvHtml) return;
+      window.open(URL.createObjectURL(new Blob([mvHtml],{type:'text/html'})),'_blank');
+    }
+    document.addEventListener('click', ev => {
+      const btn = ev.target.closest('button[data-action="video"]');
+      if (!btn) return;
+      ev.stopPropagation();
+      abrirModalVideo(btn.dataset.id, btn.dataset.titulo, btn.dataset.zona, btn.dataset.precio);
+    });
+
+    // ══ GRÁFICOS ══
+    let chartEstados = null;
+    function buildCharts(inm) {
+      const e = {borrador:0, lista:0, publicada:0, vendida:0, alquilada:0};
+      inm.forEach(i => { const s=(i.estadoPublicacion||'borrador').toLowerCase(); if(e[s]!==undefined)e[s]++; else e.borrador++; });
+      const ctx = document.getElementById('chartEstados');
+      if (!ctx) return;
+      if (chartEstados) chartEstados.destroy();
+      chartEstados = new Chart(ctx, {
+        type:'bar',
+        data:{ labels:['Borrador','Lista','Publicada','Vendida','Alquilada'],
+          datasets:[{ data:[e.borrador,e.lista,e.publicada,e.vendida,e.alquilada],
+            backgroundColor:['rgba(102,102,102,.5)','rgba(251,191,36,.55)','rgba(62,207,142,.55)','rgba(167,139,250,.55)','rgba(34,211,238,.55)'],
+            borderColor:['rgba(102,102,102,.8)','rgba(251,191,36,.9)','rgba(62,207,142,.9)','rgba(167,139,250,.9)','rgba(34,211,238,.9)'],
+            borderWidth:1, borderRadius:5 }]
+        },
+        options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}},
+          scales:{ x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#666',font:{size:11}}},
+            y:{grid:{display:false},ticks:{color:'#999',font:{size:11}}} } }
+      });
+      buildRadial('radialPublicadas', e.publicada, '#3ecf8e');
+      buildRadial('radialListas',     e.lista,     '#c9a84c');
+      buildRadial('radialVendidas',   e.vendida,   '#a78bfa');
+      document.getElementById('radVal1').textContent = e.publicada;
+      document.getElementById('radVal2').textContent = e.lista;
+      document.getElementById('radVal3').textContent = e.vendida;
+    }
+    function buildRadial(id, value, color) {
+      const ctx=document.getElementById(id); if(!ctx) return;
+      const max = Math.max(value, 5);
+      new Chart(ctx,{ type:'doughnut',
+        data:{ datasets:[{ data:[value, max-value],
+          backgroundColor:[color,'rgba(255,255,255,.05)'], borderWidth:0 }] },
+        options:{ cutout:'72%', responsive:false, plugins:{legend:{display:false},tooltip:{enabled:false}} }
+      });
+    }
+    const observer = new MutationObserver(() => {
+      if (document.querySelectorAll('#tablaBody tr').length > 0) {
+        fetch('/api/inmuebles').then(r=>r.json()).then(data=>{ if(Array.isArray(data)) buildCharts(data); }).catch(()=>{});
+        observer.disconnect();
+      }
+    });
+    const tbody = document.getElementById('tablaBody');
+    if (tbody) observer.observe(tbody, {childList:true});
+  </script>
+
 </body>
 </html>
