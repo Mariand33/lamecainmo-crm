@@ -336,10 +336,17 @@
             <div style="font-size:12px;font-weight:bold;color:#7a5c00;margin-bottom:6px">👁 Vista previa:</div>
             <div id="embedContainer" style="max-width:500px;border:1px solid #e0d0a0;border-radius:8px;overflow:hidden;background:#fff;padding:8px"></div>
           </div>
-          <button type="button" onclick="previewEmbed()"
-            style="background:#c9a84c;color:#060810;font-size:13px;padding:8px 16px;border-radius:6px;margin-top:8px;width:auto">
-            👁 Previsualizar
-          </button>
+          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+            <button type="button" onclick="previewEmbed()"
+              style="background:#c9a84c;color:#060810;font-size:13px;padding:8px 16px;border-radius:6px;width:auto">
+              👁 Previsualizar
+            </button>
+            <button type="button" onclick="extraerDatosEmbed()"
+              style="background:#143d2f;color:#fff;font-size:13px;padding:8px 16px;border-radius:6px;width:auto">
+              🤖 Extraer datos con IA
+            </button>
+          </div>
+          <div id="embedStatus" style="margin-top:8px;font-size:12px;color:#7a5c00;display:none">⏳ Analizando publicación con IA...</div>
         </div>
 
         <button type="submit" style="background:#143d2f;font-size:15px;padding:12px 28px;border-radius:8px;width:100%;margin-top:6px">
@@ -351,6 +358,50 @@
 
 
   <script>
+    async function extraerDatosEmbed() {
+      const code = document.getElementById('embedCodigo').value.trim();
+      if (!code) { alert('Pegá primero el código del embed.'); return; }
+      
+      const status = document.getElementById('embedStatus');
+      status.style.display = 'block';
+      status.textContent = '⏳ Analizando publicación con IA...';
+
+      try {
+        const resp = await fetch('/api/extraer-embed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embedCodigo: code })
+        });
+        const data = await resp.json();
+        if (!data.ok) throw new Error(data.error);
+        
+        const d = data.datos;
+        // Rellenar campos del formulario
+        if (d.titulo)        document.getElementById('titulo').value = d.titulo;
+        if (d.tipoOperacion) document.getElementById('tipoOperacion').value = d.tipoOperacion;
+        if (d.zona)          document.getElementById('zona').value = d.zona;
+        if (d.direccion)     document.getElementById('direccion').value = d.direccion;
+        if (d.precio)        document.getElementById('precio').value = d.precio;
+        if (d.moneda)        document.getElementById('moneda').value = d.moneda;
+        if (d.dormitorios)   document.getElementById('dormitorios').value = d.dormitorios;
+        if (d.banos)         document.getElementById('banos').value = d.banos;
+        if (d.m2Totales)     document.getElementById('m2Totales').value = d.m2Totales;
+        if (d.descripcion)   document.getElementById('descripcion').value = d.descripcion;
+
+        status.textContent = '✅ ¡Datos extraídos! Revisá y completá lo que falta.';
+        status.style.color = '#143d2f';
+        
+        // Scroll al título
+        document.getElementById('titulo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('titulo').style.background = '#fffde7';
+        setTimeout(() => document.getElementById('titulo').style.background = '', 2000);
+
+      } catch(e) {
+        status.textContent = '❌ Error: ' + e.message;
+        status.style.color = '#c0392b';
+      }
+    }
+
     function previewEmbed() {
       const code = document.getElementById('embedCodigo').value.trim();
       if (!code) { alert('Pegá primero el código del embed.'); return; }
