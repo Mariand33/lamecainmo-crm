@@ -1003,6 +1003,70 @@ Incluí solo las propiedades que realmente coinciden (máximo 8). Los scores son
   }
 });
 
+
+// =========================
+// EXTRAER DATOS DE EMBED (Facebook/Instagram → Claude)
+// =========================
+app.post("/api/extraer-embed", async (req, res) => {
+  const { embedCodigo } = req.body;
+  if (!embedCodigo) return res.status(400).json({ ok: false, error: "Falta el código embed" });
+
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  if (!anthropicKey) return res.status(400).json({ ok: false, error: "Falta ANTHROPIC_API_KEY" });
+
+  // Extraer texto limpio del embed
+  const textoLimpio = embedCodigo
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 2000);
+
+  const prompt = `Sos un asistente inmobiliario. A partir del siguiente texto extraído de una publicación de Facebook o Instagram de una inmobiliaria, extraé los datos de la propiedad y devolvé SOLO un JSON válido sin explicaciones ni markdown.
+
+Texto de la publicación:
+"${textoLimpio}"
+
+Devolvé exactamente este JSON (con los campos que puedas inferir, dejá vacío "" lo que no encuentres):
+{
+  "titulo": "",
+  "tipoOperacion": "venta o alquiler",
+  "tipoPropiedad": "casa, departamento, local, terreno, ph u otro",
+  "zona": "",
+  "direccion": "",
+  "precio": "",
+  "moneda": "USD o ARS",
+  "dormitorios": "",
+  "banos": "",
+  "m2Totales": "",
+  "descripcion": ""
+}`;
+
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 600,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || "{}";
+    const clean = text.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(clean);
+    res.json({ ok: true, datos: parsed });
+  } catch(e) {
+    res.status(500).json({ ok: false, error: "Error al procesar con IA: " + e.message });
+  }
+});
+
 // =========================
 // TOUR VIRTUAL — guardar meta
 // =========================
