@@ -320,12 +320,61 @@
           <div class="ayuda">MP4 recomendado. Máximo 100MB.</div>
         </div>
 
+        <!-- EMBED REDES SOCIALES -->
+        <div class="grupo" style="background:#fff8e1;border:2px dashed #c9a84c;border-radius:10px;padding:16px;margin-bottom:10px">
+          <label style="color:#7a5c00;font-size:14px">📲 Publicación de Facebook / Instagram (opcional)</label>
+          <div class="ayuda" style="color:#7a5c00;font-size:12px;line-height:1.6;margin-bottom:10px">
+            <strong>¿Cómo obtener el código?</strong><br>
+            📘 <strong>Facebook:</strong> Abrí la publicación → tres puntos (...) → <em>Insertar</em> → copiá el código iframe<br>
+            📸 <strong>Instagram:</strong> Abrí la publicación en web → tres puntos (...) → <em>Insertar</em> → copiá el código<br>
+            ✅ La publicación aparecerá en el funnel público junto con las fotos de la propiedad.
+          </div>
+          <textarea id="embedCodigo" name="embedCodigo"
+            placeholder="Pegá acá el código iframe de Facebook o Instagram"
+            style="min-height:90px;font-family:monospace;font-size:12px;background:#fffff0;border:1px solid #c9a84c"></textarea>
+          <div id="embedPreview" style="display:none;margin-top:12px">
+            <div style="font-size:12px;font-weight:bold;color:#7a5c00;margin-bottom:6px">👁 Vista previa:</div>
+            <div id="embedContainer" style="max-width:500px;border:1px solid #e0d0a0;border-radius:8px;overflow:hidden;background:#fff;padding:8px"></div>
+          </div>
+          <button type="button" onclick="previewEmbed()"
+            style="background:#c9a84c;color:#060810;font-size:13px;padding:8px 16px;border-radius:6px;margin-top:8px;width:auto">
+            👁 Previsualizar
+          </button>
+        </div>
+
         <button type="submit" style="background:#143d2f;font-size:15px;padding:12px 28px;border-radius:8px;width:100%;margin-top:6px">
           💾 Guardar inmueble
         </button>
       </form>
     </div>
   </div>
+
+
+  <script>
+    function previewEmbed() {
+      const code = document.getElementById('embedCodigo').value.trim();
+      if (!code) { alert('Pegá primero el código del embed.'); return; }
+      const container = document.getElementById('embedContainer');
+      const preview = document.getElementById('embedPreview');
+      container.innerHTML = code;
+      preview.style.display = 'block';
+      // Load FB SDK if needed
+      if (code.includes('facebook') && !window.FB) {
+        const sdk = document.createElement('script');
+        sdk.src = 'https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v18.0';
+        sdk.async = true;
+        document.body.appendChild(sdk);
+      }
+      // Load IG embed if needed
+      if (code.includes('instagram') && !window.instgrm) {
+        const sdk = document.createElement('script');
+        sdk.src = 'https://www.instagram.com/embed.js';
+        sdk.async = true;
+        document.body.appendChild(sdk);
+        setTimeout(() => { if(window.instgrm) window.instgrm.Embeds.process(); }, 1500);
+      }
+    }
+  </script>
 
   <!-- Service Worker PWA -->
   <script>
