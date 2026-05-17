@@ -329,9 +329,21 @@
             📸 <strong>Instagram:</strong> Abrí la publicación en web → tres puntos (...) → <em>Insertar</em> → copiá el código<br>
             ✅ La publicación aparecerá en el funnel público junto con las fotos de la propiedad.
           </div>
+          <!-- Código embed -->
+          <label style="font-size:12px;font-weight:bold;color:#7a5c00;margin-bottom:4px;display:block">Código embed (iframe/blockquote)</label>
           <textarea id="embedCodigo" name="embedCodigo"
-            placeholder="Pegá acá el código iframe de Facebook o Instagram"
-            style="min-height:90px;font-family:monospace;font-size:12px;background:#fffff0;border:1px solid #c9a84c"></textarea>
+            placeholder="Pegá acá el código iframe de Facebook o el blockquote de Instagram"
+            style="min-height:80px;font-family:monospace;font-size:12px;background:#fffff0;border:1px solid #c9a84c"></textarea>
+
+          <!-- Texto de la publicación -->
+          <label style="font-size:12px;font-weight:bold;color:#7a5c00;margin:8px 0 4px;display:block">📝 Texto de la publicación (para extraer datos con IA)</label>
+          <textarea id="embedTexto" name="embedTexto"
+            placeholder="Copiá y pegá acá el texto de la publicación de Instagram o Facebook&#10;Ej: Casa 3 dormitorios en venta, Banda Norte. 180m2, garage doble, piscina. USD 145.000"
+            style="min-height:80px;font-size:13px;border:1px solid #c9a84c;background:#fffff0"></textarea>
+          <div style="font-size:11px;color:#7a5c00;margin-bottom:8px">
+            💡 En Instagram: abrí la publicación → copiá la descripción completa → pegala acá
+          </div>
+
           <div id="embedPreview" style="display:none;margin-top:12px">
             <div style="font-size:12px;font-weight:bold;color:#7a5c00;margin-bottom:6px">👁 Vista previa:</div>
             <div id="embedContainer" style="max-width:500px;border:1px solid #e0d0a0;border-radius:8px;overflow:hidden;background:#fff;padding:8px"></div>
@@ -339,7 +351,7 @@
           <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
             <button type="button" onclick="previewEmbed()"
               style="background:#c9a84c;color:#060810;font-size:13px;padding:8px 16px;border-radius:6px;width:auto">
-              👁 Previsualizar
+              👁 Previsualizar embed
             </button>
             <button type="button" onclick="extraerDatosEmbed()"
               style="background:#143d2f;color:#fff;font-size:13px;padding:8px 16px;border-radius:6px;width:auto">
@@ -359,8 +371,9 @@
 
   <script>
     async function extraerDatosEmbed() {
+      const texto = document.getElementById('embedTexto').value.trim();
       const code = document.getElementById('embedCodigo').value.trim();
-      if (!code) { alert('Pegá primero el código del embed.'); return; }
+      if (!texto && !code) { alert('Pegá el texto de la publicación para que la IA pueda extraer los datos.'); return; }
       
       const status = document.getElementById('embedStatus');
       status.style.display = 'block';
@@ -370,7 +383,7 @@
         const resp = await fetch('/api/extraer-embed', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ embedCodigo: code })
+          body: JSON.stringify({ embedCodigo: texto || code })
         });
         const data = await resp.json();
         if (!data.ok) throw new Error(data.error);
