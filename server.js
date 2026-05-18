@@ -472,7 +472,7 @@ app.get("/api/inmuebles-publicos", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("inmuebles").select("*")
-      .in("estado_publicacion", ["lista", "publicada"])
+      .in("estado_publicacion", ["lista", "publicada", "Publicada", "Lista"])
       .order("id", { ascending: false });
     if (error) return res.status(500).json({ error: error.message });
     res.json((data || []).map(sbToInm));
