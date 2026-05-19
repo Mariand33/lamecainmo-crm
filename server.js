@@ -436,6 +436,8 @@ function inmToSb(i) {
   set("media_urls",          i.mediaUrls);
   if (i.imagenes !== undefined) o.imagenes = i.imagenes;
   set("estado_publicacion",  i.estadoPublicacion);
+  set("embed_codigo", i.embedCodigo);
+set("embed_texto",  i.embedTexto);
   return o;
 }
 
