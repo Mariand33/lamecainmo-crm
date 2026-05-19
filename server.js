@@ -411,6 +411,8 @@ function sbToInm(r) {
     linkPublicacion:     r.link_publicacion,
     thumbUrl:            r.thumb_url,
     cantidadPublicaciones: r.cantidad_publicaciones || 0,
+    embedCodigo: r.embed_codigo || null,
+embedTexto:  r.embed_texto  || null,
   };
 }
 
