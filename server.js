@@ -363,10 +363,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const BUCKET = "Subidas"; // nombre exacto del bucket en Supabase (case-sensitive)
 
-async function subirASupabase(buffer, name, type) {
-  // Sanitizar nombre y guardarlo dentro de la subcarpeta "Subidas/"
+async function subirASupabase(buffer, name, type, folder = "general") {
+  // Sanitizar nombre y guardarlo dentro de la carpeta de la propiedad
   const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const filename  = `Subidas/${Date.now()}-${safeName}`;
+  const filename  = `${folder}/${Date.now()}-${safeName}`;
 
   const { error } = await supabase.storage
     .from(BUCKET)
@@ -489,21 +489,30 @@ app.get("/api/inmuebles/:id", async (req, res) => {
 
 app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "fotos360" }, { name: "video" }]), async (req, res) => {
   try {
-    // Subir fotos normales
+    // 1. Insertar primero sin fotos para obtener el ID
+    const payloadInicial = inmToSb({ ...req.body, imagenes: [], estadoPublicacion: "borrador" });
+    const { data: inserted, error: insertError } = await supabase
+      .from("inmuebles").insert([payloadInicial]).select("id").single();
+    if (insertError) { console.error("Error guardando:", insertError.message); return res.status(500).send("Error: " + insertError.message); }
+
+    const id = inserted.id;
+    const folder = `propiedad_${id}`;
+
+    // 2. Subir fotos normales con carpeta de la propiedad
     const imgs = [];
     for (const f of (req.files?.imagenes || [])) {
-      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
+      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype, folder);
       if (url) imgs.push(url);
     }
 
-    // Subir fotos 360 y registrar cuáles son 360
+    // Subir fotos 360
     const fotos360Urls = [];
     for (const f of (req.files?.fotos360 || [])) {
       const nombre360 = "360_" + f.originalname;
-      const url = await subirASupabase(f.buffer, nombre360, f.mimetype);
+      const url = await subirASupabase(f.buffer, nombre360, f.mimetype, folder);
       if (url) {
-        imgs.push(url);         // también van al array de imágenes
-        fotos360Urls.push(url); // registro cuáles son 360
+        imgs.push(url);
+        fotos360Urls.push(url);
       }
     }
 
@@ -525,15 +534,15 @@ app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "fotos360" }, 
     let videoUrl = null;
     if (req.files?.video?.[0]) {
       const vf = req.files.video[0];
-      videoUrl = await subirASupabase(vf.buffer, vf.originalname, vf.mimetype);
+      videoUrl = await subirASupabase(vf.buffer, vf.originalname, vf.mimetype, folder);
     }
 
-    const payload = inmToSb({ ...req.body, imagenes: imgs, estadoPublicacion: "borrador" });
-    if (videoUrl) payload.video_url = videoUrl;
-    if (Object.keys(tourMeta).length > 0) payload.tour_meta = JSON.stringify(tourMeta);
+    // 3. Actualizar con las fotos ya subidas
+    const updates = { imagenes: imgs };
+    if (videoUrl) updates.video_url = videoUrl;
+    if (Object.keys(tourMeta).length > 0) updates.tour_meta = JSON.stringify(tourMeta);
+    await supabase.from("inmuebles").update(updates).eq("id", id);
 
-    const { error } = await supabase.from("inmuebles").insert([payload]);
-    if (error) { console.error("Error guardando:", error.message); return res.status(500).send("Error: " + error.message); }
     pushNotif({ tipo: "nuevo_inmueble", titulo: req.body.titulo, zona: req.body.zona });
     res.redirect("/dashboard.html");
   } catch (e) { console.error(e); res.status(500).send("Error interno"); }
@@ -552,10 +561,11 @@ app.post("/editar/:id", upload.fields([{ name: "imagenes" }]), async (req, res) 
   try {
     const id = req.params.id;
 
-    // Subir fotos nuevas si las hay
+    // Subir fotos nuevas si las hay (con carpeta de la propiedad)
     const nuevasFotos = [];
+    const folder = `propiedad_${id}`;
     for (const f of (req.files?.imagenes || [])) {
-      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype);
+      const url = await subirASupabase(f.buffer, f.originalname, f.mimetype, folder);
       if (url) nuevasFotos.push(url);
     }
 
