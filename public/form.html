@@ -202,6 +202,11 @@
           <input type="text" id="direccion" name="direccion" placeholder="Calle, número, piso...">
         </div>
 
+        <div class="grupo">
+          <label for="entre_calles">Entre calles <span style="color:var(--rojo,#ff4466);font-size:11px;">*</span> <span style="font-size:10px;opacity:.6;font-weight:400;">Referencia de ubicación</span></label>
+          <input type="text" id="entre_calles" name="entre_calles" placeholder="Ej: Entre Laprida y Sobremonte">
+        </div>
+
         <!-- Precio + moneda -->
         <div class="fila">
           <div class="col">
@@ -392,8 +397,9 @@
         // Rellenar campos del formulario
         if (d.titulo)        document.getElementById('titulo').value = d.titulo;
         if (d.tipoOperacion) document.getElementById('tipoOperacion').value = d.tipoOperacion;
-        if (d.zona)          document.getElementById('zona').value = d.zona;
-        if (d.direccion)     document.getElementById('direccion').value = d.direccion;
+        if (d.zona)           document.getElementById('zona').value = d.zona;
+        if (d.direccion)      document.getElementById('direccion').value = d.direccion;
+        if (d.entre_calles)   document.getElementById('entre_calles').value = d.entre_calles;
         if (d.precio)        document.getElementById('precio').value = d.precio;
         if (d.moneda)        document.getElementById('moneda').value = d.moneda;
         if (d.dormitorios)   document.getElementById('dormitorios').value = d.dormitorios;
