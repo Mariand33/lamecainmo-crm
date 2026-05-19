@@ -1110,6 +1110,7 @@
         <thead>
           <tr>
             <th>Título</th>
+            <th>Entre calles</th>
             <th>Operación</th>
             <th>Precio</th>
             <th>Creado por</th>
@@ -1366,6 +1367,7 @@
 
         const tipoOp    = getCampo(i,"tipoOperacion","tipo_operacion");
         const creadoPor = getCampo(i,"creadoPor","creado_por");
+        const entreCalles = getCampo(i,"entre_calles","entreCalles");
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -1379,8 +1381,10 @@
                 <span>${estado}</span>
                 <span>${precioTxt}</span>
               </div>
+              ${entreCalles ? `<div style="margin-top:6px;font-size:10px;color:var(--cyan);opacity:.85;">📍 Entre: ${entreCalles}</div>` : ""}
             </div>
           </td>
+          <td style="font-size:11px;color:var(--cyan);opacity:.85;max-width:160px;white-space:normal;line-height:1.3;">${entreCalles ? `📍 ${entreCalles}` : `<span style="color:var(--muted)">—</span>`}</td>
           <td style="font-size:11px;letter-spacing:.05em;">${(tipoOp||"").toUpperCase()}</td>
           <td style="color:var(--gold);font-weight:500;">${precioTxt}</td>
           <td>${creadoPor || "–"}</td>
