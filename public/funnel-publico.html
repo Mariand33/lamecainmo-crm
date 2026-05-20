@@ -482,12 +482,197 @@
 <a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a>
 
 <script>
+  // ============================================================
+//  SISTEMA DE DERIVACIÓN DINÁMICA — InmoCreador Multi-Vendedor
+//  Insertar al INICIO del primer <script> del funnel
+//  Reemplaza: const WHATSAPP_NUMBER = "543585701632";
+// ============================================================
+
+// ── 1. DICCIONARIO DE ASESORES ────────────────────────────────
+const ASESORES = {
+  vanina: {
+    nombre:    "Vanina Buzzacchi",
+    telefono:  "5493584322626",           // sin + ni espacios
+    msgHero:   "Hola Vanina, vi las propiedades en tu web y quiero más información.",
+    msgProp:   (titulo, zona, precio) =>
+      `Hola Vanina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+    brandTitle: "Vanina Buzzacchi",
+    brandSub:   "Negocios Inmobiliarios · Río Cuarto",
+  },
+  catalina: {
+    nombre:    "Catalina",
+    telefono:  "5493585701632",
+    msgHero:   "Hola Catalina, vi las propiedades en la web y quiero más información.",
+    msgProp:   (titulo, zona, precio) =>
+      `Hola Catalina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+    brandTitle: "Catalina",
+    brandSub:   "Asesora Inmobiliaria · Río Cuarto",
+  },
+  mariano: {
+    nombre:    "Mariano",
+    telefono:  "5493585189949",
+    msgHero:   "Hola Mariano, vi las propiedades en la web y quiero más información.",
+    msgProp:   (titulo, zona, precio) =>
+      `Hola Mariano, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+    brandTitle: "Mariano",
+    brandSub:   "Asesor Inmobiliario · Río Cuarto",
+  },
+};
+
+// ── 2. DETECTAR ASESOR DESDE URL ──────────────────────────────
+const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim();
+const ASESOR_ACTIVO = ASESORES[_ref] || ASESORES.vanina;   // fallback institucional → Vanina
+
+// Guardamos la procedencia para los leads
+const PROCEDENCIA = _ref && ASESORES[_ref] ? _ref : "directo";
+localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
+
+// ── 3. CONSTANTES DINÁMICAS (reemplazan las anteriores) ───────
+const API_URL   = "/api/inmuebles-publicos";
+const LEADS_URL = "/api/leads";
+const MATCH_URL = "/api/match-ia";
+const WHATSAPP_NUMBER = ASESOR_ACTIVO.telefono;   // ← ahora dinámico
+const IMG_BASE  = "/uploads/";
+
+// ── 4. INYECCIÓN EN DOM — BRAND ───────────────────────────────
+//    (Actualiza nombre del asesor en topbar si existe el elemento)
+document.addEventListener("DOMContentLoaded", () => {
+  const bt = document.querySelector(".brand-title");
+  const bs = document.querySelector(".brand-sub");
+  if (bt) bt.textContent = ASESOR_ACTIVO.brandTitle;
+  if (bs) bs.textContent = ASESOR_ACTIVO.brandSub;
+});
+
+// ── 5. WHATSAPP HELPERS — ahora usan ASESOR_ACTIVO ────────────
+//    (Reemplaza la función waLink() original)
+function waLink(texto) {
+  return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
+}
+
+function setupWhatsApp() {
+  const href = waLink(ASESOR_ACTIVO.msgHero);
+  const ids  = ["heroWhatsApp", "heroWhatsAppTop", "floatingWhatsApp"];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.href = href;
+  });
+}
+
+// ── 6. LINK DINÁMICO POR PROPIEDAD ───────────────────────────
+//    (Usa msgProp del asesor activo; invocar desde renderCards)
+function waLinkProp(titulo, zona, precio) {
+  const texto = ASESOR_ACTIVO.msgProp(titulo, zona, precio);
+  return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
+}
+
+// ── 7. LEAD FORM — agrega vendedor_asignado + procedencia ─────
+//    (Reemplaza el bloque setupLeadForm() original)
+function setupLeadForm() {
+  document.getElementById("leadForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = document.getElementById("leadMsg");
+
+    const payload = {
+      nombre:           document.getElementById("leadNombre").value.trim(),
+      telefono:         document.getElementById("leadTelefono").value.trim(),
+      operacion:        document.getElementById("leadOperacion").value,
+      tipo:             document.getElementById("leadTipo").value,
+      zona:             document.getElementById("leadZona").value.trim(),
+      precio:           document.getElementById("leadPresupuesto").value.trim(),
+      mensajeOriginal:  document.getElementById("leadMensaje").value.trim(),
+      origen:           "funnel-publico",
+      tipoLead:         "comprador",
+      // ── NUEVOS CAMPOS DE AUDITORÍA ──
+      vendedor_asignado: PROCEDENCIA,
+      procedencia:       PROCEDENCIA,
+    };
+
+    msg.textContent = "Enviando...";
+    try {
+      const res = await fetch(LEADS_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
+      document.getElementById("leadForm").reset();
+
+      // Redirigir a WhatsApp del asesor con resumen
+      const waResumen = `Hola ${ASESOR_ACTIVO.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`;
+      window.open(waLink(waResumen), "_blank");
+
+    } catch {
+      msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
+    }
+  });
+}
+
+// ── 8. CATA IA — sistema del asesor activo ───────────────────
+//    Agrega al final de buildCataSystem() el telefono correcto:
+//    Reemplaza la función buildCataSystem() original
+function buildCataSystem() {
+  const p = cataProp || {};
+  const faqsText = p.faqs?.length
+    ? p.faqs.map(f => `P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join("\n\n")
+    : "Sin FAQs.";
+  const objText = p.objections?.length
+    ? p.objections.map(o => `Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join("\n\n")
+    : "Sin objeciones.";
+
+  return `Sos Cata, asistente inmobiliaria de ${ASESOR_ACTIVO.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
+
+PROPIEDAD:
+- Título: ${p.titulo||''}
+- Precio: ${p.precio||'Consultar'}
+- Zona: ${p.zona||''}
+- Descripción: ${p.descripcion||''}
+
+ASESOR A CARGO: ${ASESOR_ACTIVO.nombre}
+WHATSAPP DEL ASESOR: https://wa.me/${ASESOR_ACTIVO.telefono}
+
+PREGUNTAS FRECUENTES:
+${faqsText}
+
+OBJECIONES:
+${objText}
+
+INSTRUCCIONES:
+- Respondé en español, tono cálido y cercano
+- Usá FAQs y objeciones cuando sean relevantes
+- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono
+- Cuando des el contacto del asesor, usá el WhatsApp indicado arriba
+- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
+- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
+}
+
+// ── 9. GUARDAR LEAD DESDE CATA con vendedor_asignado ─────────
+//    En cataSend(), reemplazá el sbPost de LEAD_CAPTURADO por:
+async function guardarLeadCata(lastUserMsg) {
+  await sbPost("leads", {
+    propiedad:         cataProp?.id,
+    nombre:            "Lead chat Cata",
+    interes:           lastUserMsg.substring(0, 200),
+    contacto:          lastUserMsg.substring(0, 100),
+    vendedor_asignado: PROCEDENCIA,   // ← auditoría
+    procedencia:       PROCEDENCIA,
+    origen:            "cata-chat",
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INSTRUCCIÓN DE USO EN cataSend():
+//  Reemplazá esta línea:
+//    await sbPost('leads', { propiedad: cataProp?.id, ... });
+//  Por:
+//    await guardarLeadCata(lastUser?.content || '');
+// ══════════════════════════════════════════════════════════════
+
   https://inmocreador-crm.onrender.com/funnel-publico.html
   const API_URL   = "/api/inmuebles-publicos";
   const LEADS_URL = "/api/leads";
   const MATCH_URL = "/api/match-ia";
-  const WHATSAPP_NUMBER = "543585701632";
-  const IMG_BASE  = "/uploads/";
+    const IMG_BASE  = "/uploads/";
 
   let allProperties  = [];
   let currentFilter  = "todos";
@@ -1056,7 +1241,8 @@ async function cataSend() {
     if (isLead && !cataLeadDone) {
       cataLeadDone = true;
       const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-      await sbPost('leads', { propiedad: cataProp?.id, nombre:'Lead chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
+      await guardarLeadCata(lastUser?.content || '');
+d chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
       document.getElementById('cataLeadOk').style.display = 'block';
     }
   } catch(e) {
