@@ -668,7 +668,7 @@ async function guardarLeadCata(lastUserMsg) {
 //    await guardarLeadCata(lastUser?.content || '');
 // ══════════════════════════════════════════════════════════════
 
-  https://inmocreador-crm.onrender.com/funnel-publico.html
+
   const API_URL   = "/api/inmuebles-publicos";
   const LEADS_URL = "/api/leads";
   const MATCH_URL = "/api/match-ia";
@@ -991,14 +991,7 @@ async function guardarLeadCata(lastUserMsg) {
     window.open(waUrl, "_blank");
   }
 
-  // ===================== WHATSAPP =====================
-  function setupWhatsApp() {
-    const href = waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.");
-    document.getElementById("heroWhatsApp").href     = href;
-    document.getElementById("heroWhatsAppTop").href  = href;
-    document.getElementById("floatingWhatsApp").href = href;
-  }
-
+  
   // ===================== COUNTER =====================
   function setupCounter() {
     const el  = document.getElementById("visitCounter");
@@ -1241,8 +1234,7 @@ async function cataSend() {
     if (isLead && !cataLeadDone) {
       cataLeadDone = true;
       const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-      await guardarLeadCata(lastUser?.content || '');
-d chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
+    await guardarLeadCata(lastUser || '');
       document.getElementById('cataLeadOk').style.display = 'block';
     }
   } catch(e) {
