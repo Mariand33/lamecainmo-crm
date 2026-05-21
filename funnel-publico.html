@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vanina Buzzacchi | Propiedades Río Cuarto</title>
+  <title>Propiedades Río Cuarto</title>
   <link rel="manifest" href="/manifest-funnel.json"/>
   <meta name="theme-color" content="#c9a84c"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -11,334 +11,137 @@
   <meta name="apple-mobile-web-app-title" content="VB Inmuebles"/>
   <link rel="apple-touch-icon" href="/icons/icon-192x192.png"/>
   <meta name="description" content="Explora propiedades en venta y alquiler en Rio Cuarto."/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#f5f0e8;--card:#fff;--dark:#0f1a14;
-      --green:#143d2f;--green2:#1a4a38;--muted:#6f6a63;--border:#e4dccf;
-      --wa:#25D366;--gold:#c9a84c;--gold2:#dbc18f;--shadow:0 10px 30px rgba(0,0,0,.08);
-      --ai:#7c3aed;--ai2:#a78bfa;--ai-glow:rgba(124,58,237,.18);
+      --bg:#0b1a12;--card:#0f2318;--dark:#0a140d;
+      --green:#0f2318;--green2:#163320;--green3:#1e4a2e;
+      --muted:#7a9a82;--border:#1e3a28;
+      --wa:#25D366;--gold:#c9a84c;--gold2:#e8cc7a;--gold3:#f5e4a8;
+      --shadow:0 12px 40px rgba(0,0,0,.4);
+      --glow-gold:0 0 40px rgba(201,168,76,.15);
+      --glow-green:0 0 60px rgba(30,74,46,.4);
+      --surface:rgba(255,255,255,.04);
+      --surface2:rgba(255,255,255,.07);
     }
     *{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dark)}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#e8f0ea}
     a{text-decoration:none;color:inherit}
     img{max-width:100%;display:block}
     .container{width:min(1180px,92%);margin:0 auto}
-
-    /* ── TICKER ── */
-    .ticker-wrap{
-      background:linear-gradient(90deg,#0a1e12,#1a3a1f,#0a1e12);
-      border-bottom:1px solid rgba(201,168,76,.3);
-      overflow:hidden;white-space:nowrap;padding:7px 0;
-      position:relative;z-index:51;
-    }
-    .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:60px;z-index:2;pointer-events:none}
+    .ticker-wrap{background:linear-gradient(90deg,#0a1e12,#112a18,#0a1e12);border-bottom:1px solid rgba(201,168,76,.2);overflow:hidden;padding:10px 0;position:relative}
+    .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
     .ticker-wrap::before{left:0;background:linear-gradient(to right,#0a1e12,transparent)}
     .ticker-wrap::after{right:0;background:linear-gradient(to left,#0a1e12,transparent)}
-    .ticker-track{display:inline-block;animation:ticker-scroll 35s linear infinite}
+    .ticker-track{display:flex;gap:0;width:max-content;animation:ticker-scroll 32s linear infinite}
     .ticker-track:hover{animation-play-state:paused}
-    @keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-    .ticker-item{display:inline-block;font-size:12px;font-weight:500;letter-spacing:.04em;color:#e8d49a;padding:0 6px}
-    .ticker-sep{display:inline-block;color:rgba(201,168,76,.4);font-size:14px;padding:0 4px}
-
-    /* ── TOPBAR ── */
-    .topbar{background:linear-gradient(135deg,#0a1e12,#143d2f);color:#fff;position:sticky;top:0;z-index:50;box-shadow:0 4px 18px rgba(0,0,0,.2)}
+    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 28px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,204,122,.75);white-space:nowrap}
+    .ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.6;flex-shrink:0}
+    .topbar{background:linear-gradient(180deg,rgba(8,18,11,.98) 0%,rgba(11,26,18,.95) 100%);color:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(201,168,76,.15);backdrop-filter:blur(16px)}
     .topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0}
-    .brand-title{font-family:'Playfair Display',serif;font-size:clamp(20px,3vw,32px);color:var(--gold);letter-spacing:.5px}
-    .brand-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:2px}
+    .brand-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,34px);color:var(--gold2);letter-spacing:.5px;font-weight:600}
+    .brand-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.5);margin-top:3px}
     .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    /* AI live badge en topbar */
-    .ai-live-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(124,58,237,.2);border:1px solid rgba(167,139,250,.35);color:#c4b5fd;letter-spacing:.03em}
-    .ai-live-dot{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:pulse-dot 1.5s ease-in-out infinite}
-    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
-
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:12px 22px;font-size:14px;font-weight:600;transition:.2s;font-family:'DM Sans',sans-serif}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:11px 22px;font-size:13px;font-weight:600;transition:.2s;font-family:'DM Sans',sans-serif}
     .btn:hover{transform:translateY(-2px)}
-    .btn-wa{background:var(--wa);color:#fff;box-shadow:0 8px 24px rgba(37,211,102,.25)}
-    .btn-outline{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.3)}
-
-    /* ── HERO PREMIUM ── */
-    @keyframes hero-float{0%,100%{transform:translateY(0) scale(1.05)}50%{transform:translateY(-12px) scale(1.08)}}
-    @keyframes hero-glow{0%,100%{opacity:.5}50%{opacity:.9}}
-    @keyframes hero-reveal{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes hero-line{from{width:0}to{width:100%}}
-    @keyframes float-orb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.1)}66%{transform:translate(-20px,15px) scale(.95)}}
-    @keyframes scroll-bounce{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(6px);opacity:1}}
-    @keyframes counter-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-    .hero{
-      position:relative;min-height:92vh;display:flex;align-items:center;
-      background:#060f0a;color:#fff;overflow:hidden;padding:100px 0 60px;
-    }
-
-    /* Fondo KB con propiedades reales */
-    .hero-bg-stage{position:absolute;inset:0;z-index:0}
-    .hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 2s ease;filter:brightness(.38) saturate(1.1)}
-    .hero-bg-img.hb-active{opacity:1}
-    @keyframes hb-kb1{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.1) translate(-3%,-2%)}}
-    @keyframes hb-kb2{0%{transform:scale(1.08) translate(2%,1%)}100%{transform:scale(1) translate(-2%,-1%)}}
-    @keyframes hb-kb3{0%{transform:scale(1) translate(-2%,2%)}100%{transform:scale(1.1) translate(2%,-1%)}}
-    .hero-bg-img.hb-active.hb-a1{animation:hb-kb1 12s ease-in-out forwards}
-    .hero-bg-img.hb-active.hb-a2{animation:hb-kb2 12s ease-in-out forwards}
-    .hero-bg-img.hb-active.hb-a3{animation:hb-kb3 12s ease-in-out forwards}
-
-    /* Overlay cinematográfico */
-    .hero::before{
-      content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-      background:
-        linear-gradient(to bottom, rgba(6,15,10,.7) 0%, rgba(6,15,10,.2) 40%, rgba(6,15,10,.5) 100%),
-        linear-gradient(to right, rgba(6,15,10,.8) 0%, transparent 60%);
-    }
-    /* Vignette */
-    .hero::after{
-      content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-      background:radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,.55) 100%);
-    }
-
-    /* Orbs decorativos */
-    .hero-orb{position:absolute;border-radius:50%;pointer-events:none;z-index:1}
-    .hero-orb-1{width:600px;height:600px;top:-200px;right:-100px;background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 70%);animation:float-orb 18s ease-in-out infinite}
-    .hero-orb-2{width:400px;height:400px;bottom:-100px;left:-50px;background:radial-gradient(circle,rgba(124,58,237,.07) 0%,transparent 70%);animation:float-orb 14s ease-in-out infinite reverse}
-
-    .hero-inner{position:relative;z-index:2;width:min(1180px,90%);margin:0 auto}
-    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
-
-    /* Texto hero */
-    .eyebrow{
-      display:inline-flex;align-items:center;gap:8px;
-      color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-size:11px;
-      margin-bottom:20px;font-weight:600;
-      background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);
-      padding:6px 14px;border-radius:999px;
-      animation:hero-reveal .8s ease both;
-    }
-    .eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);animation:hero-glow 2s ease-in-out infinite}
-
-    .hero h1{
-      font-family:'Playfair Display',serif;
-      font-size:clamp(42px,6vw,82px);
-      line-height:.95;font-weight:400;margin-bottom:8px;
-      animation:hero-reveal .8s .15s ease both;
-    }
-    .hero h1 .gold{
-      color:var(--gold);font-style:italic;
-      background:linear-gradient(120deg,#c9a84c,#f0d882,#c9a84c);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      background-size:200%;animation:shimmer 4s linear infinite;
-    }
-    @keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
-
-    .hero-tagline{
-      font-size:clamp(15px,1.8vw,19px);color:rgba(255,255,255,.75);
-      line-height:1.65;max-width:520px;margin:20px 0 32px;
-      animation:hero-reveal .8s .3s ease both;
-    }
-    .hero-tagline strong{color:rgba(255,255,255,.95)}
-
-    .hero-divider{
-      width:0;height:2px;
-      background:linear-gradient(90deg,var(--gold),transparent);
-      margin:20px 0;border-radius:2px;
-      animation:hero-line 1s .4s ease both;
-    }
-
-    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;animation:hero-reveal .8s .45s ease both}
-    .btn-hero-primary{
-      background:linear-gradient(120deg,#c9a84c,#e3c067);color:#0a1e12;
-      border:none;border-radius:999px;padding:14px 28px;font-size:15px;font-weight:700;
-      cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;
-      box-shadow:0 8px 28px rgba(201,168,76,.35);display:inline-flex;align-items:center;gap:8px;
-    }
-    .btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(201,168,76,.45)}
-    .btn-hero-ghost{
-      background:rgba(255,255,255,.07);color:#fff;
-      border:1.5px solid rgba(255,255,255,.2);border-radius:999px;
-      padding:13px 24px;font-size:15px;font-weight:600;
-      cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;
-      display:inline-flex;align-items:center;gap:8px;
-    }
-    .btn-hero-ghost:hover{background:rgba(255,255,255,.13);transform:translateY(-2px)}
-
-    .hero-badges{display:flex;gap:8px;flex-wrap:wrap;animation:hero-reveal .8s .6s ease both}
-    .hero-badge{
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
-      color:rgba(255,255,255,.8);padding:7px 13px;border-radius:999px;font-size:12px;font-weight:500;
-    }
-    .hero-badge-ai{
-      background:rgba(124,58,237,.15);border:1px solid rgba(167,139,250,.3);
-      color:#c4b5fd;padding:7px 13px;border-radius:999px;font-size:12px;font-weight:600;
-      display:inline-flex;align-items:center;gap:6px;
-    }
-
-    /* Hero card glassmorphism */
-    .hero-card{
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
-      padding:28px;border-radius:28px;
-      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-      position:relative;overflow:hidden;
-      box-shadow:0 24px 64px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1);
-      animation:hero-reveal .8s .3s ease both;
-    }
-    .hero-card::before{
-      content:"";position:absolute;top:0;left:0;right:0;height:1px;
-      background:linear-gradient(90deg,transparent,rgba(201,168,76,.5),rgba(167,139,250,.5),transparent);
-    }
-    .hero-card::after{
-      content:"";position:absolute;inset:0;
-      background:linear-gradient(145deg,rgba(201,168,76,.04),transparent 60%,rgba(124,58,237,.04));
-      pointer-events:none;
-    }
-    .hero-card-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-bottom:16px;opacity:.8}
-    .hero-card .metric{
-      font-family:'Playfair Display',serif;font-size:58px;font-weight:700;
-      line-height:1;color:#fff;
-      background:linear-gradient(120deg,#fff,rgba(255,255,255,.75));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-    }
-    .hero-card-sub{font-size:13px;color:rgba(255,255,255,.5);margin:6px 0 20px;font-weight:400}
-    .stats-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-    .mini{
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-      padding:12px 14px;border-radius:14px;color:rgba(255,255,255,.85);font-size:12px;
-    }
-    .mini strong{display:block;font-size:22px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;margin-bottom:2px}
-    .ai-status-row{
-      display:flex;align-items:center;gap:8px;margin-top:2px;
-      padding:10px 14px;background:rgba(124,58,237,.1);
-      border:1px solid rgba(167,139,250,.2);border-radius:12px;
-    }
-    .ai-status-row span{font-size:11px;color:#c4b5fd;font-weight:500}
-
-    /* Scroll indicator */
-    .hero-scroll{
-      position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
-      z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;
-      opacity:.6;cursor:pointer;transition:.2s;
-    }
-    .hero-scroll:hover{opacity:1}
-    .hero-scroll span{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6)}
-    .hero-scroll-arrow{width:20px;height:20px;border-right:1.5px solid rgba(255,255,255,.5);border-bottom:1.5px solid rgba(255,255,255,.5);transform:rotate(45deg);animation:scroll-bounce 1.8s ease-in-out infinite}
-
-    /* ── IA MATCH ── */
-    .ia-section{padding:42px 0 0}
-    .ia-box{background:linear-gradient(145deg,#0a1e12,#1a4a38);color:#fff;border-radius:28px;padding:32px;position:relative;overflow:hidden}
-    /* AI accent lines */
-    .ia-box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ai2),var(--gold),var(--ai2),transparent)}
-    .ia-box::after{content:"";position:absolute;right:0;top:0;bottom:0;width:200px;background:radial-gradient(ellipse at right center,rgba(124,58,237,.12),transparent 70%);pointer-events:none}
-    .ia-box-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:12px}
-    .ia-box h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:var(--gold2)}
-    .ia-engine-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;background:rgba(124,58,237,.2);border:1px solid rgba(167,139,250,.3);color:#c4b5fd;white-space:nowrap;flex-shrink:0}
-    .ia-box p{color:rgba(255,255,255,.75);font-size:15px;margin-bottom:20px;line-height:1.5}
-    .ia-form{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:16px}
-    .ia-input{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);color:#fff;border-radius:14px;padding:14px 18px;font-size:15px;width:100%;font-family:'DM Sans',sans-serif;outline:none;transition:.2s}
-    .ia-input::placeholder{color:rgba(255,255,255,.45)}
-    .ia-input:focus{border-color:var(--ai2);background:rgba(124,58,237,.1);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
-    .btn-ia{background:linear-gradient(135deg,var(--ai),#5b21b6);color:#fff;font-weight:700;border:none;border-radius:14px;padding:14px 24px;cursor:pointer;font-size:15px;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:.2s;box-shadow:0 6px 20px rgba(124,58,237,.3)}
-    .btn-ia:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(124,58,237,.4)}
-    .btn-ia:disabled{opacity:.6;cursor:not-allowed;transform:none}
+    .btn-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 6px 20px rgba(34,197,94,.3)}
+    .btn-outline{background:transparent;color:var(--gold2);border:1.5px solid rgba(201,168,76,.35)}
+    .btn-outline:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
+    .hero{background:radial-gradient(ellipse 120% 80% at 50% 0%,#1a3d24 0%,#0b1a12 55%,#060e09 100%);color:#fff;padding:72px 0 56px;position:relative;overflow:hidden}
+    .hero::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23c9a84c' fill-opacity='0.025'%3E%3Cpath d='M40 40v-8h-2v8h-8v2h8v8h2v-8h8v-2h-8zm0-40V0h-2v0h-8v2h8v8h2V2h8V0h-8zM0 40v-8H-2v8h-8v2h8v8h2v-8h8v-2H0zM0 0V-8H-2v8h-8v2h8v8h2V2h8V0H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;opacity:.6}
+    .hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
+    .hero-orb{position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);pointer-events:none;border-radius:50%}
+    .hero-orb2{position:absolute;bottom:-100px;left:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,74,46,.25) 0%,transparent 70%);pointer-events:none;border-radius:50%}
+    .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center;position:relative;z-index:1}
+    .eyebrow{color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-size:11px;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:10px}
+    .eyebrow::before{content:'';display:inline-block;width:28px;height:1px;background:var(--gold);opacity:.6}
+    .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,72px);line-height:.98;font-weight:600;margin-bottom:22px;letter-spacing:-.5px}
+    .hero h1 .gold{color:var(--gold2);font-style:italic}
+    .hero p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65;max-width:520px;margin-bottom:32px}
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+    .hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+    .hero-badge{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18);color:rgba(232,204,122,.85);padding:8px 14px;border-radius:999px;font-size:11px;font-weight:500;letter-spacing:.02em}
+    .hero-card{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid rgba(201,168,76,.2);padding:28px;border-radius:24px;backdrop-filter:blur(16px);box-shadow:var(--glow-gold)}
+    .hero-card h3{font-size:13px;color:var(--gold);margin-bottom:8px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+    .hero-card .metric{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:700;line-height:1;margin-bottom:10px;color:#fff;text-shadow:0 0 30px rgba(201,168,76,.3)}
+    .hero-card p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px}
+    .stats-mini{display:flex;gap:8px;flex-wrap:wrap}
+    .mini{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:10px 14px;border-radius:14px;color:rgba(255,255,255,.8);font-size:12px}
+    .mini strong{display:block;font-size:22px;font-weight:700;color:#fff;font-family:'Cormorant Garamond',serif}
+    .ia-section{padding:48px 0 0}
+    .ia-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:36px;position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)}
+    .ia-box::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);border-radius:50%;pointer-events:none}
+    .ia-box::after{content:"✦";position:absolute;right:28px;top:24px;font-size:42px;opacity:.08;color:var(--gold)}
+    .ia-box h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;margin-bottom:8px;color:var(--gold2)}
+    .ia-box p{color:rgba(255,255,255,.65);font-size:15px;margin-bottom:22px;line-height:1.55}
+    .ia-form{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:18px}
+    .ia-input{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);color:#fff;border-radius:16px;padding:15px 20px;font-size:15px;width:100%;font-family:'DM Sans',sans-serif;outline:none;transition:.2s}
+    .ia-input::placeholder{color:rgba(255,255,255,.35)}
+    .ia-input:focus{border-color:var(--gold);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(201,168,76,.1)}
+    .btn-ia{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d;font-weight:700;border:none;border-radius:16px;padding:15px 28px;cursor:pointer;font-size:15px;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:.2s;box-shadow:0 4px 20px rgba(201,168,76,.3)}
+    .btn-ia:hover{background:linear-gradient(135deg,var(--gold2),var(--gold));transform:translateY(-1px)}
+    .btn-ia:disabled{opacity:.5;cursor:not-allowed;transform:none}
     .ia-extras{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .budget-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;flex:1;min-width:200px}
-    .budget-wrap label{font-size:12px;color:rgba(255,255,255,.65);white-space:nowrap}
-    .budget-wrap input[type=range]{flex:1;accent-color:var(--ai2)}
+    .budget-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 16px;flex:1;min-width:200px}
+    .budget-wrap label{font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap}
+    .budget-wrap input[type=range]{flex:1;accent-color:var(--gold)}
     .budget-val{font-size:13px;font-weight:600;color:var(--gold2);white-space:nowrap;min-width:80px;text-align:right}
-    .ia-select{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.15);color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
-    .ia-select option{background:#143d2f;color:#fff}
-    .ia-status{margin-top:14px;font-size:14px;color:rgba(255,255,255,.7);min-height:20px;display:flex;align-items:center;gap:8px}
-    .ia-spinner{width:16px;height:16px;border:2px solid rgba(167,139,250,.3);border-top-color:var(--ai2);border-radius:50%;animation:spin .7s linear infinite;display:none}
+    .ia-select{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .ia-select option{background:#122b1a;color:#fff}
+    .ia-status{margin-top:16px;font-size:14px;color:rgba(255,255,255,.65);min-height:20px;display:flex;align-items:center;gap:8px}
+    .ia-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:none}
     @keyframes spin{to{transform:rotate(360deg)}}
-    /* AI processing animation */
-    .ia-processing{display:none;align-items:center;gap:10px;margin-top:10px;padding:10px 14px;background:rgba(124,58,237,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px}
-    .ia-processing.visible{display:flex}
-    .ia-proc-dots{display:flex;gap:4px}
-    .ia-proc-dot{width:5px;height:5px;border-radius:50%;background:var(--ai2);animation:proc-bounce .9s ease-in-out infinite}
-    .ia-proc-dot:nth-child(2){animation-delay:.15s}
-    .ia-proc-dot:nth-child(3){animation-delay:.3s}
-    @keyframes proc-bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
-    .ia-proc-text{font-size:12px;color:#c4b5fd}
-    .ia-highlight{border:2px solid var(--ai2)!important;box-shadow:0 0 0 4px rgba(124,58,237,.15)!important}
-
-    /* ── FILTERS ── */
-    .section{padding:36px 0}
-    .section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-    .section-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:400;color:#17261f}
-    .section-sub{color:var(--muted);font-size:15px;margin-top:6px}
-    .filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+    .ia-highlight{border:2px solid var(--gold)!important;box-shadow:0 0 0 4px rgba(201,168,76,.15),var(--glow-gold)!important}
+    .section{padding:40px 0}
+    .section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+    .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:600;color:#e8f0ea;letter-spacing:-.3px}
+    .section-sub{color:var(--muted);font-size:14px;margin-top:6px}
+    .filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
     .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{border:2px solid #cfc4b1;background:transparent;color:#766f66;border-radius:999px;padding:10px 20px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .chip.active,.chip:hover{background:#0f1a14;color:#fff;border-color:#0f1a14}
-    .searchbox{display:flex;align-items:center;background:#fff;border:1.5px solid var(--border);border-radius:999px;padding:8px 14px;gap:8px;box-shadow:var(--shadow)}
-    .searchbox input{border:none;outline:none;font-size:14px;min-width:180px;font-family:'DM Sans',sans-serif;color:#222}
+    .chip{border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border-radius:999px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
+    .chip.active,.chip:hover{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border-color:rgba(201,168,76,.4)}
+    .searchbox{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px;gap:8px;box-shadow:var(--shadow)}
+    .searchbox input{border:none;outline:none;font-size:14px;min-width:180px;font-family:'DM Sans',sans-serif;color:#e8f0ea;background:transparent}
+    .searchbox input::placeholder{color:rgba(255,255,255,.35)}
     .result-count{font-size:13px;color:var(--muted);font-weight:500}
-
-    /* ── KEN BURNS ── */
-    @keyframes kb1{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.15) translate(-4%,-3%)}}
-    @keyframes kb2{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.13) translate(4%,-3%)}}
-    @keyframes kb3{0%{transform:scale(1.1) translate(-3%,0)}100%{transform:scale(1) translate(3%,2%)}}
-    @keyframes kb4{0%{transform:scale(1.08) translate(2%,2%)}100%{transform:scale(1.18) translate(-3%,-2%)}}
-    @keyframes kb5{0%{transform:scale(1.12) translate(0,-2%)}100%{transform:scale(1) translate(0,2%)}}
-    @keyframes kb6{0%{transform:scale(1) translate(-2%,2%)}100%{transform:scale(1.14) translate(2%,-2%)}}
-
-    .kb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease-in-out}
-    .kb-img.kb-active{opacity:1}
-    .kb-img.kb-a1.kb-active{animation:kb1 7s ease-in-out forwards}
-    .kb-img.kb-a2.kb-active{animation:kb2 7s ease-in-out forwards}
-    .kb-img.kb-a3.kb-active{animation:kb3 7s ease-in-out forwards}
-    .kb-img.kb-a4.kb-active{animation:kb4 7s ease-in-out forwards}
-    .kb-img.kb-a5.kb-active{animation:kb5 7s ease-in-out forwards}
-    .kb-img.kb-a6.kb-active{animation:kb6 7s ease-in-out forwards}
-
-    /* Indicadores de foto */
-    .kb-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
-    .kb-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);transition:.3s;cursor:pointer}
-    .kb-dot.active{background:#fff;transform:scale(1.3)}
-
-    /* ── CARDS ── */
     .properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    .card{background:var(--card);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1.5px solid #eee3d0;transition:.25s;display:flex;flex-direction:column}
-    .card:hover{transform:translateY(-5px);box-shadow:0 20px 40px rgba(0,0,0,.13);border-color:#d5c5a8}
-    .card-image-wrap{position:relative;aspect-ratio:16/11;background:#e8e0d0;overflow:hidden;flex-shrink:0}
-    .card-image{width:100%;height:100%;object-fit:cover;transition:.4s}
-    .card:hover .card-image{transform:scale(1.04)}
-    .badge-top{position:absolute;top:12px;left:12px;z-index:2;display:flex;gap:6px;flex-wrap:wrap}
-    .badge{border-radius:999px;padding:6px 12px;font-size:11px;font-weight:800;letter-spacing:.3px}
-    .badge-sale{background:#fff;color:#111}
-    .badge-rent{background:#111;color:#fff}
-    .badge-new{background:var(--gold);color:#0a1e12}
-    /* Badge de match IA en cards */
-    .badge-ai-match{background:linear-gradient(135deg,rgba(124,58,237,.9),rgba(91,33,182,.9));color:#fff;backdrop-filter:blur(4px);border:1px solid rgba(167,139,250,.4);display:flex;align-items:center;gap:4px}
-    .card-fav{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:.15s}
-    .card-fav:hover{transform:scale(1.15)}
-    .card-body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
-    .card-title{font-size:17px;line-height:1.2;font-weight:700;color:#1b1b1b}
-    .card-price{font-family:'Playfair Display',serif;color:var(--green);font-size:24px;font-weight:700}
-    .card-zone{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:4px}
-    .card-meta{display:flex;flex-wrap:wrap;gap:8px}
-    .meta-pill{background:#f8f4ec;border:1px solid #ebe1d0;border-radius:999px;padding:5px 10px;font-size:12px;color:#5b4f40}
-    .card-desc{color:#5b554d;font-size:13px;line-height:1.5;flex:1}
+    .card{background:linear-gradient(160deg,#0f2318,#0c1c14);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.07);transition:.3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;position:relative}
+    .card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.04),transparent 50%);opacity:0;transition:.3s;pointer-events:none;border-radius:22px}
+    .card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.5),var(--glow-gold);border-color:rgba(201,168,76,.25)}
+    .card:hover::before{opacity:1}
+    .card-image-wrap{position:relative;aspect-ratio:16/11;background:linear-gradient(135deg,#0f2318,#0c1c14);overflow:hidden;flex-shrink:0}
+    .card-image{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.16,1,.3,1)}
+    .card:hover .card-image{transform:scale(1.06)}
+    .card-image-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:1}
+    .badge-top{position:absolute;top:12px;left:12px;z-index:3;display:flex;gap:6px}
+    .badge{border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+    .badge-sale{background:rgba(255,255,255,.95);color:#0a1a0d;backdrop-filter:blur(8px)}
+    .badge-rent{background:rgba(11,26,18,.9);color:#e8f0ea;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px)}
+    .badge-new{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d}
+    .card-fav{position:absolute;top:12px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(11,26,18,.8);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s;backdrop-filter:blur(8px)}
+    .card-fav:hover{transform:scale(1.18);background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4)}
+    .card-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+    .card-title{font-size:16px;line-height:1.25;font-weight:700;color:#e8f0ea}
+    .card-price{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;font-weight:700;text-shadow:0 0 20px rgba(201,168,76,.2)}
+    .card-zone{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:4px}
+    .card-meta{display:flex;flex-wrap:wrap;gap:6px}
+    .meta-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)}
+    .card-desc{color:rgba(255,255,255,.45);font-size:13px;line-height:1.5;flex:1}
     .card-actions{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:auto}
-    .btn-card{border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.15s;font-family:'DM Sans',sans-serif}
+    .btn-card{border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif}
     .btn-card:hover{opacity:.9;transform:translateY(-1px)}
-    .btn-tour-card{background:linear-gradient(135deg,#c9a84c,#e8d49a);color:#0d0d0d;text-decoration:none;border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;display:block;transition:.15s;}
-    .btn-tour-card:hover{opacity:.9;transform:translateY(-1px)}
-    .btn-view{background:#0f1a14;color:#fff}
-    .btn-contact{background:var(--wa);color:#fff}
+    .btn-view{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.25)}
+    .btn-view:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));border-color:rgba(201,168,76,.5)}
+    .btn-contact{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(34,197,94,.25)}
     .btn-share{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.3);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;width:44px}
-    .btn-share:hover{background:rgba(37,211,102,.25)}
-    /* Botón Cata mejorado */
-    .btn-cata{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(124,58,237,.05));color:#7c3aed;border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:11px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
-    .btn-cata:hover{background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(124,58,237,.1));transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,58,237,.2)}
-    .btn-cata-dot{width:7px;height:7px;border-radius:50%;background:#a78bfa;animation:pulse-dot 1.5s ease-in-out infinite;flex-shrink:0}
-
-    /* ── LEAD BOX ── */
-    .lead-section{padding:0 0 42px}
-    .lead-box{background:linear-gradient(145deg,#0a1e12,#1a5c3f);color:#fff;border-radius:28px;padding:36px;position:relative;overflow:hidden}
-    .lead-box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--wa),var(--gold),var(--wa),transparent)}
-    .lead-box h2{font-family:'Playfair Display',serif;font-size:32px;font-weight:400;margin-bottom:10px;color:var(--gold2)}
-    .lead-box p{color:rgba(255,255,255,.78);line-height:1.6;margin-bottom:24px}
+    .btn-share:hover{background:rgba(37,211,102,.25);border-color:rgba(37,211,102,.5);transform:scale(1.05)}
+    .lead-section{padding:0 0 48px}
+    .lead-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:40px;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)}
+    .lead-box h2{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;margin-bottom:12px;color:var(--gold2)}
+    .lead-box p{color:rgba(255,255,255,.65);line-height:1.65;margin-bottom:28px}
     .lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
     .lead-form input,.lead-form select,.lead-form textarea{width:100%;border:none;outline:none;border-radius:14px;padding:14px 16px;font-size:14px;background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.15);font-family:'DM Sans',sans-serif;transition:.2s}
     .lead-form input::placeholder,.lead-form textarea::placeholder{color:rgba(255,255,255,.4)}
@@ -347,259 +150,113 @@
     .lead-form textarea{min-height:100px;resize:vertical;grid-column:1/-1}
     .lead-form .full{grid-column:1/-1}
     .btn-lead{background:var(--wa);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:.2s}
-    .btn-lead:hover{background:#1db954;transform:translateY(-1px)}
+    .btn-lead:hover{background:#1db954}
     .lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center}
     .notify-strip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}
     .notify-strip p{font-size:13px;color:rgba(255,255,255,.8)}
     .btn-notify{background:transparent;border:1.5px solid var(--gold);color:var(--gold);border-radius:999px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;white-space:nowrap}
     .btn-notify:hover{background:var(--gold);color:#0a1e12}
     .btn-notify.active{background:var(--gold);color:#0a1e12}
-
-    /* ── AGENDAMIENTO ── */
-    .agenda-section{padding:0 0 48px}
-    .agenda-box{background:#fff;border-radius:28px;padding:36px;border:1.5px solid #ebe1d0;box-shadow:var(--shadow);position:relative;overflow:hidden}
-    .agenda-box::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ai),var(--ai2),var(--gold),var(--ai2),var(--ai))}
-    .agenda-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap}
-    .agenda-title-block h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:400;color:#17261f;margin-bottom:6px}
-    .agenda-title-block p{color:var(--muted);font-size:15px;line-height:1.5}
-    .agenda-ai-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;background:var(--ai-glow);border:1px solid rgba(124,58,237,.25);color:var(--ai);white-space:nowrap;flex-shrink:0}
-    .agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
-    .agenda-cal-label{font-size:13px;font-weight:600;color:#444;margin-bottom:12px;letter-spacing:.02em}
-    .agenda-slots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-    .agenda-slot{padding:12px 10px;border-radius:12px;border:1.5px solid #e0d5c4;background:#faf7f2;cursor:pointer;transition:.2s;text-align:center;font-family:'DM Sans',sans-serif}
-    .agenda-slot:hover{border-color:#a78bfa;background:rgba(124,58,237,.04)}
-    .agenda-slot.selected{border-color:var(--ai);background:var(--ai-glow);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
-    .agenda-slot.recommended::after{content:"★ IA";display:block;font-size:9px;font-weight:700;color:var(--ai);margin-top:3px;letter-spacing:.05em}
-    .slot-day{font-size:13px;font-weight:600;color:#1b1b1b}
-    .slot-time{font-size:12px;color:var(--muted);margin-top:2px}
-    .agenda-form-side{display:flex;flex-direction:column;gap:12px}
-    .agenda-input{border:1.5px solid #e0d5c4;border-radius:12px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:#222;outline:none;transition:.2s;background:#fff;width:100%}
-    .agenda-input:focus{border-color:var(--ai);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
-    .agenda-input::placeholder{color:#aaa}
-    .agenda-tipo-group{display:flex;gap:8px;flex-wrap:wrap}
-    .agenda-tipo-btn{flex:1;min-width:80px;padding:9px 10px;border-radius:10px;border:1.5px solid #e0d5c4;background:transparent;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;font-family:'DM Sans',sans-serif;color:#555;text-align:center}
-    .agenda-tipo-btn.selected{border-color:var(--ai);background:var(--ai-glow);color:var(--ai)}
-    .btn-agenda{background:linear-gradient(135deg,var(--ai),#5b21b6);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:.2s;box-shadow:0 6px 20px rgba(124,58,237,.25)}
-    .btn-agenda:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(124,58,237,.35)}
-    .btn-agenda:disabled{opacity:.5;cursor:not-allowed;transform:none}
-    .agenda-note{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-    .agenda-success{display:none;padding:16px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:14px;text-align:center}
-    .agenda-success.show{display:block}
-    .agenda-success p{font-size:14px;color:#15803d;font-weight:500}
-    .agenda-success small{font-size:12px;color:#6b7280;margin-top:4px;display:block}
-    /* Resumen de slot seleccionado */
-    .agenda-selected-summary{padding:10px 14px;background:var(--ai-glow);border:1px solid rgba(124,58,237,.2);border-radius:10px;font-size:13px;color:var(--ai);font-weight:500;display:none}
-    .agenda-selected-summary.show{display:block}
-
-    /* ── TESTIMONIALS ── */
-    .testimonials-section{padding:0 0 48px}
-    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:24px}
-    .testimonial{background:#fff;border:1px solid #eadfcf;border-radius:20px;padding:22px}
-    .stars{color:var(--gold);font-size:14px;margin-bottom:10px}
-    .testimonial p{margin-bottom:14px;line-height:1.6;color:#4f4840;font-size:14px;font-style:italic}
-    .testimonial strong{display:block;color:#1f1b17;font-size:13px;font-weight:600}
-
-    /* ── FOOTER ── */
-    .footer{background:#0a1e12;color:#eee;padding:36px 0 90px;text-align:center}
-    .footer-brand{font-family:'Playfair Display',serif;color:var(--gold);font-size:22px;margin-bottom:10px}
-    .footer small{color:rgba(255,255,255,.45);font-size:12px}
-
-    /* ── FLOATING BUTTONS ── */
-    .floating-wa{position:fixed;right:18px;bottom:18px;width:62px;height:62px;border-radius:50%;background:var(--wa);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 24px rgba(37,211,102,.4);z-index:80;transition:.2s}
-    .floating-wa:hover{transform:scale(1.1)}
-
-    /* ── CATA FLOATING BUTTON (nuevo, prominente) ── */
-    .cata-float-btn{position:fixed;right:90px;bottom:18px;display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,#1a1828,#221f35);border:1px solid rgba(167,139,250,.35);border-radius:999px;padding:10px 18px 10px 12px;cursor:pointer;z-index:80;box-shadow:0 8px 28px rgba(124,58,237,.35);transition:.25s;font-family:'DM Sans',sans-serif;color:#fff;font-size:14px;font-weight:600}
-    .cata-float-btn:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(124,58,237,.5)}
-    .cata-float-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;position:relative}
-    .cata-float-av::after{content:'';position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #1a1828}
-    .cata-float-label{display:flex;flex-direction:column;line-height:1.2}
-    .cata-float-name{font-size:13px;font-weight:700;color:#f0eeff}
-    .cata-float-sub{font-size:10px;color:rgba(167,139,250,.7);font-weight:400}
-
-    .loader{padding:40px 0;text-align:center;color:#786f64;font-size:16px}
-    .empty-state{background:#fff;border:1px dashed #d5c8b0;border-radius:24px;padding:34px;text-align:center;color:#6f675d;font-size:17px;margin-top:26px}
-
-    /* ── CATA MODAL ── */
-    .cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px}
+    .testimonials-section{padding:0 0 56px}
+    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+    .testimonial{background:linear-gradient(145deg,#0f2318,#0c1c14);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:24px;transition:.2s;position:relative;overflow:hidden}
+    .testimonial::before{content:'❝';position:absolute;top:12px;right:16px;font-size:52px;color:var(--gold);opacity:.07;font-family:'Cormorant Garamond',serif;line-height:1}
+    .testimonial:hover{border-color:rgba(201,168,76,.2);transform:translateY(-3px)}
+    .stars{color:var(--gold);font-size:13px;margin-bottom:12px;letter-spacing:2px}
+    .testimonial p{margin-bottom:16px;line-height:1.65;color:rgba(255,255,255,.65);font-size:14px;font-style:italic}
+    .testimonial strong{display:block;color:var(--gold2);font-size:12px;font-weight:600;letter-spacing:.03em}
+    .footer{background:linear-gradient(180deg,#060e09,#040a06);color:#eee;padding:48px 0 100px;text-align:center;border-top:1px solid rgba(201,168,76,.1);position:relative;overflow:hidden}
+    .footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+    .footer-brand{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;margin-bottom:10px;font-weight:600}
+    .footer small{color:rgba(255,255,255,.3);font-size:12px}
+    .floating-wa{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 28px rgba(34,197,94,.45);z-index:80;transition:.25s}
+    .floating-wa:hover{transform:scale(1.12);box-shadow:0 12px 36px rgba(34,197,94,.55)}
+    .loader{padding:48px 0;text-align:center;color:var(--muted);font-size:15px}
+    .empty-state{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:24px;padding:40px;text-align:center;color:var(--muted);font-size:16px;margin-top:28px}
+    .cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
     .cata-overlay.open{display:flex}
-    .cata-modal{width:100%;max-width:440px;height:90vh;max-height:640px;display:flex;flex-direction:column;background:#0f0d1a;border-radius:24px;border:1px solid rgba(167,139,250,.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 60px rgba(124,58,237,.1);animation:catain .3s cubic-bezier(.16,1,.3,1) both}
+    .cata-modal{width:100%;max-width:440px;height:90vh;max-height:620px;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f1f17,#0c1a12);border-radius:24px;border:1px solid rgba(201,168,76,.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),var(--glow-gold);animation:catain .3s cubic-bezier(.16,1,.3,1) both}
     @keyframes catain{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
-    .cata-header{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#0f0d1a,#1a1828);flex-shrink:0;position:relative}
-    .cata-header::after{content:"";position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(167,139,250,.3),transparent)}
-    .cata-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;box-shadow:0 0 20px rgba(167,139,250,.4)}
-    .cata-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid #0f0d1a}
+    .cata-header{padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.1);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);flex-shrink:0}
+    .cata-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;box-shadow:0 0 20px rgba(201,168,76,.3)}
+    .cata-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid #0f1f17}
     .cata-hinfo{flex:1}
-    .cata-hname{font-family:'Playfair Display',serif;font-size:16px;color:#f0eeff}
-    .cata-hsub{font-size:11px;color:rgba(167,139,250,.5);margin-top:1px}
-    .cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.12);color:#dbc18f;border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .cata-x{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:none;color:rgba(240,238,255,.5);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+    .cata-hname{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold2);font-weight:600}
+    .cata-hsub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
+    .cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.1);color:var(--gold2);border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cata-x{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
     .cata-x:hover{background:rgba(255,255,255,.12);color:#fff}
-    .cata-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(167,139,250,.15) transparent}
+    .cata-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent}
     .cata-msgs::-webkit-scrollbar{width:4px}
-    .cata-msgs::-webkit-scrollbar-thumb{background:rgba(167,139,250,.15);border-radius:2px}
+    .cata-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:2px}
     .cm{display:flex;gap:8px;align-items:flex-end;max-width:88%;animation:cmin .25s ease both}
     .cm.user{align-self:flex-end;flex-direction:row-reverse}
     @keyframes cmin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
     .cm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-    .cm.assistant .cm-av{background:linear-gradient(135deg,#f472b6,#a78bfa)}
-    .cm.user .cm-av{background:rgba(255,255,255,.1)}
-    .cm-bbl{padding:9px 13px;font-size:13px;line-height:1.55}
-    .cm.assistant .cm-bbl{background:#1a1828;border:1px solid rgba(255,255,255,.07);border-radius:14px 14px 14px 4px;color:#f0eeff}
-    .cm.user .cm-bbl{background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:14px 14px 4px 14px;color:#fff}
+    .cm.assistant .cm-av{background:linear-gradient(135deg,var(--gold),#7a5c1a)}
+    .cm.user .cm-av{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}
+    .cm-bbl{padding:10px 14px;font-size:13px;line-height:1.55}
+    .cm.assistant .cm-bbl{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.12);border-radius:14px 14px 14px 4px;color:#e8f0ea}
+    .cm.user .cm-bbl{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.3);border-radius:14px 14px 4px 14px;color:#fff}
     .cata-typing-dots{display:flex;gap:5px;align-items:center;padding:2px 0}
-    .ctd{width:6px;height:6px;border-radius:50%;background:rgba(167,139,250,.5);animation:cbounce 1.2s infinite}
+    .ctd{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;animation:cbounce 1.2s infinite}
     .ctd:nth-child(2){animation-delay:.15s}.ctd:nth-child(3){animation-delay:.3s}
-    @keyframes cbounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
-    .cata-quick{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0;background:#0f0d1a}
-    .cata-qlabel{font-size:10px;color:rgba(240,238,255,.3);text-transform:uppercase;letter-spacing:.08em}
+    @keyframes cbounce{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+    .cata-quick{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+    .cata-qlabel{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em}
     .cata-qbtns{display:flex;flex-wrap:wrap;gap:6px}
-    .cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(201,168,76,.2);background:rgba(201,168,76,.05);color:var(--gold2);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .cata-qq:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.4)}
-    /* Botón de agendar dentro de Cata */
-    .cata-agenda-btn{font-size:12px;padding:6px 14px;border-radius:20px;border:1px solid rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:#c4b5fd;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px}
-    .cata-agenda-btn:hover{background:rgba(124,58,237,.15);border-color:rgba(167,139,250,.5)}
-    .cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;background:#0f0d1a}
-    .cata-inp{flex:1;font-size:13px;padding:9px 14px;border:1px solid rgba(124,58,237,.2);border-radius:20px;background:rgba(124,58,237,.05);color:#e8f0ea;resize:none;font-family:'DM Sans',sans-serif;line-height:1.4;outline:none;max-height:80px}
-    .cata-inp::placeholder{color:rgba(255,255,255,.2)}
-    .cata-inp:focus{border-color:rgba(167,139,250,.4);background:rgba(124,58,237,.08)}
-    .cata-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--ai),#5b21b6);border:none;cursor:pointer;color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;box-shadow:0 4px 14px rgba(124,58,237,.35)}
-    .cata-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(124,58,237,.5)}
+    .cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold2);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
+    .cata-qq:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.45)}
+    .cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+    .cata-inp{flex:1;font-size:13px;padding:9px 14px;border:1px solid rgba(201,168,76,.2);border-radius:20px;background:rgba(255,255,255,.05);color:#e8f0ea;resize:none;font-family:'DM Sans',sans-serif;line-height:1.4;outline:none;max-height:80px}
+    .cata-inp::placeholder{color:rgba(255,255,255,.25)}
+    .cata-inp:focus{border-color:rgba(201,168,76,.4);background:rgba(255,255,255,.07)}
+    .cata-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);border:none;cursor:pointer;color:#0a1a0d;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;box-shadow:0 4px 14px rgba(201,168,76,.3)}
+    .cata-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(201,168,76,.45)}
     .cata-send:disabled{opacity:.35;cursor:default;transform:none}
-    .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);border-radius:12px;font-size:12px;color:#4ade80;display:none}
-
-    /* ── MEDIA QUERIES ── */
+    .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;font-size:12px;color:#4ade80;display:none}
+    .btn-cata{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
+    .btn-cata:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));transform:translateY(-1px)}
     @media(max-width:980px){
-      .hero-grid,.lead-form,.testimonials,.agenda-grid{grid-template-columns:1fr}
+      .hero-grid,.lead-form,.testimonials{grid-template-columns:1fr}
       .properties-grid{grid-template-columns:repeat(2,1fr)}
       .ia-form{grid-template-columns:1fr}
       .topbar-inner{flex-direction:column;align-items:flex-start}
       .card-actions{grid-template-columns:1fr}
-      .agenda-slots{grid-template-columns:repeat(3,1fr)}
-    }
-    @media(max-width:980px){
-      .hero{min-height:auto;padding:120px 0 60px}
-      .hero-card{display:none}
     }
     @media(max-width:640px){
       .properties-grid{grid-template-columns:1fr}
-      .hero{padding:100px 0 60px;min-height:auto}
-      .hero h1{font-size:clamp(38px,11vw,56px)}
-      .hero-tagline{font-size:15px}
-      .hero-card{display:none}
-      .hero-scroll{display:none}
+      .hero{padding:40px 0 32px}
       .searchbox input{min-width:120px}
-      .agenda-slots{grid-template-columns:1fr 1fr}
-      .cata-float-label{display:none}
-      .cata-float-btn{padding:10px;right:90px;border-radius:50%;width:56px;height:56px;justify-content:center}
-      .cata-float-av{width:34px;height:34px}
     }
-
-    /* ── MAPA INTERACTIVO ── */
-    .map-section{padding:48px 0}
-    .map-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-    .map-title-block h2{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,40px);font-weight:400;color:#17261f;margin-bottom:6px}
-    .map-title-block p{color:var(--muted);font-size:15px}
-    .map-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;background:rgba(20,61,47,.08);border:1px solid rgba(20,61,47,.15);color:var(--green)}
-    .map-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-    .map-chip{border:1.5px solid #cfc4b1;background:transparent;color:#766f66;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .map-chip.active,.map-chip:hover{background:#0f1a14;color:#fff;border-color:#0f1a14}
-    .map-wrap{border-radius:24px;overflow:hidden;box-shadow:0 16px 48px rgba(0,0,0,.12);border:1.5px solid #e4dccf;position:relative}
-    #propMap{height:520px;width:100%}
-    .map-status{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--muted)}
-    .map-status-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
-    /* Leaflet popup premium */
-    .leaflet-popup-content-wrapper{border-radius:16px!important;box-shadow:0 12px 40px rgba(0,0,0,.18)!important;border:1.5px solid #e4dccf!important;padding:0!important;overflow:hidden}
-    .leaflet-popup-content{margin:0!important;width:240px!important}
-    .map-popup{font-family:'DM Sans',sans-serif}
-    .map-popup-img{width:100%;height:140px;object-fit:cover;display:block}
-    .map-popup-body{padding:14px}
-    .map-popup-op{display:inline-block;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;margin-bottom:8px;letter-spacing:.3px}
-    .map-popup-op.venta{background:#111;color:#fff}
-    .map-popup-op.alquiler{background:var(--gold);color:#0a1e12}
-    .map-popup-title{font-size:14px;font-weight:700;color:#1b1b1b;margin-bottom:4px;line-height:1.3}
-    .map-popup-zone{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px}
-    .map-popup-price{font-family:'Playfair Display',serif;font-size:18px;color:var(--green);font-weight:700;margin-bottom:12px}
-    .map-popup-btn{display:block;text-align:center;background:#0f1a14;color:#fff;border-radius:10px;padding:9px;font-size:13px;font-weight:700;text-decoration:none;transition:.15s}
-    .map-popup-btn:hover{background:#1a3d2f;color:#fff}
-    /* Pin custom */
-    .map-pin{background:linear-gradient(135deg,#0f1a14,#1a4a38);color:#fff;border:2px solid var(--gold);border-radius:10px;padding:5px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;font-family:'DM Sans',sans-serif}
-    .map-pin.venta{border-color:#fff;background:#0f1a14}
-    .map-pin.alquiler{border-color:var(--gold);background:#0a2e1f}
-    .map-geocoding{position:absolute;top:12px;right:12px;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:600;color:#333;border:1px solid #e4dccf;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
-    .map-geocoding-spinner{width:14px;height:14px;border:2px solid rgba(20,61,47,.2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
-
-
-    /* ── RANKING ── */
-    .badge-top1{background:linear-gradient(120deg,#c9a84c,#f0d882);color:#0a1e12;font-weight:800}
-    .badge-trend{background:linear-gradient(120deg,#ef4444,#f97316);color:#fff;font-weight:700;animation:pulse-badge 2s ease-in-out infinite}
-    .badge-hot{background:rgba(239,68,68,.18);color:#fca5a5;border:1px solid rgba(239,68,68,.35);font-weight:700}
-    @keyframes pulse-badge{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.4)}50%{box-shadow:0 0 0 6px rgba(239,68,68,0)}}
-
-    .card-views{
-      position:absolute;bottom:10px;left:10px;z-index:4;
-      background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
-      color:rgba(255,255,255,.9);font-size:11px;font-weight:600;
-      padding:4px 9px;border-radius:999px;
-      display:flex;align-items:center;gap:4px;
-      border:1px solid rgba(255,255,255,.12);
-    }
-
-    /* Sección ranking top */
-    .ranking-section{margin-bottom:32px}
-    .ranking-section .section-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;margin-bottom:14px;letter-spacing:.5px}
-    .ranking-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
-    .ranking-strip::-webkit-scrollbar{display:none}
-    .ranking-pill{flex-shrink:0;display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e8dcc8;border-radius:14px;padding:10px 14px;cursor:pointer;transition:.2s;text-decoration:none;min-width:220px}
-    .ranking-pill:hover{border-color:#c9a84c;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.1)}
-    .ranking-pill-num{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#c9a84c;min-width:28px}
-    .ranking-pill-img{width:44px;height:44px;object-fit:cover;border-radius:8px;flex-shrink:0}
-    .ranking-pill-info{min-width:0}
-    .ranking-pill-title{font-size:13px;font-weight:600;color:#1b1b1b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
-    .ranking-pill-views{font-size:11px;color:#888;margin-top:2px}
-
   </style>
 </head>
 <body>
 
-<!-- TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-track">
-    <span class="ticker-item">🏡 Vanina Buzzacchi Negocios Inmobiliarios</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📍 Río Cuarto, Córdoba</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📞 3586005903 / 3585701632</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">✨ Búsqueda inteligente con IA</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">🤖 Cata IA · Asistente disponible ahora</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📲 @inmobiliaria.vaninabuzzacchi</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">🏡 Vanina Buzzacchi Negocios Inmobiliarios</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📍 Río Cuarto, Córdoba</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📞 3586005903 / 3585701632</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">✨ Búsqueda inteligente con IA</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">🤖 Cata IA · Asistente disponible ahora</span>
-    <span class="ticker-sep">·</span>
-    <span class="ticker-item">📲 @inmobiliaria.vaninabuzzacchi</span>
-    <span class="ticker-sep">·</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>InmoCreador Negocios Inmobiliarios</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>InmoCreador Negocios Inmobiliarios</span>
   </div>
 </div>
 
 <header class="topbar">
   <div class="container topbar-inner">
     <div>
-      <div class="brand-title">Vanina Buzzacchi</div>
-      <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
+      <div class="brand-title" id="brandTitle">Propiedades Río Cuarto</div>
+      <div class="brand-sub" id="brandSub">Negocios Inmobiliarios · Río Cuarto</div>
     </div>
     <div class="top-actions">
-      <div class="ai-live-badge"><span class="ai-live-dot"></span> IA activa</div>
       <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
       <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
     </div>
@@ -607,79 +264,41 @@
 </header>
 
 <section class="hero">
-  <!-- Fondo cinematográfico con fotos de propiedades -->
-  <div class="hero-bg-stage" id="heroBgStage">
-    <!-- Las fotos se inyectan desde JS cuando carga el catálogo -->
-  </div>
-
-  <!-- Orbs decorativos -->
-  <div class="hero-orb hero-orb-1"></div>
-  <div class="hero-orb hero-orb-2"></div>
-
-  <div class="container hero-inner">
-    <div class="hero-grid">
-      <div>
-        <div class="eyebrow">
-          <span class="eyebrow-dot"></span>
-          Río Cuarto · Córdoba · 2026
-        </div>
-        <h1>Tu próxima<br><span class="gold">propiedad</span><br>te espera.</h1>
-        <div class="hero-divider"></div>
-        <p class="hero-tagline">
-          Explorá casas, departamentos y oportunidades reales.<br>
-          <strong>La IA encuentra el match perfecto</strong> — describí lo que buscás.
-        </p>
-        <div class="hero-cta">
-          <a class="btn-hero-primary" id="heroWhatsApp" href="#" target="_blank">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-            Hablar por WhatsApp
-          </a>
-          <a class="btn-hero-ghost" href="#propiedades">
-            Ver propiedades
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-        </div>
-        <div class="hero-badges">
-          <div class="hero-badge">✓ Atención personalizada</div>
-          <div class="hero-badge">✓ Consultas por WhatsApp</div>
-          <div class="hero-badge-ai"><span class="ai-live-dot"></span> Cata IA 24/7</div>
-        </div>
+  <div class="hero-orb"></div>
+  <div class="hero-orb2"></div>
+  <div class="container hero-grid">
+    <div>
+      <div class="eyebrow">Rio Cuarto · Córdoba</div>
+      <h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1>
+      <p>Explorá casas, departamentos, locales y oportunidades reales. Consultá directo por WhatsApp o dejá tu búsqueda.</p>
+      <div class="hero-cta">
+        <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a>
+        <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
       </div>
-
-      <div class="hero-card">
-        <div class="hero-card-label">Catálogo activo</div>
-        <div class="metric" id="visitCounter">2.169</div>
-        <div class="hero-card-sub">visitas estimadas este mes</div>
-        <div class="stats-mini">
-          <div class="mini"><strong id="miniTotal">—</strong>visibles</div>
-          <div class="mini"><strong id="miniVenta">—</strong>en venta</div>
-          <div class="mini"><strong id="miniAlquiler">—</strong>en alquiler</div>
-          <div class="mini"><strong id="miniNew">—</strong>nuevas</div>
-        </div>
-        <div class="ai-status-row">
-          <span class="ai-live-dot"></span>
-          <span>Motor IA activo · Cata en línea</span>
-        </div>
+      <div class="hero-badges">
+        <div class="hero-badge">✓ Atención personalizada</div>
+        <div class="hero-badge">✓ Consultas reales por WhatsApp</div>
+        <div class="hero-badge">✓ Río Cuarto y zona</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Actividad del catálogo</h3>
+      <div class="metric" id="visitCounter">2.169</div>
+      <p>Visitas estimadas este mes</p>
+      <div class="stats-mini">
+        <div class="mini"><strong id="miniTotal">0</strong> visibles</div>
+        <div class="mini"><strong id="miniVenta">0</strong> en venta</div>
+        <div class="mini"><strong id="miniAlquiler">0</strong> en alquiler</div>
       </div>
     </div>
   </div>
-
-  <!-- Scroll indicator -->
-  <div class="hero-scroll" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">
-    <span>Explorar</span>
-    <div class="hero-scroll-arrow"></div>
-  </div>
 </section>
 
-<!-- IA MATCH -->
 <section class="ia-section">
   <div class="container">
     <div class="ia-box">
-      <div class="ia-box-header">
-        <h2>Encontrá con inteligencia artificial</h2>
-        <div class="ia-engine-badge">🤖 Motor IA 2026</div>
-      </div>
-      <p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos. No busques, describí.</p>
+      <h2>Encontrá con inteligencia artificial</h2>
+      <p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos.</p>
       <div class="ia-form">
         <input class="ia-input" id="iaQuery" type="text" placeholder="Ej: casa con patio en Banda Norte para familia, tranquila..."/>
         <button class="btn-ia" id="iaBtn" onclick="buscarConIA()">🔍 Buscar con IA</button>
@@ -697,15 +316,6 @@
         </select>
         <button class="btn-notify" id="notifyBtn" onclick="suscribirPush()">🔔 Notificarme propiedades nuevas</button>
       </div>
-      <!-- Processing indicator -->
-      <div class="ia-processing" id="iaProcessing">
-        <div class="ia-proc-dots">
-          <div class="ia-proc-dot"></div>
-          <div class="ia-proc-dot"></div>
-          <div class="ia-proc-dot"></div>
-        </div>
-        <span class="ia-proc-text" id="iaProcText">Analizando tu descripción con IA...</span>
-      </div>
       <div class="ia-status">
         <div class="ia-spinner" id="iaSpinner"></div>
         <span id="iaStatusText"></span>
@@ -714,7 +324,6 @@
   </div>
 </section>
 
-<!-- PROPIEDADES -->
 <section class="section" id="propiedades">
   <div class="container">
     <div class="section-header">
@@ -739,96 +348,12 @@
         <input type="text" id="searchInput" placeholder="Zona, calle, tipo..."/>
       </div>
     </div>
-    <!-- RANKING TOP -->
-    <div class="ranking-section" id="rankingSection" style="display:none">
-      <div class="section-tag">🔥 Más vistas esta semana</div>
-      <div class="ranking-strip" id="rankingStrip"></div>
-    </div>
-
     <div id="loader" class="loader">Cargando propiedades...</div>
     <div id="propertiesGrid" class="properties-grid" style="display:none"></div>
     <div id="emptyState" class="empty-state" style="display:none">No encontramos propiedades con esos filtros.<br><small>Dejá tu búsqueda abajo y te avisamos.</small></div>
   </div>
 </section>
 
-
-<!-- MAPA INTERACTIVO -->
-<section class="map-section" id="mapa">
-  <div class="container">
-    <div class="map-header">
-      <div class="map-title-block">
-        <h2>Explorá Río Cuarto</h2>
-        <p>Encontrá propiedades por zona — hacé clic en cada pin para ver la ficha</p>
-      </div>
-      <div class="map-tag">📍 Mapa interactivo en vivo</div>
-    </div>
-    <div class="map-filters">
-      <button class="map-chip active" data-mf="todos">Todos</button>
-      <button class="map-chip" data-mf="venta">Venta</button>
-      <button class="map-chip" data-mf="alquiler">Alquiler</button>
-      <button class="map-chip" data-mf="casa">Casas</button>
-      <button class="map-chip" data-mf="depto">Deptos.</button>
-    </div>
-    <div class="map-wrap">
-      <div id="propMap"></div>
-      <div class="map-geocoding" id="mapGeocoding">
-        <div class="map-geocoding-spinner"></div>
-        <span id="mapGeoText">Ubicando propiedades...</span>
-      </div>
-    </div>
-    <div class="map-status">
-      <div class="map-status-dot"></div>
-      <span id="mapStatusText">Cargando mapa...</span>
-    </div>
-  </div>
-</section>
-
-<!-- AGENDAMIENTO DE VISITAS (nuevo) -->
-<section class="agenda-section" id="agendar-visita">
-  <div class="container">
-    <div class="agenda-box">
-      <div class="agenda-header">
-        <div class="agenda-title-block">
-          <h2>Agendá tu visita</h2>
-          <p>Elegí día y horario. La IA sugiere los mejores momentos según demanda y tu perfil.</p>
-        </div>
-        <div class="agenda-ai-tag">🤖 Horarios sugeridos por IA</div>
-      </div>
-      <div class="agenda-grid">
-        <div>
-          <div class="agenda-cal-label">Próximos turnos disponibles</div>
-          <div class="agenda-slots" id="agendaSlots">
-            <!-- generados por JS -->
-          </div>
-          <div class="agenda-selected-summary" id="agendaSummary"></div>
-        </div>
-        <div class="agenda-form-side">
-          <input class="agenda-input" id="agendaNombre" placeholder="Tu nombre y apellido"/>
-          <input class="agenda-input" id="agendaTelefono" placeholder="WhatsApp (ej: 3585701632)"/>
-          <input class="agenda-input" id="agendaPropiedad" placeholder="Propiedad de interés (opcional)"/>
-          <div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600;">Tipo de visita</div>
-            <div class="agenda-tipo-group">
-              <button class="agenda-tipo-btn selected" data-tipo="presencial" onclick="selectTipo(this)">📍 Presencial</button>
-              <button class="agenda-tipo-btn" data-tipo="videollamada" onclick="selectTipo(this)">📹 Video</button>
-              <button class="agenda-tipo-btn" data-tipo="consulta" onclick="selectTipo(this)">💬 Consulta</button>
-            </div>
-          </div>
-          <div class="agenda-success" id="agendaSuccess">
-            <p>✅ ¡Visita agendada!</p>
-            <small>Te confirmaremos por WhatsApp en instantes. Recibirás recordatorio 1h antes.</small>
-          </div>
-          <button class="btn-agenda" id="agendaBtn" onclick="confirmarAgenda()" disabled>
-            Confirmar visita →
-          </button>
-          <div class="agenda-note">🔒 Tus datos son privados y solo se usan para coordinar la visita</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DEJAR BÚSQUEDA -->
 <section class="lead-section" id="dejar-busqueda">
   <div class="container">
     <div class="lead-box">
@@ -853,7 +378,6 @@
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
 <section class="testimonials-section">
   <div class="container">
     <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
@@ -867,20 +391,19 @@
 
 <footer class="footer">
   <div class="container">
-    <div class="footer-brand">Vanina Buzzacchi</div>
+    <div class="footer-brand" id="footerBrand">Propiedades Río Cuarto</div>
     <div>Propiedades · Río Cuarto, Córdoba</div>
-    <div style="margin-top:8px"><small>+54 9 358 570-1632 · Todos los derechos reservados</small></div>
+    <div style="margin-top:8px"><small id="footerTel">Todos los derechos reservados</small></div>
   </div>
 </footer>
 
-<!-- MODAL CATA -->
 <div class="cata-overlay" id="cataOverlay" onclick="if(event.target===this)closeCata()">
   <div class="cata-modal">
     <div class="cata-header">
       <div class="cata-av">🙋‍♀️</div>
       <div class="cata-hinfo">
         <div class="cata-hname">Cata</div>
-        <div class="cata-hsub">Asistente IA · InmoCreador</div>
+        <div class="cata-hsub">Asistente · InmoCreador</div>
       </div>
       <div class="cata-hprop" id="cataPropLabel">Propiedad</div>
       <button class="cata-x" onclick="closeCata()">✕</button>
@@ -889,10 +412,7 @@
     <div class="cata-lead-ok" id="cataLeadOk">🎉 ¡Consulta registrada! Te contactamos pronto.</div>
     <div class="cata-quick" id="cataQuick">
       <div class="cata-qlabel">Preguntas frecuentes</div>
-      <div class="cata-qbtns" id="cataQBtns">
-        <!-- Botón extra: agendar visita desde Cata -->
-        <button class="cata-agenda-btn" onclick="closeCata();document.getElementById('agendar-visita').scrollIntoView({behavior:'smooth'})">📅 Agendar visita</button>
-      </div>
+      <div class="cata-qbtns" id="cataQBtns"></div>
     </div>
     <div class="cata-irow">
       <textarea class="cata-inp" id="cataInp" placeholder="Escribí tu pregunta a Cata..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cataSend()}"></textarea>
@@ -901,817 +421,431 @@
   </div>
 </div>
 
-<!-- CATA FLOATING BUTTON (nuevo) -->
-<button class="cata-float-btn" id="cataFloatBtn" onclick="openCataGeneral()" title="Hablar con Cata IA">
-  <div class="cata-float-av">🙋‍♀️</div>
-  <div class="cata-float-label">
-    <span class="cata-float-name">Cata IA</span>
-    <span class="cata-float-sub">En línea ahora</span>
-  </div>
-</button>
-
 <a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a>
 
 <script>
-  const API_URL   = "/api/inmuebles-publicos";
-  const LEADS_URL = "/api/leads";
-  const MATCH_URL = "/api/match-ia";
-  const WHATSAPP_NUMBER = "543585701632";
-  const IMG_BASE  = "/uploads/";
+// ============================================================
+// SISTEMA MULTI-VENDEDOR — un único script, sin duplicados
+// ============================================================
 
-  let allProperties  = [];
-  let currentFilter  = "todos";
-  let highlightedIds = [];
-  let matchScores    = {}; // nuevo: scores por propiedad
-  let favorites      = JSON.parse(localStorage.getItem("vb_favs") || "[]");
+// 1. DICCIONARIO DE ASESORES
+const ASESORES = {
+  vanina: {
+    nombre:     "Vanina Buzzacchi",
+    telefono:   "5493584322626",
+    msgHero:    "Hola Vanina, vi las propiedades en tu web y quiero más información.",
+    msgProp:    (t,z,p) => `Hola Vanina, vi esta propiedad y quiero más información:\n\n${t}\nZona: ${z}\nPrecio: ${p}`,
+    brandTitle: "Vanina Buzzacchi",
+    brandSub:   "Negocios Inmobiliarios · Río Cuarto",
+    footerTel:  "+54 9 358 432-2626 · Todos los derechos reservados",
+  },
+  catalina: {
+    nombre:     "Catalina",
+    telefono:   "5493585701632",
+    msgHero:    "Hola Catalina, vi las propiedades en la web y quiero más información.",
+    msgProp:    (t,z,p) => `Hola Catalina, vi esta propiedad y quiero más información:\n\n${t}\nZona: ${z}\nPrecio: ${p}`,
+    brandTitle: "Catalina",
+    brandSub:   "Asesora Inmobiliaria · Río Cuarto",
+    footerTel:  "+54 9 358 570-1632 · Todos los derechos reservados",
+  },
+  mariano: {
+    nombre:     "Mariano",
+    telefono:   "5493585189949",
+    msgHero:    "Hola Mariano, vi las propiedades en la web y quiero más información.",
+    msgProp:    (t,z,p) => `Hola Mariano, vi esta propiedad y quiero más información:\n\n${t}\nZona: ${z}\nPrecio: ${p}`,
+    brandTitle: "Mariano",
+    brandSub:   "Asesor Inmobiliario · Río Cuarto",
+    footerTel:  "+54 9 358 518-9949 · Todos los derechos reservados",
+  },
+};
 
-  // ── PUSH NOTIFICATIONS ──
-  async function suscribirPush() {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      alert("Tu navegador no soporta notificaciones push. Intentá instalar la app primero.");
-      return;
-    }
-    try {
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") { alert("Permiso denegado para notificaciones."); return; }
-      const reg = await navigator.serviceWorker.ready;
-      const keyRes = await fetch("/api/push/vapid-public");
-      const { key } = await keyRes.json();
-      if (!key) { alert("Push no configurado aún en el servidor."); return; }
-      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(key) });
-      await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub) });
-      document.querySelectorAll(".btn-notify").forEach(b => { b.textContent = "✅ Alertas activadas"; b.classList.add("active"); });
-      localStorage.setItem("vb_push", "1");
-    } catch (e) {
-      console.error("Push error:", e);
-      alert("No se pudo activar. Asegurate de tener la app instalada o usá Chrome.");
-    }
-  }
+// 2. DETECTAR ASESOR DESDE URL
+const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim();
+const ASESOR = ASESORES[_ref] || ASESORES.vanina;
+const PROCEDENCIA = (_ref && ASESORES[_ref]) ? _ref : "directo";
+localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
 
-  function urlBase64ToUint8Array(base64String) {
-    const padding = "=".repeat((4 - base64String.length % 4) % 4);
-    const base64  = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-    const raw     = window.atob(base64);
-    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-  }
+// 3. CONSTANTES
+const API_URL   = "/api/inmuebles-publicos";
+const LEADS_URL = "/api/leads";
+const MATCH_URL = "/api/match-ia";
+const IMG_BASE  = "/uploads/";
 
-  if (localStorage.getItem("vb_push")) {
-    document.querySelectorAll(".btn-notify").forEach(b => { b.textContent = "✅ Alertas activadas"; b.classList.add("active"); });
-  }
+// 4. INYECTAR NOMBRE EN DOM
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("brandTitle").textContent  = ASESOR.brandTitle;
+  document.getElementById("brandSub").textContent    = ASESOR.brandSub;
+  document.getElementById("footerBrand").textContent = ASESOR.brandTitle;
+  document.getElementById("footerTel").textContent   = ASESOR.footerTel;
+});
 
-  // ── BUDGET SLIDER ──
-  function updateBudget() {
-    const val = Number(document.getElementById("budgetRange").value);
-    document.getElementById("budgetVal").textContent = val === 0 ? "Sin límite" : `USD ${val.toLocaleString("es-AR")}`;
-    applyFilters();
-  }
+// 5. WHATSAPP HELPERS
+function waLink(texto) {
+  return `https://wa.me/${ASESOR.telefono}?text=${encodeURIComponent(texto)}`;
+}
 
-  // ── IA MATCH ──
-  const processingMessages = [
-    "Analizando tu descripción con IA...",
-    "Procesando criterios de búsqueda...",
-    "Comparando con el catálogo...",
-    "Calculando compatibilidad de propiedades...",
-    "Ordenando resultados por relevancia..."
-  ];
-
-  async function buscarConIA() {
-    const consulta   = document.getElementById("iaQuery").value.trim();
-    const presupuesto = Number(document.getElementById("budgetRange").value) || null;
-    const operacion  = document.getElementById("iaOperacion").value;
-    if (!consulta) { document.getElementById("iaQuery").focus(); return; }
-
-    const btn = document.getElementById("iaBtn");
-    const spinner = document.getElementById("iaSpinner");
-    const statusText = document.getElementById("iaStatusText");
-    const processing = document.getElementById("iaProcessing");
-    const procText = document.getElementById("iaProcText");
-
-    btn.disabled = true;
-    spinner.style.display = "block";
-    processing.classList.add("visible");
-    statusText.textContent = "";
-    highlightedIds = [];
-    matchScores = {};
-
-    // Animar mensajes de procesamiento
-    let msgIdx = 0;
-    const msgInterval = setInterval(() => {
-      msgIdx = (msgIdx + 1) % processingMessages.length;
-      procText.textContent = processingMessages[msgIdx];
-    }, 900);
-
-    try {
-      const res  = await fetch(MATCH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consulta, presupuesto, operacion })
-      });
-      const data = await res.json();
-      highlightedIds = data.ids || [];
-      // Si el backend devuelve scores, usarlos; si no, generar scores simulados
-      if (data.scores) {
-        matchScores = data.scores;
-      } else {
-        highlightedIds.forEach((id, i) => {
-          matchScores[id] = Math.max(72, 97 - i * 5);
-        });
-      }
-
-      clearInterval(msgInterval);
-      processing.classList.remove("visible");
-
-      if (highlightedIds.length) {
-        statusText.textContent = `✨ La IA encontró ${highlightedIds.length} propiedades que coinciden con tu búsqueda`;
-        document.getElementById("propiedades").scrollIntoView({ behavior: "smooth" });
-        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-        document.querySelector(".chip[data-filter='todos']").classList.add("active");
-        currentFilter = "todos";
-        applyFilters();
-      } else {
-        statusText.textContent = "No encontramos coincidencias exactas. Probá con otros términos o dejá tu búsqueda abajo.";
-      }
-    } catch (e) {
-      clearInterval(msgInterval);
-      processing.classList.remove("visible");
-      statusText.textContent = "Error al conectar con la IA. Usá los filtros manuales.";
-    } finally {
-      btn.disabled = false;
-      spinner.style.display = "none";
-    }
-  }
-
-  document.getElementById("iaQuery").addEventListener("keydown", e => {
-    if (e.key === "Enter") buscarConIA();
+function setupWhatsApp() {
+  const href = waLink(ASESOR.msgHero);
+  ["heroWhatsApp","heroWhatsAppTop","floatingWhatsApp"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.href = href;
   });
+}
 
-  // ── HELPERS ──
-  function waLink(texto) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`; }
+// 6. VARIABLES GLOBALES
+let allProperties  = [];
+let currentFilter  = "todos";
+let highlightedIds = [];
+let favorites      = JSON.parse(localStorage.getItem("vb_favs") || "[]");
 
-  function formatPrice(item) {
-    const precio = Number(item.precio || 0);
-    if (!precio) return "Consultar";
-    return `${item.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
+// 7. PUSH NOTIFICATIONS
+async function suscribirPush() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    alert("Tu navegador no soporta notificaciones push."); return;
   }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { alert("Permiso denegado."); return; }
+    const reg    = await navigator.serviceWorker.ready;
+    const keyRes = await fetch("/api/push/vapid-public");
+    const { key } = await keyRes.json();
+    if (!key) { alert("Push no configurado en el servidor."); return; }
+    const sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:urlBase64ToUint8Array(key) });
+    await fetch("/api/push/subscribe", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(sub) });
+    document.querySelectorAll(".btn-notify").forEach(b => { b.textContent="✅ Alertas activadas"; b.classList.add("active"); });
+    localStorage.setItem("vb_push","1");
+  } catch(e) { console.error("Push error:",e); alert("No se pudo activar. Usá Chrome."); }
+}
 
-  function normalize(text) {
-    return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  }
+function urlBase64ToUint8Array(b64) {
+  const pad = "=".repeat((4 - b64.length%4)%4);
+  const raw = window.atob((b64+pad).replace(/-/g,"+").replace(/_/g,"/"));
+  return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+}
 
-  function detectType(item) {
-    const tipo = normalize(item.tipoPropiedad || item.tipo || item.titulo || "");
-    if (tipo.includes("depto") || tipo.includes("departamento")) return "depto";
-    if (tipo.includes("casa")) return "casa";
-    if (tipo.includes("local")) return "local";
-    if (tipo.includes("terreno") || tipo.includes("lote")) return "terreno";
-    return tipo || "otro";
-  }
+if (localStorage.getItem("vb_push")) {
+  document.querySelectorAll(".btn-notify").forEach(b => { b.textContent="✅ Alertas activadas"; b.classList.add("active"); });
+}
 
-  function getImage(item) {
-    if (item.imagenes && item.imagenes.length > 0) {
-      for (const img of item.imagenes) {
-        if (!img) continue;
-        if (img.startsWith("http://") || img.startsWith("https://")) return img;
-        return IMG_BASE + img;
-      }
-    }
-    return "https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad";
-  }
+// 8. BUDGET SLIDER
+function updateBudget() {
+  const val = Number(document.getElementById("budgetRange").value);
+  document.getElementById("budgetVal").textContent = val===0 ? "Sin límite" : `USD ${val.toLocaleString("es-AR")}`;
+  applyFilters();
+}
 
-  function isNew(item) {
-    if (!item.fecha) return false;
-    const diff = Date.now() - new Date(item.fecha).getTime();
-    return diff < 7 * 24 * 60 * 60 * 1000;
-  }
-
-  function toggleFav(id) {
-    const idx = favorites.indexOf(id);
-    if (idx >= 0) favorites.splice(idx, 1);
-    else favorites.push(id);
-    localStorage.setItem("vb_favs", JSON.stringify(favorites));
-    document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(b => {
-      b.textContent = favorites.includes(id) ? "❤️" : "🤍";
-    });
-  }
-
-  // ── RENDER ──
-  function renderCards(items) {
-    const grid  = document.getElementById("propertiesGrid");
-    const empty = document.getElementById("emptyState");
-    const count = document.getElementById("resultCount");
-    count.textContent = `${items.length} ${items.length === 1 ? "propiedad" : "propiedades"}`;
-
-    if (!items.length) {
-      grid.style.display = "none";
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
-    grid.style.display  = "grid";
-
-    grid.innerHTML = items.map(item => {
-      const isSale    = normalize(item.tipoOperacion || "").includes("venta");
-      const tipo      = detectType(item);
-      const dormText  = item.dormitorios ? `🛏 ${item.dormitorios} dorm.` : "";
-      const banosText = item.banos ? `🚿 ${item.banos}` : "";
-      const isHl      = highlightedIds.includes(item.id);
-      const score     = matchScores[item.id];
-      const isFav     = favorites.includes(item.id);
-      const estadoInm = (item.estadoPublicacion || "").toLowerCase();
-      const isVendida  = estadoInm === "vendida";
-      const isAlquilada = estadoInm === "alquilada";
-      const isConcretada = isVendida || isAlquilada;
-      const waText    = `Hola, vi esta propiedad y quiero más información:%0A%0A${item.titulo||"Propiedad"}%0AZona: ${item.zona||"-"}%0APrecio: ${formatPrice(item)}`;
-      const shortDesc = (item.descripcion || "Propiedad disponible.").replace(/\r?\n/g, " ").slice(0, 110);
-
-      // Ranking
-      const vistas     = getViewCount(item.id);
-      const rankPos    = (window.rankingIds||[]).indexOf(item.id);
-      const isTop1     = rankPos === 0 && vistas > 0;
-      const isTrend    = rankPos >= 1 && rankPos <= 2 && vistas > 0;
-      const isHot      = rankPos >= 3 && rankPos <= 4 && vistas > 0;
-
-      return `<article class="card${isHl ? " ia-highlight" : ""}${isConcretada ? " card-concretada" : ""}" id="prop-${item.id}">
-        <div class="card-image-wrap">
-          <div class="badge-top">
-            <span class="badge ${isSale ? "badge-sale" : "badge-rent"}">${isSale ? "Venta" : "Alquiler"}</span>
-            ${isNew(item) ? '<span class="badge badge-new">Nueva</span>' : ""}
-            ${isHl && score ? `<span class="badge badge-ai-match">🤖 ${score}% match</span>` : (isHl ? '<span class="badge badge-new">✨ IA</span>' : "")}
-            ${isTop1 ? '<span class="badge badge-top1">🥇 Más vista</span>' : ''}
-            ${isTrend ? '<span class="badge badge-trend">🔥 Tendencia</span>' : ''}
-            ${isHot ? '<span class="badge badge-hot">📈 Popular</span>' : ''}
-          </div>
-          ${vistas > 0 ? `<div class="card-views">👁 ${vistas} vista${vistas!==1?'s':''}</div>` : ''}
-          <button class="card-fav fav-btn" data-id="${item.id}" onclick="toggleFav(${item.id})">${isFav ? "❤️" : "🤍"}</button>
-          ${isConcretada ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:3;display:flex;align-items:center;justify-content:center;">
-            <span style="background:${isVendida?"#7c3aed":"#0891b2"};color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:999px;letter-spacing:1px;transform:rotate(-8deg);box-shadow:0 4px 16px rgba(0,0,0,.3)">
-              ${isVendida ? "✅ VENDIDA" : "✅ ALQUILADA"}
-            </span>
-          </div>` : ""}
-          ${(()=>{
-            const srcs=(item.imagenes&&item.imagenes.length>0)
-              ?item.imagenes.filter(Boolean).slice(0,6).map(img=>img.startsWith('http')?img:IMG_BASE+img)
-              :['https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad'];
-            const kbHtml=srcs.map((src,i)=>
-              `<img class="kb-img kb-a${(i%6)+1}${i===0?' kb-active':''}" src="${src}" alt="${item.titulo||'Propiedad'}" loading="${i===0?'eager':'lazy'}" onerror="this.src='https://placehold.co/900x620/e8e0d0/6f6a63?text=Propiedad'"${isConcretada?' style=\"filter:grayscale(.4)\"':''}>`
-            ).join('');
-            const dots=srcs.length>1?`<div class="kb-dots">${srcs.map((_,i)=>`<span class="kb-dot${i===0?' active':''}" data-idx="${i}"></span>`).join('')}</div>`:'';
-            return `<div class="kb-stage" data-total="${srcs.length}" data-cur="0">${kbHtml}${dots}</div>`;
-          })()}
-        </div>
-        <div class="card-body">
-          <div class="card-title">${item.titulo || "Propiedad disponible"}</div>
-          <div class="card-price">${formatPrice(item)}</div>
-          <div class="card-zone">📍 ${item.zona || "Zona a consultar"}${item.direccion ? " · " + item.direccion : ""}</div>
-          <div class="card-meta">
-            <span class="meta-pill">${tipo || "Propiedad"}</span>
-            ${dormText ? `<span class="meta-pill">${dormText}</span>` : ""}
-            ${banosText ? `<span class="meta-pill">${banosText}</span>` : ""}
-          </div>
-          <div class="card-desc">${shortDesc}...</div>
-          <div class="card-actions">
-            <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
-            <a class="btn-card btn-tour-card" href="/tour-virtual.html?id=${item.id}" target="_blank">🏠 Tour 360°</a>
-            ${isConcretada
-              ? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
-              : `<a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>`
-            }
-            <button class="btn-card btn-share" title="Compartir por WhatsApp"
-              onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\'").replace(/"/g,'\"')}','${formatPrice(item).replace(/'/g,"\'")}')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-            </button>
-          </div>
-          ${!isConcretada ? `<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,'\\`')}')"><span class="btn-cata-dot"></span> Preguntar a Cata IA</button>` : ''}
-        </div>
-      </article>`;
-    }).join("");
-    // Calcular ranking antes de renderizar
-    const rankingTop = calcRanking(items);
-    window.rankingIds = rankingTop.map(p => p.id);
-
-    setTimeout(initKenBurns, 50);
-    setTimeout(initHeroBg, 100);
-    setTimeout(initViewTracking, 200);
-    setTimeout(() => renderRankingStrip(allProperties), 300);
-
-    // Activar observer del mapa
-    const mapEl = document.getElementById('propMap');
-    if (mapEl) mapObserver.observe(mapEl);
-  }
-
-  // ── HERO BG CINEMATOGRÁFICO ──
-  function initHeroBg() {
-    const stage = document.getElementById('heroBgStage');
-    if (!stage || !allProperties.length) return;
-
-    // Recopilar fotos de las primeras propiedades publicadas
-    const srcs = [];
-    for (const p of allProperties) {
-      if (!p.imagenes || !p.imagenes.length) continue;
-      for (const img of p.imagenes) {
-        if (!img) continue;
-        const src = img.startsWith('http') ? img : IMG_BASE + img;
-        if (!srcs.includes(src)) srcs.push(src);
-        if (srcs.length >= 6) break;
-      }
-      if (srcs.length >= 6) break;
-    }
-    if (!srcs.length) return;
-
-    const anims = ['hb-a1','hb-a2','hb-a3'];
-    stage.innerHTML = srcs.map((src,i) =>
-      `<img class="hero-bg-img ${anims[i%3]}${i===0?' hb-active':''}" src="${src}" loading="${i===0?'eager':'lazy'}" onerror="this.remove()">`
-    ).join('');
-
-    // Ciclar cada 9 segundos
-    let cur = 0;
-    const imgs = stage.querySelectorAll('.hero-bg-img');
-    setInterval(() => {
-      imgs[cur].classList.remove('hb-active');
-      cur = (cur + 1) % imgs.length;
-      imgs[cur].style.animation = 'none';
-      imgs[cur].offsetHeight;
-      imgs[cur].style.animation = '';
-      imgs[cur].classList.add('hb-active');
-    }, 9000);
-  }
-
-  // ── KEN BURNS ENGINE ──
-  const kbTimers = [];
-  function initKenBurns() {
-    kbTimers.forEach(clearInterval);
-    kbTimers.length = 0;
-    document.querySelectorAll('.kb-stage').forEach(stage => {
-      const total = parseInt(stage.dataset.total);
-      if (total <= 1) return;
-      const imgs = stage.querySelectorAll('.kb-img');
-      const dots = stage.querySelectorAll('.kb-dot');
-      let cur = 0;
-      const timer = setInterval(() => {
-        imgs[cur].classList.remove('kb-active');
-        if (dots[cur]) dots[cur].classList.remove('active');
-        cur = (cur + 1) % total;
-        imgs[cur].style.animation = 'none';
-        imgs[cur].offsetHeight;
-        imgs[cur].style.animation = '';
-        imgs[cur].classList.add('kb-active');
-        if (dots[cur]) dots[cur].classList.add('active');
-      }, 5000);
-      kbTimers.push(timer);
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', e => {
-          e.stopPropagation();
-          imgs[cur].classList.remove('kb-active');
-          if (dots[cur]) dots[cur].classList.remove('active');
-          cur = i;
-          imgs[cur].style.animation = 'none';
-          imgs[cur].offsetHeight;
-          imgs[cur].style.animation = '';
-          imgs[cur].classList.add('kb-active');
-          if (dots[cur]) dots[cur].classList.add('active');
-        });
-      });
-    });
-  }
-
-
-  // ── SISTEMA DE RANKING / VISTAS ──
-  const LS_VIEWS   = 'vb_views';
-  const LS_SESSION = 'vb_session_' + new Date().toDateString();
-
-  function getViews(){ try{ return JSON.parse(localStorage.getItem(LS_VIEWS)||'{}'); }catch{ return {}; } }
-  function saveViews(d){ try{ localStorage.setItem(LS_VIEWS, JSON.stringify(d)); }catch{} }
-
-  function registrarVista(id){
-    const sessionKey = LS_SESSION + '_' + id;
-    if (sessionStorage.getItem(sessionKey)) return; // ya se contó en esta sesión
-    sessionStorage.setItem(sessionKey, '1');
-
-    const views = getViews();
-    if (!views[id]) views[id] = { total:0, week:0, lastSeen:'' };
-    views[id].total++;
-    views[id].week++;
-    views[id].lastSeen = new Date().toISOString().split('T')[0];
-    saveViews(views);
-  }
-
-  function getViewCount(id){
-    const views = getViews();
-    return views[id] ? views[id].total : 0;
-  }
-
-  function calcRanking(props){
-    const views = getViews();
-    // Ordenar por vistas semanales (tendencia)
-    return [...props]
-      .filter(p => p.estadoPublicacion !== 'vendida' && p.estadoPublicacion !== 'alquilada')
-      .sort((a,b) => {
-        const wa = views[a.id]?.week || 0;
-        const wb = views[b.id]?.week || 0;
-        return wb - wa;
-      })
-      .slice(0, 5);
-  }
-
-  function renderRankingStrip(props){
-    const views = getViews();
-    const top   = calcRanking(props);
-    const strip = document.getElementById('rankingStrip');
-    const sec   = document.getElementById('rankingSection');
-
-    // Solo mostrar si hay propiedades con vistas
-    const hayVistas = top.some(p => views[p.id]?.total > 0);
-    if (!hayVistas){ sec.style.display = 'none'; return; }
-    sec.style.display = 'block';
-
-    strip.innerHTML = top.map((p,i) => {
-      const img = (p.imagenes&&p.imagenes.length>0)
-        ? (p.imagenes[0].startsWith('http') ? p.imagenes[0] : IMG_BASE+p.imagenes[0])
-        : '';
-      const vistas = views[p.id]?.total || 0;
-      const medals = ['🥇','🥈','🥉','4°','5°'];
-      return `
-        <a class="ranking-pill" href="#prop-${p.id}" onclick="document.getElementById('prop-${p.id}').scrollIntoView({behavior:'smooth'})">
-          <div class="ranking-pill-num">${medals[i]}</div>
-          ${img ? `<img class="ranking-pill-img" src="${img}" loading="lazy" onerror="this.remove()">` : ''}
-          <div class="ranking-pill-info">
-            <div class="ranking-pill-title">${p.titulo||'Propiedad'}</div>
-            <div class="ranking-pill-views">👁 ${vistas} vista${vistas!==1?'s':''} · ${p.zona||''}</div>
-          </div>
-        </a>
-      `;
-    }).join('');
-  }
-
-  // Inicializar IntersectionObserver para contar vistas al entrar al viewport
-  function initViewTracking(){
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const id = e.target.id?.replace('prop-','');
-        if (id) { registrarVista(id); observer.unobserve(e.target); }
-      });
-    }, { threshold: 0.5 });
-
-    document.querySelectorAll('article.card[id^="prop-"]').forEach(card => {
-      observer.observe(card);
-    });
-  }
-
-
-  // ── FILTERS ──
-  function applyFilters() {
-    const search  = normalize(document.getElementById("searchInput").value.trim());
-    const budget  = Number(document.getElementById("budgetRange").value) || 0;
-
-    let filtered = allProperties.filter(item => {
-      const op   = normalize(item.tipoOperacion || "");
-      const tipo = detectType(item);
-      let okChip = true;
-      if (currentFilter === "venta")   okChip = op.includes("venta");
-      if (currentFilter === "alquiler") okChip = op.includes("alquiler");
-      if (["casa","depto","local","terreno"].includes(currentFilter)) okChip = tipo === currentFilter;
-      if (!okChip) return false;
-      if (budget > 0 && Number(item.precio || 0) > budget) return false;
-      if (search) {
-        const big = normalize(`${item.titulo||""} ${item.zona||""} ${item.direccion||""} ${item.tipoPropiedad||""} ${item.descripcion||""}`);
-        if (!big.includes(search)) return false;
-      }
-      return true;
-    });
-
+// 9. IA MATCH
+async function buscarConIA() {
+  const consulta    = document.getElementById("iaQuery").value.trim();
+  const presupuesto = Number(document.getElementById("budgetRange").value) || null;
+  const operacion   = document.getElementById("iaOperacion").value;
+  if (!consulta) { document.getElementById("iaQuery").focus(); return; }
+  const btn=document.getElementById("iaBtn"), spinner=document.getElementById("iaSpinner"), st=document.getElementById("iaStatusText");
+  btn.disabled=true; spinner.style.display="block"; st.textContent="La IA está analizando las propiedades..."; highlightedIds=[];
+  try {
+    const res  = await fetch(MATCH_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({consulta,presupuesto,operacion})});
+    const data = await res.json();
+    highlightedIds = data.ids || [];
     if (highlightedIds.length) {
-      const hl   = filtered.filter(i => highlightedIds.includes(i.id));
-      const rest = filtered.filter(i => !highlightedIds.includes(i.id));
-      filtered   = [...hl, ...rest];
+      st.textContent=`✨ La IA encontró ${highlightedIds.length} propiedades que coinciden con tu búsqueda`;
+      document.getElementById("propiedades").scrollIntoView({behavior:"smooth"});
+      document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      document.querySelector(".chip[data-filter='todos']").classList.add("active");
+      currentFilter="todos"; applyFilters();
+    } else { st.textContent="No encontramos coincidencias. Probá otros términos o dejá tu búsqueda abajo."; }
+  } catch(e) { st.textContent="Error al conectar con la IA. Usá los filtros manuales."; }
+  finally { btn.disabled=false; spinner.style.display="none"; }
+}
+
+document.getElementById("iaQuery").addEventListener("keydown", e => { if(e.key==="Enter") buscarConIA(); });
+
+// 10. HELPERS
+function normalize(text) {
+  return (text||"").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+function formatPrice(item) {
+  const p=Number(item.precio||0); if(!p) return "Consultar";
+  return `${item.moneda||"USD"} ${p.toLocaleString("es-AR")}`;
+}
+function detectType(item) {
+  const t=normalize(item.tipoPropiedad||item.tipo||item.titulo||"");
+  if(t.includes("depto")||t.includes("departamento")) return "depto";
+  if(t.includes("casa")) return "casa";
+  if(t.includes("local")) return "local";
+  if(t.includes("terreno")||t.includes("lote")) return "terreno";
+  return t||"otro";
+}
+function getImage(item) {
+  if(item.imagenes&&item.imagenes.length>0){
+    for(const img of item.imagenes){
+      if(!img) continue;
+      if(img.startsWith("http://")||img.startsWith("https://")) return img;
+      return IMG_BASE+img;
     }
-
-    renderCards(filtered);
   }
+  return "https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad";
+}
+function isNew(item) {
+  if(!item.fecha) return false;
+  return Date.now()-new Date(item.fecha).getTime() < 7*24*60*60*1000;
+}
+function toggleFav(id) {
+  const idx=favorites.indexOf(id);
+  if(idx>=0) favorites.splice(idx,1); else favorites.push(id);
+  localStorage.setItem("vb_favs",JSON.stringify(favorites));
+  document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(b=>{ b.textContent=favorites.includes(id)?"❤️":"🤍"; });
+}
 
-  function setupFilters() {
-    document.querySelectorAll(".chip").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        highlightedIds = [];
-        matchScores = {};
-        document.getElementById("iaStatusText").textContent = "";
-        applyFilters();
-      });
-    });
-    document.getElementById("searchInput").addEventListener("input", applyFilters);
-  }
+// 11. RENDER CARDS — usa ASESOR para WhatsApp
+function renderCards(items) {
+  const grid=document.getElementById("propertiesGrid"), empty=document.getElementById("emptyState"), count=document.getElementById("resultCount");
+  count.textContent=`${items.length} ${items.length===1?"propiedad":"propiedades"}`;
+  if(!items.length){ grid.style.display="none"; empty.style.display="block"; return; }
+  empty.style.display="none"; grid.style.display="grid";
 
-  // ── LOAD ──
-  async function loadProperties() {
-    const loader = document.getElementById("loader");
-    for (let i = 1; i <= 3; i++) {
-      try {
-        loader.textContent = i === 1 ? "Cargando propiedades..." : `Conectando... (${i}/3)`;
-        const res  = await fetch(API_URL, { cache: "no-store" });
-        const data = await res.json();
-        allProperties = Array.isArray(data) ? data : [];
-        document.getElementById("miniTotal").textContent   = allProperties.length;
-        document.getElementById("miniVenta").textContent   = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("venta")).length;
-        document.getElementById("miniAlquiler").textContent = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("alquiler")).length;
-        loader.style.display = "none";
-        document.getElementById("propertiesGrid").style.display = "grid";
-        applyFilters();
-        return;
-      } catch(e) {
-        if (i < 3) await new Promise(r => setTimeout(r, 3000));
-      }
-    }
-    loader.innerHTML = "No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
-  }
+  grid.innerHTML = items.map(item => {
+    const isSale      = normalize(item.tipoOperacion||"").includes("venta");
+    const tipo        = detectType(item);
+    const dormText    = item.dormitorios ? `🛏 ${item.dormitorios} dorm.` : "";
+    const banosText   = item.banos ? `🚿 ${item.banos}` : "";
+    const isHl        = highlightedIds.includes(item.id);
+    const isFav       = favorites.includes(item.id);
+    const estadoInm   = (item.estadoPublicacion||"").toLowerCase();
+    const isVendida   = estadoInm==="vendida";
+    const isAlquilada = estadoInm==="alquilada";
+    const isConcretada= isVendida||isAlquilada;
+    const shortDesc   = (item.descripcion||"Propiedad disponible.").replace(/\r?\n/g," ").slice(0,110);
+    // WhatsApp usa ASESOR activo
+    const waHref = `https://wa.me/${ASESOR.telefono}?text=${encodeURIComponent(ASESOR.msgProp(item.titulo||"Propiedad", item.zona||"-", formatPrice(item)))}`;
 
-  // ── COMPARTIR ──
-  function compartirPropiedad(e, id, titulo, precio) {
-    e.preventDefault(); e.stopPropagation();
-    const url  = `${location.origin}/propiedad.html?id=${id}`;
-    const text = `🏠 *${titulo}*\n💰 ${precio}\n\nMirá esta propiedad en Vanina Buzzacchi:\n${url}\n\n¿Te interesa? Hay más propiedades disponibles en el catálogo. 👆`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-  }
-
-  // ── WHATSAPP ──
-  function setupWhatsApp() {
-    const href = waLink("Hola, vi las propiedades en la web de Vanina Buzzacchi y quiero más información.");
-    document.getElementById("heroWhatsApp").href     = href;
-    document.getElementById("heroWhatsAppTop").href  = href;
-    document.getElementById("floatingWhatsApp").href = href;
-  }
-
-  // ── COUNTER ──
-  function setupCounter() {
-    const el  = document.getElementById("visitCounter");
-    let val   = Number(localStorage.getItem("vb_visits") || 2143);
-    val      += Math.floor(Math.random() * 3) + 1;
-    localStorage.setItem("vb_visits", val);
-    // Animación conteo
-    const target = val;
-    let current  = Math.max(0, target - 80);
-    el.textContent = current.toLocaleString("es-AR");
-    const timer = setInterval(() => {
-      current = Math.min(target, current + Math.ceil((target - current) / 6));
-      el.textContent = current.toLocaleString("es-AR");
-      if (current >= target) clearInterval(timer);
-    }, 60);
-  }
-
-  // ── LEAD FORM ──
-  function setupLeadForm() {
-    document.getElementById("leadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById("leadMsg");
-      const payload = {
-        nombre:          document.getElementById("leadNombre").value.trim(),
-        telefono:        document.getElementById("leadTelefono").value.trim(),
-        operacion:       document.getElementById("leadOperacion").value,
-        tipo:            document.getElementById("leadTipo").value,
-        zona:            document.getElementById("leadZona").value.trim(),
-        precio:          document.getElementById("leadPresupuesto").value.trim(),
-        mensajeOriginal: document.getElementById("leadMensaje").value.trim(),
-        origen:          "funnel-publico",
-        tipoLead:        "comprador"
-      };
-      msg.textContent = "Enviando...";
-      try {
-        const res = await fetch(LEADS_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-        if (!res.ok) throw new Error();
-        msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
-        document.getElementById("leadForm").reset();
-      } catch {
-        msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
-      }
-    });
-  }
-
-  // ── AGENDAMIENTO ──
-  let agendaSlotSelected = null;
-  let agendaTipoSelected = "presencial";
-
-  function buildAgendaSlots() {
-    const container = document.getElementById("agendaSlots");
-    const today = new Date();
-    const days = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-    const months = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    const horarios = ["9:00","10:30","15:00","17:00"];
-    const slots = [];
-
-    // Generar 6 slots en los próximos días hábiles
-    let d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    while (slots.length < 6) {
-      const dow = d.getDay();
-      if (dow !== 0 && dow !== 6) { // lun-vie
-        horarios.slice(0, slots.length < 3 ? 2 : 2).forEach(h => {
-          if (slots.length < 6) {
-            slots.push({ day: days[dow], date: d.getDate(), month: months[d.getMonth()], time: h, recommended: slots.length === 0 });
+    return `<article class="card${isHl?" ia-highlight":""}${isConcretada?" card-concretada":""}" id="prop-${item.id}">
+      <div class="card-image-wrap">
+        <div class="badge-top">
+          <span class="badge ${isSale?"badge-sale":"badge-rent"}">${isSale?"Venta":"Alquiler"}</span>
+          ${isNew(item)?'<span class="badge badge-new">Nueva</span>':""}
+          ${isHl?'<span class="badge badge-new">✨ IA</span>':""}
+        </div>
+        <button class="card-fav fav-btn" data-id="${item.id}" onclick="toggleFav(${item.id})">${isFav?"❤️":"🤍"}</button>
+        ${isConcretada?`<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:3;display:flex;align-items:center;justify-content:center;">
+          <span style="background:${isVendida?"#7c3aed":"#0891b2"};color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:999px;letter-spacing:1px;transform:rotate(-8deg);box-shadow:0 4px 16px rgba(0,0,0,.3)">
+            ${isVendida?"✅ VENDIDA":"✅ ALQUILADA"}
+          </span>
+        </div>`:""}
+        <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/e8e0d0/6f6a63?text=Propiedad'"${isConcretada?' style="filter:grayscale(.4)"':""}/>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${item.titulo||"Propiedad disponible"}</div>
+        <div class="card-price">${formatPrice(item)}</div>
+        <div class="card-zone">📍 ${item.zona||"Zona a consultar"}${item.direccion?" · "+item.direccion:""}</div>
+        <div class="card-meta">
+          <span class="meta-pill">${tipo||"Propiedad"}</span>
+          ${dormText?`<span class="meta-pill">${dormText}</span>`:""}
+          ${banosText?`<span class="meta-pill">${banosText}</span>`:""}
+        </div>
+        <div class="card-desc">${shortDesc}...</div>
+        <div class="card-actions">
+          <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
+          ${isConcretada
+            ?`<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
+            :`<a class="btn-card btn-contact" href="${waHref}" target="_blank">Consultar</a>`
           }
-        });
-      }
-      d.setDate(d.getDate() + 1);
-    }
+          <button class="btn-card btn-share" title="Compartir" onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\\'")}','${formatPrice(item).replace(/'/g,"\\'")}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+          </button>
+        </div>
+        ${!isConcretada?`<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,"\\`")}')">💬 Hablar con Cata</button>`:''}
+      </div>
+    </article>`;
+  }).join("");
+}
 
-    container.innerHTML = slots.map((s, i) =>
-      `<button class="agenda-slot${s.recommended ? " recommended" : ""}" data-idx="${i}" onclick="selectSlot(this,'${s.day} ${s.date} ${s.month} · ${s.time}')">
-        <div class="slot-day">${s.day} ${s.date} ${s.month}</div>
-        <div class="slot-time">${s.time} hs</div>
-      </button>`
-    ).join("");
-  }
-
-  function selectSlot(btn, label) {
-    document.querySelectorAll(".agenda-slot").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    agendaSlotSelected = label;
-    const summary = document.getElementById("agendaSummary");
-    summary.textContent = `📅 Turno seleccionado: ${label}`;
-    summary.classList.add("show");
-    checkAgendaReady();
-  }
-
-  function selectTipo(btn) {
-    document.querySelectorAll(".agenda-tipo-btn").forEach(b => b.classList.remove("selected"));
-    btn.classList.add("selected");
-    agendaTipoSelected = btn.dataset.tipo;
-  }
-
-  function checkAgendaReady() {
-    const nombre = document.getElementById("agendaNombre").value.trim();
-    const tel    = document.getElementById("agendaTelefono").value.trim();
-    document.getElementById("agendaBtn").disabled = !(agendaSlotSelected && nombre && tel);
-  }
-
-  ["agendaNombre","agendaTelefono"].forEach(id => {
-    document.getElementById(id).addEventListener("input", checkAgendaReady);
+// 12. FILTERS
+function applyFilters() {
+  const search=normalize(document.getElementById("searchInput").value.trim());
+  const budget=Number(document.getElementById("budgetRange").value)||0;
+  let filtered=allProperties.filter(item=>{
+    const op=normalize(item.tipoOperacion||""), tipo=detectType(item);
+    let ok=true;
+    if(currentFilter==="venta")    ok=op.includes("venta");
+    if(currentFilter==="alquiler") ok=op.includes("alquiler");
+    if(["casa","depto","local","terreno"].includes(currentFilter)) ok=tipo===currentFilter;
+    if(!ok) return false;
+    if(budget>0&&Number(item.precio||0)>budget) return false;
+    if(search){ const big=normalize(`${item.titulo||""} ${item.zona||""} ${item.direccion||""} ${item.tipoPropiedad||""} ${item.descripcion||""}`); if(!big.includes(search)) return false; }
+    return true;
   });
+  if(highlightedIds.length){ const hl=filtered.filter(i=>highlightedIds.includes(i.id)), rest=filtered.filter(i=>!highlightedIds.includes(i.id)); filtered=[...hl,...rest]; }
+  renderCards(filtered);
+}
 
-  async function confirmarAgenda() {
-    const btn = document.getElementById("agendaBtn");
-    const nombre = document.getElementById("agendaNombre").value.trim();
-    const telefono = document.getElementById("agendaTelefono").value.trim();
-    const propiedad = document.getElementById("agendaPropiedad").value.trim();
-    btn.disabled = true;
-    btn.textContent = "Confirmando...";
+function setupFilters() {
+  document.querySelectorAll(".chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active"); currentFilter=btn.dataset.filter; highlightedIds=[];
+      document.getElementById("iaStatusText").textContent=""; applyFilters();
+    });
+  });
+  document.getElementById("searchInput").addEventListener("input",applyFilters);
+}
 
-    // Enviar lead de visita
-    try {
-      await fetch(LEADS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre, telefono,
-          mensajeOriginal: `Visita agendada: ${agendaSlotSelected} · Tipo: ${agendaTipoSelected}${propiedad ? " · Propiedad: "+propiedad : ""}`,
-          origen: "agenda-visita", tipoLead: "visita"
-        })
-      });
-    } catch(e) { /* continuar igual */ }
-
-    document.getElementById("agendaSuccess").classList.add("show");
-    btn.style.display = "none";
-
-    // También abrir WA con el resumen
-    const waMsg = `Hola Vanina! Agendé una visita 📅\n\n*Turno:* ${agendaSlotSelected}\n*Tipo:* ${agendaTipoSelected}\n*Nombre:* ${nombre}${propiedad ? "\n*Propiedad:* " + propiedad : ""}\n\n¿Confirmamos?`;
-    setTimeout(() => { window.open(waLink(waMsg), "_blank"); }, 800);
+// 13. LOAD PROPERTIES
+async function loadProperties() {
+  const loader=document.getElementById("loader");
+  for(let i=1;i<=3;i++){
+    try{
+      loader.textContent=i===1?"Cargando propiedades...":`Conectando... (${i}/3)`;
+      const res=await fetch(API_URL,{cache:"no-store"}), data=await res.json();
+      allProperties=Array.isArray(data)?data:[];
+      document.getElementById("miniTotal").textContent=allProperties.length;
+      document.getElementById("miniVenta").textContent=allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("venta")).length;
+      document.getElementById("miniAlquiler").textContent=allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("alquiler")).length;
+      loader.style.display="none"; document.getElementById("propertiesGrid").style.display="grid"; applyFilters(); return;
+    }catch(e){ if(i<3) await new Promise(r=>setTimeout(r,3000)); }
   }
+  loader.innerHTML="No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
+}
 
-  // ── INIT ──
-  setupWhatsApp();
-  setupCounter();
-  setupFilters();
-  setupLeadForm();
-  buildAgendaSlots();
-  loadProperties();
+// 14. COMPARTIR
+function compartirPropiedad(e,id,titulo,precio) {
+  e.preventDefault(); e.stopPropagation();
+  const url=`${location.origin}/propiedad.html?id=${id}`;
+  const text=`🏠 *${titulo}*\n💰 ${precio}\n\nMirá esta propiedad:\n${url}\n\n¿Te interesa? Hay más propiedades disponibles. 👆`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,"_blank");
+}
+
+// 15. COUNTER
+function setupCounter() {
+  const el=document.getElementById("visitCounter");
+  let val=Number(localStorage.getItem("vb_visits")||2143);
+  val+=Math.floor(Math.random()*3)+1;
+  localStorage.setItem("vb_visits",val);
+  el.textContent=val.toLocaleString("es-AR");
+}
+
+// 16. LEAD FORM — con vendedor_asignado y apertura de WA del asesor
+function setupLeadForm() {
+  document.getElementById("leadForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const msg=document.getElementById("leadMsg");
+    const payload={
+      nombre:           document.getElementById("leadNombre").value.trim(),
+      telefono:         document.getElementById("leadTelefono").value.trim(),
+      operacion:        document.getElementById("leadOperacion").value,
+      tipo:             document.getElementById("leadTipo").value,
+      zona:             document.getElementById("leadZona").value.trim(),
+      precio:           document.getElementById("leadPresupuesto").value.trim(),
+      mensajeOriginal:  document.getElementById("leadMensaje").value.trim(),
+      origen:           "funnel-publico",
+      tipoLead:         "comprador",
+      vendedor_asignado: PROCEDENCIA,
+      procedencia:       PROCEDENCIA,
+    };
+    msg.textContent="Enviando...";
+    try{
+      const res=await fetch(LEADS_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      if(!res.ok) throw new Error();
+      msg.textContent="✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
+      document.getElementById("leadForm").reset();
+      const waResumen=`Hola ${ASESOR.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`;
+      window.open(waLink(waResumen),"_blank");
+    }catch{ msg.textContent="No pudimos enviar. Escribinos directo por WhatsApp."; }
+  });
+}
+
+// 17. INIT
+setupWhatsApp();
+setupCounter();
+setupFilters();
+setupLeadForm();
+loadProperties();
 </script>
 
 <script>
-// ── CATA CHAT ──
+// ============================================================
+// CATA CHAT
+// ============================================================
 const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
-const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
+const sbHdrs = {'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`};
 
-let cataProp = null, cataHistory = [], cataLeadDone = false;
+let cataProp=null, cataHistory=[], cataLeadDone=false;
 
-async function sbPost(table, data) {
-  await fetch(`${SB_URL}/rest/v1/${table}`, {
-    method: 'POST',
-    headers: { ...sbHdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify(data)
+async function sbPost(table,data){
+  await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:{...sbHdrs,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)});
+}
+
+async function guardarLeadCata(lastUserMsg){
+  await sbPost('leads',{
+    propiedad:         cataProp?.id,
+    nombre:            'Lead chat Cata',
+    interes:           lastUserMsg.substring(0,200),
+    contacto:          lastUserMsg.substring(0,100),
+    vendedor_asignado: PROCEDENCIA,
+    procedencia:       PROCEDENCIA,
+    origen:            'cata-chat',
   });
 }
 
-// Cata general (desde botón flotante, sin propiedad específica)
-async function openCataGeneral() {
-  cataProp = null; cataHistory = []; cataLeadDone = false;
-  document.getElementById('cataMsgs').innerHTML = '';
-  document.getElementById('cataQBtns').innerHTML = `<button class="cata-agenda-btn" onclick="closeCata();document.getElementById('agendar-visita').scrollIntoView({behavior:'smooth'})">📅 Agendar visita</button>`;
-  document.getElementById('cataLeadOk').style.display = 'none';
-  document.getElementById('cataPropLabel').textContent = 'Consulta general';
-  document.getElementById('cataInp').value = '';
+async function openCata(propId,propTitulo){
+  cataProp=null; cataHistory=[]; cataLeadDone=false;
+  document.getElementById('cataMsgs').innerHTML='';
+  document.getElementById('cataQBtns').innerHTML='';
+  document.getElementById('cataLeadOk').style.display='none';
+  document.getElementById('cataPropLabel').textContent=propTitulo||propId;
+  document.getElementById('cataInp').value='';
   document.getElementById('cataOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 
-  cataProp = { titulo: 'General', descripcion: 'Catálogo de Vanina Buzzacchi en Río Cuarto' };
+  let faqs=[],objs=[];
+  try{
+    const [fR,oR]=await Promise.all([fetch('/api/faqs'),fetch('/api/objeciones')]);
+    if(fR.ok) faqs=await fR.json();
+    if(oR.ok) objs=await oR.json();
+  }catch(e){console.warn('FAQs/objeciones no disponibles');}
 
-  let faqs = [], objs = [];
-  try {
-    const [faqRes, objRes] = await Promise.all([fetch('/api/faqs'), fetch('/api/objeciones')]);
-    if (faqRes.ok) faqs = await faqRes.json();
-    if (objRes.ok) objs = await objRes.json();
-  } catch(e) {}
-  cataProp.faqs = faqs; cataProp.objections = objs;
+  const prop=allProperties.find(p=>String(p.id)===String(propId))||{id:propId,titulo:propTitulo};
+  cataProp={id:propId,titulo:propTitulo||prop.titulo||propId,zona:prop.zona||'',precio:prop.precio||'',moneda:prop.moneda||'USD',descripcion:prop.descripcion||'',faqs,objections:objs};
 
-  const qbtns = document.getElementById('cataQBtns');
-  (faqs || []).slice(0, 3).forEach(f => {
-    const b = document.createElement('button');
-    b.className = 'cata-qq';
-    const pregunta = f.pregunta || f.question || '';
-    b.textContent = pregunta.length > 40 ? pregunta.slice(0,38)+'…' : pregunta;
-    b.onclick = () => { document.getElementById('cataInp').value = pregunta; cataSend(); };
+  const qbtns=document.getElementById('cataQBtns');
+  (faqs||[]).slice(0,4).forEach(f=>{
+    const b=document.createElement('button'); b.className='cata-qq';
+    const pregunta=f.pregunta||f.question||'';
+    b.textContent=pregunta.length>40?pregunta.slice(0,38)+'…':pregunta;
+    b.onclick=()=>{document.getElementById('cataInp').value=pregunta;cataSend();};
     qbtns.appendChild(b);
   });
 
   cataShowTyping();
-  try {
-    const res = await callCata([{ role:'user', content:'Presentate como Cata, asistente IA de Vanina Buzzacchi. Sé cálida y breve (2 líneas). Preguntá qué busca.' }]);
-    const text = extractCataText(res) || '¡Hola! Soy Cata 👋 La IA de Vanina Buzzacchi. ¿Qué propiedad estás buscando?';
-    cataRemoveTyping();
-    cataAddMsg('assistant', text);
-    cataHistory.push({ role:'assistant', content: text });
-  } catch(e) {
-    cataRemoveTyping();
-    cataAddMsg('assistant', '¡Hola! Soy Cata 👋 La IA de Vanina Buzzacchi. ¿En qué te puedo ayudar?');
+  try{
+    const res=await callCata([{role:'user',content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.'}]);
+    const text=extractCataText(res)||'¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
+    cataRemoveTyping(); cataAddMsg('assistant',text); cataHistory.push({role:'assistant',content:text});
+  }catch(e){
+    cataRemoveTyping(); cataAddMsg('assistant','¡Hola! Soy Cata 👋 Estoy acá para ayudarte. ¿Qué querés saber?');
   }
   document.getElementById('cataInp').focus();
 }
 
-async function openCata(propId, propTitulo) {
-  cataProp = null; cataHistory = []; cataLeadDone = false;
-  document.getElementById('cataMsgs').innerHTML = '';
-  document.getElementById('cataQBtns').innerHTML = `<button class="cata-agenda-btn" onclick="closeCata();document.getElementById('agendar-visita').scrollIntoView({behavior:'smooth'})">📅 Agendar visita</button>`;
-  document.getElementById('cataLeadOk').style.display = 'none';
-  document.getElementById('cataPropLabel').textContent = propTitulo || propId;
-  document.getElementById('cataInp').value = '';
-  document.getElementById('cataOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  let faqs = [], objs = [];
-  try {
-    const [faqRes, objRes] = await Promise.all([fetch('/api/faqs'), fetch('/api/objeciones')]);
-    if (faqRes.ok) faqs = await faqRes.json();
-    if (objRes.ok) objs = await objRes.json();
-  } catch(e) { console.warn('No se pudieron cargar FAQs/objeciones'); }
-
-  const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
-  cataProp = { ...prop, id: propId, titulo: propTitulo || prop.titulo || propId, zona: prop.zona || '', precio: prop.precio || '', moneda: prop.moneda || 'USD', descripcion: prop.descripcion || '', faqs, objections: objs };
-
-  const qbtns = document.getElementById('cataQBtns');
-  (faqs || []).slice(0, 4).forEach(f => {
-    const b = document.createElement('button');
-    b.className = 'cata-qq';
-    const pregunta = f.pregunta || f.question || '';
-    b.textContent = pregunta.length > 40 ? pregunta.slice(0,38)+'…' : pregunta;
-    b.onclick = () => { document.getElementById('cataInp').value = pregunta; cataSend(); };
-    qbtns.appendChild(b);
-  });
-
-  cataShowTyping();
-  try {
-    const res = await callCata([{ role:'user', content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.' }]);
-    const text = extractCataText(res) || '¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
-    cataRemoveTyping();
-    cataAddMsg('assistant', text);
-    cataHistory.push({ role:'assistant', content: text });
-  } catch(e) {
-    cataRemoveTyping();
-    cataAddMsg('assistant', '¡Hola! Soy Cata 👋 Estoy acá para ayudarte con esta propiedad. ¿Qué querés saber?');
-  }
-  document.getElementById('cataInp').focus();
-}
-
-function closeCata() {
+function closeCata(){
   document.getElementById('cataOverlay').classList.remove('open');
-  document.body.style.overflow = '';
+  document.body.style.overflow='';
 }
 
-function buildCataSystem() {
-  const p = cataProp || {};
-  const faqsText = p.faqs?.length
-    ? p.faqs.map(f => `P: ${f.pregunta || f.question || f.p || ''}\nR: ${f.respuesta || f.answer || f.r || ''}`).join('\n\n')
-    : 'Sin FAQs.';
-  const objText = p.objections?.length
-    ? p.objections.map(o => `Objeción: ${o.objecion || o.objection || o.o || ''}\nRespuesta: ${o.respuesta || o.answer || o.r || ''}`).join('\n\n')
-    : 'Sin objeciones.';
-  return `Sos Cata, asistente inmobiliaria IA de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés el catálogo a la perfección. Estamos en 2026 y usás IA para ayudar a los clientes.
+function buildCataSystem(){
+  const p=cataProp||{};
+  const faqsText=p.faqs?.length?p.faqs.map(f=>`P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join('\n\n'):'Sin FAQs.';
+  const objText=p.objections?.length?p.objections.map(o=>`Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join('\n\n'):'Sin objeciones.';
+  return `Sos Cata, asistente inmobiliaria de ${ASESOR.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
 
 PROPIEDAD:
-- Título: ${p.titulo||'Consulta general'}
+- Título: ${p.titulo||''}
 - Precio: ${p.precio||'Consultar'}
-- Zona: ${p.zona||'Río Cuarto'}
+- Zona: ${p.zona||''}
 - Descripción: ${p.descripcion||''}
+
+ASESOR A CARGO: ${ASESOR.nombre}
+WHATSAPP DEL ASESOR: https://wa.me/${ASESOR.telefono}
 
 PREGUNTAS FRECUENTES:
 ${faqsText}
@@ -1722,299 +856,77 @@ ${objText}
 INSTRUCCIONES:
 - Respondé en español, tono cálido y cercano
 - Usá FAQs y objeciones cuando sean relevantes
-- Si el usuario quiere visitar o muestra interés real → mencioná que puede agendar una visita en la sección de la página y pedile nombre y teléfono/email
+- Si el usuario quiere visitar → pedile nombre y teléfono
+- Cuando des el contacto del asesor usá el WhatsApp indicado arriba
 - Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
 - Respuestas cortas, máx 3 párrafos. No inventes datos.`;
 }
 
-async function callCata(messages) {
-  const res = await fetch('/api/cata-chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system: buildCataSystem(), messages })
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
+async function callCata(messages){
+  const res=await fetch('/api/cata-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:buildCataSystem(),messages})});
+  if(!res.ok) throw new Error('HTTP '+res.status);
   return res.json();
 }
 
-function extractCataText(data) {
-  if (!data) return null;
-  if (Array.isArray(data.content)) {
-    const t = data.content.map(c => c.text || '').join('').trim();
-    if (t) return t;
-  }
-  if (data.respuesta) return String(data.respuesta).trim();
-  if (data.error) { console.error('Cata API error:', data.error); return null; }
+function extractCataText(data){
+  if(!data) return null;
+  if(Array.isArray(data.content)){const t=data.content.map(c=>c.text||'').join('').trim();if(t) return t;}
+  if(data.respuesta) return String(data.respuesta).trim();
+  if(data.error){console.error('Cata API error:',data.error);return null;}
   return null;
 }
 
-function cataAddMsg(role, text) {
-  const msgs = document.getElementById('cataMsgs');
-  const d = document.createElement('div');
-  d.className = 'cm ' + role;
-  d.innerHTML = `<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+function cataAddMsg(role,text){
+  const msgs=document.getElementById('cataMsgs');
+  const d=document.createElement('div'); d.className='cm '+role;
+  d.innerHTML=`<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
 
-function cataShowTyping() {
-  const msgs = document.getElementById('cataMsgs');
-  const d = document.createElement('div');
-  d.className = 'cm assistant'; d.id = 'cataTyping';
-  d.innerHTML = `<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
-  msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
+function cataShowTyping(){
+  const msgs=document.getElementById('cataMsgs');
+  const d=document.createElement('div'); d.className='cm assistant'; d.id='cataTyping';
+  d.innerHTML=`<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
+  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
 }
-function cataRemoveTyping() { const t=document.getElementById('cataTyping'); if(t) t.remove(); }
+function cataRemoveTyping(){const t=document.getElementById('cataTyping');if(t)t.remove();}
 
-async function cataSend() {
-  const inp = document.getElementById('cataInp');
-  const text = inp.value.trim();
-  if (!text) return;
-  document.getElementById('cataSendBtn').disabled = true;
-  inp.value = '';
-  cataAddMsg('user', text.replace(/</g,'&lt;'));
-  cataHistory.push({ role:'user', content: text });
+async function cataSend(){
+  const inp=document.getElementById('cataInp');
+  const text=inp.value.trim(); if(!text) return;
+  document.getElementById('cataSendBtn').disabled=true; inp.value='';
+  cataAddMsg('user',text.replace(/</g,'&lt;'));
+  cataHistory.push({role:'user',content:text});
   cataShowTyping();
-  try {
-    const data = await callCata(cataHistory);
-    const full  = extractCataText(data);
-    if (!full) throw new Error('Respuesta vacía');
-    const isLead = full.includes('LEAD_CAPTURADO');
-    const clean  = full.replace('LEAD_CAPTURADO','').trim();
-    cataRemoveTyping();
-    cataAddMsg('assistant', clean);
-    cataHistory.push({ role:'assistant', content: clean });
-    if (isLead && !cataLeadDone) {
-      cataLeadDone = true;
-      const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-      await sbPost('leads', { propiedad: cataProp?.id, nombre:'Lead chat Cata', interes: lastUser.substring(0,200), contacto: lastUser.substring(0,100) });
-      document.getElementById('cataLeadOk').style.display = 'block';
+  try{
+    const data=await callCata(cataHistory);
+    const full=extractCataText(data); if(!full) throw new Error('Respuesta vacía');
+    const isLead=full.includes('LEAD_CAPTURADO');
+    const clean=full.replace('LEAD_CAPTURADO','').trim();
+    cataRemoveTyping(); cataAddMsg('assistant',clean);
+    cataHistory.push({role:'assistant',content:clean});
+    if(isLead&&!cataLeadDone){
+      cataLeadDone=true;
+      const lastUser=cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content||'';
+      await guardarLeadCata(lastUser);
+      document.getElementById('cataLeadOk').style.display='block';
     }
-  } catch(e) {
-    console.error('cataSend error:', e);
+  }catch(e){
+    console.error('cataSend error:',e);
     cataRemoveTyping();
-    cataAddMsg('assistant', 'Hubo un problema al conectar. Por favor intentá de nuevo en un momento.');
+    cataAddMsg('assistant','Hubo un problema al conectar. Por favor intentá de nuevo en un momento.');
   }
-  document.getElementById('cataSendBtn').disabled = false;
+  document.getElementById('cataSendBtn').disabled=false;
   document.getElementById('cataInp').focus();
 }
 
-
-  // ── MAPA INTERACTIVO ──
-  let propMap = null;
-  let mapMarkers = [];
-  let mapFilter = 'todos';
-  let geocodeCache = {};
-
-  // Coordenadas base de zonas conocidas de Río Cuarto
-  const ZONA_COORDS = {
-    'banda norte':    [-33.110, -64.345],
-    'banda sur':      [-33.155, -64.350],
-    'centro':         [-33.130, -64.348],
-    'centro norte':   [-33.120, -64.348],
-    'centro sur':     [-33.138, -64.348],
-    'alberdi':        [-33.125, -64.360],
-    'san martin':     [-33.133, -64.340],
-    'santa rosa':     [-33.145, -64.355],
-    'jorge newbery':  [-33.118, -64.338],
-    'las delicias':   [-33.148, -64.338],
-    'general paz':    [-33.135, -64.362],
-    'quintas':        [-33.160, -64.330],
-    'jardin':         [-33.115, -64.360],
-    'jardín':         [-33.115, -64.360],
-    'villa del lago': [-33.105, -64.345],
-    'kilometro 8':    [-33.155, -64.380],
-    'km 8':           [-33.155, -64.380],
-    'el dorado':      [-33.108, -64.352],
-    'rio cuarto':     [-33.130, -64.348],
-    'río cuarto':     [-33.130, -64.348],
-  };
-
-  function getZoneCoords(zona) {
-    const z = (zona || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-    for (const [key, coords] of Object.entries(ZONA_COORDS)) {
-      const k = key.normalize('NFD').replace(/[̀-ͯ]/g,'');
-      if (z.includes(k) || k.includes(z)) return coords;
-    }
-    return null;
-  }
-
-  async function geocodeAddress(address, zona) {
-    const key = (address || zona || '').trim();
-    if (!key) return null;
-    if (geocodeCache[key]) return geocodeCache[key];
-
-    // 1. Intentar por zona conocida primero (sin API)
-    const zc = getZoneCoords(zona);
-    if (zc) {
-      // Agregar jitter para que pins de misma zona no se superpongan
-      const jitter = () => (Math.random() - 0.5) * 0.008;
-      const coords = [zc[0] + jitter(), zc[1] + jitter()];
-      geocodeCache[key] = coords;
-      return coords;
-    }
-
-    // 2. Nominatim para direcciones específicas
-    try {
-      const query = address
-        ? `${address}, Río Cuarto, Córdoba, Argentina`
-        : `${zona}, Río Cuarto, Córdoba, Argentina`;
-      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
-      const res = await fetch(url, { headers: { 'Accept-Language': 'es' } });
-      const data = await res.json();
-      if (data && data[0]) {
-        const coords = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-        geocodeCache[key] = coords;
-        return coords;
-      }
-    } catch(e) {}
-
-    // 3. Fallback: centro de Río Cuarto con jitter
-    const fallback = [-33.130 + (Math.random()-.5)*.02, -64.348 + (Math.random()-.5)*.02];
-    geocodeCache[key] = fallback;
-    return fallback;
-  }
-
-  function formatPrice(item) {
-    const p = Number(item.precio || 0);
-    if (!p) return 'Consultar';
-    return `${item.moneda||'USD'} ${p.toLocaleString('es-AR')}`;
-  }
-
-  function createMarker(item, coords) {
-    const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
-    const img = (item.imagenes&&item.imagenes.length>0)
-      ? (item.imagenes[0].startsWith('http') ? item.imagenes[0] : IMG_BASE+item.imagenes[0])
-      : 'https://placehold.co/240x140/0f2318/c9a84c?text=Propiedad';
-
-    const icon = L.divIcon({
-      className: '',
-      html: `<div class="map-pin ${op}">${op==='venta'?'🏠':'🔑'} ${formatPrice(item)}</div>`,
-      iconAnchor: [0, 10],
-    });
-
-    const marker = L.marker(coords, { icon });
-
-    marker.bindPopup(`
-      <div class="map-popup">
-        <img class="map-popup-img" src="${img}" loading="lazy" onerror="this.src='https://placehold.co/240x140/e8e0d0/6f6a63?text=Propiedad'">
-        <div class="map-popup-body">
-          <span class="map-popup-op ${op}">${op==='venta'?'VENTA':'ALQUILER'}</span>
-          <div class="map-popup-title">${item.titulo||'Propiedad'}</div>
-          <div class="map-popup-zone">📍 ${item.zona||'Río Cuarto'}</div>
-          <div class="map-popup-price">${formatPrice(item)}</div>
-          <a class="map-popup-btn" href="/propiedad.html?id=${item.id}">Ver ficha completa →</a>
-        </div>
-      </div>
-    `, { maxWidth: 260 });
-
-    marker._propData = item;
-    return marker;
-  }
-
-  function applyMapFilter() {
-    mapMarkers.forEach(({ marker, item }) => {
-      const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
-      const tipo = (item.tipoPropiedad||item.titulo||'').toLowerCase();
-      let show = true;
-      if (mapFilter === 'venta')    show = op === 'venta';
-      if (mapFilter === 'alquiler') show = op === 'alquiler';
-      if (mapFilter === 'casa')     show = tipo.includes('casa');
-      if (mapFilter === 'depto')    show = tipo.includes('depto')||tipo.includes('departamento');
-      if (show) marker.addTo(propMap);
-      else      propMap.removeLayer(marker);
-    });
-    const visible = mapMarkers.filter(({item}) => {
-      const op = (item.tipoOperacion||'').toLowerCase().includes('venta') ? 'venta' : 'alquiler';
-      const tipo = (item.tipoPropiedad||item.titulo||'').toLowerCase();
-      if (mapFilter==='venta')    return op==='venta';
-      if (mapFilter==='alquiler') return op==='alquiler';
-      if (mapFilter==='casa')     return tipo.includes('casa');
-      if (mapFilter==='depto')    return tipo.includes('depto')||tipo.includes('departamento');
-      return true;
-    });
-    document.getElementById('mapStatusText').textContent =
-      `${visible.length} propiedades visibles en el mapa · Río Cuarto, Córdoba`;
-  }
-
-  async function initMap() {
-    if (propMap || !allProperties.length) return;
-
-    // Cargar cache de geocoding
-    try { geocodeCache = JSON.parse(localStorage.getItem('vb_geocache')||'{}'); } catch {}
-
-    propMap = L.map('propMap', {
-      center: [-33.130, -64.348],
-      zoom: 13,
-      zoomControl: true,
-    });
-
-    // Tiles oscuros premium (CartoDB Dark)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© OpenStreetMap © CARTO',
-      subdomains: 'abcd',
-      maxZoom: 19
-    }).addTo(propMap);
-
-    // Geocodificar propiedades
-    const geo = document.getElementById('mapGeocoding');
-    const geoText = document.getElementById('mapGeoText');
-    geo.style.display = 'flex';
-
-    const props = allProperties.filter(p => p.estadoPublicacion !== 'vendida' && p.estadoPublicacion !== 'alquilada');
-    let done = 0;
-
-    for (const item of props) {
-      geoText.textContent = `Ubicando ${++done}/${props.length}...`;
-      const coords = await geocodeAddress(item.direccion, item.zona);
-      if (coords) {
-        const marker = createMarker(item, coords);
-        marker.addTo(propMap);
-        mapMarkers.push({ marker, item });
-      }
-      // Rate limit Nominatim: 1 req/seg
-      await new Promise(r => setTimeout(r, 300));
-    }
-
-    // Guardar cache
-    try { localStorage.setItem('vb_geocache', JSON.stringify(geocodeCache)); } catch {}
-
-    geo.style.display = 'none';
-    document.getElementById('mapStatusText').textContent =
-      `${mapMarkers.length} propiedades en el mapa · Río Cuarto, Córdoba`;
-
-    // Filtros del mapa
-    document.querySelectorAll('.map-chip').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.map-chip').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        mapFilter = btn.dataset.mf;
-        applyMapFilter();
-      });
-    });
-  }
-
-  // Inicializar mapa cuando el usuario hace scroll hasta él
-  const mapObserver = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting && allProperties.length) {
-        initMap();
-        mapObserver.disconnect();
-      }
-    });
-  }, { threshold: 0.1 });
-
-
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCata();});
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
 <script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw-funnel.js").catch(() => {});
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("/sw-funnel.js").catch(()=>{});
   }
 </script>
-  <!-- Asegurate de que el path a js/funnel-controller.js sea el correcto según tu carpeta -->
-<script type="module" src="js/funnel-controller.js"></script>
-
 </body>
 </html>
