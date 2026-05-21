@@ -61,7 +61,6 @@
     .hero{background:radial-gradient(ellipse 120% 80% at 50% 0%,#1a3d24 0%,#0b1a12 55%,#060e09 100%);color:#fff;padding:72px 0 56px;position:relative;overflow:hidden}
     .hero::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23c9a84c' fill-opacity='0.025'%3E%3Cpath d='M40 40v-8h-2v8h-8v2h8v8h2v-8h8v-2h-8zm0-40V0h-2v0h-8v2h8v8h2V2h8V0h-8zM0 40v-8H-2v8h-8v2h8v8h2v-8h8v-2H0zM0 0V-8H-2v8h-8v2h8v8h2V2h8V0H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;opacity:.6}
     .hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
-    /* golden glow orb */
     .hero-orb{position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);pointer-events:none;border-radius:50%}
     .hero-orb2{position:absolute;bottom:-100px;left:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,74,46,.25) 0%,transparent 70%);pointer-events:none;border-radius:50%}
     .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center;position:relative;z-index:1}
@@ -130,7 +129,6 @@
     .card-image-wrap{position:relative;aspect-ratio:16/11;background:linear-gradient(135deg,#0f2318,#0c1c14);overflow:hidden;flex-shrink:0}
     .card-image{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.16,1,.3,1)}
     .card:hover .card-image{transform:scale(1.06)}
-    /* image overlay shimmer */
     .card-image-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:1}
     .badge-top{position:absolute;top:12px;left:12px;z-index:3;display:flex;gap:6px}
     .badge{border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
@@ -144,6 +142,7 @@
     .card-price{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;font-weight:700;text-shadow:0 0 20px rgba(201,168,76,.2)}
     .card-zone{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:4px}
     .card-meta{display:flex;flex-wrap:wrap;gap:6px}
+    .meta-pill覆{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)}
     .meta-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)}
     .card-desc{color:rgba(255,255,255,.45);font-size:13px;line-height:1.5;flex:1}
     .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
@@ -198,7 +197,6 @@
 
     .loader{padding:48px 0;text-align:center;color:var(--muted);font-size:15px}
     .empty-state{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:24px;padding:40px;text-align:center;color:var(--muted);font-size:16px;margin-top:28px}
-
 
     /* === CATA MODAL === */
     .cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
@@ -261,25 +259,10 @@
       .hero{padding:40px 0 32px}
       .searchbox input{min-width:120px}
     }
-    /* === FIN CATA === */
-
-    @media(max-width:980px){
-      .hero-grid,.lead-form,.testimonials{grid-template-columns:1fr}
-      .properties-grid{grid-template-columns:repeat(2,1fr)}
-      .ia-form{grid-template-columns:1fr}
-      .topbar-inner{flex-direction:column;align-items:flex-start}
-      .card-actions{grid-template-columns:1fr}
-    }
-    @media(max-width:640px){
-      .properties-grid{grid-template-columns:1fr}
-      .hero{padding:40px 0 32px}
-      .searchbox input{min-width:120px}
-    }
   </style>
 </head>
 <body>
 
-<!-- TICKER ANIMADO -->
 <div class="ticker-wrap">
   <div class="ticker-track">
     <span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span>
@@ -341,7 +324,6 @@
   </div>
 </section>
 
-<!-- IA MATCH -->
 <section class="ia-section">
   <div class="container">
     <div class="ia-box">
@@ -349,10 +331,7 @@
       <p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos.</p>
       <div class="ia-form">
         <input class="ia-input" id="iaQuery" type="text" placeholder="Ej: casa con patio en Banda Norte para familia, tranquila..."/>
-
-<button class="btn-ia" id="iaBtn" onclick="buscarConIA()">
-  🔍 Buscar con IA
-</button>
+        <button class="btn-ia" id="iaBtn" onclick="buscarConIA()">🔍 Buscar con IA</button>
       </div>
       <div class="ia-extras">
         <div class="budget-wrap">
@@ -375,7 +354,6 @@
   </div>
 </section>
 
-<!-- PROPIEDADES -->
 <section class="section" id="propiedades">
   <div class="container">
     <div class="section-header">
@@ -406,7 +384,6 @@
   </div>
 </section>
 
-<!-- DEJAR BÚSQUEDA -->
 <section class="lead-section" id="dejar-busqueda">
   <div class="container">
     <div class="lead-box">
@@ -424,7 +401,6 @@
       </form>
       <div id="leadMsg" class="lead-msg"></div>
 
-      <!-- PUSH NOTIFY dentro del lead box -->
       <div class="notify-strip">
         <p>🔔 También podés activar notificaciones para recibir alertas en tu celular cuando entre una nueva propiedad</p>
         <button class="btn-notify" id="notifyBtn2" onclick="suscribirPush()">Activar alertas</button>
@@ -433,7 +409,6 @@
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
 <section class="testimonials-section">
   <div class="container">
     <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
@@ -453,8 +428,6 @@
   </div>
 </footer>
 
-
-<!-- MODAL CATA -->
 <div class="cata-overlay" id="cataOverlay" onclick="if(event.target===this)closeCata()">
   <div class="cata-modal">
     <div class="cata-header">
@@ -483,144 +456,126 @@
 
 <script>
   // ============================================================
-//  SISTEMA DE DERIVACIÓN DINÁMICA — InmoCreador Multi-Vendedor
-//  Insertar al INICIO del primer <script> del funnel
-//  Reemplaza: const WHATSAPP_NUMBER = "543585701632";
-// ============================================================
+  //  SISTEMA DE DERIVACIÓN DINÁMICA — InmoCreador Multi-Vendedor
+  // ============================================================
 
-// ── 1. DICCIONARIO DE ASESORES ────────────────────────────────
-const ASESORES = {
-  vanina: {
-    nombre:    "Vanina Buzzacchi",
-    telefono:  "5493584322626",           // sin + ni espacios
-    msgHero:   "Hola Vanina, vi las propiedades en tu web y quiero más información.",
-    msgProp:   (titulo, zona, precio) =>
-      `Hola Vanina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-    brandTitle: "Vanina Buzzacchi",
-    brandSub:   "Negocios Inmobiliarios · Río Cuarto",
-  },
-  catalina: {
-    nombre:    "Catalina",
-    telefono:  "5493585701632",
-    msgHero:   "Hola Catalina, vi las propiedades en la web y quiero más información.",
-    msgProp:   (titulo, zona, precio) =>
-      `Hola Catalina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-    brandTitle: "Catalina",
-    brandSub:   "Asesora Inmobiliaria · Río Cuarto",
-  },
-  mariano: {
-    nombre:    "Mariano",
-    telefono:  "5493585189949",
-    msgHero:   "Hola Mariano, vi las propiedades en la web y quiero más información.",
-    msgProp:   (titulo, zona, precio) =>
-      `Hola Mariano, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-    brandTitle: "Mariano",
-    brandSub:   "Asesor Inmobiliario · Río Cuarto",
-  },
-};
+  const ASESORES = {
+    vanina: {
+      nombre:    "Vanina Buzzacchi",
+      telefono:  "5493584322626",
+      msgHero:   "Hola Vanina, vi las propiedades en tu web y quiero más información.",
+      msgProp:   (titulo, zona, precio) =>
+        `Hola Vanina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+      brandTitle: "Vanina Buzzacchi",
+      brandSub:   "Negocios Inmobiliarios · Río Cuarto",
+    },
+    catalina: {
+      nombre:    "Catalina",
+      telefono:  "5493585701632",
+      msgHero:   "Hola Catalina, vi las propiedades en la web y quiero más información.",
+      msgProp:   (titulo, zona, precio) =>
+        `Hola Catalina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+      brandTitle: "Catalina",
+      brandSub:   "Asesora Inmobiliaria · Río Cuarto",
+    },
+    mariano: {
+      nombre:    "Mariano",
+      telefono:  "5493585189949",
+      msgHero:   "Hola Mariano, vi las propiedades en la web y quiero más información.",
+      msgProp:   (titulo, zona, precio) =>
+        `Hola Mariano, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
+      brandTitle: "Mariano",
+      brandSub:   "Asesor Inmobiliario · Río Cuarto",
+    },
+  };
 
-// ── 2. DETECTAR ASESOR DESDE URL ──────────────────────────────
-const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim();
-const ASESOR_ACTIVO = ASESORES[_ref] || ASESORES.vanina;   // fallback institucional → Vanina
+  const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim();
+  const ASESOR_ACTIVO = ASESORES[_ref] || ASESORES.vanina;   
 
-// Guardamos la procedencia para los leads
-const PROCEDENCIA = _ref && ASESORES[_ref] ? _ref : "directo";
-localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
+  const PROCEDENCIA = _ref && ASESORES[_ref] ? _ref : "directo";
+  localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
 
-// ── 3. CONSTANTES DINÁMICAS (reemplazan las anteriores) ───────
-const API_URL   = "/api/inmuebles-publicos";
-const LEADS_URL = "/api/leads";
-const MATCH_URL = "/api/match-ia";
-const WHATSAPP_NUMBER = ASESOR_ACTIVO.telefono;   // ← ahora dinámico
-const IMG_BASE  = "/uploads/";
+  // CONSTANTES GLOBALES DINÁMICAS
+  const API_URL   = "/api/inmuebles-publicos";
+  const LEADS_URL = "/api/leads";
+  const MATCH_URL = "/api/match-ia";
+  const WHATSAPP_NUMBER = ASESOR_ACTIVO.telefono;   
+  const IMG_BASE  = "/uploads/";
 
-// ── 4. INYECCIÓN EN DOM — BRAND ───────────────────────────────
-//    (Actualiza nombre del asesor en topbar si existe el elemento)
-document.addEventListener("DOMContentLoaded", () => {
-  const bt = document.querySelector(".brand-title");
-  const bs = document.querySelector(".brand-sub");
-  if (bt) bt.textContent = ASESOR_ACTIVO.brandTitle;
-  if (bs) bs.textContent = ASESOR_ACTIVO.brandSub;
-});
-
-// ── 5. WHATSAPP HELPERS — ahora usan ASESOR_ACTIVO ────────────
-//    (Reemplaza la función waLink() original)
-function waLink(texto) {
-  return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
-}
-
-function setupWhatsApp() {
-  const href = waLink(ASESOR_ACTIVO.msgHero);
-  const ids  = ["heroWhatsApp", "heroWhatsAppTop", "floatingWhatsApp"];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.href = href;
+  document.addEventListener("DOMContentLoaded", () => {
+    const bt = document.querySelector(".brand-title");
+    const bs = document.querySelector(".brand-sub");
+    if (bt) bt.textContent = ASESOR_ACTIVO.brandTitle;
+    if (bs) bs.textContent = ASESOR_ACTIVO.brandSub;
   });
-}
 
-// ── 6. LINK DINÁMICO POR PROPIEDAD ───────────────────────────
-//    (Usa msgProp del asesor activo; invocar desde renderCards)
-function waLinkProp(titulo, zona, precio) {
-  const texto = ASESOR_ACTIVO.msgProp(titulo, zona, precio);
-  return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
-}
+  function waLink(texto) {
+    return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
+  }
 
-// ── 7. LEAD FORM — agrega vendedor_asignado + procedencia ─────
-//    (Reemplaza el bloque setupLeadForm() original)
-function setupLeadForm() {
-  document.getElementById("leadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const msg = document.getElementById("leadMsg");
+  function setupWhatsApp() {
+    const href = waLink(ASESOR_ACTIVO.msgHero);
+    const ids  = ["heroWhatsApp", "heroWhatsAppTop", "floatingWhatsApp"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = href;
+    });
+  }
 
-    const payload = {
-      nombre:           document.getElementById("leadNombre").value.trim(),
-      telefono:         document.getElementById("leadTelefono").value.trim(),
-      operacion:        document.getElementById("leadOperacion").value,
-      tipo:             document.getElementById("leadTipo").value,
-      zona:             document.getElementById("leadZona").value.trim(),
-      precio:           document.getElementById("leadPresupuesto").value.trim(),
-      mensajeOriginal:  document.getElementById("leadMensaje").value.trim(),
-      origen:           "funnel-publico",
-      tipoLead:         "comprador",
-      // ── NUEVOS CAMPOS DE AUDITORÍA ──
-      vendedor_asignado: PROCEDENCIA,
-      procedencia:       PROCEDENCIA,
-    };
+  function waLinkProp(titulo, zona, precio) {
+    const texto = ASESOR_ACTIVO.msgProp(titulo, zona, precio);
+    return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
+  }
 
-    msg.textContent = "Enviando...";
-    try {
-      const res = await fetch(LEADS_URL, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error();
-      msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
-      document.getElementById("leadForm").reset();
+  function setupLeadForm() {
+    document.getElementById("leadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("leadMsg");
 
-      // Redirigir a WhatsApp del asesor con resumen
-      const waResumen = `Hola ${ASESOR_ACTIVO.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`;
-      window.open(waLink(waResumen), "_blank");
+      const payload = {
+        nombre:           document.getElementById("leadNombre").value.trim(),
+        telefono:         document.getElementById("leadTelefono").value.trim(),
+        operacion:        document.getElementById("leadOperacion").value,
+        tipo:             document.getElementById("leadTipo").value,
+        zona:             document.getElementById("leadZona").value.trim(),
+        precio:           document.getElementById("leadPresupuesto").value.trim(),
+        mensajeOriginal:  document.getElementById("leadMensaje").value.trim(),
+        origen:           "funnel-publico",
+        tipoLead:         "comprador",
+        vendedor_asignado: PROCEDENCIA,
+        procedencia:       PROCEDENCIA,
+      };
 
-    } catch {
-      msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
-    }
-  });
-}
+      msg.textContent = "Enviando...";
+      try {
+        const res = await fetch(LEADS_URL, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error();
+        msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
+        document.getElementById("leadForm").reset();
 
-// ── 8. CATA IA — sistema del asesor activo ───────────────────
-//    Agrega al final de buildCataSystem() el telefono correcto:
-//    Reemplaza la función buildCataSystem() original
-function buildCataSystem() {
-  const p = cataProp || {};
-  const faqsText = p.faqs?.length
-    ? p.faqs.map(f => `P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join("\n\n")
-    : "Sin FAQs.";
-  const objText = p.objections?.length
-    ? p.objections.map(o => `Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join("\n\n")
-    : "Sin objeciones.";
+        const waResumen = `Hola ${ASESOR_ACTIVO.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`;
+        window.open(waLink(waResumen), "_blank");
 
-  return `Sos Cata, asistente inmobiliaria de ${ASESOR_ACTIVO.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
+      } catch {
+        msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
+      }
+    });
+  }
+
+  function buildCataSystem() {
+    const p = cataProp || {};
+    const faqsText = p.faqs?.length
+      ? p.faqs.map(f => `P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join("\n\n")
+      : "Sin FAQs.";
+    const objText = p.objections?.length
+      ? p.objections.map(o => `Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join("\n\n")
+      : "Sin objeciones.";
+
+    return `Sos Cata, asistente inmobiliaria de ${ASESOR_ACTIVO.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
 
 PROPIEDAD:
 - Título: ${p.titulo||''}
@@ -644,43 +599,26 @@ INSTRUCCIONES:
 - Cuando des el contacto del asesor, usá el WhatsApp indicado arriba
 - Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
 - Respuestas cortas, máx 3 párrafos. No inventes datos.`;
-}
+  }
 
-// ── 9. GUARDAR LEAD DESDE CATA con vendedor_asignado ─────────
-//    En cataSend(), reemplazá el sbPost de LEAD_CAPTURADO por:
-async function guardarLeadCata(lastUserMsg) {
-  await sbPost("leads", {
-    propiedad:         cataProp?.id,
-    nombre:            "Lead chat Cata",
-    interes:           lastUserMsg.substring(0, 200),
-    contacto:          lastUserMsg.substring(0, 100),
-    vendedor_asignado: PROCEDENCIA,   // ← auditoría
-    procedencia:       PROCEDENCIA,
-    origen:            "cata-chat",
-  });
-}
+  async function guardarLeadCata(lastUserMsg) {
+    await sbPost("leads", {
+      propiedad:         cataProp?.id,
+      nombre:            "Lead chat Cata",
+      interes:           lastUserMsg.substring(0, 200),
+      contacto:          lastUserMsg.substring(0, 100),
+      vendedor_asignado: PROCEDENCIA,   
+      procedencia:       PROCEDENCIA,
+      origen:            "cata-chat",
+    });
+  }
 
-// ══════════════════════════════════════════════════════════════
-//  INSTRUCCIÓN DE USO EN cataSend():
-//  Reemplazá esta línea:
-//    await sbPost('leads', { propiedad: cataProp?.id, ... });
-//  Por:
-//    await guardarLeadCata(lastUser?.content || '');
-// ══════════════════════════════════════════════════════════════
-
-
-  const API_URL   = "/api/inmuebles-publicos";
-  const LEADS_URL = "/api/leads";
-  const MATCH_URL = "/api/match-ia";
-    const IMG_BASE  = "/uploads/";
-
+  // variables de estado de la app
   let allProperties  = [];
   let currentFilter  = "todos";
   let highlightedIds = [];
   let favorites      = JSON.parse(localStorage.getItem("vb_favs") || "[]");
   let deferredPrompt = null;
-
-  // ===================== PWA INSTALL =====================
 
   // ===================== PUSH NOTIFICATIONS =====================
   async function suscribirPush() {
@@ -768,9 +706,7 @@ async function guardarLeadCata(lastUserMsg) {
 
       if (highlightedIds.length) {
         statusText.textContent = `✨ La IA encontró ${highlightedIds.length} propiedades que coinciden con tu búsqueda`;
-        // Scroll a propiedades
         document.getElementById("propiedades").scrollIntoView({ behavior: "smooth" });
-        // Reset chips
         document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
         document.querySelector(".chip[data-filter='todos']").classList.add("active");
         currentFilter = "todos";
@@ -791,15 +727,16 @@ async function guardarLeadCata(lastUserMsg) {
   });
 
   // ===================== HELPERS =====================
-  function waLink(texto) { return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`; }
-
   function formatPrice(item) {
     const precio = Number(item.precio || 0);
     if (!precio) return "Consultar";
     return `${item.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
   }
 
-  function normalize(text) {
+  // alias heredado para compatibilidad
+  function formatPrecio(item) { return formatPrice(item); }
+
+  运作function normalize(text) {
     return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 
@@ -814,12 +751,9 @@ async function guardarLeadCata(lastUserMsg) {
 
   function getImage(item) {
     if (item.imagenes && item.imagenes.length > 0) {
-      // Buscar la primera imagen válida (no vacía)
       for (const img of item.imagenes) {
         if (!img) continue;
-        // URL completa (Supabase Storage o externa)
         if (img.startsWith("http://") || img.startsWith("https://")) return img;
-        // Path relativo local
         return IMG_BASE + img;
       }
     }
@@ -842,7 +776,7 @@ async function guardarLeadCata(lastUserMsg) {
     });
   }
 
-  // ===================== RENDER =====================
+  // ===================== RENDER CARDS CORREGIDO =====================
   function renderCards(items) {
     const grid  = document.getElementById("propertiesGrid");
     const empty = document.getElementById("emptyState");
@@ -868,7 +802,9 @@ async function guardarLeadCata(lastUserMsg) {
       const isVendida  = estadoInm === "vendida";
       const isAlquilada = estadoInm === "alquilada";
       const isConcretada = isVendida || isAlquilada;
-      const waText    = `Hola, vi esta propiedad y quiero más información:%0A%0A${item.titulo||"Propiedad"}%0AZona: ${item.zona||"-"}%0APrecio: ${formatPrice(item)}`;
+      
+      // FIX CRÍTICO: Usa el link de WhatsApp dinámico del asesor activo
+      const dynamicWaUrl = waLinkProp(item.titulo || "Propiedad", item.zona || "-", formatPrice(item));
       const shortDesc = (item.descripcion || "Propiedad disponible.").replace(/\r?\n/g, " ").slice(0, 110);
 
       return `<article class="card${isHl ? " ia-highlight" : ""}${isConcretada ? " card-concretada" : ""}" id="prop-${item.id}">
@@ -884,7 +820,7 @@ async function guardarLeadCata(lastUserMsg) {
               ${isVendida ? "✅ VENDIDA" : "✅ ALQUILADA"}
             </span>
           </div>` : ""}
-          <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/e8e0d0/6f6a63?text=Propiedad'"${isConcretada ? ' style="filter:grayscale(.4)"' : ""}/>
+          <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad'"${isConcretada ? ' style="filter:grayscale(.4)"' : ""}/>
         </div>
         <div class="card-body">
           <div class="card-title">${item.titulo || "Propiedad disponible"}</div>
@@ -900,7 +836,7 @@ async function guardarLeadCata(lastUserMsg) {
             <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
             ${isConcretada
               ? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
-              : `<a class="btn-card btn-contact" href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" target="_blank">Consultar</a>`
+              : `<a class="btn-card btn-contact" href="${dynamicWaUrl}" target="_blank">Consultar</a>`
             }
             <button class="btn-card btn-share" title="Compartir por WhatsApp"
               onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\'").replace(/"/g,'\"')}','${formatPrice(item).replace(/'/g,"\'")}')">
@@ -934,7 +870,6 @@ async function guardarLeadCata(lastUserMsg) {
       return true;
     });
 
-    // Si hay resultados IA, mostrarlos primero
     if (highlightedIds.length) {
       const hl  = filtered.filter(i => highlightedIds.includes(i.id));
       const rest = filtered.filter(i => !highlightedIds.includes(i.id));
@@ -991,7 +926,6 @@ async function guardarLeadCata(lastUserMsg) {
     window.open(waUrl, "_blank");
   }
 
-  
   // ===================== COUNTER =====================
   function setupCounter() {
     const el  = document.getElementById("visitCounter");
@@ -1001,42 +935,6 @@ async function guardarLeadCata(lastUserMsg) {
     el.textContent = val.toLocaleString("es-AR");
   }
 
-  // ===================== LEAD FORM =====================
-  function setupLeadForm() {
-    document.getElementById("leadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById("leadMsg");
-      const payload = {
-        nombre:          document.getElementById("leadNombre").value.trim(),
-        telefono:        document.getElementById("leadTelefono").value.trim(),
-        operacion:       document.getElementById("leadOperacion").value,
-        tipo:            document.getElementById("leadTipo").value,
-        zona:            document.getElementById("leadZona").value.trim(),
-        precio:          document.getElementById("leadPresupuesto").value.trim(),
-        mensajeOriginal: document.getElementById("leadMensaje").value.trim(),
-        origen:          "funnel-publico",
-        tipoLead:        "comprador"
-      };
-      msg.textContent = "Enviando...";
-      try {
-                const res = await fetch(LEADS_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...payload, // Esto mantiene el nombre, teléfono y búsqueda del cliente
-            procedencia: localStorage.getItem('procedencia_inmocreador') || 'directo' // <--- ESTO DA EL TESTIMONIO
-          })
-        });
-        if (!res.ok) throw new Error();
-        msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
-        document.getElementById("leadForm").reset();
-      } catch {
-        msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
-      }
-
-    });
-  }
-
   // ===================== INIT =====================
   setupWhatsApp();
   setupCounter();
@@ -1044,7 +942,6 @@ async function guardarLeadCata(lastUserMsg) {
   setupLeadForm();
   loadProperties();
 </script>
-
 
 <script>
 // ===================== CATA CHAT =====================
@@ -1076,7 +973,6 @@ async function openCata(propId, propTitulo) {
   document.getElementById('cataOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Cargar FAQs y objeciones desde el server (no Supabase directo)
   let faqs = [], objs = [];
   try {
     const [faqRes, objRes] = await Promise.all([
@@ -1089,7 +985,6 @@ async function openCata(propId, propTitulo) {
     console.warn('No se pudieron cargar FAQs/objeciones:', e.message);
   }
 
-  // Buscar los datos del inmueble en allProperties (ya cargado en el funnel)
   const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
 
   cataProp = {
@@ -1103,7 +998,6 @@ async function openCata(propId, propTitulo) {
     objections: objs
   };
 
-  // Mostrar botones de preguntas frecuentes
   const qbtns = document.getElementById('cataQBtns');
   (faqs || []).slice(0, 4).forEach(f => {
     const b = document.createElement('button');
@@ -1134,36 +1028,6 @@ function closeCata() {
   document.body.style.overflow = '';
 }
 
-function buildCataSystem() {
-  const p = cataProp || {};
-  const faqsText = p.faqs?.length
-    ? p.faqs.map(f => `P: ${f.pregunta || f.question || f.p || ''}\nR: ${f.respuesta || f.answer || f.r || ''}`).join('\n\n')
-    : 'Sin FAQs.';
-  const objText = p.objections?.length
-    ? p.objections.map(o => `Objeción: ${o.objecion || o.objection || o.o || ''}\nRespuesta: ${o.respuesta || o.answer || o.r || ''}`).join('\n\n')
-    : 'Sin objeciones.';
-  return `Sos Cata, asistente inmobiliaria de Vanina Buzzacchi en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
-
-PROPIEDAD:
-- Título: ${p.titulo||''}
-- Precio: ${p.precio||'Consultar'}
-- Zona: ${p.zona||''}
-- Descripción: ${p.descripcion||''}
-
-PREGUNTAS FRECUENTES:
-${faqsText}
-
-OBJECIONES:
-${objText}
-
-INSTRUCCIONES:
-- Respondé en español, tono cálido y cercano
-- Usá FAQs y objeciones cuando sean relevantes
-- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono/email
-- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
-- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
-}
-
 async function callCata(messages) {
   const res = await fetch('/api/cata-chat', {
     method: 'POST',
@@ -1174,20 +1038,13 @@ async function callCata(messages) {
   return res.json();
 }
 
-// Extrae el texto de la respuesta sea cual sea el formato
-// Soporta: Anthropic { content: [{type:'text', text:'...'}] }
-//          OpenAI fallback { ok: true, respuesta: '...' }
-//          Error { error: '...' }
 function extractCataText(data) {
   if (!data) return null;
-  // Formato Anthropic
   if (Array.isArray(data.content)) {
     const t = data.content.map(c => c.text || '').join('').trim();
     if (t) return t;
   }
-  // Formato OpenAI fallback
   if (data.respuesta) return String(data.respuesta).trim();
-  // Error explícito
   if (data.error) {
     console.error('Cata API error:', data.error);
     return null;
@@ -1234,7 +1091,7 @@ async function cataSend() {
     if (isLead && !cataLeadDone) {
       cataLeadDone = true;
       const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-    await guardarLeadCata(lastUser || '');
+      await guardarLeadCata(lastUser || '');
       document.getElementById('cataLeadOk').style.display = 'block';
     }
   } catch(e) {
