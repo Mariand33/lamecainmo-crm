@@ -1396,7 +1396,7 @@ app.get("/health", (_, res) => {
     uptime:    process.uptime(),
     ts:        new Date().toISOString(),
   });
-});
+
 app.post('/api/generar-contenido', async (req, res) => {
 
   try {
@@ -1433,31 +1433,33 @@ crear slides separados.
 Si es reel:
 crear hook + desarrollo + CTA.
 
+El contenido debe sentirse humano, estratégico y profesional.
 `;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4.1-mini',
+    const msg = await anthropic.messages.create({
+      model: "claude-3-5-sonnet-20241022",
+      max_tokens: 1200,
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: prompt
         }
       ]
     });
 
-    const resultado = completion.choices[0].message.content;
+    const resultado = msg.content[0].text;
 
     res.json({
-      ok:true,
+      ok: true,
       resultado
     });
 
-  } catch(err){
+  } catch(err) {
 
-    console.error(err);
+    console.error("ERROR CLAUDE:", err);
 
     res.json({
-      ok:false,
+      ok: false,
       error: err.message
     });
 
