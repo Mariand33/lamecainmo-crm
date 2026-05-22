@@ -493,6 +493,10 @@ app.get("/api/inmuebles/:id", async (req, res) => {
 
 app.post("/guardar", upload.fields([{ name: "imagenes" }, { name: "fotos360" }, { name: "video" }]), async (req, res) => {
   try {
+    const mostrar_demo = req.body.mostrar_demo === 'on';
+const compartida = req.body.compartida === 'on';
+const generar_contenido = req.body.generar_contenido === 'on';
+const publicar_funnel = req.body.publicar_funnel === 'on';
     // 1. Insertar primero sin fotos para obtener el ID
     const payloadInicial = inmToSb({ ...req.body, imagenes: [], estadoPublicacion: "borrador" });
     const { data: inserted, error: insertError } = await supabase
