@@ -498,7 +498,15 @@ const compartida = req.body.compartida === 'on';
 const generar_contenido = req.body.generar_contenido === 'on';
 const publicar_funnel = req.body.publicar_funnel === 'on';
     // 1. Insertar primero sin fotos para obtener el ID
-    const payloadInicial = inmToSb({ ...req.body, imagenes: [], estadoPublicacion: "borrador" });
+    const payloadInicial = inmToSb({
+  ...req.body,
+  imagenes: [],
+  estadoPublicacion: "borrador",
+  mostrar_demo,
+  compartida,
+  generar_contenido,
+  publicar_funnel
+});
     const { data: inserted, error: insertError } = await supabase
       .from("inmuebles").insert([payloadInicial]).select("id").single();
     if (insertError) { console.error("Error guardando:", insertError.message); return res.status(500).send("Error: " + insertError.message); }
