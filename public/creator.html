@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator IA - InmoCreador</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0f1115;
+  color:white;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:30px;
+}
+
+.card{
+  background:#181b22;
+  padding:24px;
+  border-radius:16px;
+  margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+h1{
+  margin-top:0;
+  color:#c9a84c;
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  font-size:14px;
+}
+
+select,
+textarea{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#232733;
+  color:white;
+  margin-bottom:16px;
+}
+
+textarea{
+  min-height:120px;
+}
+
+button{
+  background:#c9a84c;
+  color:#111;
+  border:none;
+  padding:14px 22px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+  width:100%;
+  font-size:16px;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.resultado{
+  white-space:pre-wrap;
+  line-height:1.6;
+  background:#10131a;
+  padding:20px;
+  border-radius:12px;
+  margin-top:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.loading{
+  opacity:.7;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="card">
+    <h1>🚀 Creator IA</h1>
+
+    <label>Objetivo</label>
+    <select id="objetivo">
+      <option>Ganar autoridad</option>
+      <option>Captar propietarios</option>
+      <option>Atraer compradores</option>
+      <option>Atraer inversores</option>
+    </select>
+
+    <label>Tema</label>
+    <select id="tema">
+      <option>Herencias</option>
+      <option>Errores al comprar</option>
+      <option>Emociones al vender</option>
+      <option>Inversión inmobiliaria</option>
+      <option>Miedo a decidir</option>
+      <option>Confianza</option>
+      <option>Mudanzas</option>
+    </select>
+
+    <label>Formato</label>
+    <select id="formato">
+      <option>Carrusel Instagram</option>
+      <option>Reel</option>
+      <option>Post Facebook</option>
+      <option>Caption</option>
+    </select>
+
+    <label>Idea adicional</label>
+    <textarea id="idea" placeholder="Ej: personas que heredan una casa y no saben qué hacer"></textarea>
+
+    <button onclick="generarContenido()">
+      ✨ Generar contenido
+    </button>
+
+    <div id="resultado" class="resultado" style="display:none"></div>
+  </div>
+
+</div>
+
+<script>
+
+async function generarContenido(){
+
+  const objetivo = document.getElementById('objetivo').value;
+  const tema = document.getElementById('tema').value;
+  const formato = document.getElementById('formato').value;
+  const idea = document.getElementById('idea').value;
+
+  const resultado = document.getElementById('resultado');
+
+  resultado.style.display = 'block';
+  resultado.innerHTML = '⏳ Generando contenido...';
+  resultado.classList.add('loading');
+
+  try{
+
+    const resp = await fetch('/api/generar-contenido', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        objetivo,
+        tema,
+        formato,
+        idea
+      })
+    });
+
+    const data = await resp.json();
+
+    resultado.classList.remove('loading');
+
+    if(data.ok){
+      resultado.innerHTML = data.resultado;
+    }else{
+      resultado.innerHTML = '❌ Error: ' + data.error;
+    }
+
+  }catch(err){
+    resultado.innerHTML = '❌ Error de conexión';
+  }
+
+}
+
+</script>
+
+</body>
+</html>
