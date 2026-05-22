@@ -13,7 +13,6 @@ const cors    = require("cors");
 const https   = require("https");
 const http    = require("http");
 const { createClient } = require("@supabase/supabase-js");
-const OpenAI      = require("openai");
 const PDFDocument = require("pdfkit");
 const sharp       = require("sharp");
 const Anthropic = require('@anthropic-ai/sdk');
