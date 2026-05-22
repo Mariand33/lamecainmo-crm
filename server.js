@@ -16,6 +16,11 @@ const { createClient } = require("@supabase/supabase-js");
 const OpenAI      = require("openai");
 const PDFDocument = require("pdfkit");
 const sharp       = require("sharp");
+const Anthropic = require('@anthropic-ai/sdk');
+
+const anthropic = new Anthropic({
+  apiKey: process.env.CLAUDE_API_KEY,
+});
 
 // =========================
 // MIDDLEWARE — UNA SOLA VEZ
