@@ -1400,7 +1400,7 @@ app.get("/health", (_, res) => {
     uptime:    process.uptime(),
     ts:        new Date().toISOString(),
   });
-
+});
 app.post('/api/generar-contenido', async (req, res) => {
 
   try {
