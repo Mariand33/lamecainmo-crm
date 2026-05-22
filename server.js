@@ -1397,7 +1397,73 @@ app.get("/health", (_, res) => {
     ts:        new Date().toISOString(),
   });
 });
+app.post('/api/generar-contenido', async (req, res) => {
 
+  try {
+
+    const { objetivo, tema, formato, idea } = req.body;
+
+    const prompt = `
+Sos un experto en marketing inmobiliario para Instagram.
+
+Creá un ${formato} orientado a:
+
+OBJETIVO:
+${objetivo}
+
+TEMA:
+${tema}
+
+IDEA:
+${idea}
+
+Debe:
+- generar autoridad
+- confianza
+- conexión emocional
+- posicionar al asesor inmobiliario
+
+No uses frases genéricas.
+
+Debe parecer contenido real de un profesional inmobiliario moderno.
+
+Si es carrusel:
+crear slides separados.
+
+Si es reel:
+crear hook + desarrollo + CTA.
+
+`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4.1-mini',
+      messages: [
+        {
+          role: 'user',
+          content: prompt
+        }
+      ]
+    });
+
+    const resultado = completion.choices[0].message.content;
+
+    res.json({
+      ok:true,
+      resultado
+    });
+
+  } catch(err){
+
+    console.error(err);
+
+    res.json({
+      ok:false,
+      error: err.message
+    });
+
+  }
+
+});
 // =========================
 // SERVER START
 // =========================
