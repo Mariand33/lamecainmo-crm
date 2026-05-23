@@ -939,7 +939,7 @@ app.post("/api/cata-chat", async (req, res) => {
       const sysCtx = system || (propiedad
         ? `Sos Cata, asistente de Vanina Buzzacchi en Río Cuarto. Propiedad: ${propiedad.titulo} · ${propiedad.zona} · ${propiedad.moneda} ${propiedad.precio}. Si capturás nombre + contacto, terminá con LEAD_CAPTURADO.`
         : "Sos Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto. Respondé en español, máximo 3 oraciones.");
-      const completion = await openai.chat.completions.create({
+      const msg = await anthropic.messages.create({
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: sysCtx },
