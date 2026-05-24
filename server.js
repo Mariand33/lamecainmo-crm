@@ -88,6 +88,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL || "",
   process.env.SUPABASE_KEY || ""
 );
+const OpenAI = require("openai");
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
 // =========================
