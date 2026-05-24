@@ -760,173 +760,79 @@ setupFilters();
 setupLeadForm();
 loadProperties();
 </script>
-
 <script>
+
 // ============================================================
-// CATA CHAT
+// ASESOR COMERCIAL IA
 // ============================================================
+
 const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
-const sbHdrs = {'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`};
+const SB_KEY = 'TU_SUPABASE_ANON_KEY';
 
-let cataProp=null, cataHistory=[], cataLeadDone=false;
+const sbHdrs = {
+  apikey: SB_KEY,
+  Authorization: `Bearer ${SB_KEY}`
+};
 
-async function sbPost(table,data){
-  await fetch(`${SB_URL}/rest/v1/${table}`,{method:'POST',headers:{...sbHdrs,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(data)});
+let asesorProp = null;
+let asesorHistory = [];
+let asesorLeadDone = false;
+
+async function sbPost(table, data) {
+
+  await fetch(`${SB_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      ...sbHdrs,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal'
+    },
+    body: JSON.stringify(data)
+  });
+
 }
 
-async function guardarLeadCata(lastUserMsg){
-  await sbPost('leads',{
-    propiedad:         cataProp?.id,
-    nombre:            'Lead chat Cata',
-    interes:           lastUserMsg.substring(0,200),
-    contacto:          lastUserMsg.substring(0,100),
+async function guardarLeadAsesor(lastUserMsg) {
+
+  await sbPost('leads', {
+    propiedad: asesorProp?.id,
+    nombre: 'Lead chat asesor IA',
+    interes: lastUserMsg.substring(0, 200),
+    contacto: lastUserMsg.substring(0, 100),
     vendedor_asignado: PROCEDENCIA,
-    procedencia:       PROCEDENCIA,
-    origen:            'cata-chat',
-  });
-}
-
-async function openCata(propId,propTitulo){
-  cataProp=null; cataHistory=[]; cataLeadDone=false;
-  document.getElementById('cataMsgs').innerHTML='';
-  document.getElementById('cataQBtns').innerHTML='';
-  document.getElementById('cataLeadOk').style.display='none';
-  document.getElementById('cataPropLabel').textContent=propTitulo||propId;
-  document.getElementById('cataInp').value='';
-  document.getElementById('cataOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-
-  let faqs=[],objs=[];
-  try{
-    const [fR,oR]=await Promise.all([fetch('/api/faqs'),fetch('/api/objeciones')]);
-    if(fR.ok) faqs=await fR.json();
-    if(oR.ok) objs=await oR.json();
-  }catch(e){console.warn('FAQs/objeciones no disponibles');}
-
-  const prop=allProperties.find(p=>String(p.id)===String(propId))||{id:propId,titulo:propTitulo};
-  cataProp={id:propId,titulo:propTitulo||prop.titulo||propId,zona:prop.zona||'',precio:prop.precio||'',moneda:prop.moneda||'USD',descripcion:prop.descripcion||'',faqs,objections:objs};
-
-  const qbtns=document.getElementById('cataQBtns');
-  (faqs||[]).slice(0,4).forEach(f=>{
-    const b=document.createElement('button'); b.className='cata-qq';
-    const pregunta=f.pregunta||f.question||'';
-    b.textContent=pregunta.length>40?pregunta.slice(0,38)+'…':pregunta;
-    b.onclick=()=>{document.getElementById('cataInp').value=pregunta;cataSend();};
-    qbtns.appendChild(b);
+    procedencia: PROCEDENCIA,
+    origen: 'asesor-comercial-ia'
   });
 
-  cataShowTyping();
-  try{
-    const res=await callCata([{role:'user',content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.'}]);
-    const text=extractCataText(res)||'¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
-    cataRemoveTyping(); cataAddMsg('assistant',text); cataHistory.push({role:'assistant',content:text});
-  }catch(e){
-    cataRemoveTyping(); cataAddMsg('assistant','¡Hola! Soy Cata 👋 Estoy acá para ayudarte. ¿Qué querés saber?');
+}
+
+function closeAsesor() {
+
+  document
+    .getElementById('asesorOverlay')
+    .classList.remove('open');
+
+  document.body.style.overflow = '';
+
+}
+
+document.addEventListener('keydown', e => {
+
+  if (e.key === 'Escape') {
+    closeAsesor();
   }
-  document.getElementById('cataInp').focus();
-}
 
-function closeCata(){
-  document.getElementById('cataOverlay').classList.remove('open');
-  document.body.style.overflow='';
-}
+});
 
-function buildCataSystem(){
-  const p=cataProp||{};
-  const faqsText=p.faqs?.length?p.faqs.map(f=>`P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join('\n\n'):'Sin FAQs.';
-  const objText=p.objections?.length?p.objections.map(o=>`Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join('\n\n'):'Sin objeciones.';
-  return `Sos Cata, asistente inmobiliaria de ${ASESOR.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
-
-PROPIEDAD:
-- Título: ${p.titulo||''}
-- Precio: ${p.precio||'Consultar'}
-- Zona: ${p.zona||''}
-- Descripción: ${p.descripcion||''}
-
-ASESOR A CARGO: ${ASESOR.nombre}
-WHATSAPP DEL ASESOR: https://wa.me/${ASESOR.telefono}
-
-PREGUNTAS FRECUENTES:
-${faqsText}
-
-OBJECIONES:
-${objText}
-
-INSTRUCCIONES:
-- Respondé en español, tono cálido y cercano
-- Usá FAQs y objeciones cuando sean relevantes
-- Si el usuario quiere visitar → pedile nombre y teléfono
-- Cuando des el contacto del asesor usá el WhatsApp indicado arriba
-- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
-- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
-}
-
-async function callCata(messages){
-  const res=await fetch('/api/cata-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:buildCataSystem(),messages})});
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  return res.json();
-}
-
-function extractCataText(data){
-  if(!data) return null;
-  if(Array.isArray(data.content)){const t=data.content.map(c=>c.text||'').join('').trim();if(t) return t;}
-  if(data.respuesta) return String(data.respuesta).trim();
-  if(data.error){console.error('Cata API error:',data.error);return null;}
-  return null;
-}
-
-function cataAddMsg(role,text){
-  const msgs=document.getElementById('cataMsgs');
-  const d=document.createElement('div'); d.className='cm '+role;
-  d.innerHTML=`<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
-}
-
-function cataShowTyping(){
-  const msgs=document.getElementById('cataMsgs');
-  const d=document.createElement('div'); d.className='cm assistant'; d.id='cataTyping';
-  d.innerHTML=`<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
-  msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
-}
-function cataRemoveTyping(){const t=document.getElementById('cataTyping');if(t)t.remove();}
-
-async function cataSend(){
-  const inp=document.getElementById('cataInp');
-  const text=inp.value.trim(); if(!text) return;
-  document.getElementById('cataSendBtn').disabled=true; inp.value='';
-  cataAddMsg('user',text.replace(/</g,'&lt;'));
-  cataHistory.push({role:'user',content:text});
-  cataShowTyping();
-  try{
-    const data=await callCata(cataHistory);
-    const full=extractCataText(data); if(!full) throw new Error('Respuesta vacía');
-    const isLead=full.includes('LEAD_CAPTURADO');
-    const clean=full.replace('LEAD_CAPTURADO','').trim();
-    cataRemoveTyping(); cataAddMsg('assistant',clean);
-    cataHistory.push({role:'assistant',content:clean});
-    if(isLead&&!cataLeadDone){
-      cataLeadDone=true;
-      const lastUser=cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content||'';
-      await guardarLeadCata(lastUser);
-      document.getElementById('cataLeadOk').style.display='block';
-    }
-  }catch(e){
-    console.error('cataSend error:',e);
-    cataRemoveTyping();
-    cataAddMsg('assistant','Hubo un problema al conectar. Por favor intentá de nuevo en un momento.');
-  }
-  document.getElementById('cataSendBtn').disabled=false;
-  document.getElementById('cataInp').focus();
-}
-
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCata();});
 </script>
 
 <script>
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("/sw-funnel.js").catch(()=>{});
   }
+</script>
+
+
 </script>
 </body>
 </html>
