@@ -711,10 +711,13 @@ const PROCEDENCIA = (_ref && ASESORES[_ref]) ? _ref : "directo";
 localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
 
 // 3. CONSTANTES
-const API_URL   = "/api/inmuebles-publicos";
-const LEADS_URL = "/api/leads";
-const MATCH_URL = "/api/match-ia";
-const IMG_BASE  = "/uploads/";
+const API_URL     = "/api/inmuebles-publicos";
+const LEADS_URL   = "/api/leads";
+const MATCH_URL   = "/api/match-ia";
+const IMG_BASE    = "/uploads/";
+const SB_URL      = "https://nniivhebocgdsynlpuhf.supabase.co";
+const SB_KEY      = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70";
+const SB_HEADERS  = { "apikey": SB_KEY, "Authorization": "Bearer " + SB_KEY };
 
 // 4. INYECTAR NOMBRE EN DOM
 document.addEventListener("DOMContentLoaded", () => {
@@ -780,7 +783,7 @@ function updateBudget() {
 }
 
 // 9. IA MATCH
-async async function buscarConIA() {
+async function buscarConIA() {
   const consulta    = document.getElementById("iaQuery").value.trim();
   const presupuesto = Number(document.getElementById("budgetRange").value) || null;
   const operacion   = document.getElementById("iaOperacion").value;
@@ -935,69 +938,124 @@ function setupFilters() {
   document.getElementById("searchInput").addEventListener("input",applyFilters);
 }
 
+
+// ── FETCH DIRECTO A SUPABASE (fallback sin servidor) ──
+async function fetchDesdeSupabase() {
+  const url = SB_URL + "/rest/v1/inmuebles" +
+    "?select=*" +
+    "&estado_publicacion=in.(lista,publicada,Publicada,Lista)" +
+    "&order=id.desc";
+  const res = await fetch(url, { headers: SB_HEADERS, cache: "no-store" });
+  if (!res.ok) throw new Error("Supabase HTTP " + res.status);
+  const rows = await res.json();
+  if (!Array.isArray(rows)) throw new Error("Supabase no devolvió array");
+  // Mapear campos snake_case → camelCase igual que sbToInm del server
+  return rows.map(r => ({
+    id:               r.id,
+    titulo:           r.titulo           || "",
+    descripcion:      r.descripcion      || "",
+    precio:           r.precio           || 0,
+    moneda:           r.moneda           || "USD",
+    tipoOperacion:    r.tipo_operacion   || "",
+    tipoInmueble:     r.tipo_inmueble    || "",
+    zona:             r.zona             || "",
+    direccion:        r.direccion        || "",
+    entre_calles:     r.entre_calles     || "",
+    dormitorios:      r.dormitorios      || 0,
+    banos:            r.banos            || 0,
+    superficie:       r.superficie       || 0,
+    superficieCub:    r.superficie_cub   || 0,
+    estadoPublicacion:r.estado_publicacion || "",
+    imagenes:         r.imagenes         || [],
+    mediaUrls:        r.media_urls       || [],
+    videoUrl:         r.video_url        || null,
+    latitud:          r.latitud          || null,
+    longitud:         r.longitud         || null,
+    vecesPub:         r.veces_publicado  || 0,
+    createdAt:        r.created_at       || "",
+  }));
+}
+
 // 13. LOAD PROPERTIES
 async function loadProperties() {
   const loader = document.getElementById("loader");
   const grid   = document.getElementById("propertiesGrid");
 
-  // Fetch con timeout configurable
-  async function fetchWithTimeout(url, ms=25000) {
+  function mostrarPropiedades(data) {
+    allProperties = Array.isArray(data) ? data : [];
+    document.getElementById("miniTotal").textContent    = allProperties.length;
+    document.getElementById("miniVenta").textContent    = allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("venta")).length;
+    document.getElementById("miniAlquiler").textContent = allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("alquiler")).length;
+    loader.style.display = "none";
+    grid.style.display   = "grid";
+    applyFilters();
+    setTimeout(cargarRanking, 500);
+  }
+
+  // ── INTENTO 1: Servidor Render (rápido si está despierto) ──
+  loader.textContent = "Cargando propiedades...";
+  try {
     const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), ms);
-    try {
-      const r = await fetch(url, { cache:"no-store", signal: ctrl.signal });
-      clearTimeout(tid);
-      return r;
-    } catch(e) { clearTimeout(tid); throw e; }
-  }
-
-  // Intentos con espera progresiva
-  const delays = [0, 5000, 10000]; // 3 intentos: inmediato, 5s, 10s
-  for (let i = 0; i < delays.length; i++) {
-    if (delays[i] > 0) {
-      loader.innerHTML = `⏳ Reconectando (${i+1}/3)... <small style="opacity:.5">El servidor puede tardar hasta 30s en arrancar</small>`;
-      await new Promise(r => setTimeout(r, delays[i]));
-    } else {
-      loader.textContent = "Cargando propiedades...";
-    }
-    try {
-      const res = await fetchWithTimeout(API_URL, 30000);
-      if (!res.ok) throw new Error("HTTP " + res.status);
+    setTimeout(() => ctrl.abort(), 8000); // 8s timeout para Render
+    const res = await fetch(API_URL, { cache:"no-store", signal: ctrl.signal });
+    if (res.ok) {
       const data = await res.json();
-      allProperties = Array.isArray(data) ? data : [];
-      if (allProperties.length === 0 && i < 2) {
-        // API respondió pero vacío — podría ser error de Supabase, reintentar
-        throw new Error("Lista vacía, reintentando...");
+      if (Array.isArray(data) && data.length > 0) {
+        mostrarPropiedades(data);
+        return;
       }
-      // ── ÉXITO ──
-      document.getElementById("miniTotal").textContent    = allProperties.length;
-      document.getElementById("miniVenta").textContent    = allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("venta")).length;
-      document.getElementById("miniAlquiler").textContent = allProperties.filter(p=>normalize(p.tipoOperacion||"").includes("alquiler")).length;
-      loader.style.display = "none";
-      grid.style.display   = "grid";
-      applyFilters();
-      cargarRanking();
-      return;
-    } catch(e) {
-      console.warn(`loadProperties intento ${i+1} falló:`, e.message);
     }
+  } catch(e) { console.warn("Render no disponible, usando Supabase directo:", e.message); }
+
+  // ── INTENTO 2: Supabase directo (siempre disponible) ──
+  loader.innerHTML = "⚡ Conectando con la base de datos...";
+  try {
+    const data = await fetchDesdeSupabase();
+    if (data.length > 0) {
+      mostrarPropiedades(data);
+      return;
+    }
+    // Si hay 0 propiedades publicadas, mostrar igual
+    mostrarPropiedades(data);
+    return;
+  } catch(e) {
+    console.error("Supabase directo falló:", e.message);
   }
 
-  // ── TODOS LOS INTENTOS FALLARON ──
+  // ── INTENTO 3: Reintentar Render (puede que esté despertando) ──
+  loader.innerHTML = "⏳ El servidor está iniciando, aguardá un momento...";
+  await new Promise(r => setTimeout(r, 15000));
+  try {
+    const res = await fetch(API_URL, { cache:"no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      mostrarPropiedades(data);
+      return;
+    }
+  } catch(e) { console.warn("Intento final falló:", e.message); }
+
+  // ── ÚLTIMO RECURSO: Supabase de nuevo ──
+  try {
+    const data = await fetchDesdeSupabase();
+    mostrarPropiedades(data);
+    return;
+  } catch(e) {}
+
+  // ── TODO FALLÓ ──
   loader.innerHTML = `
-    <div style="text-align:center;padding:20px 0">
-      <div style="font-size:32px;margin-bottom:12px">⚠️</div>
-      <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:16px">
-        No pudimos conectar con el servidor.<br>
-        <small style="opacity:.5">Esto puede ocurrir cuando el servidor está iniciando (hasta 60s en el plan gratuito).</small>
+    <div style="text-align:center;padding:24px 0">
+      <div style="font-size:36px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:20px;line-height:1.6">
+        No pudimos cargar las propiedades.<br>
+        <small style="opacity:.5">Revisá tu conexión a internet e intentá de nuevo.</small>
       </div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button onclick="location.reload()" style="background:rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.4);color:#00e5ff;padding:10px 20px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;">
+        <button onclick="location.reload()" style="background:rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.4);color:#00e5ff;padding:10px 22px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;">
           🔄 Reintentar
         </button>
         <a href="https://wa.me/5493584322626?text=Hola+Vanina,+quiero+ver+las+propiedades+disponibles" target="_blank"
-           style="background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#25d366;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:13px;">
-          💬 Consultar por WhatsApp
+           style="background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#25d366;padding:10px 22px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">
+          💬 WhatsApp
         </a>
       </div>
     </div>`;
