@@ -953,7 +953,14 @@ function renderCards(items) {
           </span>
         </div>`:""}
         ${(()=>{
-          const imgs = [...(item.imagenes||[]).map(i=>'/uploads/'+i), ...(item.mediaUrls||[])].filter(Boolean);
+          const imgs = [
+  ...(item.imagenes || []).map(i =>
+    i && (i.startsWith('http://') || i.startsWith('https://'))
+      ? i
+      : '/uploads/' + i
+  ),
+  ...(item.mediaUrls || [])
+].filter(Boolean);
           const allImgs = imgs.length ? imgs : ['https://placehold.co/900x620/020d12/00e5ff?text=Propiedad'];
           const uid = 'car_'+item.id;
           return allImgs.length > 1
