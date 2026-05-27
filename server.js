@@ -88,8 +88,11 @@ const supabase = createClient(
   process.env.SUPABASE_URL || "",
   process.env.SUPABASE_KEY || ""
 );
-const OpenAI = require("openai");
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
+let openai = null;
+try {
+  const OpenAI = require("openai");
+  openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
+} catch(e) { console.warn("OpenAI SDK no disponible:", e.message); }
 
 // =========================
 // DATA LOCAL — notificaciones
@@ -416,8 +419,9 @@ function sbToInm(r) {
     linkPublicacion:     r.link_publicacion,
     thumbUrl:            r.thumb_url,
     cantidadPublicaciones: r.cantidad_publicaciones || 0,
-    embedCodigo: r.embed_codigo || null,
-embedTexto:  r.embed_texto  || null,
+    embedCodigo:   r.embed_codigo  || null,
+    embedTexto:    r.embed_texto   || null,
+    entre_calles:  r.entre_calles  || null,
   };
 }
 
@@ -825,6 +829,7 @@ app.post("/api/transcribir-audio", upload.single("audio"), async (req, res) => {
   try {
     const stream = require("stream").Readable.from(req.file.buffer);
     stream.path = "audio.webm";
+    if(!openai) throw new Error("OpenAI no disponible");
     const r = await openai.audio.transcriptions.create({ file: stream, model: "whisper-1", language: "es" });
     res.json({ ok: true, texto: r.text });
   } catch (e) { res.status(500).json({ ok: false }); }
@@ -941,6 +946,7 @@ app.post("/api/cata-chat", async (req, res) => {
       const sysCtx = system || (propiedad
         ? `Sos Cata, asistente de Vanina Buzzacchi en Río Cuarto. Propiedad: ${propiedad.titulo} · ${propiedad.zona} · ${propiedad.moneda} ${propiedad.precio}. Si capturás nombre + contacto, terminá con LEAD_CAPTURADO.`
         : "Sos Cata, asistente de Vanina Buzzacchi Negocios Inmobiliarios en Río Cuarto. Respondé en español, máximo 3 oraciones.");
+      if (!openai) throw new Error("OpenAI no disponible");
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
@@ -975,7 +981,7 @@ app.post("/api/match-ia", async (req, res) => {
     const { data: inmuebles, error } = await supabase
       .from("inmuebles")
       .select("id, titulo, zona, tipo_operacion, tipo_propiedad, precio, dormitorios, banos, descripcion, superficie_total")
-      .in("estado_publicacion", ["lista","publicada","Publicada","Lista","publicado"])
+      .eq("estado_publicacion", "publicado")
       .limit(100);
 
     if (error) return res.status(500).json({ ok: false, error: error.message });
@@ -1034,139 +1040,6 @@ Incluí solo las propiedades que realmente coinciden (máximo 8). Los scores son
     res.status(500).json({ ok: false, error: e.message });
   }
 });
-
-// =========================
-// VISITAS: registrar y obtener
-// =========================
-const visitasMap = {}; // { id: { count, lastVisit, history:[ts,...] } }
-
-app.post("/api/visitas/:id", (req, res) => {
-  const id = String(req.params.id);
-  if (!visitasMap[id]) visitasMap[id] = { count: 0, history: [] };
-  visitasMap[id].count++;
-  visitasMap[id].lastVisit = Date.now();
-  visitasMap[id].history.push(Date.now());
-  // Mantener solo últimas 200 visitas por propiedad
-  if (visitasMap[id].history.length > 200) visitasMap[id].history.shift();
-  res.json({ ok: true, count: visitasMap[id].count });
-});
-
-app.get("/api/visitas/:id", (req, res) => {
-  const id = String(req.params.id);
-  res.json(visitasMap[id] || { count: 0, history: [] });
-});
-
-// =========================
-// RANKING: propiedades más visitadas
-// =========================
-app.get("/api/ranking", async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 6;
-    // Ordenar por visitas
-    const ranked = Object.entries(visitasMap)
-      .sort((a, b) => b[1].count - a[1].count)
-      .slice(0, limit)
-      .map(([id, v]) => ({ id, visitas: v.count, lastVisit: v.lastVisit }));
-
-    if (!ranked.length) {
-      // Si no hay visitas todavía, devolver las más recientes de Supabase
-      const { data } = await supabase
-        .from("inmuebles")
-        .select("id, titulo, zona, precio, moneda, tipo_operacion, media_urls, entre_calles")
-        .in("estado_publicacion", ["lista","publicada","Publicada","Lista"])
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      return res.json({ ok: true, ranking: (data||[]).map(p => ({ ...p, visitas: 0 })) });
-    }
-
-    // Enriquecer con datos de Supabase
-    const ids = ranked.map(r => r.id);
-    const { data: props } = await supabase
-      .from("inmuebles")
-      .select("id, titulo, zona, precio, moneda, tipo_operacion, media_urls, entre_calles")
-      .in("id", ids);
-
-    const propMap = {};
-    (props||[]).forEach(p => { propMap[String(p.id)] = p; });
-
-    const result = ranked.map(r => ({
-      ...(propMap[r.id] || { id: r.id }),
-      visitas: r.visitas,
-      lastVisit: r.lastVisit
-    }));
-
-    res.json({ ok: true, ranking: result });
-  } catch(e) {
-    console.error("Ranking error:", e.message);
-    res.status(500).json({ ok: false, error: e.message });
-  }
-});
-
-// =========================
-// NEUROSCORE: calcula puntaje de un lead/búsqueda
-// =========================
-app.post("/api/neuroscore", async (req, res) => {
-  const { nombre, telefono, mensaje, origen, interes, presupuesto, operacion } = req.body;
-
-  // Cálculo local (sin IA — rápido y confiable)
-  const msg = (mensaje || "").toLowerCase();
-  const tel = (telefono || "").replace(/\D/g,"").length >= 8;
-
-  // Urgencia
-  const urgWords = ["cuánto","cuanto","precio","sale","disponible","urgente","hoy","ya","me interesa","necesito","quiero","busco","cuántos","dormitorios","metros"];
-  let urgencia = 20;
-  urgWords.forEach(w => { if(msg.includes(w)) urgencia = Math.min(urgencia + 12, 100); });
-
-  // Intención
-  const intencionMap = { compra: 90, venta: 85, alquiler: 75, inversion: 88, consulta: 40 };
-  const intencion = intencionMap[interes] || (msg.includes("comprar") ? 85 : msg.includes("alquilar") ? 75 : 50);
-
-  // Contactabilidad
-  let contacto = tel ? 85 : 30;
-  if (msg.length > 30) contacto = Math.min(contacto + 10, 100);
-  if (nombre && nombre.split(" ").length >= 2) contacto = Math.min(contacto + 10, 100);
-
-  // Calidad del mensaje
-  const calidad = Math.min(15 + msg.length * 1.1, 100);
-
-  // Origen
-  const origenScore = { web: 70, whatsapp: 90, facebook: 80, instagram: 78, llamada: 95, referido: 98, email: 65 }[origen] || 60;
-
-  // Presupuesto declarado
-  const presupuestoScore = presupuesto && Number(presupuesto) > 0 ? 85 : 40;
-
-  const total = Math.round(
-    urgencia * .22 +
-    intencion * .25 +
-    contacto * .20 +
-    calidad * .08 +
-    origenScore * .12 +
-    presupuestoScore * .13
-  );
-
-  const nivel = total >= 80 ? "HOT" : total >= 60 ? "CALIFICADO" : total >= 40 ? "TIBIO" : "FRIO";
-  const color = total >= 80 ? "#ff4466" : total >= 60 ? "#00f5aa" : total >= 40 ? "#f0d080" : "#4a7a8a";
-
-  // Tags automáticos
-  const tags = [];
-  if (urgencia >= 60) tags.push("Urgencia alta");
-  if (intencion >= 80) tags.push("Buyer intención");
-  if (contacto >= 80) tags.push("Contactable");
-  if (origenScore >= 85) tags.push("Canal premium");
-  if (presupuesto) tags.push("Presupuesto declarado");
-  if (total >= 80) tags.push("🔥 Lead HOT");
-  if (total < 40) tags.push("Necesita nurturing");
-
-  res.json({
-    ok: true,
-    score: total,
-    nivel,
-    color,
-    tags,
-    factores: { urgencia, intencion, contacto, calidad, origen: origenScore, presupuesto: presupuestoScore }
-  });
-});
-
 
 
 // =========================
@@ -1609,6 +1482,83 @@ El contenido debe sentirse humano, estratégico y profesional.
 // SERVER START
 // =========================
 const PORT = process.env.PORT || 10000;
+
+// =========================
+// VISITAS
+// =========================
+const visitasMap = {};
+app.post("/api/visitas/:id", (req, res) => {
+  const id = String(req.params.id);
+  if (!visitasMap[id]) visitasMap[id] = { count: 0, history: [] };
+  visitasMap[id].count++;
+  visitasMap[id].lastVisit = Date.now();
+  if (visitasMap[id].history.length > 200) visitasMap[id].history.shift();
+  visitasMap[id].history.push(Date.now());
+  res.json({ ok: true, count: visitasMap[id].count });
+});
+app.get("/api/visitas/:id", (req, res) => {
+  const id = String(req.params.id);
+  res.json(visitasMap[id] || { count: 0, history: [] });
+});
+
+// =========================
+// RANKING
+// =========================
+app.get("/api/ranking", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6;
+    const ranked = Object.entries(visitasMap)
+      .sort((a,b) => b[1].count - a[1].count)
+      .slice(0, limit)
+      .map(([id,v]) => ({ id, visitas: v.count }));
+    if (!ranked.length) {
+      const { data } = await supabase.from("inmuebles")
+        .select("id, titulo, zona, precio, moneda, tipo_operacion, media_urls")
+        .in("estado_publicacion", ["lista","publicada","Publicada","Lista"])
+        .order("created_at", { ascending: false })
+        .limit(limit);
+      return res.json({ ok: true, ranking: (data||[]).map(p => ({ ...p, visitas: 0 })) });
+    }
+    const ids = ranked.map(r => r.id);
+    const { data: props } = await supabase.from("inmuebles")
+      .select("id, titulo, zona, precio, moneda, tipo_operacion, media_urls")
+      .in("id", ids);
+    const propMap = {};
+    (props||[]).forEach(p => { propMap[String(p.id)] = p; });
+    res.json({ ok: true, ranking: ranked.map(r => ({ ...(propMap[r.id]||{id:r.id}), visitas: r.visitas })) });
+  } catch(e) { res.status(500).json({ ok: false, error: e.message }); }
+});
+
+// =========================
+// NEUROSCORE
+// =========================
+app.post("/api/neuroscore", (req, res) => {
+  const { nombre, telefono, mensaje, origen, interes, presupuesto } = req.body;
+  const msg = (mensaje||"").toLowerCase();
+  const tel = (telefono||"").replace(/[^0-9]/g,"").length >= 8;
+  const urgWords = ["cuanto","precio","sale","disponible","urgente","hoy","ya","me interesa","necesito","quiero","busco","dormitorios","metros"];
+  let urgencia = 20;
+  urgWords.forEach(w => { if(msg.includes(w)) urgencia = Math.min(urgencia+12,100); });
+  const intencionMap = { compra:90, venta:85, alquiler:75, inversion:88, consulta:40 };
+  const intencion = intencionMap[interes] || 50;
+  let contacto = tel ? 85 : 30;
+  if(msg.length > 30) contacto = Math.min(contacto+10,100);
+  if(nombre && nombre.split(" ").length >= 2) contacto = Math.min(contacto+10,100);
+  const calidad = Math.min(15 + msg.length*1.1, 100);
+  const origenScore = {web:70,whatsapp:90,facebook:80,instagram:78,llamada:95,referido:98,email:65}[origen]||60;
+  const presScore = presupuesto && Number(presupuesto)>0 ? 85 : 40;
+  const total = Math.round(urgencia*.22+intencion*.25+contacto*.20+calidad*.08+origenScore*.12+presScore*.13);
+  const nivel = total>=80?"HOT":total>=60?"CALIFICADO":total>=40?"TIBIO":"FRIO";
+  const tags = [];
+  if(urgencia>=60) tags.push("Urgencia alta");
+  if(intencion>=80) tags.push("Buyer intención");
+  if(contacto>=80) tags.push("Contactable");
+  if(total>=80) tags.push("🔥 Lead HOT");
+  if(presupuesto) tags.push("Presupuesto declarado");
+  res.json({ ok:true, score:total, nivel, color: total>=80?"#ff4466":total>=60?"#00f5aa":total>=40?"#f0d080":"#4a7a8a", tags,
+    factores:{urgencia,intencion,contacto,calidad,origen:origenScore,presupuesto:presScore} });
+});
+
 app.listen(PORT, () => {
   console.log(`\n✅ BUZZACCHI CRM — Puerto ${PORT}`);
   console.log(`🔗 Supabase:  ${process.env.SUPABASE_URL  ? "✅" : "❌ FALTA"}`);
