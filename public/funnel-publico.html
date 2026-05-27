@@ -184,7 +184,112 @@
     .stars{color:var(--gold);font-size:13px;margin-bottom:12px;letter-spacing:2px}
     .testimonial p{margin-bottom:16px;line-height:1.65;color:rgba(255,255,255,.65);font-size:14px;font-style:italic}
     .testimonial strong{display:block;color:var(--gold2);font-size:12px;font-weight:600;letter-spacing:.03em}
+/* =========================
+   CONSEJOS
+========================= */
 
+.tips-section{
+  padding:90px 0;
+  background:linear-gradient(180deg,#07131b 0%, #081923 100%);
+}
+
+.center{text-align:center}
+
+.mini-tag{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(0,229,255,.08);
+  color:#00e5ff;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:14px;
+}
+
+.tips-slider{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:22px;
+  margin-top:40px;
+}
+
+.tip-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:24px;
+  padding:28px;
+  transition:.3s ease;
+  backdrop-filter:blur(8px);
+}
+
+.tip-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(0,229,255,.3);
+}
+
+.tip-icon{
+  font-size:34px;
+  margin-bottom:14px;
+}
+
+.tip-card h3{
+  font-size:22px;
+  margin-bottom:14px;
+  color:#fff;
+}
+
+.tip-card p{
+  color:#b8c2cc;
+  line-height:1.7;
+  font-size:15px;
+}
+
+.tip-footer{
+  margin-top:20px;
+}
+
+.tip-footer span{
+  color:#00e5ff;
+  font-weight:700;
+  font-size:14px;
+}
+
+.tips-cta{
+  margin-top:50px;
+  text-align:center;
+  padding:40px;
+  border-radius:30px;
+  background:rgba(0,229,255,.05);
+  border:1px solid rgba(0,229,255,.12);
+}
+
+.tips-cta h3{
+  font-size:28px;
+  margin-bottom:12px;
+}
+
+.tips-cta p{
+  color:#b8c2cc;
+  margin-bottom:24px;
+}
+
+.btn-tip-wa{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:16px 26px;
+  border-radius:999px;
+  background:#00e5ff;
+  color:#041018;
+  font-weight:800;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.btn-tip-wa:hover{
+  transform:translateY(-2px) scale(1.02);
+}
     /* ===== FOOTER ===== */
     .footer{background:linear-gradient(180deg,#060e09,#040a06);color:#eee;padding:48px 0 100px;text-align:center;border-top:1px solid rgba(201,168,76,.1);position:relative;overflow:hidden}
     .footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
@@ -408,7 +513,50 @@
     </div>
   </div>
 </section>
+<section class="owner-ai-section">
 
+  <div class="owner-ai-wrap">
+
+    <div class="owner-ai-head">
+      <span class="owner-mini">🧠 Diagnóstico Inteligente</span>
+
+      <h2>
+        ¿Tu propiedad está realmente lista para venderse?
+      </h2>
+
+      <p>
+        La mayoría de las propiedades no tardan en venderse por mala suerte.
+        Sino por estrategia, precio y posicionamiento.
+      </p>
+    </div>
+
+    <div class="owner-chat" id="ownerChat">
+
+      <div class="owner-msg ia">
+        👋 Hola. Soy el asistente inmobiliario de Vanina Buzzacchi.
+        Voy a hacerte algunas preguntas rápidas para detectar posibles puntos que estén frenando la venta.
+      </div>
+
+      <div class="owner-step active" data-step="1">
+
+        <div class="owner-q">
+          ¿Hace cuánto tiempo está publicada tu propiedad?
+        </div>
+
+        <div class="owner-options">
+          <button onclick="ownerAnswer(1,'menos')">Menos de 30 días</button>
+          <button onclick="ownerAnswer(1,'3meses')">1 a 3 meses</button>
+          <button onclick="ownerAnswer(1,'6meses')">Más de 3 meses</button>
+          <button onclick="ownerAnswer(1,'mucho')">Más de 6 meses</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 <section class="testimonials-section">
   <div class="container">
     <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
