@@ -94,11 +94,35 @@ let imgs=[], lbI=0, cmI=0, cmT=null;
 function pid(){return new URLSearchParams(location.search).get("id");}
 function fmt(p){const n=Number(p.precio||0);return n?(p.moneda||"USD")+" "+n.toLocaleString("es-AR"):"Consultar";}
 
+function buildImgUrl(img){
+  if(!img) return "";
+
+  if(
+    img.startsWith("http://") ||
+    img.startsWith("https://") ||
+    img.startsWith("/uploads/")
+  ){
+    return img;
+  }
+
+  return RENDER + "/uploads/" + img;
+}
+
 function buildImgs(p){
   const out=[];
-  (p.imagenes||[]).forEach(i=>out.push(RENDER+"/uploads/"+i));
-  (p.mediaUrls||p.media_urls||[]).forEach(u=>{if(!out.includes(u))out.push(u);});
-  return out.length?out:["https://placehold.co/1200x700/041018/00e5ff?text=Sin+fotos"];
+
+  (p.imagenes || []).forEach(i=>{
+    const url = buildImgUrl(i);
+    if(url && !out.includes(url)) out.push(url);
+  });
+
+  (p.mediaUrls || p.media_urls || []).forEach(u=>{
+    if(u && !out.includes(u)) out.push(u);
+  });
+
+  return out.length
+    ? out
+    : ["https://placehold.co/1200x700/041018/00e5ff?text=Sin+fotos"];
 }
 
 /* CARRUSEL */
