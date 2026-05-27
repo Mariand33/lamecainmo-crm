@@ -894,8 +894,8 @@ function renderCards(items) {
         <div class="card-actions">
           <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}" onclick="registrarVisita(${item.id})">Ver ficha</a>
           ${isConcretada
-            ?`<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
-            :`<a class="btn-card btn-contact" href="${waHref}" target="_blank" onclick="if(this.href==='#'||!this.href){event.preventDefault();window.open('https://wa.me/5493584322626?text=Hola+Vanina,+vi+esta+propiedad+y+quiero+más+información','_blank')}">Consultar</a>`
+            ?`<span class="btn-card" style="background:rgba(255,255,255,.06);color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
+            :`<a class="btn-card btn-contact" href="${waHref}" target="_blank">💬 Consultar</a>`
           }
           ${!isConcretada?`<button class="btn-card btn-asesor-ia" onclick="openAsesor(${JSON.stringify({id:item.id,titulo:item.titulo,zona:item.zona,precio:item.precio,moneda:item.moneda,tipo_operacion:item.tipoOperacion,entre_calles:item.entre_calles,descripcion:(item.descripcion||'').substring(0,200)}).replace(/"/g,'&quot;')})">🤖 Asesor IA</button>`:``}
           <button class="btn-card btn-share" title="Compartir" onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\\'")}','${formatPrice(item).replace(/'/g,"\\'")}')">
@@ -1188,34 +1188,85 @@ async function enviarAsesor() {
   typing.className = 'amsg bot';
   typing.innerHTML = '<div class="amsg-bubble" style="opacity:.6">✍️ escribiendo...</div>';
   if (msgs) { msgs.appendChild(typing); msgs.scrollTop = msgs.scrollHeight; }
+
+  const propCtx = asesorProp
+    ? `Propiedad: "${asesorProp.titulo||''}" | Zona: ${asesorProp.zona||''} | Entre calles: ${asesorProp.entre_calles||''} | Precio: ${asesorProp.moneda||'USD'} ${asesorProp.precio||'consultar'} | Tipo: ${asesorProp.tipo_operacion||''} | ${(asesorProp.descripcion||'').substring(0,200)}`
+    : 'Consulta general sobre propiedades disponibles en Río Cuarto.';
+
+  const systemPrompt = `Sos el asesor comercial IA de Vanina Buzzacchi Negocios Inmobiliarios, Río Cuarto, Córdoba, Argentina. Respondés en español argentino, amable y profesional, máximo 3-4 oraciones. ${propCtx}. WhatsApp de contacto: +54 9 358 570-1632. Si el usuario quiere visitar o tiene interés concreto, invitalo a escribir por WhatsApp. Si obtenés nombre + teléfono, agregá LEAD_CAPTURADO al final.`;
+
+  // Intentar servidor Render primero
+  let respText = null;
   try {
-    const propCtx = asesorProp
-      ? `Propiedad consultada: "${asesorProp.titulo || ''}" | Zona: ${asesorProp.zona || ''} | Entre calles: ${asesorProp.entre_calles || ''} | Precio: ${asesorProp.moneda || 'USD'} ${asesorProp.precio || 'consultar'} | Tipo: ${asesorProp.tipo_operacion || ''} | ${(asesorProp.descripcion || '').substring(0,200)}`
-      : 'Consulta general sobre propiedades disponibles.';
-    const system = `Sos el asesor comercial IA de Vanina Buzzacchi Negocios Inmobiliarios, Río Cuarto, Córdoba, Argentina. Respondés en español argentino, amable y profesional, máximo 3-4 oraciones. ${propCtx}. Si el usuario quiere visitar o contactar, mencioná WhatsApp ${ASESOR.telefono}. Si obtenés nombre + teléfono del usuario, agregá LEAD_CAPTURADO al final.`;
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 8000);
     const resp = await fetch('/api/cata-chat', {
-      method: 'POST',
+      method: 'POST', signal: ctrl.signal,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, messages: asesorHistory.slice(-10) })
+      body: JSON.stringify({ system: systemPrompt, messages: asesorHistory.slice(-10) })
     });
-    if (typing.parentNode) typing.parentNode.removeChild(typing);
-    const data = await resp.json();
-    if (!resp.ok || data.error) {
-      appendAsesorMsg('bot', 'Disculpá, hubo un problema. Contactá a Vanina por WhatsApp 📱');
-      return;
+    if (resp.ok) {
+      const data = await resp.json();
+      respText = data.content?.[0]?.text || null;
     }
-    const botText = (data.content?.[0]?.text || '').replace('LEAD_CAPTURADO','').trim() || 'No pude procesar tu consulta. Escribinos por WhatsApp.';
-    appendAsesorMsg('bot', botText);
-    asesorHistory.push({ role: 'assistant', content: botText });
-    if ((data.content?.[0]?.text || '').includes('LEAD_CAPTURADO') && !asesorLeadDone) {
+  } catch(e) { console.warn('cata-chat Render falló, usando Anthropic directo'); }
+
+  // Fallback: Anthropic API directo desde frontend
+  if (!respText) {
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': '',
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 400,
+          system: systemPrompt,
+          messages: asesorHistory.slice(-10)
+        })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        respText = data.content?.[0]?.text || null;
+      }
+    } catch(e) { console.warn('Anthropic directo falló:', e.message); }
+  }
+
+  if (typing.parentNode) typing.parentNode.removeChild(typing);
+
+  if (respText) {
+    const clean = respText.replace('LEAD_CAPTURADO','').trim();
+    appendAsesorMsg('bot', clean);
+    asesorHistory.push({ role: 'assistant', content: clean });
+    if (respText.includes('LEAD_CAPTURADO') && !asesorLeadDone) {
       asesorLeadDone = true;
       guardarLeadAsesor(texto);
     }
-  } catch(e) {
-    if (typing.parentNode) typing.parentNode.removeChild(typing);
-    appendAsesorMsg('bot', 'No pude conectarme. Contactá a Vanina por WhatsApp 📱');
-    console.error('Asesor error:', e.message);
+  } else {
+    // Último recurso: respuesta inteligente local
+    const respLocal = generarRespuestaLocal(texto, asesorProp);
+    appendAsesorMsg('bot', respLocal);
+    asesorHistory.push({ role: 'assistant', content: respLocal });
   }
+}
+
+// Respuesta local sin IA (último recurso)
+function generarRespuestaLocal(msg, prop) {
+  const m = msg.toLowerCase();
+  const wa = `https://wa.me/5493585701632?text=${encodeURIComponent('Hola Vanina, consulto por ' + (prop?.titulo || 'una propiedad'))}`;
+  if (m.includes('precio') || m.includes('cuánto') || m.includes('cuanto') || m.includes('vale'))
+    return prop ? `El precio de "${prop.titulo}" es ${prop.moneda||'USD'} ${prop.precio?.toLocaleString('es-AR')||'a consultar'}. Para más detalles escribinos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> 📱` : `Para consultar precios escribinos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> 📱`;
+  if (m.includes('visita') || m.includes('ver') || m.includes('recorr'))
+    return `¡Claro que sí! Podés agendar una visita escribiéndonos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> 📱 y coordinamos el horario que mejor te venga.`;
+  if (m.includes('ubicac') || m.includes('dónde') || m.includes('donde') || m.includes('zona'))
+    return prop ? `La propiedad está en ${prop.zona||'Río Cuarto'}${prop.entre_calles ? ', entre ' + prop.entre_calles : ''}. ¿Querés que te mandemos la ubicación exacta por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a>? 📍` : `Tenemos propiedades en distintas zonas de Río Cuarto. Escribinos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> y te asesoramos 📍`;
+  if (m.includes('financ') || m.includes('cuotas') || m.includes('crédito'))
+    return `Trabajamos con diferentes opciones de financiamiento. Para asesorarte mejor escribinos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> 📱`;
+  return `Gracias por tu consulta. Para brindarte la mejor atención personalizada escribinos por <a href="${wa}" target="_blank" style="color:#00e5ff">WhatsApp</a> al +54 9 358 570-1632 📱 ¡Vanina te responde enseguida!`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1265,10 +1316,10 @@ document.addEventListener('DOMContentLoaded', () => { setTimeout(cargarRanking, 
 
 <!-- ═══ ASESOR COMERCIAL IA — OVERLAY ═══ -->
 <div id="asesorOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:0 0 0 0;">
-  <div style="width:min(480px,100%);height:min(600px,90vh);background:#0c1a0c;border:1px solid rgba(0,229,255,.2);border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -20px 60px rgba(0,0,0,.5);">
+  <div style="width:min(480px,100%);height:min(600px,90vh);background:#04101c;border:1px solid rgba(0,229,255,.2);border-radius:16px 16px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -20px 60px rgba(0,0,0,.5);">
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid rgba(0,229,255,.12);flex-shrink:0;background:rgba(0,229,255,.04);">
-      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e4a1e,#2a6a2a);border:1px solid rgba(0,229,255,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#041a2e,#083050);border:1px solid rgba(0,229,255,.3);display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
       <div>
         <div style="font-family:'Playfair Display',serif;font-size:15px;color:#40f0ff;text-shadow:0 0 10px rgba(0,229,255,.4);font-weight:600;">Asesor IA · Buzzacchi</div>
         <div style="font-size:10px;color:rgba(200,210,170,.45);letter-spacing:.06em;">En línea · Responde al instante</div>
