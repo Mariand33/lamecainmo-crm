@@ -123,6 +123,16 @@
     .card-image-wrap{position:relative;aspect-ratio:16/11;background:linear-gradient(135deg,#0f2318,#0c1c14);overflow:hidden;flex-shrink:0}
     .card-image{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.16,1,.3,1)}
     .card:hover .card-image{transform:scale(1.06)}
+    /* CARRUSEL */
+    .card-carousel{position:relative;width:100%;height:100%;overflow:hidden;}
+    .car-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s ease;}
+    .car-img.car-active{opacity:1;z-index:1;}
+    .car-prev,.car-next{position:absolute;top:50%;transform:translateY(-50%);z-index:4;background:rgba(0,0,0,.45);color:#fff;border:none;width:28px;height:44px;font-size:20px;cursor:pointer;border-radius:4px;transition:background .2s;display:flex;align-items:center;justify-content:center;line-height:1;}
+    .car-prev{left:6px;} .car-next{right:6px;}
+    .car-prev:hover,.car-next:hover{background:rgba(0,229,255,.4);}
+    .car-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:4;display:flex;gap:5px;}
+    .car-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45);cursor:pointer;transition:background .2s;}
+    .car-dot.car-dot-on{background:#00e5ff;box-shadow:0 0 6px rgba(0,229,255,.8);}
     .card-image-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:1}
     .badge-top{position:absolute;top:12px;left:12px;z-index:3;display:flex;gap:6px}
     .badge{border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
@@ -727,6 +737,69 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("footerTel").textContent   = ASESOR.footerTel;
 });
 
+
+// ── CARRUSEL DE FOTOS EN CARDS ──
+const carTimers = {};
+
+function carMove(e, uid, dir) {
+  e && e.stopPropagation();
+  const el = document.getElementById(uid);
+  if (!el) return;
+  const imgs = el.querySelectorAll('.car-img');
+  const dots = el.querySelectorAll('.car-dot');
+  let idx = parseInt(el.dataset.idx || 0);
+  imgs[idx].classList.remove('car-active');
+  dots[idx] && dots[idx].classList.remove('car-dot-on');
+  idx = (idx + dir + imgs.length) % imgs.length;
+  // Lazy load
+  const img = imgs[idx];
+  if (img.dataset.src && img.src !== img.dataset.src) img.src = img.dataset.src;
+  img.classList.add('car-active');
+  dots[idx] && dots[idx].classList.add('car-dot-on');
+  el.dataset.idx = idx;
+  carReset(uid);
+}
+
+function carGo(e, uid, idx) {
+  e && e.stopPropagation();
+  const el = document.getElementById(uid);
+  if (!el) return;
+  const imgs = el.querySelectorAll('.car-img');
+  const dots = el.querySelectorAll('.car-dot');
+  const cur = parseInt(el.dataset.idx || 0);
+  imgs[cur].classList.remove('car-active');
+  dots[cur] && dots[cur].classList.remove('car-dot-on');
+  const img = imgs[idx];
+  if (img.dataset.src && img.src !== img.dataset.src) img.src = img.dataset.src;
+  img.classList.add('car-active');
+  dots[idx] && dots[idx].classList.add('car-dot-on');
+  el.dataset.idx = idx;
+  carReset(uid);
+}
+
+function carReset(uid) {
+  if (carTimers[uid]) clearInterval(carTimers[uid]);
+  carTimers[uid] = setInterval(() => carMove(null, uid, 1), 3500);
+}
+
+function initCarruseles() {
+  document.querySelectorAll('.card-carousel').forEach(el => {
+    const uid = el.id;
+    const imgs = el.querySelectorAll('.car-img');
+    if (imgs.length > 1) carReset(uid);
+    // Pause on hover
+    el.addEventListener('mouseenter', () => { if(carTimers[uid]) clearInterval(carTimers[uid]); });
+    el.addEventListener('mouseleave', () => { if(imgs.length > 1) carReset(uid); });
+    // Touch swipe
+    let tx = 0;
+    el.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+    el.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (Math.abs(dx) > 40) carMove(null, uid, dx < 0 ? 1 : -1);
+    }, {passive:true});
+  });
+}
+
 // 5. WHATSAPP HELPERS
 function waLink(texto) {
   return `https://wa.me/${ASESOR.telefono}?text=${encodeURIComponent(texto)}`;
@@ -879,7 +952,21 @@ function renderCards(items) {
             ${isVendida?"✅ VENDIDA":"✅ ALQUILADA"}
           </span>
         </div>`:""}
-        <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/e8e0d0/6f6a63?text=Propiedad'"${isConcretada?' style="filter:grayscale(.4)"':""}/>
+        ${(()=>{
+          const imgs = [...(item.imagenes||[]).map(i=>'/uploads/'+i), ...(item.mediaUrls||[])].filter(Boolean);
+          const allImgs = imgs.length ? imgs : ['https://placehold.co/900x620/020d12/00e5ff?text=Propiedad'];
+          const uid = 'car_'+item.id;
+          return allImgs.length > 1
+            ? `<div class="card-carousel" id="${uid}" data-imgs='${JSON.stringify(allImgs).replace(/'/g,"&#39;")}' data-idx="0">
+                ${allImgs.map((src,i)=>`<img class="car-img${i===0?' car-active':''}" src="${i<3?src:'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" data-src="${src}" alt="foto ${i+1}" loading="lazy" onerror="this.src='https://placehold.co/900x620/020d12/00e5ff?text=Sin+foto'"${isConcretada?' style="filter:grayscale(.4)"':''}/>`).join('')}
+                ${allImgs.length>1?`
+                <button class="car-prev" onclick="carMove(event,'${uid}',-1)">&#8249;</button>
+                <button class="car-next" onclick="carMove(event,'${uid}',1)">&#8250;</button>
+                <div class="car-dots">${allImgs.map((_,i)=>`<span class="car-dot${i===0?' car-dot-on':''}" onclick="carGo(event,'${uid}',${i})"></span>`).join('')}</div>
+                `:''}
+              </div>`
+            : `<img class="card-image" src="${allImgs[0]}" alt="${item.titulo||'Propiedad'}" loading="lazy" onerror="this.src='https://placehold.co/900x620/020d12/00e5ff?text=Propiedad'"${isConcretada?' style="filter:grayscale(.4)"':''}/>`;
+        })()}
       </div>
       <div class="card-body">
         <div class="card-title">${item.titulo||"Propiedad disponible"}</div>
@@ -906,6 +993,7 @@ function renderCards(items) {
       </div>
     </article>`;
   }).join("");
+  requestAnimationFrame(initCarruseles);
 }
 
 // 12. FILTERS
