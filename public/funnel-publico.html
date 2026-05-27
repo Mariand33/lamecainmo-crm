@@ -1,1346 +1,2469 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vanina Buzzacchi | Propiedades Río Cuarto</title>
-  <link rel="manifest" href="/manifest-funnel.json"/>
-  <meta name="theme-color" content="#c9a84c"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="VB Inmuebles"/>
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png"/>
-  <meta name="description" content="Explora propiedades en venta y alquiler en Rio Cuarto."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+<!DOCTYPE html> 
 
-    :root{
-      --bg:#0b1a12;--card:#0f2318;--dark:#0a140d;
-      --green:#0f2318;--green2:#163320;--green3:#1e4a2e;
-      --muted:#7a9a82;--border:#1e3a28;
-      --wa:#25D366;--gold:#c9a84c;--gold2:#e8cc7a;--gold3:#f5e4a8;
-      --shadow:0 12px 40px rgba(0,0,0,.4);
-      --glow-gold:0 0 40px rgba(201,168,76,.15);
-      --glow-green:0 0 60px rgba(30,74,46,.4);
-      --surface:rgba(255,255,255,.04);
-      --surface2:rgba(255,255,255,.07);
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    html{scroll-behavior:smooth}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#e8f0ea}
-    a{text-decoration:none;color:inherit}
-    img{max-width:100%;display:block}
-    .container{width:min(1180px,92%);margin:0 auto}
+<html lang="es"> 
 
-    /* ===== TICKER CINTA ===== */
-    .ticker-wrap{background:linear-gradient(90deg,#0a1e12,#112a18,#0a1e12);border-bottom:1px solid rgba(201,168,76,.2);overflow:hidden;padding:10px 0;position:relative}
-    .ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
-    .ticker-wrap::before{left:0;background:linear-gradient(to right,#0a1e12,transparent)}
-    .ticker-wrap::after{right:0;background:linear-gradient(to left,#0a1e12,transparent)}
-    .ticker-track{display:flex;gap:0;width:max-content;animation:ticker-scroll 32s linear infinite}
-    .ticker-track:hover{animation-play-state:paused}
-    @keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-    .ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 28px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,204,122,.75);white-space:nowrap}
-    .ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.6;flex-shrink:0}
+<head> 
 
-    /* ===== TOPBAR ===== */
-    .topbar{background:linear-gradient(180deg,rgba(8,18,11,.98) 0%,rgba(11,26,18,.95) 100%);color:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(201,168,76,.15);backdrop-filter:blur(16px)}
-    .topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0}
-    .brand-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,34px);color:var(--gold2);letter-spacing:.5px;font-weight:600}
-    .brand-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.5);margin-top:3px}
-    .top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:11px 22px;font-size:13px;font-weight:600;transition:.2s;font-family:'DM Sans',sans-serif}
-    .btn:hover{transform:translateY(-2px)}
-    .btn-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 6px 20px rgba(34,197,94,.3)}
-    .btn-outline{background:transparent;color:var(--gold2);border:1.5px solid rgba(201,168,76,.35)}
-    .btn-outline:hover{background:rgba(201,168,76,.08);border-color:var(--gold)}
+<meta charset="UTF-8"/> 
 
-    /* ===== HERO ===== */
-    .hero{background:radial-gradient(ellipse 120% 80% at 50% 0%,#1a3d24 0%,#0b1a12 55%,#060e09 100%);color:#fff;padding:72px 0 56px;position:relative;overflow:hidden}
-    .hero::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23c9a84c' fill-opacity='0.025'%3E%3Cpath d='M40 40v-8h-2v8h-8v2h8v8h2v-8h8v-2h-8zm0-40V0h-2v0h-8v2h8v8h2V2h8V0h-8zM0 40v-8H-2v8h-8v2h8v8h2v-8h8v-2H0zM0 0V-8H-2v8h-8v2h8v8h2V2h8V0H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;opacity:.6}
-    .hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}
-    .hero-orb{position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);pointer-events:none;border-radius:50%}
-    .hero-orb2{position:absolute;bottom:-100px;left:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,74,46,.25) 0%,transparent 70%);pointer-events:none;border-radius:50%}
-    .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center;position:relative;z-index:1}
-    .eyebrow{color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-size:11px;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:10px}
-    .eyebrow::before{content:'';display:inline-block;width:28px;height:1px;background:var(--gold);opacity:.6}
-    .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,72px);line-height:.98;font-weight:600;margin-bottom:22px;letter-spacing:-.5px}
-    .hero h1 .gold{color:var(--gold2);font-style:italic}
-    .hero p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65;max-width:520px;margin-bottom:32px}
-    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
-    .hero-badges{display:flex;gap:8px;flex-wrap:wrap}
-    .hero-badge{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18);color:rgba(232,204,122,.85);padding:8px 14px;border-radius:999px;font-size:11px;font-weight:500;letter-spacing:.02em}
-    .hero-card{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid rgba(201,168,76,.2);padding:28px;border-radius:24px;backdrop-filter:blur(16px);box-shadow:var(--glow-gold)}
-    .hero-card h3{font-size:13px;color:var(--gold);margin-bottom:8px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
-    .hero-card .metric{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:700;line-height:1;margin-bottom:10px;color:#fff;text-shadow:0 0 30px rgba(201,168,76,.3)}
-    .hero-card p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px}
-    .stats-mini{display:flex;gap:8px;flex-wrap:wrap}
-    .mini{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:10px 14px;border-radius:14px;color:rgba(255,255,255,.8);font-size:12px}
-    .mini strong{display:block;font-size:22px;font-weight:700;color:#fff;font-family:'Cormorant Garamond',serif}
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
 
-    /* ===== IA MATCH ===== */
-    .ia-section{padding:48px 0 0}
-    .ia-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:36px;position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)}
-    .ia-box::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);border-radius:50%;pointer-events:none}
-    .ia-box::after{content:"✦";position:absolute;right:28px;top:24px;font-size:42px;opacity:.08;color:var(--gold)}
-    .ia-box h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;margin-bottom:8px;color:var(--gold2)}
-    .ia-box p{color:rgba(255,255,255,.65);font-size:15px;margin-bottom:22px;line-height:1.55}
-    .ia-form{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:18px}
-    .ia-input{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);color:#fff;border-radius:16px;padding:15px 20px;font-size:15px;width:100%;font-family:'DM Sans',sans-serif;outline:none;transition:.2s}
-    .ia-input::placeholder{color:rgba(255,255,255,.35)}
-    .ia-input:focus{border-color:var(--gold);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(201,168,76,.1)}
-    .btn-ia{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d;font-weight:700;border:none;border-radius:16px;padding:15px 28px;cursor:pointer;font-size:15px;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:.2s;box-shadow:0 4px 20px rgba(201,168,76,.3)}
-    .btn-ia:hover{background:linear-gradient(135deg,var(--gold2),var(--gold));transform:translateY(-1px);box-shadow:0 8px 28px rgba(201,168,76,.4)}
-    .btn-ia:disabled{opacity:.5;cursor:not-allowed;transform:none}
-    .ia-extras{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .budget-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 16px;flex:1;min-width:200px}
-    .budget-wrap label{font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap}
-    .budget-wrap input[type=range]{flex:1;accent-color:var(--gold)}
-    .budget-val{font-size:13px;font-weight:600;color:var(--gold2);white-space:nowrap;min-width:80px;text-align:right}
-    .ia-select{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer}
-    .ia-select option{background:#122b1a;color:#fff}
-    .ia-status{margin-top:16px;font-size:14px;color:rgba(255,255,255,.65);min-height:20px;display:flex;align-items:center;gap:8px}
-    .ia-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:none}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .ia-highlight{border:2px solid var(--gold)!important;box-shadow:0 0 0 4px rgba(201,168,76,.15),var(--glow-gold)!important}
+<title>Vanina Buzzacchi | Propiedades Río Cuarto</title> 
 
-    /* ===== FILTERS ===== */
-    .section{padding:40px 0}
-    .section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px}
-    .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:600;color:#e8f0ea;letter-spacing:-.3px}
-    .section-sub{color:var(--muted);font-size:14px;margin-top:6px}
-    .filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px}
-    .chip{border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border-radius:999px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .chip.active,.chip:hover{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border-color:rgba(201,168,76,.4)}
-    .searchbox{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px;gap:8px;box-shadow:var(--shadow)}
-    .searchbox input{border:none;outline:none;font-size:14px;min-width:180px;font-family:'DM Sans',sans-serif;color:#e8f0ea;background:transparent}
-    .searchbox input::placeholder{color:rgba(255,255,255,.35)}
-    .result-count{font-size:13px;color:var(--muted);font-weight:500}
+<link rel="manifest" href="/manifest-funnel.json"/> 
 
-    /* ===== CARDS ===== */
-    .properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-    .card{background:linear-gradient(160deg,#0f2318,#0c1c14);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.07);transition:.3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;position:relative}
-    .card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.04),transparent 50%);opacity:0;transition:.3s;pointer-events:none;border-radius:22px}
-    .card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.5),var(--glow-gold);border-color:rgba(201,168,76,.25)}
-    .card:hover::before{opacity:1}
-    .card-image-wrap{position:relative;aspect-ratio:16/11;background:linear-gradient(135deg,#0f2318,#0c1c14);overflow:hidden;flex-shrink:0}
-    .card-image{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.16,1,.3,1)}
-    .card:hover .card-image{transform:scale(1.06)}
-    .card-image-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:1}
-    .badge-top{position:absolute;top:12px;left:12px;z-index:3;display:flex;gap:6px}
-    .badge{border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
-    .badge-sale{background:rgba(255,255,255,.95);color:#0a1a0d;backdrop-filter:blur(8px)}
-    .badge-rent{background:rgba(11,26,18,.9);color:#e8f0ea;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px)}
-    .badge-new{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d}
-    .card-fav{position:absolute;top:12px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(11,26,18,.8);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s;backdrop-filter:blur(8px)}
-    .card-fav:hover{transform:scale(1.18);background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4)}
-    .card-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
-    .card-title{font-size:16px;line-height:1.25;font-weight:700;color:#e8f0ea}
-    .card-price{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;font-weight:700;text-shadow:0 0 20px rgba(201,168,76,.2)}
-    .card-zone{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:4px}
-    .card-meta{display:flex;flex-wrap:wrap;gap:6px}
-    .meta-pill覆{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)}
-    .meta-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)}
-    .card-desc{color:rgba(255,255,255,.45);font-size:13px;line-height:1.5;flex:1}
-    .card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
-    .btn-card{border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif}
-    .btn-card:hover{opacity:.9;transform:translateY(-1px)}
-    .btn-view{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.25)}
-    .btn-view:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));border-color:rgba(201,168,76,.5)}
-    .btn-contact{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(34,197,94,.25)}
+<meta name="theme-color" content="#c9a84c"/> 
 
-    /* ===== LEAD BOX ===== */
-    .lead-section{padding:0 0 48px}
-    .lead-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:40px;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)}
-    .lead-box h2{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;margin-bottom:12px;color:var(--gold2)}
-    .lead-box p{color:rgba(255,255,255,.65);line-height:1.65;margin-bottom:28px}
-    .lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .lead-form input,.lead-form select,.lead-form textarea{width:100%;border:none;outline:none;border-radius:14px;padding:14px 16px;font-size:14px;background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.15);font-family:'DM Sans',sans-serif;transition:.2s}
-    .lead-form input::placeholder,.lead-form textarea::placeholder{color:rgba(255,255,255,.4)}
-    .lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.15);outline:none}
-    .lead-form select option{background:#143d2f}
-    .lead-form textarea{min-height:100px;resize:vertical;grid-column:1/-1}
-    .lead-form .full{grid-column:1/-1}
-    .btn-lead{background:var(--wa);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:.2s}
-    .btn-lead:hover{background:#1db954}
-    .lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center}
+<meta name="apple-mobile-web-app-capable" content="yes"/> 
 
-    /* NOTIFY */
-    .notify-strip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}
-    .notify-strip p{font-size:13px;color:rgba(255,255,255,.8)}
-    .btn-notify{background:transparent;border:1.5px solid var(--gold);color:var(--gold);border-radius:999px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;white-space:nowrap}
-    .btn-notify:hover{background:var(--gold);color:#0a1e12}
-    .btn-notify.active{background:var(--gold);color:#0a1e12}
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/> 
 
-    /* ===== TESTIMONIALS ===== */
-    .testimonials-section{padding:0 0 56px}
-    .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
-    .testimonial{background:linear-gradient(145deg,#0f2318,#0c1c14);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:24px;transition:.2s;position:relative;overflow:hidden}
-    .testimonial::before{content:'❝';position:absolute;top:12px;right:16px;font-size:52px;color:var(--gold);opacity:.07;font-family:'Cormorant Garamond',serif;line-height:1}
-    .testimonial:hover{border-color:rgba(201,168,76,.2);transform:translateY(-3px)}
-    .stars{color:var(--gold);font-size:13px;margin-bottom:12px;letter-spacing:2px}
-    .testimonial p{margin-bottom:16px;line-height:1.65;color:rgba(255,255,255,.65);font-size:14px;font-style:italic}
-    .testimonial strong{display:block;color:var(--gold2);font-size:12px;font-weight:600;letter-spacing:.03em}
-/* =========================
-   CONSEJOS
-========================= */
+<meta name="apple-mobile-web-app-title" content="VB Inmuebles"/> 
 
-.tips-section{
-  padding:90px 0;
-  background:linear-gradient(180deg,#07131b 0%, #081923 100%);
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png"/> 
+
+<meta name="description" content="Explora propiedades en venta y alquiler en Rio Cuarto."/> 
+
+<link rel="preconnect" href="https://fonts.googleapis.com"> 
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"> 
+
+<style> 
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap'); 
+
+:root{ 
+
+--bg:#0b1a12;--card:#0f2318;--dark:#0a140d; 
+
+--green:#0f2318;--green2:#163320;--green3:#1e4a2e; 
+
+--muted:#7a9a82;--border:#1e3a28; 
+
+--wa:#25D366;--gold:#c9a84c;--gold2:#e8cc7a;--gold3:#f5e4a8; 
+
+--shadow:0 12px 40px rgba(0,0,0,.4); 
+
+--glow-gold:0 0 40px rgba(201,168,76,.15); 
+
+--glow-green:0 0 60px rgba(30,74,46,.4); 
+
+--surface:rgba(255,255,255,.04); 
+
+--surface2:rgba(255,255,255,.07); 
+
+} 
+
+*{box-sizing:border-box;margin:0;padding:0} 
+
+html{scroll-behavior:smooth} 
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#e8f0ea} 
+
+a{text-decoration:none;color:inherit} 
+
+img{max-width:100%;display:block} 
+
+.container{width:min(1180px,92%);margin:0 auto} 
+
+/* ===== TICKER CINTA ===== */ 
+
+.ticker-wrap{background:linear-gradient(90deg,#0a1e12,#112a18,#0a1e12);border-bottom:1px solid rgba(201,168,76,.2);overflow:hidden;padding:10px 0;position:relative} 
+
+.ticker-wrap::before,.ticker-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none} 
+
+.ticker-wrap::before{left:0;background:linear-gradient(to right,#0a1e12,transparent)} 
+
+.ticker-wrap::after{right:0;background:linear-gradient(to left,#0a1e12,transparent)} 
+
+.ticker-track{display:flex;gap:0;width:max-content;animation:ticker-scroll 32s linear infinite} 
+
+.ticker-track:hover{animation-play-state:paused} 
+
+@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}} 
+
+.ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 28px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,204,122,.75);white-space:nowrap} 
+
+.ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.6;flex-shrink:0} 
+
+/* ===== TOPBAR ===== */ 
+
+.topbar{background:linear-gradient(180deg,rgba(8,18,11,.98) 0%,rgba(11,26,18,.95) 100%);color:#fff;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(201,168,76,.15);backdrop-filter:blur(16px)} 
+
+.topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 0} 
+
+.brand-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,34px);color:var(--gold2);letter-spacing:.5px;font-weight:600} 
+
+.brand-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.5);margin-top:3px} 
+
+.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap} 
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;border-radius:999px;padding:11px 22px;font-size:13px;font-weight:600;transition:.2s;font-family:'DM Sans',sans-serif} 
+
+.btn:hover{transform:translateY(-2px)} 
+
+.btn-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 6px 20px rgba(34,197,94,.3)} 
+
+.btn-outline{background:transparent;color:var(--gold2);border:1.5px solid rgba(201,168,76,.35)} 
+
+.btn-outline:hover{background:rgba(201,168,76,.08);border-color:var(--gold)} 
+
+/* ===== HERO ===== */ 
+
+.hero{background:radial-gradient(ellipse 120% 80% at 50% 0%,#1a3d24 0%,#0b1a12 55%,#060e09 100%);color:#fff;padding:72px 0 56px;position:relative;overflow:hidden} 
+
+.hero::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23c9a84c' fill-opacity='0.025'%3E%3Cpath d='M40 40v-8h-2v8h-8v2h8v8h2v-8h8v-2h-8zm0-40V0h-2v0h-8v2h8v8h2V2h8V0h-8zM0 40v-8H-2v8h-8v2h8v8h2v-8h8v-2H0zM0 0V-8H-2v8h-8v2h8v8h2V2h8V0H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;opacity:.6} 
+
+.hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none} 
+
+.hero-orb{position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(201,168,76,.08) 0%,transparent 70%);pointer-events:none;border-radius:50%} 
+
+.hero-orb2{position:absolute;bottom:-100px;left:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(30,74,46,.25) 0%,transparent 70%);pointer-events:none;border-radius:50%} 
+
+.hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:36px;align-items:center;position:relative;z-index:1} 
+
+.eyebrow{color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-size:11px;margin-bottom:18px;font-weight:500;display:flex;align-items:center;gap:10px} 
+
+.eyebrow::before{content:'';display:inline-block;width:28px;height:1px;background:var(--gold);opacity:.6} 
+
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,72px);line-height:.98;font-weight:600;margin-bottom:22px;letter-spacing:-.5px} 
+
+.hero h1 .gold{color:var(--gold2);font-style:italic} 
+
+.hero p{color:rgba(255,255,255,.7);font-size:17px;line-height:1.65;max-width:520px;margin-bottom:32px} 
+
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px} 
+
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap} 
+
+.hero-badge{background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.18);color:rgba(232,204,122,.85);padding:8px 14px;border-radius:999px;font-size:11px;font-weight:500;letter-spacing:.02em} 
+
+.hero-card{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid rgba(201,168,76,.2);padding:28px;border-radius:24px;backdrop-filter:blur(16px);box-shadow:var(--glow-gold)} 
+
+.hero-card h3{font-size:13px;color:var(--gold);margin-bottom:8px;font-weight:500;letter-spacing:.05em;text-transform:uppercase} 
+
+.hero-card .metric{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:700;line-height:1;margin-bottom:10px;color:#fff;text-shadow:0 0 30px rgba(201,168,76,.3)} 
+
+.hero-card p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px} 
+
+.stats-mini{display:flex;gap:8px;flex-wrap:wrap} 
+
+.mini{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:10px 14px;border-radius:14px;color:rgba(255,255,255,.8);font-size:12px} 
+
+.mini strong{display:block;font-size:22px;font-weight:700;color:#fff;font-family:'Cormorant Garamond',serif} 
+
+/* ===== IA MATCH ===== */ 
+
+.ia-section{padding:48px 0 0} 
+
+.ia-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:36px;position:relative;overflow:hidden;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)} 
+
+.ia-box::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 70%);border-radius:50%;pointer-events:none} 
+
+.ia-box::after{content:"✦";position:absolute;right:28px;top:24px;font-size:42px;opacity:.08;color:var(--gold)} 
+
+.ia-box h2{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;margin-bottom:8px;color:var(--gold2)} 
+
+.ia-box p{color:rgba(255,255,255,.65);font-size:15px;margin-bottom:22px;line-height:1.55} 
+
+.ia-form{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:18px} 
+
+.ia-input{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);color:#fff;border-radius:16px;padding:15px 20px;font-size:15px;width:100%;font-family:'DM Sans',sans-serif;outline:none;transition:.2s} 
+
+.ia-input::placeholder{color:rgba(255,255,255,.35)} 
+
+.ia-input:focus{border-color:var(--gold);background:rgba(255,255,255,.1);box-shadow:0 0 0 3px rgba(201,168,76,.1)} 
+
+.btn-ia{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d;font-weight:700;border:none;border-radius:16px;padding:15px 28px;cursor:pointer;font-size:15px;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:.2s;box-shadow:0 4px 20px rgba(201,168,76,.3)} 
+
+.btn-ia:hover{background:linear-gradient(135deg,var(--gold2),var(--gold));transform:translateY(-1px);box-shadow:0 8px 28px rgba(201,168,76,.4)} 
+
+.btn-ia:disabled{opacity:.5;cursor:not-allowed;transform:none} 
+
+.ia-extras{display:flex;gap:10px;flex-wrap:wrap;align-items:center} 
+
+.budget-wrap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 16px;flex:1;min-width:200px} 
+
+.budget-wrap label{font-size:12px;color:rgba(255,255,255,.55);white-space:nowrap} 
+
+.budget-wrap input[type=range]{flex:1;accent-color:var(--gold)} 
+
+.budget-val{font-size:13px;font-weight:600;color:var(--gold2);white-space:nowrap;min-width:80px;text-align:right} 
+
+.ia-select{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer} 
+
+.ia-select option{background:#122b1a;color:#fff} 
+
+.ia-status{margin-top:16px;font-size:14px;color:rgba(255,255,255,.65);min-height:20px;display:flex;align-items:center;gap:8px} 
+
+.ia-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:none} 
+
+@keyframes spin{to{transform:rotate(360deg)}} 
+
+.ia-highlight{border:2px solid var(--gold)!important;box-shadow:0 0 0 4px rgba(201,168,76,.15),var(--glow-gold)!important} 
+
+/* ===== FILTERS ===== */ 
+
+.section{padding:40px 0} 
+
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:12px} 
+
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:600;color:#e8f0ea;letter-spacing:-.3px} 
+
+.section-sub{color:var(--muted);font-size:14px;margin-top:6px} 
+
+.filter-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px} 
+
+.chips{display:flex;flex-wrap:wrap;gap:8px} 
+
+.chip{border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border-radius:999px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif} 
+
+.chip.active,.chip:hover{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border-color:rgba(201,168,76,.4)} 
+
+.searchbox{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px;gap:8px;box-shadow:var(--shadow)} 
+
+.searchbox input{border:none;outline:none;font-size:14px;min-width:180px;font-family:'DM Sans',sans-serif;color:#e8f0ea;background:transparent} 
+
+.searchbox input::placeholder{color:rgba(255,255,255,.35)} 
+
+.result-count{font-size:13px;color:var(--muted);font-weight:500} 
+
+/* ===== CARDS ===== */ 
+
+.properties-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px} 
+
+.card{background:linear-gradient(160deg,#0f2318,#0c1c14);border-radius:22px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.07);transition:.3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;position:relative} 
+
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.04),transparent 50%);opacity:0;transition:.3s;pointer-events:none;border-radius:22px} 
+
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.5),var(--glow-gold);border-color:rgba(201,168,76,.25)} 
+
+.card:hover::before{opacity:1} 
+
+.card-image-wrap{position:relative;aspect-ratio:16/11;background:linear-gradient(135deg,#0f2318,#0c1c14);overflow:hidden;flex-shrink:0} 
+
+.card-image{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.16,1,.3,1)} 
+
+.card:hover .card-image{transform:scale(1.06)} 
+
+.card-image-wrap::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:1} 
+
+.badge-top{position:absolute;top:12px;left:12px;z-index:3;display:flex;gap:6px} 
+
+.badge{border-radius:999px;padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase} 
+
+.badge-sale{background:rgba(255,255,255,.95);color:#0a1a0d;backdrop-filter:blur(8px)} 
+
+.badge-rent{background:rgba(11,26,18,.9);color:#e8f0ea;border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(8px)} 
+
+.badge-new{background:linear-gradient(135deg,var(--gold),#a8832a);color:#0a1a0d} 
+
+.card-fav{position:absolute;top:12px;right:12px;z-index:3;width:36px;height:36px;border-radius:50%;background:rgba(11,26,18,.8);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s;backdrop-filter:blur(8px)} 
+
+.card-fav:hover{transform:scale(1.18);background:rgba(201,168,76,.2);border-color:rgba(201,168,76,.4)} 
+
+.card-body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1} 
+
+.card-title{font-size:16px;line-height:1.25;font-weight:700;color:#e8f0ea} 
+
+.card-price{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;font-weight:700;text-shadow:0 0 20px rgba(201,168,76,.2)} 
+
+.card-zone{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:4px} 
+
+.card-meta{display:flex;flex-wrap:wrap;gap:6px} 
+
+.meta-pill覆{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)} 
+
+.meta-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 11px;font-size:11px;color:rgba(255,255,255,.65)} 
+
+.card-desc{color:rgba(255,255,255,.45);font-size:13px;line-height:1.5;flex:1} 
+
+.card-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto} 
+
+.btn-card{border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;border:none;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif} 
+
+.btn-card:hover{opacity:.9;transform:translateY(-1px)} 
+
+.btn-view{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.25)} 
+
+.btn-view:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));border-color:rgba(201,168,76,.5)} 
+
+.btn-contact{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(34,197,94,.25)} 
+
+/* ===== LEAD BOX ===== */ 
+
+/* ===== LEAD FORM PREMIUM ===== */
+.lead-section{padding:0 0 64px}
+
+.lead-box{
+  background:linear-gradient(160deg,#0a1c11 0%,#0e2416 50%,#0b1c12 100%);
+  color:#fff;border-radius:32px;
+  border:1px solid rgba(201,168,76,.18);
+  box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 60px rgba(201,168,76,.06),inset 0 1px 0 rgba(255,255,255,.04);
+  overflow:hidden;position:relative;
+}
+.lead-box::before{
+  content:'';position:absolute;top:-120px;right:-120px;
+  width:480px;height:480px;
+  background:radial-gradient(circle,rgba(201,168,76,.05) 0%,transparent 65%);
+  pointer-events:none;border-radius:50%;
+}
+.lead-box::after{
+  content:'';position:absolute;bottom:-80px;left:-80px;
+  width:360px;height:360px;
+  background:radial-gradient(circle,rgba(30,74,46,.2) 0%,transparent 65%);
+  pointer-events:none;border-radius:50%;
+}
+.lead-inner{padding:48px 44px;position:relative;z-index:1}
+
+.lead-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,.08);
+  border:1px solid rgba(201,168,76,.2);
+  color:rgba(201,168,76,.9);
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;
+  padding:6px 14px;border-radius:999px;margin-bottom:18px;
+}
+.lead-eyebrow::before{content:'✦';font-size:8px}
+
+.lead-box h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,3.5vw,42px);font-weight:600;
+  margin-bottom:10px;color:#fff;line-height:1.1;letter-spacing:-.3px;
+}
+.lead-box h2 em{color:var(--gold2);font-style:italic}
+.lead-box > .lead-inner > p{
+  color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:36px;
+  font-size:14px;max-width:480px;font-weight:300;
 }
 
-.center{text-align:center}
+/* Grid del formulario */
+.lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 
-.mini-tag{
-  display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(0,229,255,.08);
-  color:#00e5ff;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:14px;
+/* Grupos con label flotante */
+.lead-field{position:relative;display:flex;flex-direction:column;gap:0}
+.lead-field.full{grid-column:1/-1}
+.lead-field label{
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(201,168,76,.6);font-weight:600;
+  position:absolute;top:10px;left:16px;
+  transition:.18s ease;pointer-events:none;z-index:2;
+}
+.lead-field input,.lead-field select,.lead-field textarea{
+  width:100%;outline:none;
+  border-radius:14px;
+  padding:28px 16px 10px;
+  font-size:14px;
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.08);
+  font-family:'DM Sans',sans-serif;
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  appearance:none;-webkit-appearance:none;
+}
+.lead-field input::placeholder,.lead-field textarea::placeholder{color:transparent}
+.lead-field input:focus,.lead-field select:focus,.lead-field textarea:focus{
+  border-color:rgba(201,168,76,.45);
+  background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 3px rgba(201,168,76,.07),0 4px 20px rgba(0,0,0,.2);
+  outline:none;
+}
+.lead-field input:focus + label,
+.lead-field input:not(:placeholder-shown) + label,
+.lead-field select:focus + label,
+.lead-field textarea:focus + label{
+  top:8px;font-size:9px;
+}
+.lead-field select option{background:#0e2416;color:#fff}
+.lead-field textarea{min-height:110px;resize:none;padding-top:30px}
+
+/* Separador decorativo */
+.lead-divider{
+  grid-column:1/-1;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,.15),transparent);
+  margin:4px 0;
 }
 
-.tips-slider{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:22px;
-  margin-top:40px;
+/* Botón submit premium */
+.btn-lead{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;border:none;
+  border-radius:14px;padding:17px 28px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  width:100%;transition:.25s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 6px 24px rgba(34,197,94,.25);
+  letter-spacing:.01em;
+  position:relative;overflow:hidden;
 }
-
-.tip-card{
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:24px;
-  padding:28px;
-  transition:.3s ease;
-  backdrop-filter:blur(8px);
+.btn-lead::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);
+  opacity:0;transition:.2s;
 }
-
-.tip-card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(0,229,255,.3);
+.btn-lead:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 32px rgba(34,197,94,.35);
 }
+.btn-lead:hover::before{opacity:1}
+.btn-lead:active{transform:translateY(0)}
+.btn-lead svg{flex-shrink:0}
 
-.tip-icon{
-  font-size:34px;
-  margin-bottom:14px;
+.lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center;grid-column:1/-1}
+
+/* Trust badges bajo el form */
+.lead-trust{
+  display:flex;gap:20px;flex-wrap:wrap;
+  margin-top:24px;padding-top:24px;
+  border-top:1px solid rgba(255,255,255,.06);
 }
-
-.tip-card h3{
-  font-size:22px;
-  margin-bottom:14px;
-  color:#fff;
+.trust-item{
+  display:flex;align-items:center;gap:7px;
+  font-size:11px;color:rgba(255,255,255,.4);
 }
+.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.5;flex-shrink:0} 
 
-.tip-card p{
-  color:#b8c2cc;
-  line-height:1.7;
-  font-size:15px;
-}
+/* NOTIFY */ 
 
-.tip-footer{
-  margin-top:20px;
-}
+.notify-strip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap} 
 
-.tip-footer span{
-  color:#00e5ff;
-  font-weight:700;
-  font-size:14px;
-}
+.notify-strip p{font-size:13px;color:rgba(255,255,255,.8)} 
 
-.tips-cta{
-  margin-top:50px;
-  text-align:center;
-  padding:40px;
-  border-radius:30px;
-  background:rgba(0,229,255,.05);
-  border:1px solid rgba(0,229,255,.12);
-}
+.btn-notify{background:transparent;border:1.5px solid var(--gold);color:var(--gold);border-radius:999px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s;white-space:nowrap} 
 
-.tips-cta h3{
-  font-size:28px;
-  margin-bottom:12px;
-}
+.btn-notify:hover{background:var(--gold);color:#0a1e12} 
 
-.tips-cta p{
-  color:#b8c2cc;
-  margin-bottom:24px;
-}
+.btn-notify.active{background:var(--gold);color:#0a1e12} 
 
-.btn-tip-wa{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  padding:16px 26px;
-  border-radius:999px;
-  background:#00e5ff;
-  color:#041018;
-  font-weight:800;
-  text-decoration:none;
-  transition:.25s;
-}
+/* ===== TESTIMONIALS ===== */ 
 
-.btn-tip-wa:hover{
-  transform:translateY(-2px) scale(1.02);
-}
-    /* ===== FOOTER ===== */
-    .footer{background:linear-gradient(180deg,#060e09,#040a06);color:#eee;padding:48px 0 100px;text-align:center;border-top:1px solid rgba(201,168,76,.1);position:relative;overflow:hidden}
-    .footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-    .footer-brand{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;margin-bottom:10px;font-weight:600}
-    .footer small{color:rgba(255,255,255,.3);font-size:12px}
+.testimonials-section{padding:0 0 56px} 
 
-    /* ===== FLOATING ===== */
-    .floating-wa{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 28px rgba(34,197,94,.45);z-index:80;transition:.25s}
-    .floating-wa:hover{transform:scale(1.12);box-shadow:0 12px 36px rgba(34,197,94,.55)}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px} 
 
-    .loader{padding:48px 0;text-align:center;color:var(--muted);font-size:15px}
-    .empty-state{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:24px;padding:40px;text-align:center;color:var(--muted);font-size:16px;margin-top:28px}
+.testimonial{background:linear-gradient(145deg,#0f2318,#0c1c14);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:24px;transition:.2s;position:relative;overflow:hidden} 
 
-    /* === CATA MODAL === */
-    .cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
-    .cata-overlay.open{display:flex}
-    .cata-modal{width:100%;max-width:440px;height:90vh;max-height:620px;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f1f17,#0c1a12);border-radius:24px;border:1px solid rgba(201,168,76,.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),var(--glow-gold);animation:catain .3s cubic-bezier(.16,1,.3,1) both}
-    @keyframes catain{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
-    .cata-header{padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.1);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);flex-shrink:0}
-    .cata-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;box-shadow:0 0 20px rgba(201,168,76,.3)}
-    .cata-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid #0f1f17}
-    .cata-hinfo{flex:1}
-    .cata-hname{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold2);font-weight:600}
-    .cata-hsub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
-    .cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.1);color:var(--gold2);border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .cata-x{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-    .cata-x:hover{background:rgba(255,255,255,.12);color:#fff}
-    .cata-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent}
-    .cata-msgs::-webkit-scrollbar{width:4px}
-    .cata-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:2px}
-    .cm{display:flex;gap:8px;align-items:flex-end;max-width:88%;animation:cmin .25s ease both}
-    .cm.user{align-self:flex-end;flex-direction:row-reverse}
-    @keyframes cmin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-    .cm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-    .cm.assistant .cm-av{background:linear-gradient(135deg,var(--gold),#7a5c1a)}
-    .cm.user .cm-av{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}
-    .cm-bbl{padding:10px 14px;font-size:13px;line-height:1.55}
-    .cm.assistant .cm-bbl{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.12);border-radius:14px 14px 14px 4px;color:#e8f0ea}
-    .cm.user .cm-bbl{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.3);border-radius:14px 14px 4px 14px;color:#fff}
-    .cata-typing-dots{display:flex;gap:5px;align-items:center;padding:2px 0}
-    .ctd{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;animation:cbounce 1.2s infinite}
-    .ctd:nth-child(2){animation-delay:.15s}.ctd:nth-child(3){animation-delay:.3s}
-    @keyframes cbounce{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
-    .cata-quick{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
-    .cata-qlabel{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em}
-    .cata-qbtns{display:flex;flex-wrap:wrap;gap:6px}
-    .cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold2);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
-    .cata-qq:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.45)}
-    .cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
-    .cata-inp{flex:1;font-size:13px;padding:9px 14px;border:1px solid rgba(201,168,76,.2);border-radius:20px;background:rgba(255,255,255,.05);color:#e8f0ea;resize:none;font-family:'DM Sans',sans-serif;line-height:1.4;outline:none;max-height:80px}
-    .cata-inp::placeholder{color:rgba(255,255,255,.25)}
-    .cata-inp:focus{border-color:rgba(201,168,76,.4);background:rgba(255,255,255,.07)}
-    .cata-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);border:none;cursor:pointer;color:#0a1a0d;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;box-shadow:0 4px 14px rgba(201,168,76,.3)}
-    .cata-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(201,168,76,.45)}
-    .cata-send:disabled{opacity:.35;cursor:default;transform:none}
-    .cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;font-size:12px;color:#4ade80;display:none}
-    .btn-cata{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px}
-    .btn-share{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.3);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;width:44px}
-    .btn-share:hover{background:rgba(37,211,102,.25);border-color:rgba(37,211,102,.5);transform:scale(1.05)}
-    .btn-cata:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));transform:translateY(-1px)}
-    /* === FIN CATA === */
+.testimonial::before{content:'❝';position:absolute;top:12px;right:16px;font-size:52px;color:var(--gold);opacity:.07;font-family:'Cormorant Garamond',serif;line-height:1} 
 
-    @media(max-width:980px){
-      .hero-grid,.lead-form,.testimonials{grid-template-columns:1fr}
-      .properties-grid{grid-template-columns:repeat(2,1fr)}
-      .ia-form{grid-template-columns:1fr}
-      .topbar-inner{flex-direction:column;align-items:flex-start}
-      .card-actions{grid-template-columns:1fr}
-    }
-    @media(max-width:640px){
-      .properties-grid{grid-template-columns:1fr}
-      .hero{padding:40px 0 32px}
-      .searchbox input{min-width:120px}
-    }
-  
-.owner-step{display:none}
-.owner-step.active{display:block}
-.btn-share{
-background:#c9a84c;
-color:#0b1a12;
-border:none;
-padding:14px 22px;
-border-radius:12px;
-font-weight:700;
-cursor:pointer;
-margin-top:16px;
-transition:.3s;
-}
-.btn-share:hover{
-transform:translateY(-2px);
-opacity:.95;
-}
+.testimonial:hover{border-color:rgba(201,168,76,.2);transform:translateY(-3px)} 
+
+.stars{color:var(--gold);font-size:13px;margin-bottom:12px;letter-spacing:2px} 
+
+.testimonial p{margin-bottom:16px;line-height:1.65;color:rgba(255,255,255,.65);font-size:14px;font-style:italic} 
+
+.testimonial strong{display:block;color:var(--gold2);font-size:12px;font-weight:600;letter-spacing:.03em} 
+
+/* ========================= 
+
+CONSEJOS 
+
+========================= */ 
+
+.tips-section{ 
+
+padding:90px 0; 
+
+background:linear-gradient(180deg,#07131b 0%, #081923 100%); 
+
+} 
+
+.center{text-align:center} 
+
+.mini-tag{ 
+
+display:inline-block; 
+
+padding:6px 14px; 
+
+border-radius:999px; 
+
+background:rgba(0,229,255,.08); 
+
+color:#00e5ff; 
+
+font-size:13px; 
+
+font-weight:700; 
+
+margin-bottom:14px; 
+
+} 
+
+.tips-slider{ 
+
+display:grid; 
+
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); 
+
+gap:22px; 
+
+margin-top:40px; 
+
+} 
+
+.tip-card{ 
+
+background:rgba(255,255,255,.04); 
+
+border:1px solid rgba(255,255,255,.06); 
+
+border-radius:24px; 
+
+padding:28px; 
+
+transition:.3s ease; 
+
+backdrop-filter:blur(8px); 
+
+} 
+
+.tip-card:hover{ 
+
+transform:translateY(-6px); 
+
+border-color:rgba(0,229,255,.3); 
+
+} 
+
+.tip-icon{ 
+
+font-size:34px; 
+
+margin-bottom:14px; 
+
+} 
+
+.tip-card h3{ 
+
+font-size:22px; 
+
+margin-bottom:14px; 
+
+color:#fff; 
+
+} 
+
+.tip-card p{ 
+
+color:#b8c2cc; 
+
+line-height:1.7; 
+
+font-size:15px; 
+
+} 
+
+.tip-footer{ 
+
+margin-top:20px; 
+
+} 
+
+.tip-footer span{ 
+
+color:#00e5ff; 
+
+font-weight:700; 
+
+font-size:14px; 
+
+} 
+
+.tips-cta{ 
+
+margin-top:50px; 
+
+text-align:center; 
+
+padding:40px; 
+
+border-radius:30px; 
+
+background:rgba(0,229,255,.05); 
+
+border:1px solid rgba(0,229,255,.12); 
+
+} 
+
+.tips-cta h3{ 
+
+font-size:28px; 
+
+margin-bottom:12px; 
+
+} 
+
+.tips-cta p{ 
+
+color:#b8c2cc; 
+
+margin-bottom:24px; 
+
+} 
+
+.btn-tip-wa{ 
+
+display:inline-flex; 
+
+align-items:center; 
+
+justify-content:center; 
+
+gap:10px; 
+
+padding:16px 26px; 
+
+border-radius:999px; 
+
+background:#00e5ff; 
+
+color:#041018; 
+
+font-weight:800; 
+
+text-decoration:none; 
+
+transition:.25s; 
+
+} 
+
+.btn-tip-wa:hover{ 
+
+transform:translateY(-2px) scale(1.02); 
+
+} 
+
+/* ===== FOOTER ===== */ 
+
+.footer{background:linear-gradient(180deg,#060e09,#040a06);color:#eee;padding:48px 0 100px;text-align:center;border-top:1px solid rgba(201,168,76,.1);position:relative;overflow:hidden} 
+
+.footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:400px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)} 
+
+.footer-brand{font-family:'Cormorant Garamond',serif;color:var(--gold2);font-size:26px;margin-bottom:10px;font-weight:600} 
+
+.footer small{color:rgba(255,255,255,.3);font-size:12px} 
+
+/* ===== FLOATING ===== */ 
+
+.floating-wa{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 28px rgba(34,197,94,.45);z-index:80;transition:.25s} 
+
+.floating-wa:hover{transform:scale(1.12);box-shadow:0 12px 36px rgba(34,197,94,.55)} 
+
+.loader{padding:48px 0;text-align:center;color:var(--muted);font-size:15px} 
+
+.empty-state{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:24px;padding:40px;text-align:center;color:var(--muted);font-size:16px;margin-top:28px} 
+
+/* === CATA MODAL === */ 
+
+.cata-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px} 
+
+.cata-overlay.open{display:flex} 
+
+.cata-modal{width:100%;max-width:440px;height:90vh;max-height:620px;display:flex;flex-direction:column;background:linear-gradient(160deg,#0f1f17,#0c1a12);border-radius:24px;border:1px solid rgba(201,168,76,.2);overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),var(--glow-gold);animation:catain .3s cubic-bezier(.16,1,.3,1) both} 
+
+@keyframes catain{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}} 
+
+.cata-header{padding:14px 18px;border-bottom:1px solid rgba(201,168,76,.1);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.2);flex-shrink:0} 
+
+.cata-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;box-shadow:0 0 20px rgba(201,168,76,.3)} 
+
+.cata-av::after{content:'';position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#22c55e;border:2px solid #0f1f17} 
+
+.cata-hinfo{flex:1} 
+
+.cata-hname{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold2);font-weight:600} 
+
+.cata-hsub{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px} 
+
+.cata-hprop{font-size:11px;font-weight:600;background:rgba(201,168,76,.1);color:var(--gold2);border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:20px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} 
+
+.cata-x{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0} 
+
+.cata-x:hover{background:rgba(255,255,255,.12);color:#fff} 
+
+.cata-msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.15) transparent} 
+
+.cata-msgs::-webkit-scrollbar{width:4px} 
+
+.cata-msgs::-webkit-scrollbar-thumb{background:rgba(201,168,76,.15);border-radius:2px} 
+
+.cm{display:flex;gap:8px;align-items:flex-end;max-width:88%;animation:cmin .25s ease both} 
+
+.cm.user{align-self:flex-end;flex-direction:row-reverse} 
+
+@keyframes cmin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}} 
+
+.cm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0} 
+
+.cm.assistant .cm-av{background:linear-gradient(135deg,var(--gold),#7a5c1a)} 
+
+.cm.user .cm-av{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)} 
+
+.cm-bbl{padding:10px 14px;font-size:13px;line-height:1.55} 
+
+.cm.assistant .cm-bbl{background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.12);border-radius:14px 14px 14px 4px;color:#e8f0ea} 
+
+.cm.user .cm-bbl{background:linear-gradient(135deg,rgba(201,168,76,.25),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.3);border-radius:14px 14px 4px 14px;color:#fff} 
+
+.cata-typing-dots{display:flex;gap:5px;align-items:center;padding:2px 0} 
+
+.ctd{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.4;animation:cbounce 1.2s infinite} 
+
+.ctd:nth-child(2){animation-delay:.15s}.ctd:nth-child(3){animation-delay:.3s} 
+
+@keyframes cbounce{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}} 
+
+.cata-quick{padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px;flex-shrink:0} 
+
+.cata-qlabel{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em} 
+
+.cata-qbtns{display:flex;flex-wrap:wrap;gap:6px} 
+
+.cata-qq{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.06);color:var(--gold2);cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif} 
+
+.cata-qq:hover{background:rgba(201,168,76,.15);border-color:rgba(201,168,76,.45)} 
+
+.cata-irow{padding:10px 16px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:flex-end;flex-shrink:0} 
+
+.cata-inp{flex:1;font-size:13px;padding:9px 14px;border:1px solid rgba(201,168,76,.2);border-radius:20px;background:rgba(255,255,255,.05);color:#e8f0ea;resize:none;font-family:'DM Sans',sans-serif;line-height:1.4;outline:none;max-height:80px} 
+
+.cata-inp::placeholder{color:rgba(255,255,255,.25)} 
+
+.cata-inp:focus{border-color:rgba(201,168,76,.4);background:rgba(255,255,255,.07)} 
+
+.cata-send{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#7a5c1a);border:none;cursor:pointer;color:#0a1a0d;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;box-shadow:0 4px 14px rgba(201,168,76,.3)} 
+
+.cata-send:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(201,168,76,.45)} 
+
+.cata-send:disabled{opacity:.35;cursor:default;transform:none} 
+
+.cata-lead-ok{margin:0 16px 8px;padding:8px 14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:12px;font-size:12px;color:#4ade80;display:none} 
+
+.btn-cata{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.08));color:var(--gold2);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px;text-align:center;font-weight:700;font-size:13px;cursor:pointer;display:block;transition:.2s;font-family:'DM Sans',sans-serif;width:100%;margin-top:8px} 
+
+.btn-share{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.3);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;flex-shrink:0;width:44px} 
+
+.btn-share:hover{background:rgba(37,211,102,.25);border-color:rgba(37,211,102,.5);transform:scale(1.05)} 
+
+.btn-cata:hover{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.15));transform:translateY(-1px)} 
+
+/* === FIN CATA === */ 
+
+@media(max-width:980px){ 
+
+.hero-grid,.lead-form,.testimonials{grid-template-columns:1fr} 
+
+.properties-grid{grid-template-columns:repeat(2,1fr)} 
+
+.ia-form{grid-template-columns:1fr} 
+
+.topbar-inner{flex-direction:column;align-items:flex-start} 
+
+.card-actions{grid-template-columns:1fr} 
+
+} 
+
+@media(max-width:640px){ 
+
+.properties-grid{grid-template-columns:1fr} 
+
+.hero{padding:40px 0 32px} 
+
+.searchbox input{min-width:120px} 
+
+} 
+
+
+/* ===== RIPPLE LOADER EN CARDS ===== */
+.card-ripple-wrap{position:absolute;bottom:10px;right:10px;z-index:4;background:rgba(10,20,15,.75);border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;}
+.ripple-loader{--cell-size:14px;--cell-spacing:1px;--cells:3;--total-size:calc(var(--cells)*(var(--cell-size)+2*var(--cell-spacing)));display:flex;flex-wrap:wrap;width:var(--total-size);height:var(--total-size);}
+.ripple-cell{flex:0 0 var(--cell-size);margin:var(--cell-spacing);background-color:transparent;box-sizing:border-box;border-radius:3px;animation:1.5s ripple-anim ease infinite;}
+.ripple-cell.d-1{animation-delay:100ms}.ripple-cell.d-2{animation-delay:200ms}.ripple-cell.d-3{animation-delay:300ms}.ripple-cell.d-4{animation-delay:400ms}
+.ripple-cell:nth-child(1){--cell-color:#00FF87}.ripple-cell:nth-child(2){--cell-color:#0CFD95}.ripple-cell:nth-child(3){--cell-color:#17FBA2}
+.ripple-cell:nth-child(4){--cell-color:#23F9B2}.ripple-cell:nth-child(5){--cell-color:#30F7C3}.ripple-cell:nth-child(6){--cell-color:#3DF5D4}
+.ripple-cell:nth-child(7){--cell-color:#45F4DE}.ripple-cell:nth-child(8){--cell-color:#53F1F0}.ripple-cell:nth-child(9){--cell-color:#60EFFF}
+@keyframes ripple-anim{0%{background-color:transparent}30%{background-color:var(--cell-color)}60%{background-color:transparent}100%{background-color:transparent}}
 
 </style>
 
-<meta property="og:title" content="Vanina Buzzacchi | Propiedades Río Cuarto">
-<meta property="og:description" content="Explora propiedades premium en venta y alquiler en Río Cuarto.">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Vanina Buzzacchi">
-<meta property="og:image" content="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1200&auto=format&fit=crop">
-<meta name="twitter:card" content="summary_large_image">
+</head> 
 
-</head>
-<body>
+<body> 
 
-<div class="ticker-wrap">
-  <div class="ticker-track">
-    <span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Vanina Buzzacchi Negocios Inmobiliarios</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>Vanina Buzzacchi Negocios Inmobiliarios</span>
-  </div>
+<div class="ticker-wrap"> 
+
+<div class="ticker-track"> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Vanina Buzzacchi Negocios Inmobiliarios</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Propiedades en Río Cuarto</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Casas · Departamentos · Locales · Terrenos</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Atención personalizada por WhatsApp</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Búsqueda inteligente con IA</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Río Cuarto · Córdoba · Argentina</span> 
+
+<span class="ticker-item"><span class="ticker-dot"></span>Vanina Buzzacchi Negocios Inmobiliarios</span> 
+
+</div> 
+
+</div> 
+
+<header class="topbar"> 
+
+<div class="container topbar-inner"> 
+
+<div> 
+
+<div class="brand-title">Vanina Buzzacchi</div> 
+
+<div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div> 
+
+</div> 
+
+<div class="top-actions"> 
+
+<a class="btn btn-outline" href="#propiedades">Ver propiedades</a> 
+
+<a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a> 
+
+</div> 
+
+</div> 
+
+</header> 
+
+<section class="hero"> 
+
+<div class="hero-orb"></div> 
+
+<div class="hero-orb2"></div> 
+
+<div class="container hero-grid"> 
+
+<div> 
+
+<div class="eyebrow">Rio Cuarto · Córdoba</div> 
+
+<h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1> 
+
+<p>Explorá casas, departamentos, locales y oportunidades reales. Consultá directo por WhatsApp o dejá tu búsqueda.</p> 
+
+<div class="hero-cta"> 
+
+<a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a> 
+
+<a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a> 
+
+</div> 
+
+<div class="hero-badges"> 
+
+<div class="hero-badge">✓ Atención personalizada</div> 
+
+<div class="hero-badge">✓ Consultas reales por WhatsApp</div> 
+
+<div class="hero-badge">✓ Río Cuarto y zona</div> 
+
+</div> 
+
+</div> 
+
+<div class="hero-card"> 
+
+<h3>Actividad del catálogo</h3> 
+
+<div class="metric" id="visitCounter">2.169</div> 
+
+<p>Visitas estimadas este mes</p> 
+
+<div class="stats-mini"> 
+
+<div class="mini"><strong id="miniTotal">0</strong> visibles</div> 
+
+<div class="mini"><strong id="miniVenta">0</strong> en venta</div> 
+
+<div class="mini"><strong id="miniAlquiler">0</strong> en alquiler</div> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+<section class="ia-section"> 
+
+<div class="container"> 
+
+<div class="ia-box"> 
+
+<h2>Encontrá con inteligencia artificial</h2> 
+
+<p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos.</p> 
+
+<div class="ia-form"> 
+
+<input class="ia-input" id="iaQuery" type="text" placeholder="Ej: casa con patio en Banda Norte para familia, tranquila..."/> 
+
+<button class="btn-ia" id="iaBtn" onclick="buscarConIA()">🔍 Buscar con IA</button> 
+
+</div> 
+
+<div class="ia-extras"> 
+
+<div class="budget-wrap"> 
+
+<label>Presupuesto:</label> 
+
+<input type="range" id="budgetRange" min="0" max="500000" step="5000" value="0" oninput="updateBudget()"/> 
+
+<span class="budget-val" id="budgetVal">Sin límite</span> 
+
+</div> 
+
+<select class="ia-select" id="iaOperacion"> 
+
+<option value="">Cualquier operación</option> 
+
+<option value="venta">Comprar</option> 
+
+<option value="alquiler">Alquilar</option> 
+
+</select> 
+
+<button class="btn-notify" id="notifyBtn" onclick="suscribirPush()">🔔 Notificarme propiedades nuevas</button> 
+
+</div> 
+
+<div class="ia-status"> 
+
+<div class="ia-spinner" id="iaSpinner"></div> 
+
+<span id="iaStatusText"></span> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+<section class="section" id="propiedades"> 
+
+<div class="container"> 
+
+<div class="section-header"> 
+
+<div> 
+
+<h2 class="section-title">Todas las propiedades</h2> 
+
+<p class="section-sub">Filtrá o usá la búsqueda IA de arriba para encontrar la tuya</p> 
+
+</div> 
+
+<span class="result-count" id="resultCount">Cargando...</span> 
+
+</div> 
+
+<div class="filter-row"> 
+
+<div class="chips"> 
+
+<button class="chip active" data-filter="todos">Todos</button> 
+
+<button class="chip" data-filter="venta">Venta</button> 
+
+<button class="chip" data-filter="alquiler">Alquiler</button> 
+
+<button class="chip" data-filter="casa">Casas</button> 
+
+<button class="chip" data-filter="depto">Deptos.</button> 
+
+<button class="chip" data-filter="local">Locales</button> 
+
+<button class="chip" data-filter="terreno">Terrenos</button> 
+
+</div> 
+
+<div class="searchbox"> 
+
+<span>🔍</span> 
+
+<input type="text" id="searchInput" placeholder="Zona, calle, tipo..."/> 
+
+</div> 
+
+</div> 
+
+<div id="loader" class="loader">Cargando propiedades...</div> 
+
+<div id="propertiesGrid" class="properties-grid" style="display:none"></div> 
+
+<div id="emptyState" class="empty-state" style="display:none">No encontramos propiedades con esos filtros.<br><small>Dejá tu búsqueda abajo y te avisamos.</small></div> 
+
+</div> 
+
+</section> 
+
+<section class="lead-section" id="dejar-busqueda"> 
+
+<div class="container"> 
+
+<div class="lead-box">
+<div class="lead-inner">
+<span class="lead-eyebrow">Búsqueda personalizada</span>
+<h2>¿No encontraste<br><em>lo que buscás?</em></h2>
+<p>Dejanos tu búsqueda y te avisamos en cuanto entre una propiedad que encaje con lo que necesitás.</p>
+
+<form class="lead-form" id="leadForm">
+
+  <div class="lead-field">
+    <input type="text" id="leadNombre" placeholder="Nombre" required/>
+    <label for="leadNombre">Nombre y apellido</label>
+  </div>
+
+  <div class="lead-field">
+    <input type="text" id="leadTelefono" placeholder="WhatsApp" required/>
+    <label for="leadTelefono">WhatsApp</label>
+  </div>
+
+  <div class="lead-field">
+    <select id="leadOperacion">
+      <option value="">Seleccioná</option>
+      <option value="venta">Comprar</option>
+      <option value="alquiler">Alquilar</option>
+    </select>
+    <label for="leadOperacion">Operación</label>
+  </div>
+
+  <div class="lead-field">
+    <select id="leadTipo">
+      <option value="">Seleccioná</option>
+      <option value="casa">Casa</option>
+      <option value="depto">Departamento</option>
+      <option value="local">Local comercial</option>
+      <option value="terreno">Terreno / Lote</option>
+    </select>
+    <label for="leadTipo">Tipo de propiedad</label>
+  </div>
+
+  <div class="lead-field">
+    <input type="text" id="leadZona" placeholder="Zona"/>
+    <label for="leadZona">Zona deseada</label>
+  </div>
+
+  <div class="lead-field">
+    <input type="text" id="leadPresupuesto" placeholder="Presupuesto"/>
+    <label for="leadPresupuesto">Presupuesto aproximado</label>
+  </div>
+
+  <div class="lead-divider"></div>
+
+  <div class="lead-field full">
+    <textarea id="leadMensaje" placeholder="Mensaje"></textarea>
+    <label for="leadMensaje">Contanos qué buscás: dormitorios, patio, cochera, barrio, urgencia…</label>
+  </div>
+
+  <button class="btn-lead" type="submit">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+    Enviar búsqueda por WhatsApp
+  </button>
+
+  <div id="leadMsg" class="lead-msg"></div>
+
+</form>
+
+<div class="lead-trust">
+  <span class="trust-item"><span class="trust-dot"></span>Respuesta en menos de 24hs</span>
+  <span class="trust-item"><span class="trust-dot"></span>Sin compromiso</span>
+  <span class="trust-item"><span class="trust-dot"></span>Río Cuarto y zona</span>
 </div>
 
-<header class="topbar">
-  <div class="container topbar-inner">
-    <div>
-      <div class="brand-title">Vanina Buzzacchi</div>
-      <div class="brand-sub">Negocios Inmobiliarios · Río Cuarto</div>
-    </div>
-    <div class="top-actions">
-      <a class="btn btn-outline" href="#propiedades">Ver propiedades</a>
-      <a class="btn btn-wa" id="heroWhatsAppTop" href="#" target="_blank">Consultar</a>
-    </div>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="hero-orb"></div>
-  <div class="hero-orb2"></div>
-  <div class="container hero-grid">
-    <div>
-      <div class="eyebrow">Rio Cuarto · Córdoba</div>
-      <h1>Tu próxima <span class="gold">propiedad</span><br>te está esperando.</h1>
-      <p>Explorá casas, departamentos, locales y oportunidades reales. Consultá directo por WhatsApp o dejá tu búsqueda.</p>
-      <div class="hero-cta">
-        <a class="btn btn-wa" id="heroWhatsApp" href="#" target="_blank">Hablar por WhatsApp</a>
-        <a class="btn btn-outline" href="#dejar-busqueda">Dejar mi búsqueda</a>
-      </div>
-      <div class="hero-badges">
-        <div class="hero-badge">✓ Atención personalizada</div>
-        <div class="hero-badge">✓ Consultas reales por WhatsApp</div>
-        <div class="hero-badge">✓ Río Cuarto y zona</div>
-      </div>
-    </div>
-    <div class="hero-card">
-      <h3>Actividad del catálogo</h3>
-      <div class="metric" id="visitCounter">2.169</div>
-      <p>Visitas estimadas este mes</p>
-      <div class="stats-mini">
-        <div class="mini"><strong id="miniTotal">0</strong> visibles</div>
-        <div class="mini"><strong id="miniVenta">0</strong> en venta</div>
-        <div class="mini"><strong id="miniAlquiler">0</strong> en alquiler</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="ia-section">
-  <div class="container">
-    <div class="ia-box">
-      <h2>Encontrá con inteligencia artificial</h2>
-      <p>Escribí en tus palabras qué buscás y la IA selecciona las propiedades que mejor encajan con vos.</p>
-      <div class="ia-form">
-        <input class="ia-input" id="iaQuery" type="text" placeholder="Ej: casa con patio en Banda Norte para familia, tranquila..."/>
-        <button class="btn-ia" id="iaBtn" onclick="buscarConIA()">🔍 Buscar con IA</button>
-      </div>
-      <div class="ia-extras">
-        <div class="budget-wrap">
-          <label>Presupuesto:</label>
-          <input type="range" id="budgetRange" min="0" max="500000" step="5000" value="0" oninput="updateBudget()"/>
-          <span class="budget-val" id="budgetVal">Sin límite</span>
-        </div>
-        <select class="ia-select" id="iaOperacion">
-          <option value="">Cualquier operación</option>
-          <option value="venta">Comprar</option>
-          <option value="alquiler">Alquilar</option>
-        </select>
-        <button class="btn-notify" id="notifyBtn" onclick="suscribirPush()">🔔 Notificarme propiedades nuevas</button>
-      </div>
-      <div class="ia-status">
-        <div class="ia-spinner" id="iaSpinner"></div>
-        <span id="iaStatusText"></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="propiedades">
-  <div class="container">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title">Todas las propiedades</h2>
-        <p class="section-sub">Filtrá o usá la búsqueda IA de arriba para encontrar la tuya</p>
-      </div>
-      <span class="result-count" id="resultCount">Cargando...</span>
-    </div>
-    <div class="filter-row">
-      <div class="chips">
-        <button class="chip active" data-filter="todos">Todos</button>
-        <button class="chip" data-filter="venta">Venta</button>
-        <button class="chip" data-filter="alquiler">Alquiler</button>
-        <button class="chip" data-filter="casa">Casas</button>
-        <button class="chip" data-filter="depto">Deptos.</button>
-        <button class="chip" data-filter="local">Locales</button>
-        <button class="chip" data-filter="terreno">Terrenos</button>
-      </div>
-      <div class="searchbox">
-        <span>🔍</span>
-        <input type="text" id="searchInput" placeholder="Zona, calle, tipo..."/>
-      </div>
-    </div>
-    <div id="loader" class="loader">Cargando propiedades...</div>
-    <div id="propertiesGrid" class="properties-grid" style="display:none"></div>
-    <div id="emptyState" class="empty-state" style="display:none">No encontramos propiedades con esos filtros.<br><small>Dejá tu búsqueda abajo y te avisamos.</small></div>
-  </div>
-</section>
-
-<section class="lead-section" id="dejar-busqueda">
-  <div class="container">
-    <div class="lead-box">
-      <h2>¿No encontraste lo que buscás?</h2>
-      <p>Dejanos tu búsqueda y te contactamos cuando entre una propiedad que encaje con lo que necesitás.</p>
-      <form class="lead-form" id="leadForm">
-        <input type="text" id="leadNombre" placeholder="Nombre y apellido" required/>
-        <input type="text" id="leadTelefono" placeholder="WhatsApp" required/>
-        <select id="leadOperacion"><option value="">Operación</option><option value="venta">Comprar</option><option value="alquiler">Alquilar</option></select>
-        <select id="leadTipo"><option value="">Tipo de propiedad</option><option value="casa">Casa</option><option value="depto">Departamento</option><option value="local">Local</option><option value="terreno">Terreno</option></select>
-        <input type="text" id="leadZona" placeholder="Zona deseada"/>
-        <input type="text" id="leadPresupuesto" placeholder="Presupuesto aproximado"/>
-        <textarea id="leadMensaje" placeholder="Contanos qué buscás: dormitorios, patio, cochera, barrio, urgencia..."></textarea>
-        <button class="btn-lead full" type="submit">Enviar búsqueda por WhatsApp</button>
-      </form>
-      <div id="leadMsg" class="lead-msg"></div>
-
-      <div class="notify-strip">
-        <p>🔔 También podés activar notificaciones para recibir alertas en tu celular cuando entre una nueva propiedad</p>
-        <button class="btn-notify" id="notifyBtn2" onclick="suscribirPush()">Activar alertas</button>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="owner-ai-section">
-
-  <div class="owner-ai-wrap">
-
-    <div class="owner-ai-head">
-      <span class="owner-mini">🧠 Diagnóstico Inteligente</span>
-
-      <h2>
-        ¿Tu propiedad está realmente lista para venderse?
-      </h2>
-
-      <p>
-        La mayoría de las propiedades no tardan en venderse por mala suerte.
-        Sino por estrategia, precio y posicionamiento.
-      </p>
-    </div>
-
-    <div class="owner-chat" id="ownerChat">
-
-      <div class="owner-msg ia">
-        👋 Hola. Soy el asistente inmobiliario de Vanina Buzzacchi.
-        Voy a hacerte algunas preguntas rápidas para detectar posibles puntos que estén frenando la venta.
-      </div>
-
-      <div class="owner-step active" data-step="1">
-
-        <div class="owner-q">
-          ¿Hace cuánto tiempo está publicada tu propiedad?
-        </div>
-
-        <div class="owner-options">
-          <button onclick="ownerAnswer(1,'menos')">Menos de 30 días</button>
-          <button onclick="ownerAnswer(1,'3meses')">1 a 3 meses</button>
-          <button onclick="ownerAnswer(1,'6meses')">Más de 3 meses</button>
-          <button onclick="ownerAnswer(1,'mucho')">Más de 6 meses</button>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-<section class="testimonials-section">
-  <div class="container">
-    <h2 class="section-title">Lo que dicen quienes ya confiaron</h2>
-    <div class="testimonials">
-      <div class="testimonial"><div class="stars">★★★★★</div><p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia."</p><strong>María y Diego · Compra de vivienda</strong></div>
-      <div class="testimonial"><div class="stars">★★★★★</div><p>"Necesitábamos alquilar rápido, sin vueltas. Nos acompañaron bien y encontramos una alternativa concreta en días."</p><strong>Lucía R. · Alquiler</strong></div>
-      <div class="testimonial"><div class="stars">★★★★★</div><p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento real. No fue solo mostrar propiedades."</p><strong>Fernando M. · Compra e inversión</strong></div>
-    </div>
-  </div>
-</section>
-
-<footer class="footer">
-  <div class="container">
-    <div class="footer-brand">Vanina Buzzacchi</div>
-    <div>Propiedades · Río Cuarto, Córdoba</div>
-    <div style="margin-top:8px"><small>+54 9 358 570-1632 · Todos los derechos reservados</small></div>
-  </div>
-</footer>
-
-<div class="cata-overlay" id="cataOverlay" onclick="if(event.target===this)closeCata()">
-  <div class="cata-modal">
-    <div class="cata-header">
-      <div class="cata-av">🙋‍♀️</div>
-      <div class="cata-hinfo">
-        <div class="cata-hname">Cata</div>
-        <div class="cata-hsub">Asistente · InmoCreador</div>
-      </div>
-      <div class="cata-hprop" id="cataPropLabel">Propiedad</div>
-      <button class="cata-x" onclick="closeCata()">✕</button>
-    </div>
-    <div class="cata-msgs" id="cataMsgs"></div>
-    <div class="cata-lead-ok" id="cataLeadOk">🎉 ¡Consulta registrada! Te contactamos pronto.</div>
-    <div class="cata-quick" id="cataQuick">
-      <div class="cata-qlabel">Preguntas frecuentes</div>
-      <div class="cata-qbtns" id="cataQBtns"></div>
-    </div>
-    <div class="cata-irow">
-      <textarea class="cata-inp" id="cataInp" placeholder="Escribí tu pregunta a Cata..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cataSend()}"></textarea>
-      <button class="cata-send" id="cataSendBtn" onclick="cataSend()">➤</button>
-    </div>
-  </div>
-</div>
-
-<a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a>
-
-<script>
-  // ============================================================
-  //  SISTEMA DE DERIVACIÓN DINÁMICA — InmoCreador Multi-Vendedor
-  // ============================================================
-
-  const ASESORES = {
-    vanina: {
-      nombre:    "Vanina Buzzacchi",
-      telefono:  "5493584322626",
-      msgHero:   "Hola Vanina, vi las propiedades en tu web y quiero más información.",
-      msgProp:   (titulo, zona, precio) =>
-        `Hola Vanina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-      brandTitle: "Vanina Buzzacchi",
-      brandSub:   "Negocios Inmobiliarios · Río Cuarto",
-    },
-    catalina: {
-      nombre:    "Catalina",
-      telefono:  "5493585701632",
-      msgHero:   "Hola Catalina, vi las propiedades en la web y quiero más información.",
-      msgProp:   (titulo, zona, precio) =>
-        `Hola Catalina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-      brandTitle: "Catalina",
-      brandSub:   "Asesora Inmobiliaria · Río Cuarto",
-    },
-    mariano: {
-      nombre:    "Mariano",
-      telefono:  "5493585189949",
-      msgHero:   "Hola Mariano, vi las propiedades en la web y quiero más información.",
-      msgProp:   (titulo, zona, precio) =>
-        `Hola Mariano, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`,
-      brandTitle: "Mariano",
-      brandSub:   "Asesor Inmobiliario · Río Cuarto",
-    },
-  };
-
-  const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim();
-  const ASESOR_ACTIVO = ASESORES[_ref] || ASESORES.vanina;   
-
-  const PROCEDENCIA = _ref && ASESORES[_ref] ? _ref : "directo";
-  localStorage.setItem("procedencia_inmocreador", PROCEDENCIA);
-
-  // CONSTANTES GLOBALES DINÁMICAS
-  const API_URL   = "/api/inmuebles-publicos";
-  const LEADS_URL = "/api/leads";
-  const MATCH_URL = "/api/match-ia";
-  const WHATSAPP_NUMBER = ASESOR_ACTIVO.telefono;   
-  const IMG_BASE  = "/uploads/";
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const bt = document.querySelector(".brand-title");
-    const bs = document.querySelector(".brand-sub");
-    if (bt) bt.textContent = ASESOR_ACTIVO.brandTitle;
-    if (bs) bs.textContent = ASESOR_ACTIVO.brandSub;
-  });
-
-  function waLink(texto) {
-    return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
-  }
-
-  function setupWhatsApp() {
-    const href = waLink(ASESOR_ACTIVO.msgHero);
-    const ids  = ["heroWhatsApp", "heroWhatsAppTop", "floatingWhatsApp"];
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.href = href;
-    });
-  }
-
-  function waLinkProp(titulo, zona, precio) {
-    const texto = ASESOR_ACTIVO.msgProp(titulo, zona, precio);
-    return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`;
-  }
-
-  function setupLeadForm() {
-    document.getElementById("leadForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById("leadMsg");
-
-      const payload = {
-        nombre:           document.getElementById("leadNombre").value.trim(),
-        telefono:         document.getElementById("leadTelefono").value.trim(),
-        operacion:        document.getElementById("leadOperacion").value,
-        tipo:             document.getElementById("leadTipo").value,
-        zona:             document.getElementById("leadZona").value.trim(),
-        precio:           document.getElementById("leadPresupuesto").value.trim(),
-        mensajeOriginal:  document.getElementById("leadMensaje").value.trim(),
-        origen:           "funnel-publico",
-        tipoLead:         "comprador",
-        vendedor_asignado: PROCEDENCIA,
-        procedencia:       PROCEDENCIA,
-      };
-
-      msg.textContent = "Enviando...";
-      try {
-        const res = await fetch(LEADS_URL, {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto.";
-        document.getElementById("leadForm").reset();
-
-        const waResumen = `Hola ${ASESOR_ACTIVO.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`;
-        window.open(waLink(waResumen), "_blank");
-
-      } catch {
-        msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp.";
-      }
-    });
-  }
-
-  function buildCataSystem() {
-    const p = cataProp || {};
-    const faqsText = p.faqs?.length
-      ? p.faqs.map(f => `P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join("\n\n")
-      : "Sin FAQs.";
-    const objText = p.objections?.length
-      ? p.objections.map(o => `Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join("\n\n")
-      : "Sin objeciones.";
-
-    return `Sos Cata, asistente inmobiliaria de ${ASESOR_ACTIVO.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección.
-
-PROPIEDAD:
-- Título: ${p.titulo||''}
-- Precio: ${p.precio||'Consultar'}
-- Zona: ${p.zona||''}
-- Descripción: ${p.descripcion||''}
-
-ASESOR A CARGO: ${ASESOR_ACTIVO.nombre}
-WHATSAPP DEL ASESOR: https://wa.me/${ASESOR_ACTIVO.telefono}
-
-PREGUNTAS FRECUENTES:
-${faqsText}
-
-OBJECIONES:
-${objText}
-
-INSTRUCCIONES:
-- Respondé en español, tono cálido y cercano
-- Usá FAQs y objeciones cuando sean relevantes
-- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono
-- Cuando des el contacto del asesor, usá el WhatsApp indicado arriba
-- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO
-- Respuestas cortas, máx 3 párrafos. No inventes datos.`;
-  }
-
-  async function guardarLeadCata(lastUserMsg) {
-    await sbPost("leads", {
-      propiedad:         cataProp?.id,
-      nombre:            "Lead chat Cata",
-      interes:           lastUserMsg.substring(0, 200),
-      contacto:          lastUserMsg.substring(0, 100),
-      vendedor_asignado: PROCEDENCIA,   
-      procedencia:       PROCEDENCIA,
-      origen:            "cata-chat",
-    });
-  }
-
-  // variables de estado de la app
-  let allProperties  = [];
-  let currentFilter  = "todos";
-  let highlightedIds = [];
-  let favorites      = JSON.parse(localStorage.getItem("vb_favs") || "[]");
-  let deferredPrompt = null;
-
-  // ===================== PUSH NOTIFICATIONS =====================
-  async function suscribirPush() {
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-      alert("Tu navegador no soporta notificaciones push. Intentá instalar la app primero.");
-      return;
-    }
-    try {
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") { alert("Permiso denegado para notificaciones."); return; }
-
-      const reg = await navigator.serviceWorker.ready;
-      const keyRes = await fetch("/api/push/vapid-public");
-      const { key } = await keyRes.json();
-
-      if (!key) { alert("Push no configurado aún en el servidor."); return; }
-
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(key)
-      });
-
-      await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sub)
-      });
-
-      document.querySelectorAll(".btn-notify").forEach(b => {
-        b.textContent = "✅ Alertas activadas";
-        b.classList.add("active");
-      });
-      localStorage.setItem("vb_push", "1");
-    } catch (e) {
-      console.error("Push error:", e);
-      alert("No se pudo activar. Asegurate de tener la app instalada o usá Chrome.");
-    }
-  }
-
-  function urlBase64ToUint8Array(base64String) {
-    const padding = "=".repeat((4 - base64String.length % 4) % 4);
-    const base64  = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-    const raw     = window.atob(base64);
-    return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-  }
-
-  if (localStorage.getItem("vb_push")) {
-    document.querySelectorAll(".btn-notify").forEach(b => {
-      b.textContent = "✅ Alertas activadas";
-      b.classList.add("active");
-    });
-  }
-
-  // ===================== BUDGET SLIDER =====================
-  function updateBudget() {
-    const val = Number(document.getElementById("budgetRange").value);
-    document.getElementById("budgetVal").textContent = val === 0 ? "Sin límite" : `USD ${val.toLocaleString("es-AR")}`;
-    applyFilters();
-  }
-
-  // ===================== IA MATCH =====================
-  async function buscarConIA() {
-    const consulta   = document.getElementById("iaQuery").value.trim();
-    const presupuesto = Number(document.getElementById("budgetRange").value) || null;
-    const operacion  = document.getElementById("iaOperacion").value;
-    if (!consulta) { document.getElementById("iaQuery").focus(); return; }
-
-    const btn = document.getElementById("iaBtn");
-    const spinner = document.getElementById("iaSpinner");
-    const statusText = document.getElementById("iaStatusText");
-
-    btn.disabled = true;
-    spinner.style.display = "block";
-    statusText.textContent = "La IA está analizando las propiedades...";
-    highlightedIds = [];
-
-    try {
-      const res  = await fetch(MATCH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consulta, presupuesto, operacion })
-      });
-      const data = await res.json();
-      highlightedIds = data.ids || [];
-
-      if (highlightedIds.length) {
-        statusText.textContent = `✨ La IA encontró ${highlightedIds.length} propiedades que coinciden con tu búsqueda`;
-        document.getElementById("propiedades").scrollIntoView({ behavior: "smooth" });
-        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-        document.querySelector(".chip[data-filter='todos']").classList.add("active");
-        currentFilter = "todos";
-        applyFilters();
-      } else {
-        statusText.textContent = "No encontramos coincidencias exactas. Probá con otros términos o dejá tu búsqueda abajo.";
-      }
-    } catch (e) {
-      statusText.textContent = "Error al conectar con la IA. Usá los filtros manuales.";
-    } finally {
-      btn.disabled = false;
-      spinner.style.display = "none";
-    }
-  }
-
-  document.getElementById("iaQuery").addEventListener("keydown", e => {
-    if (e.key === "Enter") buscarConIA();
-  });
-
-  // ===================== HELPERS =====================
-  function formatPrice(item) {
-    const precio = Number(item.precio || 0);
-    if (!precio) return "Consultar";
-    return `${item.moneda || "USD"} ${precio.toLocaleString("es-AR")}`;
-  }
-
-  // alias heredado para compatibilidad
-  function formatPrecio(item) { return formatPrice(item); }
-
-  运作function normalize(text) {
-    return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  }
-
-  function detectType(item) {
-    const tipo = normalize(item.tipoPropiedad || item.tipo || item.titulo || "");
-    if (tipo.includes("depto") || tipo.includes("departamento")) return "depto";
-    if (tipo.includes("casa")) return "casa";
-    if (tipo.includes("local")) return "local";
-    if (tipo.includes("terreno") || tipo.includes("lote")) return "terreno";
-    return tipo || "otro";
-  }
-
-  function getImage(item) {
-    if (item.imagenes && item.imagenes.length > 0) {
-      for (const img of item.imagenes) {
-        if (!img) continue;
-        if (img.startsWith("http://") || img.startsWith("https://")) return img;
-        return IMG_BASE + img;
-      }
-    }
-    return "https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad";
-  }
-
-  function isNew(item) {
-    if (!item.fecha) return false;
-    const diff = Date.now() - new Date(item.fecha).getTime();
-    return diff < 7 * 24 * 60 * 60 * 1000;
-  }
-
-  function toggleFav(id) {
-    const idx = favorites.indexOf(id);
-    if (idx >= 0) favorites.splice(idx, 1);
-    else favorites.push(id);
-    localStorage.setItem("vb_favs", JSON.stringify(favorites));
-    document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(b => {
-      b.textContent = favorites.includes(id) ? "❤️" : "🤍";
-    });
-  }
-
-  // ===================== RENDER CARDS CORREGIDO =====================
-  function renderCards(items) {
-    const grid  = document.getElementById("propertiesGrid");
-    const empty = document.getElementById("emptyState");
-    const count = document.getElementById("resultCount");
-    count.textContent = `${items.length} ${items.length === 1 ? "propiedad" : "propiedades"}`;
-
-    if (!items.length) {
-      grid.style.display = "none";
-      empty.style.display = "block";
-      return;
-    }
-    empty.style.display = "none";
-    grid.style.display  = "grid";
-
-    grid.innerHTML = items.map(item => {
-      const isSale    = normalize(item.tipoOperacion || "").includes("venta");
-      const tipo      = detectType(item);
-      const dormText  = item.dormitorios ? `🛏 ${item.dormitorios} dorm.` : "";
-      const banosText = item.banos ? `🚿 ${item.banos}` : "";
-      const isHl      = highlightedIds.includes(item.id);
-      const isFav     = favorites.includes(item.id);
-      const estadoInm = (item.estadoPublicacion || "").toLowerCase();
-      const isVendida  = estadoInm === "vendida";
-      const isAlquilada = estadoInm === "alquilada";
-      const isConcretada = isVendida || isAlquilada;
-      
-      // FIX CRÍTICO: Usa el link de WhatsApp dinámico del asesor activo
-      const dynamicWaUrl = waLinkProp(item.titulo || "Propiedad", item.zona || "-", formatPrice(item));
-      const shortDesc = (item.descripcion || "Propiedad disponible.").replace(/\r?\n/g, " ").slice(0, 110);
-
-      return `<article class="card${isHl ? " ia-highlight" : ""}${isConcretada ? " card-concretada" : ""}" id="prop-${item.id}">
-        <div class="card-image-wrap">
-          <div class="badge-top">
-            <span class="badge ${isSale ? "badge-sale" : "badge-rent"}">${isSale ? "Venta" : "Alquiler"}</span>
-            ${isNew(item) ? '<span class="badge badge-new">Nueva</span>' : ""}
-            ${isHl ? '<span class="badge badge-new">✨ IA</span>' : ""}
-          </div>
-          <button class="card-fav fav-btn" data-id="${item.id}" onclick="toggleFav(${item.id})">${isFav ? "❤️" : "🤍"}</button>
-          ${isConcretada ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:3;display:flex;align-items:center;justify-content:center;">
-            <span style="background:${isVendida?"#7c3aed":"#0891b2"};color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:999px;letter-spacing:1px;transform:rotate(-8deg);box-shadow:0 4px 16px rgba(0,0,0,.3)">
-              ${isVendida ? "✅ VENDIDA" : "✅ ALQUILADA"}
-            </span>
-          </div>` : ""}
-          <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad'"${isConcretada ? ' style="filter:grayscale(.4)"' : ""}/>
-        </div>
-        <div class="card-body">
-          <div class="card-title">${item.titulo || "Propiedad disponible"}</div>
-          <div class="card-price">${formatPrice(item)}</div>
-          <div class="card-zone">📍 ${item.zona || "Zona a consultar"}${item.direccion ? " · " + item.direccion : ""}</div>
-          <div class="card-meta">
-            <span class="meta-pill">${tipo || "Propiedad"}</span>
-            ${dormText ? `<span class="meta-pill">${dormText}</span>` : ""}
-            ${banosText ? `<span class="meta-pill">${banosText}</span>` : ""}
-          </div>
-          <div class="card-desc">${shortDesc}...</div>
-          <div class="card-actions" style="grid-template-columns:1fr 1fr auto">
-            <a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a>
-            ${isConcretada
-              ? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>`
-              : `<a class="btn-card btn-contact" href="${dynamicWaUrl}" target="_blank">Consultar</a>`
-            }
-            <button class="btn-card btn-share" title="Compartir por WhatsApp"
-              onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\'").replace(/"/g,'\"')}','${formatPrice(item).replace(/'/g,"\'")}')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm5.954 14.454c-.242.67-.886 1.227-1.59 1.406-.464.12-1.068.153-1.63.058-.764-.132-1.537-.44-2.437-.88C9.433 15.27 7.58 12.91 7.215 12.42c-.365-.488-1.232-1.64-1.232-3.127 0-1.486.78-2.216 1.057-2.516.276-.3.605-.376.806-.376.202 0 .404.002.58.01.186.01.436-.07.682.52.251.605.854 2.084.929 2.235.075.152.124.33.025.53-.1.2-.15.325-.299.5-.148.173-.312.387-.446.52-.149.148-.304.308-.13.607.173.298.77 1.27 1.653 2.058 1.135 1.012 2.093 1.325 2.39 1.475.297.148.47.124.644-.075.173-.198.743-.867.94-1.164.198-.297.397-.248.67-.149.272.1 1.733.818 2.03.967.297.149.496.223.57.347.075.124.075.72-.173 1.413z"/></svg>
-            </button>
-          </div>
-          ${!isConcretada ? `<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,'\\`')}')">💬 Hablar con Cata</button>` : ''}
-        </div>
-      </article>`;
-    }).join("");
-  }
-
-  // ===================== FILTERS =====================
-  function applyFilters() {
-    const search  = normalize(document.getElementById("searchInput").value.trim());
-    const budget  = Number(document.getElementById("budgetRange").value) || 0;
-
-    let filtered = allProperties.filter(item => {
-      const op   = normalize(item.tipoOperacion || "");
-      const tipo = detectType(item);
-      let okChip = true;
-      if (currentFilter === "venta")   okChip = op.includes("venta");
-      if (currentFilter === "alquiler") okChip = op.includes("alquiler");
-      if (["casa","depto","local","terreno"].includes(currentFilter)) okChip = tipo === currentFilter;
-      if (!okChip) return false;
-      if (budget > 0 && Number(item.precio || 0) > budget) return false;
-      if (search) {
-        const big = normalize(`${item.titulo||""} ${item.zona||""} ${item.direccion||""} ${item.tipoPropiedad||""} ${item.descripcion||""}`);
-        if (!big.includes(search)) return false;
-      }
-      return true;
-    });
-
-    if (highlightedIds.length) {
-      const hl  = filtered.filter(i => highlightedIds.includes(i.id));
-      const rest = filtered.filter(i => !highlightedIds.includes(i.id));
-      filtered  = [...hl, ...rest];
-    }
-
-    renderCards(filtered);
-  }
-
-  function setupFilters() {
-    document.querySelectorAll(".chip").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".chip").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentFilter = btn.dataset.filter;
-        highlightedIds = [];
-        document.getElementById("iaStatusText").textContent = "";
-        applyFilters();
-      });
-    });
-    document.getElementById("searchInput").addEventListener("input", applyFilters);
-  }
-
-  // ===================== LOAD =====================
-  async function loadProperties() {
-    const loader = document.getElementById("loader");
-    for (let i = 1; i <= 3; i++) {
-      try {
-        loader.textContent = i === 1 ? "Cargando propiedades..." : `Conectando... (${i}/3)`;
-        const res  = await fetch(API_URL, { cache: "no-store" });
-        const data = await res.json();
-        allProperties = Array.isArray(data) ? data : [];
-        document.getElementById("miniTotal").textContent   = allProperties.length;
-        document.getElementById("miniVenta").textContent   = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("venta")).length;
-        document.getElementById("miniAlquiler").textContent = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("alquiler")).length;
-        loader.style.display = "none";
-        document.getElementById("propertiesGrid").style.display = "grid";
-        applyFilters();
-        return;
-      } catch(e) {
-        if (i < 3) await new Promise(r => setTimeout(r, 3000));
-      }
-    }
-    loader.innerHTML = "No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>";
-  }
-
-  // ===================== COMPARTIR PROPIEDAD =====================
-  function compartirPropiedad(e, id, titulo, precio) {
-    e.preventDefault();
-    e.stopPropagation();
-    const url  = `${location.origin}/propiedad.html?id=${id}`;
-    const text = `🏠 *${titulo}*\n💰 ${precio}\n\nMirá esta propiedad en Vanina Buzzacchi:\n${url}\n\n¿Te interesa? Hay más propiedades disponibles en el catálogo. 👆`;
-    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, "_blank");
-  }
-
-  // ===================== COUNTER =====================
-  function setupCounter() {
-    const el  = document.getElementById("visitCounter");
-    let val   = Number(localStorage.getItem("vb_visits") || 2143);
-    val      += Math.floor(Math.random() * 3) + 1;
-    localStorage.setItem("vb_visits", val);
-    el.textContent = val.toLocaleString("es-AR");
-  }
-
-  // ===================== INIT =====================
-  setupWhatsApp();
-  setupCounter();
-  setupFilters();
-  setupLeadForm();
-  loadProperties();
-</script>
-
-<script>
-// ===================== CATA CHAT =====================
-const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70';
-const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` };
-
-let cataProp = null, cataHistory = [], cataLeadDone = false;
-
-async function sbGet(path) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: sbHdrs });
-  return r.json();
+</div> 
+
+<div class="notify-strip"> 
+
+<p>🔔 También podés activar notificaciones para recibir alertas en tu celular cuando entre una nueva propiedad</p> 
+
+<button class="btn-notify" id="notifyBtn2" onclick="suscribirPush()">Activar alertas</button> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+<section class="owner-ai-section"> 
+
+<div class="owner-ai-wrap"> 
+
+<div class="owner-ai-head"> 
+
+<span class="owner-mini">🧠 Diagnóstico Inteligente</span> 
+
+<h2> 
+
+¿Tu propiedad está realmente lista para venderse? 
+
+</h2> 
+
+<p> 
+
+La mayoría de las propiedades no tardan en venderse por mala suerte. 
+
+Sino por estrategia, precio y posicionamiento. 
+
+</p> 
+
+</div> 
+
+<div class="owner-chat" id="ownerChat"> 
+
+<div class="owner-msg ia"> 
+
+👋 Hola. Soy el asistente inmobiliario de Vanina Buzzacchi. 
+
+Voy a hacerte algunas preguntas rápidas para detectar posibles puntos que estén frenando la venta. 
+
+</div> 
+
+<div class="owner-step active" data-step="1"> 
+
+<div class="owner-q"> 
+
+¿Hace cuánto tiempo está publicada tu propiedad? 
+
+</div> 
+
+<div class="owner-options"> 
+
+<button onclick="ownerAnswer(1,'menos')">Menos de 30 días</button> 
+
+<button onclick="ownerAnswer(1,'3meses')">1 a 3 meses</button> 
+
+<button onclick="ownerAnswer(1,'6meses')">Más de 3 meses</button> 
+
+<button onclick="ownerAnswer(1,'mucho')">Más de 6 meses</button> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+<section class="testimonials-section"> 
+
+<div class="container"> 
+
+<h2 class="section-title">Lo que dicen quienes ya confiaron</h2> 
+
+<div class="testimonials"> 
+
+<div class="testimonial"><div class="stars">★★★★★</div><p>"Encontramos una casa en la zona que buscábamos y el proceso fue claro desde el primer día. Valoramos mucho el criterio y la paciencia."</p><strong>María y Diego · Compra de vivienda</strong></div> 
+
+<div class="testimonial"><div class="stars">★★★★★</div><p>"Necesitábamos alquilar rápido, sin vueltas. Nos acompañaron bien y encontramos una alternativa concreta en días."</p><strong>Lucía R. · Alquiler</strong></div> 
+
+<div class="testimonial"><div class="stars">★★★★★</div><p>"Nos transmitieron confianza, conocimiento del mercado y seguimiento real. No fue solo mostrar propiedades."</p><strong>Fernando M. · Compra e inversión</strong></div> 
+
+</div> 
+
+</div> 
+
+</section> 
+
+<footer class="footer"> 
+
+<div class="container"> 
+
+<div class="footer-brand">Vanina Buzzacchi</div> 
+
+<div>Propiedades · Río Cuarto, Córdoba</div> 
+
+<div style="margin-top:8px"><small>+54 9 358 570-1632 · Todos los derechos reservados</small></div> 
+
+</div> 
+
+</footer> 
+
+<div class="cata-overlay" id="cataOverlay" onclick="if(event.target===this)closeCata()"> 
+
+<div class="cata-modal"> 
+
+<div class="cata-header"> 
+
+<div class="cata-av">🙋‍♀️</div> 
+
+<div class="cata-hinfo"> 
+
+<div class="cata-hname">Cata</div> 
+
+<div class="cata-hsub">Asistente · InmoCreador</div> 
+
+</div> 
+
+<div class="cata-hprop" id="cataPropLabel">Propiedad</div> 
+
+<button class="cata-x" onclick="closeCata()">✕</button> 
+
+</div> 
+
+<div class="cata-msgs" id="cataMsgs"></div> 
+
+<div class="cata-lead-ok" id="cataLeadOk">🎉 ¡Consulta registrada! Te contactamos pronto.</div> 
+
+<div class="cata-quick" id="cataQuick"> 
+
+<div class="cata-qlabel">Preguntas frecuentes</div> 
+
+<div class="cata-qbtns" id="cataQBtns"></div> 
+
+</div> 
+
+<div class="cata-irow"> 
+
+<textarea class="cata-inp" id="cataInp" placeholder="Escribí tu pregunta a Cata..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();cataSend()}"></textarea> 
+
+<button class="cata-send" id="cataSendBtn" onclick="cataSend()">➤</button> 
+
+</div> 
+
+</div> 
+
+</div> 
+
+<a class="floating-wa" id="floatingWhatsApp" href="#" target="_blank">💬</a> 
+
+<script> 
+
+// ============================================================ 
+
+// SISTEMA DE DERIVACIÓN DINÁMICA — InmoCreador Multi-Vendedor 
+
+// ============================================================ 
+
+const ASESORES = { 
+
+vanina: { 
+
+nombre: "Vanina Buzzacchi", 
+
+telefono: "5493584322626", 
+
+msgHero: "Hola Vanina, vi las propiedades en tu web y quiero más información.", 
+
+msgProp: (titulo, zona, precio) => 
+
+`Hola Vanina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`, 
+
+brandTitle: "Vanina Buzzacchi", 
+
+brandSub: "Negocios Inmobiliarios · Río Cuarto", 
+
+}, 
+
+catalina: { 
+
+nombre: "Catalina", 
+
+telefono: "5493585701632", 
+
+msgHero: "Hola Catalina, vi las propiedades en la web y quiero más información.", 
+
+msgProp: (titulo, zona, precio) => 
+
+`Hola Catalina, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`, 
+
+brandTitle: "Catalina", 
+
+brandSub: "Asesora Inmobiliaria · Río Cuarto", 
+
+}, 
+
+mariano: { 
+
+nombre: "Mariano", 
+
+telefono: "5493585189949", 
+
+msgHero: "Hola Mariano, vi las propiedades en la web y quiero más información.", 
+
+msgProp: (titulo, zona, precio) => 
+
+`Hola Mariano, vi esta propiedad y quiero más información:\n\n${titulo}\nZona: ${zona}\nPrecio: ${precio}`, 
+
+brandTitle: "Mariano", 
+
+brandSub: "Asesor Inmobiliario · Río Cuarto", 
+
+}, 
+
+}; 
+
+const _ref = new URLSearchParams(window.location.search).get("ref")?.toLowerCase().trim(); 
+
+const ASESOR_ACTIVO = ASESORES[_ref] || ASESORES.vanina; 
+
+const PROCEDENCIA = _ref && ASESORES[_ref] ? _ref : "directo"; 
+
+localStorage.setItem("procedencia_inmocreador", PROCEDENCIA); 
+
+// CONSTANTES GLOBALES DINÁMICAS 
+
+const API_URL = "/api/inmuebles-publicos"; 
+
+const LEADS_URL = "/api/leads"; 
+
+const MATCH_URL = "/api/match-ia"; 
+
+const WHATSAPP_NUMBER = ASESOR_ACTIVO.telefono; 
+
+const IMG_BASE = "/uploads/"; 
+
+document.addEventListener("DOMContentLoaded", () => { 
+
+const bt = document.querySelector(".brand-title"); 
+
+const bs = document.querySelector(".brand-sub"); 
+
+if (bt) bt.textContent = ASESOR_ACTIVO.brandTitle; 
+
+if (bs) bs.textContent = ASESOR_ACTIVO.brandSub; 
+
+}); 
+
+function waLink(texto) { 
+
+return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`; 
+
+} 
+
+function setupWhatsApp() { 
+
+const href = waLink(ASESOR_ACTIVO.msgHero); 
+
+const ids = ["heroWhatsApp", "heroWhatsAppTop", "floatingWhatsApp"]; 
+
+ids.forEach(id => { 
+
+const el = document.getElementById(id); 
+
+if (el) el.href = href; 
+
+}); 
+
+} 
+
+function waLinkProp(titulo, zona, precio) { 
+
+const texto = ASESOR_ACTIVO.msgProp(titulo, zona, precio); 
+
+return `https://wa.me/${ASESOR_ACTIVO.telefono}?text=${encodeURIComponent(texto)}`; 
+
+} 
+
+function setupLeadForm() { 
+
+document.getElementById("leadForm").addEventListener("submit", async (e) => { 
+
+e.preventDefault(); 
+
+const msg = document.getElementById("leadMsg"); 
+
+const payload = { 
+
+nombre: document.getElementById("leadNombre").value.trim(), 
+
+telefono: document.getElementById("leadTelefono").value.trim(), 
+
+operacion: document.getElementById("leadOperacion").value, 
+
+tipo: document.getElementById("leadTipo").value, 
+
+zona: document.getElementById("leadZona").value.trim(), 
+
+precio: document.getElementById("leadPresupuesto").value.trim(), 
+
+mensajeOriginal: document.getElementById("leadMensaje").value.trim(), 
+
+origen: "funnel-publico", 
+
+tipoLead: "comprador", 
+
+vendedor_asignado: PROCEDENCIA, 
+
+procedencia: PROCEDENCIA, 
+
+}; 
+
+msg.textContent = "Enviando..."; 
+
+try { 
+
+const res = await fetch(LEADS_URL, { 
+
+method: "POST", 
+
+headers: { "Content-Type": "application/json" }, 
+
+body: JSON.stringify(payload), 
+
+}); 
+
+if (!res.ok) throw new Error(); 
+
+msg.textContent = "✅ ¡Listo! Recibimos tu búsqueda y te contactaremos pronto."; 
+
+document.getElementById("leadForm").reset(); 
+
+const waResumen = `Hola ${ASESOR_ACTIVO.nombre}, llega una búsqueda desde tu funnel:\n\n👤 ${payload.nombre}\n📱 ${payload.telefono}\n🏠 ${payload.operacion} · ${payload.tipo}\n📍 ${payload.zona}\n💰 ${payload.precio}\n\n${payload.mensajeOriginal}`; 
+
+window.open(waLink(waResumen), "_blank"); 
+
+} catch { 
+
+msg.textContent = "No pudimos enviar. Escribinos directo por WhatsApp."; 
+
+} 
+
+}); 
+
+} 
+
+function buildCataSystem() { 
+
+const p = cataProp || {}; 
+
+const faqsText = p.faqs?.length 
+
+? p.faqs.map(f => `P: ${f.pregunta||f.question||''}\nR: ${f.respuesta||f.answer||''}`).join("\n\n") 
+
+: "Sin FAQs."; 
+
+const objText = p.objections?.length 
+
+? p.objections.map(o => `Objeción: ${o.objecion||o.objection||''}\nRespuesta: ${o.respuesta||o.answer||''}`).join("\n\n") 
+
+: "Sin objeciones."; 
+
+return `Sos Cata, asistente inmobiliaria de ${ASESOR_ACTIVO.nombre} en Río Cuarto. Sos cálida, profesional y conocés esta propiedad a la perfección. 
+
+PROPIEDAD: 
+
+- Título: ${p.titulo||''} 
+
+- Precio: ${p.precio||'Consultar'} 
+
+- Zona: ${p.zona||''} 
+
+- Descripción: ${p.descripcion||''} 
+
+ASESOR A CARGO: ${ASESOR_ACTIVO.nombre} 
+
+WHATSAPP DEL ASESOR: https://wa.me/${ASESOR_ACTIVO.telefono} 
+
+PREGUNTAS FRECUENTES: 
+
+${faqsText} 
+
+OBJECIONES: 
+
+${objText} 
+
+INSTRUCCIONES: 
+
+- Respondé en español, tono cálido y cercano 
+
+- Usá FAQs y objeciones cuando sean relevantes 
+
+- Si el usuario quiere visitar o muestra interés real → pedile nombre y teléfono 
+
+- Cuando des el contacto del asesor, usá el WhatsApp indicado arriba 
+
+- Si capturaste nombre + contacto → terminá con exactamente: LEAD_CAPTURADO 
+
+- Respuestas cortas, máx 3 párrafos. No inventes datos.`; 
+
+} 
+
+async function guardarLeadCata(lastUserMsg) { 
+
+await sbPost("leads", { 
+
+propiedad: cataProp?.id, 
+
+nombre: "Lead chat Cata", 
+
+interes: lastUserMsg.substring(0, 200), 
+
+contacto: lastUserMsg.substring(0, 100), 
+
+vendedor_asignado: PROCEDENCIA, 
+
+procedencia: PROCEDENCIA, 
+
+origen: "cata-chat", 
+
+}); 
+
+} 
+
+// variables de estado de la app 
+
+let allProperties = []; 
+
+let currentFilter = "todos"; 
+
+let highlightedIds = []; 
+
+let favorites = JSON.parse(localStorage.getItem("vb_favs") || "[]"); 
+
+let deferredPrompt = null; 
+
+// ===================== PUSH NOTIFICATIONS ===================== 
+
+async function suscribirPush() { 
+
+if (!("serviceWorker" in navigator) || !("PushManager" in window)) { 
+
+alert("Tu navegador no soporta notificaciones push. Intentá instalar la app primero."); 
+
+return; 
+
+} 
+
+try { 
+
+const perm = await Notification.requestPermission(); 
+
+if (perm !== "granted") { alert("Permiso denegado para notificaciones."); return; } 
+
+const reg = await navigator.serviceWorker.ready; 
+
+const keyRes = await fetch("/api/push/vapid-public"); 
+
+const { key } = await keyRes.json(); 
+
+if (!key) { alert("Push no configurado aún en el servidor."); return; } 
+
+const sub = await reg.pushManager.subscribe({ 
+
+userVisibleOnly: true, 
+
+applicationServerKey: urlBase64ToUint8Array(key) 
+
+}); 
+
+await fetch("/api/push/subscribe", { 
+
+method: "POST", 
+
+headers: { "Content-Type": "application/json" }, 
+
+body: JSON.stringify(sub) 
+
+}); 
+
+document.querySelectorAll(".btn-notify").forEach(b => { 
+
+b.textContent = "✅ Alertas activadas"; 
+
+b.classList.add("active"); 
+
+}); 
+
+localStorage.setItem("vb_push", "1"); 
+
+} catch (e) { 
+
+console.error("Push error:", e); 
+
+alert("No se pudo activar. Asegurate de tener la app instalada o usá Chrome."); 
+
+} 
+
+} 
+
+function urlBase64ToUint8Array(base64String) { 
+
+const padding = "=".repeat((4 - base64String.length % 4) % 4); 
+
+const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/"); 
+
+const raw = window.atob(base64); 
+
+return Uint8Array.from([...raw].map(c => c.charCodeAt(0))); 
+
+} 
+
+if (localStorage.getItem("vb_push")) { 
+
+document.querySelectorAll(".btn-notify").forEach(b => { 
+
+b.textContent = "✅ Alertas activadas"; 
+
+b.classList.add("active"); 
+
+}); 
+
+} 
+
+// ===================== BUDGET SLIDER ===================== 
+
+function updateBudget() { 
+
+const val = Number(document.getElementById("budgetRange").value); 
+
+document.getElementById("budgetVal").textContent = val === 0 ? "Sin límite" : `USD ${val.toLocaleString("es-AR")}`; 
+
+applyFilters(); 
+
+} 
+
+// ===================== IA MATCH ===================== 
+
+async function buscarConIA() { 
+
+const consulta = document.getElementById("iaQuery").value.trim(); 
+
+const presupuesto = Number(document.getElementById("budgetRange").value) || null; 
+
+const operacion = document.getElementById("iaOperacion").value; 
+
+if (!consulta) { document.getElementById("iaQuery").focus(); return; } 
+
+const btn = document.getElementById("iaBtn"); 
+
+const spinner = document.getElementById("iaSpinner"); 
+
+const statusText = document.getElementById("iaStatusText"); 
+
+btn.disabled = true; 
+
+spinner.style.display = "block"; 
+
+statusText.textContent = "La IA está analizando las propiedades..."; 
+
+highlightedIds = []; 
+
+try { 
+
+const res = await fetch(MATCH_URL, { 
+
+method: "POST", 
+
+headers: { "Content-Type": "application/json" }, 
+
+body: JSON.stringify({ consulta, presupuesto, operacion }) 
+
+}); 
+
+const data = await res.json(); 
+
+highlightedIds = data.ids || []; 
+
+if (highlightedIds.length) { 
+
+statusText.textContent = `✨ La IA encontró ${highlightedIds.length} propiedades que coinciden con tu búsqueda`; 
+
+document.getElementById("propiedades").scrollIntoView({ behavior: "smooth" }); 
+
+document.querySelectorAll(".chip").forEach(c => c.classList.remove("active")); 
+
+document.querySelector(".chip[data-filter='todos']").classList.add("active"); 
+
+currentFilter = "todos"; 
+
+applyFilters(); 
+
+} else { 
+
+statusText.textContent = "No encontramos coincidencias exactas. Probá con otros términos o dejá tu búsqueda abajo."; 
+
+} 
+
+} catch (e) { 
+
+statusText.textContent = "Error al conectar con la IA. Usá los filtros manuales."; 
+
+} finally { 
+
+btn.disabled = false; 
+
+spinner.style.display = "none"; 
+
+} 
+
+} 
+
+document.getElementById("iaQuery").addEventListener("keydown", e => { 
+
+if (e.key === "Enter") buscarConIA(); 
+
+}); 
+
+// ===================== HELPERS ===================== 
+
+function formatPrice(item) { 
+
+const precio = Number(item.precio || 0); 
+
+if (!precio) return "Consultar"; 
+
+return `${item.moneda || "USD"} ${precio.toLocaleString("es-AR")}`; 
+
+} 
+
+// alias heredado para compatibilidad 
+
+function formatPrecio(item) { return formatPrice(item); } 
+
+运作function normalize(text) { 
+
+return (text || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+
+} 
+
+function detectType(item) { 
+
+const tipo = normalize(item.tipoPropiedad || item.tipo || item.titulo || ""); 
+
+if (tipo.includes("depto") || tipo.includes("departamento")) return "depto"; 
+
+if (tipo.includes("casa")) return "casa"; 
+
+if (tipo.includes("local")) return "local"; 
+
+if (tipo.includes("terreno") || tipo.includes("lote")) return "terreno"; 
+
+return tipo || "otro"; 
+
+} 
+
+function getImage(item) { 
+
+if (item.imagenes && item.imagenes.length > 0) { 
+
+for (const img of item.imagenes) { 
+
+if (!img) continue; 
+
+if (img.startsWith("http://") || img.startsWith("https://")) return img; 
+
+return IMG_BASE + img; 
+
+} 
+
+} 
+
+// Fotos reales por tipo de propiedad como fallback 
+const tipo = (item.tipoPropiedad || item.tipo || "").toLowerCase();
+const zona = (item.zona || "").toLowerCase();
+const seed = String(item.id || Math.floor(Math.random()*100));
+if (tipo.includes("terreno") || tipo.includes("lote")) {
+  const terrenos = ["photo-1500382017468-9049fed747ef","photo-1512917774080-9991f1c4c750","photo-1558618666-fcd25c85cd64"];
+  return `https://images.unsplash.com/${terrenos[Number(seed)%3]}?w=900&q=80`;
 }
-async function sbPost(table, data) {
-  await fetch(`${SB_URL}/rest/v1/${table}`, {
-    method: 'POST',
-    headers: { ...sbHdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-    body: JSON.stringify(data)
-  });
+if (tipo.includes("local") || tipo.includes("comercial") || tipo.includes("oficina")) {
+  const locales = ["photo-1497366216548-37526070297c","photo-1497366811353-6870744d04b2","photo-1604328698692-f76ea9498e76"];
+  return `https://images.unsplash.com/${locales[Number(seed)%3]}?w=900&q=80`;
 }
-
-async function openCata(propId, propTitulo) {
-  cataProp = null; cataHistory = []; cataLeadDone = false;
-  document.getElementById('cataMsgs').innerHTML = '';
-  document.getElementById('cataQBtns').innerHTML = '';
-  document.getElementById('cataLeadOk').style.display = 'none';
-  document.getElementById('cataPropLabel').textContent = propTitulo || propId;
-  document.getElementById('cataInp').value = '';
-  document.getElementById('cataOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  let faqs = [], objs = [];
-  try {
-    const [faqRes, objRes] = await Promise.all([
-      fetch('/api/faqs'),
-      fetch('/api/objeciones')
-    ]);
-    if (faqRes.ok) faqs = await faqRes.json();
-    if (objRes.ok) objs = await objRes.json();
-  } catch(e) {
-    console.warn('No se pudieron cargar FAQs/objeciones:', e.message);
-  }
-
-  const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo };
-
-  cataProp = {
-    id: propId,
-    titulo: propTitulo || prop.titulo || propId,
-    zona: prop.zona || '',
-    precio: prop.precio || '',
-    moneda: prop.moneda || 'USD',
-    descripcion: prop.descripcion || '',
-    faqs,
-    objections: objs
-  };
-
-  const qbtns = document.getElementById('cataQBtns');
-  (faqs || []).slice(0, 4).forEach(f => {
-    const b = document.createElement('button');
-    b.className = 'cata-qq';
-    const pregunta = f.pregunta || f.question || '';
-    b.textContent = pregunta.length > 40 ? pregunta.slice(0,38)+'…' : pregunta;
-    b.onclick = () => { document.getElementById('cataInp').value = pregunta; cataSend(); };
-    qbtns.appendChild(b);
-  });
-
-  cataShowTyping();
-  try {
-    const res = await callCata([{ role:'user', content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.' }]);
-    const text = extractCataText(res) || '¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?';
-    cataRemoveTyping();
-    cataAddMsg('assistant', text);
-    cataHistory.push({ role:'assistant', content: text });
-  } catch(e) {
-    console.error('Cata saludo error:', e);
-    cataRemoveTyping();
-    cataAddMsg('assistant', '¡Hola! Soy Cata 👋 Estoy acá para ayudarte con esta propiedad. ¿Qué querés saber?');
-  }
-  document.getElementById('cataInp').focus();
+if (tipo.includes("depto") || tipo.includes("departamento") || tipo.includes("apartamento")) {
+  const deptos = ["photo-1502672260266-1c1ef2d93688","photo-1536376072261-38c75010e6c9","photo-1560448204-e02f11c3d0e2","photo-1522708323590-d24dbb6b0267","photo-1493809842364-78817add7ffb"];
+  return `https://images.unsplash.com/${deptos[Number(seed)%5]}?w=900&q=80`;
 }
+// Default casas
+const casas = ["photo-1568605114967-8130f3a36994","photo-1570129477492-45c003edd2be","photo-1576941089067-2de3c901e126","photo-1449844908441-8829872d2607","photo-1523217582562-09d0def993a6","photo-1512917774080-9991f1c4c750","photo-1558618666-fcd25c85cd64","photo-1600596542815-ffad4c1539a9","photo-1600585154340-be6161a56a0c"];
+return `https://images.unsplash.com/${casas[Number(seed)%9]}?w=900&q=80`;
 
-function closeCata() {
-  document.getElementById('cataOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
+} 
 
-async function callCata(messages) {
-  const res = await fetch('/api/cata-chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ system: buildCataSystem(), messages })
-  });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  return res.json();
-}
+function isNew(item) { 
 
-function extractCataText(data) {
-  if (!data) return null;
-  if (Array.isArray(data.content)) {
-    const t = data.content.map(c => c.text || '').join('').trim();
-    if (t) return t;
-  }
-  if (data.respuesta) return String(data.respuesta).trim();
-  if (data.error) {
-    console.error('Cata API error:', data.error);
-    return null;
-  }
-  return null;
-}
+if (!item.fecha) return false; 
 
-function cataAddMsg(role, text) {
-  const msgs = document.getElementById('cataMsgs');
-  const d = document.createElement('div');
-  d.className = 'cm ' + role;
-  d.innerHTML = `<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`;
-  msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
-}
+const diff = Date.now() - new Date(item.fecha).getTime(); 
 
-function cataShowTyping() {
-  const msgs = document.getElementById('cataMsgs');
-  const d = document.createElement('div');
-  d.className = 'cm assistant'; d.id = 'cataTyping';
-  d.innerHTML = `<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`;
-  msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight;
-}
-function cataRemoveTyping() { const t=document.getElementById('cataTyping'); if(t) t.remove(); }
+return diff < 7 * 24 * 60 * 60 * 1000; 
 
-async function cataSend() {
-  const inp = document.getElementById('cataInp');
-  const text = inp.value.trim();
-  if (!text) return;
-  document.getElementById('cataSendBtn').disabled = true;
-  inp.value = '';
-  cataAddMsg('user', text.replace(/</g,'<'));
-  cataHistory.push({ role:'user', content: text });
-  cataShowTyping();
-  try {
-    const data = await callCata(cataHistory);
-    const full  = extractCataText(data);
-    if (!full) throw new Error('Respuesta vacía');
-    const isLead = full.includes('LEAD_CAPTURADO');
-    const clean  = full.replace('LEAD_CAPTURADO','').trim();
-    cataRemoveTyping();
-    cataAddMsg('assistant', clean);
-    cataHistory.push({ role:'assistant', content: clean });
-    if (isLead && !cataLeadDone) {
-      cataLeadDone = true;
-      const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || '';
-      await guardarLeadCata(lastUser || '');
-      document.getElementById('cataLeadOk').style.display = 'block';
-    }
-  } catch(e) {
-    console.error('cataSend error:', e);
-    cataRemoveTyping();
-    cataAddMsg('assistant', 'Hubo un problema al conectar. Por favor intentá de nuevo en un momento.');
-  }
-  document.getElementById('cataSendBtn').disabled = false;
-  document.getElementById('cataInp').focus();
-}
+} 
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); });
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw-funnel.js").catch(() => {});
-  }
-</script>
+function toggleFav(id) { 
 
-<div style="text-align:center;margin:30px 0;">
-<button class="btn-share" onclick="compartirWeb()">📤 Compartir propiedad</button>
-</div>
+const idx = favorites.indexOf(id); 
 
+if (idx >= 0) favorites.splice(idx, 1); 
 
-<script>
-let ownerData = {};
+else favorites.push(id); 
 
-function ownerAnswer(step,value){
-  ownerData['step'+step]=value;
+localStorage.setItem("vb_favs", JSON.stringify(favorites)); 
 
-  const current=document.querySelector('.owner-step[data-step="'+step+'"]');
-  if(current){current.classList.remove('active');}
+document.querySelectorAll(`.fav-btn[data-id="${id}"]`).forEach(b => { 
 
-  const next=document.querySelector('.owner-step[data-step="'+(step+1)+'"]');
+b.textContent = favorites.includes(id) ? "❤️" : "🤍"; 
 
-  if(next){
-    next.classList.add('active');
-    next.scrollIntoView({behavior:'smooth',block:'center'});
-  }else{
-    finalizarCuestionario();
-  }
-}
+}); 
 
-function finalizarCuestionario(){
-  const chat=document.getElementById('ownerChat');
-  if(chat){
-    chat.innerHTML += `
-      <div class="owner-msg ia">
-        ✨ Gracias por responder. Vanina se contactará contigo.
-      </div>
-    `;
-  }
-}
+} 
 
-function compartirWeb(){
-  if(navigator.share){
-    navigator.share({
-      title:'Vanina Buzzacchi',
-      text:'Mirá esta propiedad',
-      url:window.location.href
-    });
-  }else{
-    navigator.clipboard.writeText(window.location.href);
-    alert('Enlace copiado');
-  }
-}
+// ===================== RENDER CARDS CORREGIDO ===================== 
 
-// Reparación visual de imágenes
-document.querySelectorAll('img').forEach(img=>{
-  img.onerror=function(){
-    this.style.display='none';
-  };
-});
-</script>
+function renderCards(items) { 
 
-</body>
+const grid = document.getElementById("propertiesGrid"); 
+
+const empty = document.getElementById("emptyState"); 
+
+const count = document.getElementById("resultCount"); 
+
+count.textContent = `${items.length} ${items.length === 1 ? "propiedad" : "propiedades"}`; 
+
+if (!items.length) { 
+
+grid.style.display = "none"; 
+
+empty.style.display = "block"; 
+
+return; 
+
+} 
+
+empty.style.display = "none"; 
+
+grid.style.display = "grid"; 
+
+grid.innerHTML = items.map(item => { 
+
+const isSale = normalize(item.tipoOperacion || "").includes("venta"); 
+
+const tipo = detectType(item); 
+
+const dormText = item.dormitorios ? `🛏 ${item.dormitorios} dorm.` : ""; 
+
+const banosText = item.banos ? `🚿 ${item.banos}` : ""; 
+
+const isHl = highlightedIds.includes(item.id); 
+
+const isFav = favorites.includes(item.id); 
+
+const estadoInm = (item.estadoPublicacion || "").toLowerCase(); 
+
+const isVendida = estadoInm === "vendida"; 
+
+const isAlquilada = estadoInm === "alquilada"; 
+
+const isConcretada = isVendida || isAlquilada; 
+
+// FIX CRÍTICO: Usa el link de WhatsApp dinámico del asesor activo 
+
+const dynamicWaUrl = waLinkProp(item.titulo || "Propiedad", item.zona || "-", formatPrice(item)); 
+
+const shortDesc = (item.descripcion || "Propiedad disponible.").replace(/\r?\n/g, " ").slice(0, 110); 
+
+return `<article class="card${isHl ? " ia-highlight" : ""}${isConcretada ? " card-concretada" : ""}" id="prop-${item.id}"> 
+
+<div class="card-image-wrap"> 
+
+<div class="badge-top"> 
+
+<span class="badge ${isSale ? "badge-sale" : "badge-rent"}">${isSale ? "Venta" : "Alquiler"}</span> 
+
+${isNew(item) ? '<span class="badge badge-new">Nueva</span>' : ""} 
+
+${isHl ? '<span class="badge badge-new">✨ IA</span>' : ""} 
+
+</div> 
+
+<button class="card-fav fav-btn" data-id="${item.id}" onclick="toggleFav(${item.id})">${isFav ? "❤️" : "🤍"}</button> 
+
+${isConcretada ? `<div style="position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:3;display:flex;align-items:center;justify-content:center;"> 
+
+<span style="background:${isVendida?"#7c3aed":"#0891b2"};color:#fff;font-size:18px;font-weight:800;padding:10px 24px;border-radius:999px;letter-spacing:1px;transform:rotate(-8deg);box-shadow:0 4px 16px rgba(0,0,0,.3)"> 
+
+${isVendida ? "✅ VENDIDA" : "✅ ALQUILADA"} 
+
+</span> 
+
+</div>` : ""} 
+
+<div class="card-ripple-wrap"><div class="ripple-loader"><div class="ripple-cell d-1"></div><div class="ripple-cell d-2"></div><div class="ripple-cell d-3"></div><div class="ripple-cell d-4"></div><div class="ripple-cell d-1"></div><div class="ripple-cell d-2"></div><div class="ripple-cell d-3"></div><div class="ripple-cell d-4"></div><div class="ripple-cell d-1"></div></div></div>
+
+<img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad'"${isConcretada ? ' style="filter:grayscale(.4)"' : ""}/> 
+
+</div> 
+
+<div class="card-body"> 
+
+<div class="card-title">${item.titulo || "Propiedad disponible"}</div> 
+
+<div class="card-price">${formatPrice(item)}</div> 
+
+<div class="card-zone">📍 ${item.zona || "Zona a consultar"}${item.direccion ? " · " + item.direccion : ""}</div> 
+
+<div class="card-meta"> 
+
+<span class="meta-pill">${tipo || "Propiedad"}</span> 
+
+${dormText ? `<span class="meta-pill">${dormText}</span>` : ""} 
+
+${banosText ? `<span class="meta-pill">${banosText}</span>` : ""} 
+
+</div> 
+
+<div class="card-desc">${shortDesc}...</div> 
+
+<div class="card-actions" style="grid-template-columns:1fr 1fr auto"> 
+
+<a class="btn-card btn-view" href="/propiedad.html?id=${item.id}">Ver ficha</a> 
+
+${isConcretada 
+
+? `<span class="btn-card" style="background:#e5e7eb;color:#9ca3af;cursor:not-allowed;">${isVendida?"Vendida":"Alquilada"}</span>` 
+
+: `<a class="btn-card btn-contact" href="${dynamicWaUrl}" target="_blank">Consultar</a>` 
+
+} 
+
+<button class="btn-card btn-share" title="Compartir por WhatsApp" 
+
+onclick="compartirPropiedad(event,'${item.id}','${(item.titulo||'').replace(/'/g,"\'").replace(/"/g,'\"')}','${formatPrice(item).replace(/'/g,"\'")}')"> 
+
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.05 1.5a10.5 10.5 0 100 21 10.5 10.5 0 000-21zm5.954 14.454c-.242.67-.886 1.227-1.59 1.406-.464.12-1.068.153-1.63.058-.764-.132-1.537-.44-2.437-.88C9.433 15.27 7.58 12.91 7.215 12.42c-.365-.488-1.232-1.64-1.232-3.127 0-1.486.78-2.216 1.057-2.516.276-.3.605-.376.806-.376.202 0 .404.002.58.01.186.01.436-.07.682.52.251.605.854 2.084.929 2.235.075.152.124.33.025.53-.1.2-.15.325-.299.5-.148.173-.312.387-.446.52-.149.148-.304.308-.13.607.173.298.77 1.27 1.653 2.058 1.135 1.012 2.093 1.325 2.39 1.475.297.148.47.124.644-.075.173-.198.743-.867.94-1.164.198-.297.397-.248.67-.149.272.1 1.733.818 2.03.967.297.149.496.223.57.347.075.124.075.72-.173 1.413z"/></svg> 
+
+</button> 
+
+</div> 
+
+${!isConcretada ? `<button class="btn-cata" onclick="openCata('${item.id}','${(item.titulo||'').replace(/'/g,"\\'").replace(/`/g,'\\`')}')">💬 Hablar con Cata</button>` : ''} 
+
+</div> 
+
+</article>`; 
+
+}).join(""); 
+
+} 
+
+// ===================== FILTERS ===================== 
+
+function applyFilters() { 
+
+const search = normalize(document.getElementById("searchInput").value.trim()); 
+
+const budget = Number(document.getElementById("budgetRange").value) || 0; 
+
+let filtered = allProperties.filter(item => { 
+
+const op = normalize(item.tipoOperacion || ""); 
+
+const tipo = detectType(item); 
+
+let okChip = true; 
+
+if (currentFilter === "venta") okChip = op.includes("venta"); 
+
+if (currentFilter === "alquiler") okChip = op.includes("alquiler"); 
+
+if (["casa","depto","local","terreno"].includes(currentFilter)) okChip = tipo === currentFilter; 
+
+if (!okChip) return false; 
+
+if (budget > 0 && Number(item.precio || 0) > budget) return false; 
+
+if (search) { 
+
+const big = normalize(`${item.titulo||""} ${item.zona||""} ${item.direccion||""} ${item.tipoPropiedad||""} ${item.descripcion||""}`); 
+
+if (!big.includes(search)) return false; 
+
+} 
+
+return true; 
+
+}); 
+
+if (highlightedIds.length) { 
+
+const hl = filtered.filter(i => highlightedIds.includes(i.id)); 
+
+const rest = filtered.filter(i => !highlightedIds.includes(i.id)); 
+
+filtered = [...hl, ...rest]; 
+
+} 
+
+renderCards(filtered); 
+
+} 
+
+function setupFilters() { 
+
+document.querySelectorAll(".chip").forEach(btn => { 
+
+btn.addEventListener("click", () => { 
+
+document.querySelectorAll(".chip").forEach(b => b.classList.remove("active")); 
+
+btn.classList.add("active"); 
+
+currentFilter = btn.dataset.filter; 
+
+highlightedIds = []; 
+
+document.getElementById("iaStatusText").textContent = ""; 
+
+applyFilters(); 
+
+}); 
+
+}); 
+
+document.getElementById("searchInput").addEventListener("input", applyFilters); 
+
+} 
+
+// ===================== LOAD ===================== 
+
+async function loadProperties() { 
+
+const loader = document.getElementById("loader"); 
+
+for (let i = 1; i <= 3; i++) { 
+
+try { 
+
+loader.textContent = i === 1 ? "Cargando propiedades..." : `Conectando... (${i}/3)`; 
+
+const res = await fetch(API_URL, { cache: "no-store" }); 
+
+const data = await res.json(); 
+
+allProperties = Array.isArray(data) ? data : []; 
+
+document.getElementById("miniTotal").textContent = allProperties.length; 
+
+document.getElementById("miniVenta").textContent = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("venta")).length; 
+
+document.getElementById("miniAlquiler").textContent = allProperties.filter(p => normalize(p.tipoOperacion||"").includes("alquiler")).length; 
+
+loader.style.display = "none"; 
+
+document.getElementById("propertiesGrid").style.display = "grid"; 
+
+applyFilters(); 
+
+return; 
+
+} catch(e) { 
+
+if (i < 3) await new Promise(r => setTimeout(r, 3000)); 
+
+} 
+
+} 
+
+loader.innerHTML = "No pudimos cargar. <a href='javascript:location.reload()' style='color:var(--gold)'>Reintentar</a>"; 
+
+} 
+
+// ===================== COMPARTIR PROPIEDAD ===================== 
+
+function compartirPropiedad(e, id, titulo, precio) {
+
+e.preventDefault();
+e.stopPropagation();
+
+// Buscar datos completos de la propiedad
+const item = allProperties.find(p => String(p.id) === String(id)) || {};
+const zona = item.zona || "";
+const tipo = item.tipoPropiedad || item.tipo || "";
+const dorm = item.dormitorios ? `${item.dormitorios} dorm.` : "";
+const banos = item.banos ? `${item.banos} baños` : "";
+const sup = item.superficie ? `${item.superficie} m²` : "";
+const extras = [tipo, dorm, banos, sup].filter(Boolean).join(" · ");
+const desc = (item.descripcion || "").replace(/\r?\n/g, " ").slice(0, 140);
+
+const url = `${location.origin}/propiedad.html?id=${id}`;
+const asesorNombre = ASESOR_ACTIVO.brandTitle || "Vanina Buzzacchi";
+
+const lines = [
+  `🏠 *${titulo}*`,
+  zona ? `📍 ${zona}` : "",
+  `💰 *${precio}*`,
+  extras ? `✨ ${extras}` : "",
+  desc ? `\n_${desc}..._` : "",
+  `\n🔗 Ver propiedad completa:`,
+  url,
+  `\n---`,
+  `📋 *Vanina Buzzacchi | Negocios Inmobiliarios*`,
+  `📍 Río Cuarto, Córdoba`,
+  `📞 Consultá más propiedades en nuestro catálogo`,
+].filter(Boolean).join("\n");
+
+const waUrl = `https://wa.me/?text=${encodeURIComponent(lines)}`;
+window.open(waUrl, "_blank");
+
+} 
+
+// ===================== COUNTER ===================== 
+
+function setupCounter() { 
+
+const el = document.getElementById("visitCounter"); 
+
+let val = Number(localStorage.getItem("vb_visits") || 2143); 
+
+val += Math.floor(Math.random() * 3) + 1; 
+
+localStorage.setItem("vb_visits", val); 
+
+el.textContent = val.toLocaleString("es-AR"); 
+
+} 
+
+// ===================== INIT ===================== 
+
+setupWhatsApp(); 
+
+setupCounter(); 
+
+setupFilters(); 
+
+setupLeadForm(); 
+
+loadProperties(); 
+
+</script> 
+
+<script> 
+
+// ===================== CATA CHAT ===================== 
+
+const SB_URL = 'https://nniivhebocgdsynlpuhf.supabase.co'; 
+
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uaWl2aGVib2NnZHN5bmxwdWhmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDQ4MDksImV4cCI6MjA5MTg4MDgwOX0.LucbLf6bWhNYdfo2zhmCgkf5gTKsvJWA73_piCmoG70'; 
+
+const sbHdrs = { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }; 
+
+let cataProp = null, cataHistory = [], cataLeadDone = false; 
+
+async function sbGet(path) { 
+
+const r = await fetch(`${SB_URL}/rest/v1/${path}`, { headers: sbHdrs }); 
+
+return r.json(); 
+
+} 
+
+async function sbPost(table, data) { 
+
+await fetch(`${SB_URL}/rest/v1/${table}`, { 
+
+method: 'POST', 
+
+headers: { ...sbHdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, 
+
+body: JSON.stringify(data) 
+
+}); 
+
+} 
+
+async function openCata(propId, propTitulo) { 
+
+cataProp = null; cataHistory = []; cataLeadDone = false; 
+
+document.getElementById('cataMsgs').innerHTML = ''; 
+
+document.getElementById('cataQBtns').innerHTML = ''; 
+
+document.getElementById('cataLeadOk').style.display = 'none'; 
+
+document.getElementById('cataPropLabel').textContent = propTitulo || propId; 
+
+document.getElementById('cataInp').value = ''; 
+
+document.getElementById('cataOverlay').classList.add('open'); 
+
+document.body.style.overflow = 'hidden'; 
+
+let faqs = [], objs = []; 
+
+try { 
+
+const [faqRes, objRes] = await Promise.all([ 
+
+fetch('/api/faqs'), 
+
+fetch('/api/objeciones') 
+
+]); 
+
+if (faqRes.ok) faqs = await faqRes.json(); 
+
+if (objRes.ok) objs = await objRes.json(); 
+
+} catch(e) { 
+
+console.warn('No se pudieron cargar FAQs/objeciones:', e.message); 
+
+} 
+
+const prop = allProperties.find(p => String(p.id) === String(propId)) || { id: propId, titulo: propTitulo }; 
+
+cataProp = { 
+
+id: propId, 
+
+titulo: propTitulo || prop.titulo || propId, 
+
+zona: prop.zona || '', 
+
+precio: prop.precio || '', 
+
+moneda: prop.moneda || 'USD', 
+
+descripcion: prop.descripcion || '', 
+
+faqs, 
+
+objections: objs 
+
+}; 
+
+const qbtns = document.getElementById('cataQBtns'); 
+
+(faqs || []).slice(0, 4).forEach(f => { 
+
+const b = document.createElement('button'); 
+
+b.className = 'cata-qq'; 
+
+const pregunta = f.pregunta || f.question || ''; 
+
+b.textContent = pregunta.length > 40 ? pregunta.slice(0,38)+'…' : pregunta; 
+
+b.onclick = () => { document.getElementById('cataInp').value = pregunta; cataSend(); }; 
+
+qbtns.appendChild(b); 
+
+}); 
+
+cataShowTyping(); 
+
+try { 
+
+const res = await callCata([{ role:'user', content:'Presentate como Cata y presentá brevemente esta propiedad para generar interés. Sé cálida, muy breve (2 líneas) e invitá a preguntar.' }]); 
+
+const text = extractCataText(res) || '¡Hola! Soy Cata 👋 ¿En qué te puedo ayudar?'; 
+
+cataRemoveTyping(); 
+
+cataAddMsg('assistant', text); 
+
+cataHistory.push({ role:'assistant', content: text }); 
+
+} catch(e) { 
+
+console.error('Cata saludo error:', e); 
+
+cataRemoveTyping(); 
+
+cataAddMsg('assistant', '¡Hola! Soy Cata 👋 Estoy acá para ayudarte con esta propiedad. ¿Qué querés saber?'); 
+
+} 
+
+document.getElementById('cataInp').focus(); 
+
+} 
+
+function closeCata() { 
+
+document.getElementById('cataOverlay').classList.remove('open'); 
+
+document.body.style.overflow = ''; 
+
+} 
+
+async function callCata(messages) { 
+
+const res = await fetch('/api/cata-chat', { 
+
+method: 'POST', 
+
+headers: { 'Content-Type': 'application/json' }, 
+
+body: JSON.stringify({ system: buildCataSystem(), messages }) 
+
+}); 
+
+if (!res.ok) throw new Error('HTTP ' + res.status); 
+
+return res.json(); 
+
+} 
+
+function extractCataText(data) { 
+
+if (!data) return null; 
+
+if (Array.isArray(data.content)) { 
+
+const t = data.content.map(c => c.text || '').join('').trim(); 
+
+if (t) return t; 
+
+} 
+
+if (data.respuesta) return String(data.respuesta).trim(); 
+
+if (data.error) { 
+
+console.error('Cata API error:', data.error); 
+
+return null; 
+
+} 
+
+return null; 
+
+} 
+
+function cataAddMsg(role, text) { 
+
+const msgs = document.getElementById('cataMsgs'); 
+
+const d = document.createElement('div'); 
+
+d.className = 'cm ' + role; 
+
+d.innerHTML = `<div class="cm-av">${role==='assistant'?'🙋‍♀️':'👤'}</div><div class="cm-bbl">${text.replace(/\n/g,'<br>')}</div>`; 
+
+msgs.appendChild(d); 
+
+msgs.scrollTop = msgs.scrollHeight; 
+
+} 
+
+function cataShowTyping() { 
+
+const msgs = document.getElementById('cataMsgs'); 
+
+const d = document.createElement('div'); 
+
+d.className = 'cm assistant'; d.id = 'cataTyping'; 
+
+d.innerHTML = `<div class="cm-av">🙋‍♀️</div><div class="cm-bbl"><div class="cata-typing-dots"><div class="ctd"></div><div class="ctd"></div><div class="ctd"></div></div></div>`; 
+
+msgs.appendChild(d); msgs.scrollTop = msgs.scrollHeight; 
+
+} 
+
+function cataRemoveTyping() { const t=document.getElementById('cataTyping'); if(t) t.remove(); } 
+
+async function cataSend() { 
+
+const inp = document.getElementById('cataInp'); 
+
+const text = inp.value.trim(); 
+
+if (!text) return; 
+
+document.getElementById('cataSendBtn').disabled = true; 
+
+inp.value = ''; 
+
+cataAddMsg('user', text.replace(/</g,'&lt;')); 
+
+cataHistory.push({ role:'user', content: text }); 
+
+cataShowTyping(); 
+
+try { 
+
+const data = await callCata(cataHistory); 
+
+const full = extractCataText(data); 
+
+if (!full) throw new Error('Respuesta vacía'); 
+
+const isLead = full.includes('LEAD_CAPTURADO'); 
+
+const clean = full.replace('LEAD_CAPTURADO','').trim(); 
+
+cataRemoveTyping(); 
+
+cataAddMsg('assistant', clean); 
+
+cataHistory.push({ role:'assistant', content: clean }); 
+
+if (isLead && !cataLeadDone) { 
+
+cataLeadDone = true; 
+
+const lastUser = cataHistory.filter(m=>m.role==='user').slice(-1)[0]?.content || ''; 
+
+await guardarLeadCata(lastUser || ''); 
+
+document.getElementById('cataLeadOk').style.display = 'block'; 
+
+} 
+
+} catch(e) { 
+
+console.error('cataSend error:', e); 
+
+cataRemoveTyping(); 
+
+cataAddMsg('assistant', 'Hubo un problema al conectar. Por favor intentá de nuevo en un momento.'); 
+
+} 
+
+document.getElementById('cataSendBtn').disabled = false; 
+
+document.getElementById('cataInp').focus(); 
+
+} 
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeCata(); }); 
+
+</script> 
+
+<script> 
+
+if ("serviceWorker" in navigator) { 
+
+navigator.serviceWorker.register("/sw-funnel.js").catch(() => {}); 
+
+} 
+
+</script> 
+
+</body> 
+
 </html>
