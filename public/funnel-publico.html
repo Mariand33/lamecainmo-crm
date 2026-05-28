@@ -292,139 +292,33 @@ img{max-width:100%;display:block}
 
 /* ===== LEAD BOX ===== */ 
 
-/* ===== LEAD FORM PREMIUM ===== */
-.lead-section{padding:0 0 64px}
+.lead-section{padding:0 0 48px} 
 
-.lead-box{
-  background:linear-gradient(160deg,#0a1c11 0%,#0e2416 50%,#0b1c12 100%);
-  color:#fff;border-radius:32px;
-  border:1px solid rgba(201,168,76,.18);
-  box-shadow:0 32px 80px rgba(0,0,0,.5),0 0 60px rgba(201,168,76,.06),inset 0 1px 0 rgba(255,255,255,.04);
-  overflow:hidden;position:relative;
-}
-.lead-box::before{
-  content:'';position:absolute;top:-120px;right:-120px;
-  width:480px;height:480px;
-  background:radial-gradient(circle,rgba(201,168,76,.05) 0%,transparent 65%);
-  pointer-events:none;border-radius:50%;
-}
-.lead-box::after{
-  content:'';position:absolute;bottom:-80px;left:-80px;
-  width:360px;height:360px;
-  background:radial-gradient(circle,rgba(30,74,46,.2) 0%,transparent 65%);
-  pointer-events:none;border-radius:50%;
-}
-.lead-inner{padding:48px 44px;position:relative;z-index:1}
+.lead-box{background:linear-gradient(145deg,#0c1f14,#122b1a);color:#fff;border-radius:28px;padding:40px;border:1px solid rgba(201,168,76,.15);box-shadow:var(--glow-gold)} 
 
-.lead-eyebrow{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(201,168,76,.08);
-  border:1px solid rgba(201,168,76,.2);
-  color:rgba(201,168,76,.9);
-  font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;
-  padding:6px 14px;border-radius:999px;margin-bottom:18px;
-}
-.lead-eyebrow::before{content:'✦';font-size:8px}
+.lead-box h2{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;margin-bottom:12px;color:var(--gold2)} 
 
-.lead-box h2{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(28px,3.5vw,42px);font-weight:600;
-  margin-bottom:10px;color:#fff;line-height:1.1;letter-spacing:-.3px;
-}
-.lead-box h2 em{color:var(--gold2);font-style:italic}
-.lead-box > .lead-inner > p{
-  color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:36px;
-  font-size:14px;max-width:480px;font-weight:300;
-}
+.lead-box p{color:rgba(255,255,255,.65);line-height:1.65;margin-bottom:28px} 
 
-/* Grid del formulario */
-.lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px} 
 
-/* Grupos con label flotante */
-.lead-field{position:relative;display:flex;flex-direction:column;gap:0}
-.lead-field.full{grid-column:1/-1}
-.lead-field label{
-  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
-  color:rgba(201,168,76,.6);font-weight:600;
-  position:absolute;top:10px;left:16px;
-  transition:.18s ease;pointer-events:none;z-index:2;
-}
-.lead-field input,.lead-field select,.lead-field textarea{
-  width:100%;outline:none;
-  border-radius:14px;
-  padding:28px 16px 10px;
-  font-size:14px;
-  background:rgba(255,255,255,.04);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.08);
-  font-family:'DM Sans',sans-serif;
-  transition:border-color .2s,background .2s,box-shadow .2s;
-  appearance:none;-webkit-appearance:none;
-}
-.lead-field input::placeholder,.lead-field textarea::placeholder{color:transparent}
-.lead-field input:focus,.lead-field select:focus,.lead-field textarea:focus{
-  border-color:rgba(201,168,76,.45);
-  background:rgba(255,255,255,.07);
-  box-shadow:0 0 0 3px rgba(201,168,76,.07),0 4px 20px rgba(0,0,0,.2);
-  outline:none;
-}
-.lead-field input:focus + label,
-.lead-field input:not(:placeholder-shown) + label,
-.lead-field select:focus + label,
-.lead-field textarea:focus + label{
-  top:8px;font-size:9px;
-}
-.lead-field select option{background:#0e2416;color:#fff}
-.lead-field textarea{min-height:110px;resize:none;padding-top:30px}
+.lead-form input,.lead-form select,.lead-form textarea{width:100%;border:none;outline:none;border-radius:14px;padding:14px 16px;font-size:14px;background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.15);font-family:'DM Sans',sans-serif;transition:.2s} 
 
-/* Separador decorativo */
-.lead-divider{
-  grid-column:1/-1;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(201,168,76,.15),transparent);
-  margin:4px 0;
-}
+.lead-form input::placeholder,.lead-form textarea::placeholder{color:rgba(255,255,255,.4)} 
 
-/* Botón submit premium */
-.btn-lead{
-  grid-column:1/-1;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;border:none;
-  border-radius:14px;padding:17px 28px;
-  font-size:15px;font-weight:700;
-  cursor:pointer;font-family:'DM Sans',sans-serif;
-  width:100%;transition:.25s;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  box-shadow:0 6px 24px rgba(34,197,94,.25);
-  letter-spacing:.01em;
-  position:relative;overflow:hidden;
-}
-.btn-lead::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);
-  opacity:0;transition:.2s;
-}
-.btn-lead:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 32px rgba(34,197,94,.35);
-}
-.btn-lead:hover::before{opacity:1}
-.btn-lead:active{transform:translateY(0)}
-.btn-lead svg{flex-shrink:0}
+.lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.15);outline:none} 
 
-.lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center;grid-column:1/-1}
+.lead-form select option{background:#143d2f} 
 
-/* Trust badges bajo el form */
-.lead-trust{
-  display:flex;gap:20px;flex-wrap:wrap;
-  margin-top:24px;padding-top:24px;
-  border-top:1px solid rgba(255,255,255,.06);
-}
-.trust-item{
-  display:flex;align-items:center;gap:7px;
-  font-size:11px;color:rgba(255,255,255,.4);
-}
-.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.5;flex-shrink:0} 
+.lead-form textarea{min-height:100px;resize:vertical;grid-column:1/-1} 
+
+.lead-form .full{grid-column:1/-1} 
+
+.btn-lead{background:var(--wa);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:.2s} 
+
+.btn-lead:hover{background:#1db954} 
+
+.lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center} 
 
 /* NOTIFY */ 
 
@@ -777,15 +671,101 @@ transform:translateY(-2px) scale(1.02);
 } 
 
 
-/* ===== RIPPLE LOADER EN CARDS ===== */
-.card-ripple-wrap{position:absolute;bottom:10px;right:10px;z-index:4;background:rgba(10,20,15,.75);border-radius:10px;padding:7px;display:flex;align-items:center;justify-content:center;}
-.ripple-loader{--cell-size:14px;--cell-spacing:1px;--cells:3;--total-size:calc(var(--cells)*(var(--cell-size)+2*var(--cell-spacing)));display:flex;flex-wrap:wrap;width:var(--total-size);height:var(--total-size);}
-.ripple-cell{flex:0 0 var(--cell-size);margin:var(--cell-spacing);background-color:transparent;box-sizing:border-box;border-radius:3px;animation:1.5s ripple-anim ease infinite;}
-.ripple-cell.d-1{animation-delay:100ms}.ripple-cell.d-2{animation-delay:200ms}.ripple-cell.d-3{animation-delay:300ms}.ripple-cell.d-4{animation-delay:400ms}
-.ripple-cell:nth-child(1){--cell-color:#00FF87}.ripple-cell:nth-child(2){--cell-color:#0CFD95}.ripple-cell:nth-child(3){--cell-color:#17FBA2}
-.ripple-cell:nth-child(4){--cell-color:#23F9B2}.ripple-cell:nth-child(5){--cell-color:#30F7C3}.ripple-cell:nth-child(6){--cell-color:#3DF5D4}
-.ripple-cell:nth-child(7){--cell-color:#45F4DE}.ripple-cell:nth-child(8){--cell-color:#53F1F0}.ripple-cell:nth-child(9){--cell-color:#60EFFF}
-@keyframes ripple-anim{0%{background-color:transparent}30%{background-color:var(--cell-color)}60%{background-color:transparent}100%{background-color:transparent}}
+/* ===== RIPPLE LOADER CARDS ===== */
+.card-ripple-wrap{position:absolute;bottom:10px;right:10px;z-index:4;background:rgba(0,0,0,.6);border-radius:9px;padding:6px;display:flex;}
+.ripple-loader{--cs:13px;--sp:1px;display:flex;flex-wrap:wrap;width:calc(3*(var(--cs)+2*var(--sp)));height:calc(3*(var(--cs)+2*var(--sp)));}
+.rc{flex:0 0 var(--cs);margin:var(--sp);background:transparent;border-radius:3px;animation:rp 1.5s ease infinite;}
+.rc:nth-child(1){--cc:#00FF87;animation-delay:0ms}
+.rc:nth-child(2){--cc:#0CFD95;animation-delay:100ms}
+.rc:nth-child(3){--cc:#17FBA2;animation-delay:200ms}
+.rc:nth-child(4){--cc:#23F9B2;animation-delay:300ms}
+.rc:nth-child(5){--cc:#30F7C3;animation-delay:400ms}
+.rc:nth-child(6){--cc:#3DF5D4;animation-delay:100ms}
+.rc:nth-child(7){--cc:#45F4DE;animation-delay:200ms}
+.rc:nth-child(8){--cc:#53F1F0;animation-delay:300ms}
+.rc:nth-child(9){--cc:#60EFFF;animation-delay:400ms}
+@keyframes rp{0%{background:transparent}30%{background:var(--cc)}60%,100%{background:transparent}}
+
+/* ===== LEAD FORM PREMIUM ===== */
+.lead-section{padding:0 0 64px}
+.lead-box{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#081510 0%,#0e2416 55%,#091410 100%);
+  color:#fff;border-radius:32px;
+  border:1px solid rgba(201,168,76,.2);
+  box-shadow:0 40px 100px rgba(0,0,0,.6),0 0 80px rgba(201,168,76,.05),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.lead-box::before{
+  content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(201,168,76,.06) 0%,transparent 65%);
+  border-radius:50%;pointer-events:none;
+}
+.lead-box::after{
+  content:'';position:absolute;bottom:-80px;left:-60px;width:320px;height:320px;
+  background:radial-gradient(circle,rgba(30,74,46,.18) 0%,transparent 65%);
+  border-radius:50%;pointer-events:none;
+}
+.lead-inner{padding:48px 44px;position:relative;z-index:2}
+.lead-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.22);
+  color:rgba(201,168,76,.85);font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;font-weight:600;padding:6px 14px;
+  border-radius:999px;margin-bottom:20px;
+}
+.lead-box .lead-inner > h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(30px,3.5vw,44px);font-weight:600;
+  margin-bottom:10px;color:#fff;line-height:1.1;letter-spacing:-.3px;
+}
+.lead-box .lead-inner > h2 em{color:var(--gold2);font-style:italic}
+.lead-box .lead-inner > p{
+  color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:36px;
+  font-size:14px;font-weight:300;
+}
+.lead-form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.lf{position:relative;display:flex;flex-direction:column}
+.lf.full{grid-column:1/-1}
+.lf label{
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(201,168,76,.55);font-weight:600;margin-bottom:5px;
+}
+.lf input,.lf select,.lf textarea{
+  width:100%;outline:none;border-radius:13px;
+  padding:12px 15px;font-size:14px;
+  background:rgba(255,255,255,.045);color:#fff;
+  border:1px solid rgba(255,255,255,.09);
+  font-family:'DM Sans',sans-serif;transition:border-color .2s,background .2s,box-shadow .2s;
+  appearance:none;-webkit-appearance:none;
+}
+.lf input::placeholder,.lf textarea::placeholder{color:rgba(255,255,255,.3)}
+.lf input:focus,.lf select:focus,.lf textarea:focus{
+  border-color:rgba(201,168,76,.5);
+  background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 3px rgba(201,168,76,.08);
+}
+.lf select option{background:#0e2416;color:#fff}
+.lf textarea{min-height:110px;resize:none}
+.lead-sep{grid-column:1/-1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.12),transparent);margin:4px 0}
+.btn-lead{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#fff;border:none;border-radius:13px;padding:17px;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'DM Sans',sans-serif;width:100%;transition:.25s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 8px 28px rgba(34,197,94,.28);
+  position:relative;overflow:hidden;
+}
+.btn-lead:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(34,197,94,.38)}
+.lead-trust{
+  display:flex;gap:20px;flex-wrap:wrap;
+  margin-top:22px;padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.trust-item{display:flex;align-items:center;gap:7px;font-size:11px;color:rgba(255,255,255,.38)}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.5;flex-shrink:0}
+.lead-msg{margin-top:14px;font-size:14px;color:#dfeee8;text-align:center;grid-column:1/-1}
 
 </style>
 
@@ -1031,65 +1011,65 @@ transform:translateY(-2px) scale(1.02);
 
 <div class="lead-box">
 <div class="lead-inner">
-<span class="lead-eyebrow">Búsqueda personalizada</span>
+<span class="lead-eyebrow">✦ Búsqueda personalizada</span>
 <h2>¿No encontraste<br><em>lo que buscás?</em></h2>
 <p>Dejanos tu búsqueda y te avisamos en cuanto entre una propiedad que encaje con lo que necesitás.</p>
 
 <form class="lead-form" id="leadForm">
 
-  <div class="lead-field">
-    <input type="text" id="leadNombre" placeholder="Nombre" required/>
-    <label for="leadNombre">Nombre y apellido</label>
-  </div>
+<div class="lf">
+  <label for="leadNombre">Nombre y apellido</label>
+  <input type="text" id="leadNombre" placeholder="Ej: María García" required/>
+</div>
 
-  <div class="lead-field">
-    <input type="text" id="leadTelefono" placeholder="WhatsApp" required/>
-    <label for="leadTelefono">WhatsApp</label>
-  </div>
+<div class="lf">
+  <label for="leadTelefono">WhatsApp</label>
+  <input type="text" id="leadTelefono" placeholder="+54 9 358..." required/>
+</div>
 
-  <div class="lead-field">
-    <select id="leadOperacion">
-      <option value="">Seleccioná</option>
-      <option value="venta">Comprar</option>
-      <option value="alquiler">Alquilar</option>
-    </select>
-    <label for="leadOperacion">Operación</label>
-  </div>
+<div class="lf">
+  <label for="leadOperacion">Operación</label>
+  <select id="leadOperacion">
+    <option value="">Seleccioná</option>
+    <option value="venta">Comprar</option>
+    <option value="alquiler">Alquilar</option>
+  </select>
+</div>
 
-  <div class="lead-field">
-    <select id="leadTipo">
-      <option value="">Seleccioná</option>
-      <option value="casa">Casa</option>
-      <option value="depto">Departamento</option>
-      <option value="local">Local comercial</option>
-      <option value="terreno">Terreno / Lote</option>
-    </select>
-    <label for="leadTipo">Tipo de propiedad</label>
-  </div>
+<div class="lf">
+  <label for="leadTipo">Tipo de propiedad</label>
+  <select id="leadTipo">
+    <option value="">Seleccioná</option>
+    <option value="casa">Casa</option>
+    <option value="depto">Departamento</option>
+    <option value="local">Local</option>
+    <option value="terreno">Terreno</option>
+  </select>
+</div>
 
-  <div class="lead-field">
-    <input type="text" id="leadZona" placeholder="Zona"/>
-    <label for="leadZona">Zona deseada</label>
-  </div>
+<div class="lf">
+  <label for="leadZona">Zona deseada</label>
+  <input type="text" id="leadZona" placeholder="Ej: Urca, Centro..."/>
+</div>
 
-  <div class="lead-field">
-    <input type="text" id="leadPresupuesto" placeholder="Presupuesto"/>
-    <label for="leadPresupuesto">Presupuesto aproximado</label>
-  </div>
+<div class="lf">
+  <label for="leadPresupuesto">Presupuesto</label>
+  <input type="text" id="leadPresupuesto" placeholder="Ej: USD 80.000"/>
+</div>
 
-  <div class="lead-divider"></div>
+<div class="lead-sep"></div>
 
-  <div class="lead-field full">
-    <textarea id="leadMensaje" placeholder="Mensaje"></textarea>
-    <label for="leadMensaje">Contanos qué buscás: dormitorios, patio, cochera, barrio, urgencia…</label>
-  </div>
+<div class="lf full">
+  <label for="leadMensaje">¿Qué buscás?</label>
+  <textarea id="leadMensaje" placeholder="Dormitorios, patio, cochera, barrio, urgencia..."></textarea>
+</div>
 
-  <button class="btn-lead" type="submit">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
-    Enviar búsqueda por WhatsApp
-  </button>
+<button class="btn-lead" type="submit">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+  Enviar búsqueda por WhatsApp
+</button>
 
-  <div id="leadMsg" class="lead-msg"></div>
+<div id="leadMsg" class="lead-msg"></div>
 
 </form>
 
@@ -1781,25 +1761,18 @@ return IMG_BASE + img;
 
 } 
 
-// Fotos reales por tipo de propiedad como fallback 
-const tipo = (item.tipoPropiedad || item.tipo || "").toLowerCase();
-const zona = (item.zona || "").toLowerCase();
-const seed = String(item.id || Math.floor(Math.random()*100));
-if (tipo.includes("terreno") || tipo.includes("lote")) {
-  const terrenos = ["photo-1500382017468-9049fed747ef","photo-1512917774080-9991f1c4c750","photo-1558618666-fcd25c85cd64"];
-  return `https://images.unsplash.com/${terrenos[Number(seed)%3]}?w=900&q=80`;
-}
-if (tipo.includes("local") || tipo.includes("comercial") || tipo.includes("oficina")) {
-  const locales = ["photo-1497366216548-37526070297c","photo-1497366811353-6870744d04b2","photo-1604328698692-f76ea9498e76"];
-  return `https://images.unsplash.com/${locales[Number(seed)%3]}?w=900&q=80`;
-}
-if (tipo.includes("depto") || tipo.includes("departamento") || tipo.includes("apartamento")) {
-  const deptos = ["photo-1502672260266-1c1ef2d93688","photo-1536376072261-38c75010e6c9","photo-1560448204-e02f11c3d0e2","photo-1522708323590-d24dbb6b0267","photo-1493809842364-78817add7ffb"];
-  return `https://images.unsplash.com/${deptos[Number(seed)%5]}?w=900&q=80`;
-}
-// Default casas
-const casas = ["photo-1568605114967-8130f3a36994","photo-1570129477492-45c003edd2be","photo-1576941089067-2de3c901e126","photo-1449844908441-8829872d2607","photo-1523217582562-09d0def993a6","photo-1512917774080-9991f1c4c750","photo-1558618666-fcd25c85cd64","photo-1600596542815-ffad4c1539a9","photo-1600585154340-be6161a56a0c"];
-return `https://images.unsplash.com/${casas[Number(seed)%9]}?w=900&q=80`;
+// Fotos reales Unsplash por tipo
+const tipo2 = (item.tipoPropiedad || item.tipo || item.titulo || "").toLowerCase();
+const seed = Math.abs(String(item.id||"").split("").reduce((a,c)=>a+c.charCodeAt(0),0)) % 9;
+const casas = ["photo-1568605114967-8130f3a36994","photo-1570129477492-45c003edd2be","photo-1576941089067-2de3c901e126","photo-1449844908441-8829872d2607","photo-1523217582562-09d0def993a6","photo-1600596542815-ffad4c1539a9","photo-1600585154340-be6161a56a0c","photo-1512917774080-9991f1c4c750","photo-1558618666-fcd25c85cd64"];
+const deptos = ["photo-1502672260266-1c1ef2d93688","photo-1536376072261-38c75010e6c9","photo-1560448204-e02f11c3d0e2","photo-1522708323590-d24dbb6b0267","photo-1493809842364-78817add7ffb"];
+const terrenos = ["photo-1500382017468-9049fed747ef","photo-1416331108676-a22ccb276e35","photo-1464822759023-fed622ff2c3b"];
+const locales = ["photo-1497366216548-37526070297c","photo-1497366811353-6870744d04b2","photo-1604328698692-f76ea9498e76"];
+let pool = casas;
+if (tipo2.includes("depto")||tipo2.includes("departamento")||tipo2.includes("apartamento")) pool = deptos;
+else if (tipo2.includes("terreno")||tipo2.includes("lote")) pool = terrenos;
+else if (tipo2.includes("local")||tipo2.includes("comercial")||tipo2.includes("oficina")) pool = locales;
+return `https://images.unsplash.com/${pool[seed % pool.length]}?w=900&q=80`;
 
 } 
 
@@ -1911,7 +1884,7 @@ ${isVendida ? "✅ VENDIDA" : "✅ ALQUILADA"}
 
 </div>` : ""} 
 
-<div class="card-ripple-wrap"><div class="ripple-loader"><div class="ripple-cell d-1"></div><div class="ripple-cell d-2"></div><div class="ripple-cell d-3"></div><div class="ripple-cell d-4"></div><div class="ripple-cell d-1"></div><div class="ripple-cell d-2"></div><div class="ripple-cell d-3"></div><div class="ripple-cell d-4"></div><div class="ripple-cell d-1"></div></div></div>
+<div class="card-ripple-wrap"><div class="ripple-loader"><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div><div class="rc"></div></div></div>
 
 <img class="card-image" src="${getImage(item)}" alt="${item.titulo||"Propiedad"}" loading="lazy" onerror="this.src='https://placehold.co/900x620/0f2318/c9a84c?text=Propiedad'"${isConcretada ? ' style="filter:grayscale(.4)"' : ""}/> 
 
@@ -2098,35 +2071,30 @@ function compartirPropiedad(e, id, titulo, precio) {
 e.preventDefault();
 e.stopPropagation();
 
-// Buscar datos completos de la propiedad
 const item = allProperties.find(p => String(p.id) === String(id)) || {};
-const zona = item.zona || "";
+const zona = item.zona ? `📍 ${item.zona}` : "";
 const tipo = item.tipoPropiedad || item.tipo || "";
 const dorm = item.dormitorios ? `${item.dormitorios} dorm.` : "";
 const banos = item.banos ? `${item.banos} baños` : "";
 const sup = item.superficie ? `${item.superficie} m²` : "";
 const extras = [tipo, dorm, banos, sup].filter(Boolean).join(" · ");
-const desc = (item.descripcion || "").replace(/\r?\n/g, " ").slice(0, 140);
-
+const desc = (item.descripcion || "").replace(/\r?\n/g, " ").slice(0, 130);
 const url = `${location.origin}/propiedad.html?id=${id}`;
-const asesorNombre = ASESOR_ACTIVO.brandTitle || "Vanina Buzzacchi";
 
-const lines = [
+const msg = [
   `🏠 *${titulo}*`,
-  zona ? `📍 ${zona}` : "",
+  zona,
   `💰 *${precio}*`,
   extras ? `✨ ${extras}` : "",
   desc ? `\n_${desc}..._` : "",
-  `\n🔗 Ver propiedad completa:`,
-  url,
-  `\n---`,
+  `\n🔗 ${url}`,
+  `\n─────────────────`,
   `📋 *Vanina Buzzacchi | Negocios Inmobiliarios*`,
-  `📍 Río Cuarto, Córdoba`,
-  `📞 Consultá más propiedades en nuestro catálogo`,
+  `📍 Río Cuarto · Córdoba`,
+  `📞 Más propiedades: ${location.origin}`,
 ].filter(Boolean).join("\n");
 
-const waUrl = `https://wa.me/?text=${encodeURIComponent(lines)}`;
-window.open(waUrl, "_blank");
+window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
 
 } 
 
