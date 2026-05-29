@@ -340,95 +340,32 @@
           <button class="fmt-tab" data-ratio="43" onclick="setRatio(this,4,3)">Landscape 4:3</button>
         </div>
 
-        <!-- VISTA PREVIA HTML (inmediata, sin canvas) -->
+        <!-- CANVAS VISIBLE = preview exacta + descarga idéntica -->
         <div id="livePreview" style="
           position:relative; border-radius:16px; overflow:hidden;
           border:1px solid rgba(255,255,255,.08); background:#0a1a10;
-          aspect-ratio:1; max-width:520px; width:100%;
+          max-width:520px; width:100%;
         ">
-          <!-- Foto de fondo -->
-          <div id="prevFoto" style="
-            position:absolute; inset:0;
-            background-size:cover; background-position:center;
-            transition:background-image .25s;
-          "></div>
-          <!-- Overlay degradado -->
-          <div id="prevOverlay" style="
-            position:absolute; inset:0;
-            background:linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%);
-          "></div>
-          <!-- Verde marca (solo plantilla verde) -->
-          <div id="prevVerde" style="display:none; position:absolute; inset:0;
-            background:linear-gradient(135deg,#0a1e12,#143d2f,#0f2318);">
-            <div style="position:absolute;top:12%;left:7%;width:12%;height:2px;background:#c9a84c;border-radius:2px"></div>
-          </div>
-          <!-- Textos sobre foto -->
-          <div id="prevTextos" style="
-            position:absolute; inset:0;
-            display:flex; flex-direction:column; justify-content:flex-end;
-            padding:6% 7% 5%;
-          ">
-            <div id="prevTitulo" style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(22px,7.5vw,56px);
-              font-style:italic; font-weight:400;
-              color:#fff; line-height:1.1; margin-bottom:2%;
-              text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6);
-            "></div>
-            <div id="prevSubtitulo" style="
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(9px,1.8vw,14px);
-              font-weight:500; letter-spacing:.12em; text-transform:uppercase;
-              color:rgba(255,255,255,.72);
-              text-shadow:0 1px 8px rgba(0,0,0,.8);
-              margin-bottom:1%;
-            "></div>
-            <div id="prevPrecio" style="
-              display:inline-block; align-self:flex-start;
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(10px,2.2vw,17px);
-              font-weight:700; letter-spacing:.06em;
-              background:rgba(201,168,76,.92); color:#0a1e12;
-              padding:.35em .9em; border-radius:30px; margin-bottom:4%;
-            "></div>
-          </div>
-          <!-- LOGO BRANDING — posicionado independientemente -->
-          <div id="prevBranding" style="
-            position:absolute; left:7%; top:88%;
-            text-shadow:0 2px 12px rgba(0,0,0,.9);
-          ">
-            <div style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(13px,3.8vw,30px);
-              font-style:italic; font-weight:500; color:#fff;
-              line-height:1.1;
-            ">Vanina Buzzacchi</div>
-            <div style="
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(7px,1.4vw,11px);
-              font-weight:500; letter-spacing:.18em; text-transform:uppercase;
-              color:rgba(255,255,255,.65);
-              margin-top:.15em;
-            ">NEGOCIOS INMOBILIARIOS</div>
-          </div>
-          <!-- Frase centrada (plantillas foto-titulo y completo) -->
-          <div id="prevFraseCentro" style="
-            display:none; position:absolute; inset:0;
-            align-items:center; justify-content:center;
-          ">
-            <div id="prevFraseTexto" style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(24px,8vw,64px);
-              font-style:italic; font-weight:300; color:#fff;
-              text-align:center; padding:0 8%;
-              text-shadow:0 2px 20px rgba(0,0,0,.9);
-              line-height:1.15;
-            "></div>
-          </div>
+          <canvas id="postCanvas" width="1080" height="1080" style="
+            display:block; width:100%; height:auto;
+            border-radius:14px;
+          "></canvas>
+          <div class="loading-overlay" id="loadingOverlay">Generando...</div>
         </div>
 
-        <!-- Canvas oculto — solo para descarga 1080px -->
-        <canvas id="postCanvas" width="1080" height="1080" style="display:none"></canvas>
+        <!-- Elementos dummy para no romper referencias JS existentes -->
+        <div id="prevFoto"        style="display:none"></div>
+        <div id="prevOverlay"     style="display:none"></div>
+        <div id="prevVerde"       style="display:none"></div>
+        <div id="prevTextos"      style="display:none">
+          <div id="prevTitulo"></div>
+          <div id="prevSubtitulo"></div>
+          <div id="prevPrecio"></div>
+        </div>
+        <div id="prevBranding"    style="display:none"></div>
+        <div id="prevFraseCentro" style="display:none">
+          <div id="prevFraseTexto"></div>
+        </div>
       </div>
 
       <div class="download-row" style="margin-top:12px">
@@ -669,120 +606,11 @@ function render(){
 }
 
 // ══════════════════════════════════════
-// LIVE PREVIEW HTML (instantáneo)
+// LIVE PREVIEW = canvas directo (pixel-perfect)
 // ══════════════════════════════════════
 function renderLivePreview(){
-  const titulo    = document.getElementById('ctrlTitulo').value    || '';
-  const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
-  const precio    = document.getElementById('ctrlPrecio').value    || '';
-  const frase     = document.getElementById('ctrlFrase').value     || '';
-  const esVerde   = tplActual === 'verde-frase';
-
-  // Foto de fondo
-  const fotaUrl = imagenActualSrc || '';
-  document.getElementById('prevFoto').style.backgroundImage   = fotaUrl ? `url(${fotaUrl})` : 'none';
-  document.getElementById('prevVerde').style.display          = esVerde ? 'block' : 'none';
-  document.getElementById('prevOverlay').style.opacity        = esVerde ? '0' : '1';
-
-  // Overlay de color
-  const ovEl = document.getElementById('prevOverlay');
-  if (!esVerde && overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
-    ovEl.style.background = `linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%)`;
-  }
-
-  // Textos
-  const tituloEl    = document.getElementById('prevTitulo');
-  const subtEl      = document.getElementById('prevSubtitulo');
-  const precioEl    = document.getElementById('prevPrecio');
-
-  // Ajustar posición textos según plantilla
-  const textosEl = document.getElementById('prevTextos');
-
-  if (tplActual === 'foto-titulo') {
-    tituloEl.textContent    = titulo || frase;
-    subtEl.textContent      = '';
-    precioEl.textContent    = '';
-    precioEl.style.display  = 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (tplActual === 'foto-precio') {
-    tituloEl.textContent    = titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (tplActual === 'foto-completo') {
-    tituloEl.textContent    = titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (esVerde) {
-    tituloEl.textContent    = frase || titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    // En verde el precio es dorado texto
-    precioEl.style.background = 'transparent';
-    precioEl.style.color      = '#c9a84c';
-    precioEl.style.padding    = '0';
-    textosEl.style.justifyContent = 'center';
-    // Resetear en otros templates
-    document.getElementById('prevPrecio').style.background = 'rgba(201,168,76,.92)';
-    document.getElementById('prevPrecio').style.color      = '#0a1e12';
-    document.getElementById('prevPrecio').style.padding    = '.35em .9em';
-  }
-
-  // ratio del live preview
-  const ratioMap = {'1':'1/1','916':'9/16','43':'4/3'};
-  const activeRatio = document.querySelector('.fmt-tab.active')?.dataset.ratio || '1';
-  document.getElementById('livePreview').style.aspectRatio = ratioMap[activeRatio] || '1/1';
-
-  // Aplicar sliders al live preview
-  const logoSizePct = sl('slLogoSize') / 100;
-  const logoSubPct  = sl('slLogoSub')  / 100;
-  const logoXPct    = sl('slLogoX');     // %
-  const logoYPct    = sl('slLogoY');     // % desde arriba
-  const titSizePct  = sl('slTitSize')  / 100;
-  const titYPct     = sl('slTitY');
-  const subSizePct  = sl('slSubSize')  / 100;
-  const subYPct     = sl('slSubY');
-
-  // Branding (logo)
-  const brandEl = document.getElementById('prevBranding');
-  if (brandEl) {
-    brandEl.style.position = 'absolute';
-    brandEl.style.left     = logoXPct + '%';
-    brandEl.style.top      = logoYPct + '%';
-    brandEl.style.marginTop = '0';
-    brandEl.style.paddingTop = '0';
-    const nameEl = brandEl.querySelector('div:first-child');
-    const negEl  = brandEl.querySelector('div:last-child');
-    if (nameEl) nameEl.style.fontSize = `clamp(10px, ${3.8 * logoSizePct}vw, ${30 * logoSizePct}px)`;
-    if (negEl)  negEl.style.fontSize  = `clamp(6px,  ${1.4 * logoSubPct}vw, ${11 * logoSubPct}px)`;
-  }
-
-  // Título
-  const titEl = document.getElementById('prevTitulo');
-  if (titEl) titEl.style.fontSize = `clamp(18px, ${7.5 * titSizePct}vw, ${56 * titSizePct}px)`;
-
-  // Textos posición Y (mover el contenedor de textos usando padding-bottom relativo)
-  const textosEl2 = document.getElementById('prevTextos');
-  if (textosEl2 && tplActual !== 'verde-frase') {
-    // Convertimos titY a padding-bottom: 100% - titY aproximado
-    const pb = Math.max(0, 100 - titYPct - 12);
-    textosEl2.style.paddingBottom = pb + '%';
-    textosEl2.style.justifyContent = 'flex-end';
-  }
-
-  // Subtítulo y precio size
-  const subtElS = document.getElementById('prevSubtitulo');
-  const precioElS = document.getElementById('prevPrecio');
-  if (subtElS) subtElS.style.fontSize = `clamp(8px, ${1.8 * subSizePct}vw, ${14 * subSizePct}px)`;
-  if (precioElS && precioElS.style.display !== 'none')
-    precioElS.style.fontSize = `clamp(9px, ${2.2 * subSizePct}vw, ${17 * subSizePct}px)`;
+  // El canvas ES la preview — simplemente re-renderizamos
+  render();
 }
 
 function renderFoto(W, H){
@@ -1082,8 +910,9 @@ function roundRect(ctx, x, y, w, h, r){
 // DESCARGAR
 // ══════════════════════════════════════
 async function descargar(){
-  render();
-  await new Promise(r => setTimeout(r, 80)); // dejar que el canvas termine de pintar
+  // Canvas ya está actualizado (es la misma preview visible)
+  // Solo pequeña espera por si hay fuentes en carga
+  await new Promise(r => setTimeout(r, 30));
   const titulo = document.getElementById('ctrlTitulo').value || 'post';
   const filename = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
   try {
