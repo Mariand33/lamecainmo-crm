@@ -78,6 +78,18 @@ app.get("/:page.html", (req, res) => {
   res.status(404).send(`Página ${page} no encontrada`);
 });
 
+// GET — listar todos
+app.get('/api/edificios', ...)
+
+// POST — crear
+app.post('/api/edificios', ...)
+
+// PUT — editar
+app.put('/api/edificios/:id', ...)
+
+// DELETE — eliminar
+app.delete('/api/edificios/:id', ...)
+
 // =========================
 // SUPABASE
 // =========================
