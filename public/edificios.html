@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Agenda de Edificios | Vanina Buzzacchi</title>
+<meta name="theme-color" content="#c9a84c"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1a12;--card:#0f2318;--dark:#0a140d;
+  --green:#0f2318;--green2:#163320;--green3:#1e4a2e;
+  --muted:#7a9a82;--border:#1e3a28;
+  --wa:#25D366;--gold:#c9a84c;--gold2:#e8cc7a;
+  --shadow:0 12px 40px rgba(0,0,0,.4);
+  --surface:rgba(255,255,255,.04);
+  --surface2:rgba(255,255,255,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#e8f0ea;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+.nav{
+  background:rgba(10,20,13,.97);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(201,168,76,.15);
+  padding:14px 0;position:sticky;top:0;z-index:200;
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  width:min(1100px,94%);margin:0 auto;gap:12px;
+}
+.nav-brand{
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic;font-size:18px;color:#fff;white-space:nowrap;
+}
+.nav-brand span{
+  display:block;font-family:'DM Sans',sans-serif;font-style:normal;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(255,255,255,.35);margin-top:1px;
+}
+.nav-actions{display:flex;gap:8px;align-items:center}
+.btn-new{
+  display:flex;align-items:center;gap:7px;
+  background:var(--gold);color:#0a1e12;
+  border:none;border-radius:30px;padding:9px 18px;
+  font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:.2s;white-space:nowrap;
+}
+.btn-new:hover{background:var(--gold2)}
+
+/* HERO STATS */
+.stats-bar{
+  background:linear-gradient(180deg,#0a1e12,var(--bg));
+  padding:20px 0 24px;border-bottom:1px solid var(--border);
+}
+.stats-inner{
+  width:min(1100px,94%);margin:0 auto;
+  display:flex;gap:0;
+}
+.stat{
+  flex:1;text-align:center;
+  padding:12px 8px;
+  border-right:1px solid var(--border);
+}
+.stat:last-child{border-right:none}
+.stat-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:600;color:var(--gold2);
+  display:block;line-height:1;
+}
+.stat-l{
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin-top:4px;display:block;
+}
+
+/* CONTAINER */
+.wrap{width:min(1100px,94%);margin:0 auto;padding:28px 0 80px}
+
+/* FILTROS */
+.filtros{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:22px;align-items:center;
+}
+.filtros input[type=text]{
+  flex:1;min-width:180px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;
+  font-size:13px;color:#e8f0ea;font-family:'DM Sans',sans-serif;
+  outline:none;transition:border-color .2s;
+}
+.filtros input:focus{border-color:rgba(201,168,76,.4)}
+.filtros input::placeholder{color:var(--muted)}
+.filtro-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:9px 14px;
+  font-size:12px;color:var(--muted);
+  cursor:pointer;transition:.2s;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;
+}
+.filtro-btn.active{background:rgba(201,168,76,.1);border-color:rgba(201,168,76,.35);color:var(--gold2)}
+.filtro-btn:hover{border-color:rgba(255,255,255,.15);color:#fff}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:16px;
+}
+
+/* CARD EDIFICIO */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+  position:relative;
+  cursor:pointer;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+
+.card-top{
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+}
+.card-icon{
+  width:44px;height:44px;flex-shrink:0;
+  background:var(--green3);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.card-title-wrap{flex:1;min-width:0}
+.card-nombre{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;font-weight:600;color:#fff;
+  line-height:1.2;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-dir{
+  font-size:12px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Estado badge */
+.estado-badge{
+  flex-shrink:0;
+  font-size:10px;font-weight:600;letter-spacing:.8px;
+  text-transform:uppercase;padding:4px 10px;border-radius:30px;
+  white-space:nowrap;
+}
+.estado-pendiente{background:rgba(255,193,7,.12);color:#ffc107;border:1px solid rgba(255,193,7,.25)}
+.estado-visitado{background:rgba(37,211,102,.1);color:#25D366;border:1px solid rgba(37,211,102,.2)}
+.estado-contacto{background:rgba(201,168,76,.12);color:var(--gold2);border:1px solid rgba(201,168,76,.25)}
+
+.card-body{padding:14px 18px}
+.card-meta{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-bottom:12px;
+}
+.meta-tag{
+  display:flex;align-items:center;gap:5px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px;
+  font-size:11px;color:rgba(232,240,234,.65);
+}
+.card-notas{
+  font-size:12px;color:var(--muted);
+  line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+  min-height:36px;
+}
+.card-footer{
+  padding:12px 18px;
+  border-top:1px solid var(--border);
+  display:flex;gap:8px;
+}
+.btn-accion{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  border:none;border-radius:10px;padding:9px 8px;
+  font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:.2s;
+}
+.btn-editar{background:var(--surface2);color:#e8f0ea}
+.btn-editar:hover{background:rgba(255,255,255,.1)}
+.btn-wa-card{background:rgba(37,211,102,.12);color:#25D366}
+.btn-wa-card:hover{background:rgba(37,211,102,.2)}
+.btn-mapa{background:rgba(201,168,76,.1);color:var(--gold2)}
+.btn-mapa:hover{background:rgba(201,168,76,.18)}
+
+/* EMPTY STATE */
+.empty{
+  text-align:center;padding:80px 20px;grid-column:1/-1;
+}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:.4}
+.empty h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;color:var(--gold2);margin-bottom:8px;
+}
+.empty p{font-size:13px;color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--card);
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:24px;
+  width:min(560px,100%);
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(20px);transition:transform .25s;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{
+  padding:24px 24px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-header h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;color:#fff;
+}
+.modal-close{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:50%;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;color:var(--muted);
+  transition:.2s;flex-shrink:0;
+}
+.modal-close:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+.modal-body{padding:20px 24px 24px;display:flex;flex-direction:column;gap:14px}
+
+/* Form fields */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:rgba(201,168,76,.6);font-weight:600;
+}
+.field input,.field select,.field textarea{
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:11px;padding:11px 14px;
+  font-size:14px;color:#e8f0ea;
+  font-family:'DM Sans',sans-serif;
+  outline:none;transition:border-color .2s,background .2s;
+  width:100%;appearance:none;-webkit-appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:rgba(201,168,76,.45);background:rgba(255,255,255,.07);
+}
+.field input::placeholder,.field textarea::placeholder{color:rgba(232,240,234,.3)}
+.field select option{background:#0f2318;color:#e8f0ea}
+.field textarea{min-height:90px;resize:none;line-height:1.6}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Estado selector visual */
+.estado-opts{display:flex;gap:8px}
+.estado-opt{
+  flex:1;border:1px solid var(--border);border-radius:10px;
+  padding:10px 6px;text-align:center;cursor:pointer;transition:.2s;
+  font-size:11px;font-weight:600;letter-spacing:.5px;
+  background:var(--surface);color:var(--muted);
+}
+.estado-opt:hover{border-color:rgba(255,255,255,.15)}
+.estado-opt.sel-pendiente{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.3);color:#ffc107}
+.estado-opt.sel-visitado{background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.25);color:#25D366}
+.estado-opt.sel-contacto{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.3);color:var(--gold2)}
+
+.modal-footer{
+  padding:0 24px 24px;display:flex;gap:10px;
+}
+.btn-save{
+  flex:1;background:var(--gold);color:#0a1e12;
+  border:none;border-radius:12px;padding:14px;
+  font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:.2s;
+}
+.btn-save:hover{background:var(--gold2)}
+.btn-cancel{
+  background:var(--surface);color:var(--muted);
+  border:1px solid var(--border);border-radius:12px;padding:14px 20px;
+  font-size:14px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s;
+}
+.btn-cancel:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+.btn-delete{
+  background:rgba(239,68,68,.1);color:#f87171;
+  border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:14px 16px;
+  font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:.2s;
+}
+.btn-delete:hover{background:rgba(239,68,68,.2)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#0f2318;border:1px solid rgba(201,168,76,.3);
+  color:var(--gold2);font-size:13px;font-weight:500;
+  padding:12px 22px;border-radius:30px;
+  opacity:0;transition:.3s;pointer-events:none;z-index:999;
+  white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Ripple loader */
+.card-ripple{position:absolute;top:10px;right:10px;
+  background:rgba(0,0,0,.55);border-radius:8px;padding:5px;}
+.rl{--cs:11px;--sp:1px;display:flex;flex-wrap:wrap;
+  width:calc(3*(var(--cs)+2*var(--sp)));height:calc(3*(var(--cs)+2*var(--sp)));}
+.rc{flex:0 0 var(--cs);margin:var(--sp);background:transparent;border-radius:2px;animation:rp 1.5s ease infinite}
+.rc:nth-child(1){--cc:#00FF87;animation-delay:0ms}.rc:nth-child(2){--cc:#0CFD95;animation-delay:100ms}
+.rc:nth-child(3){--cc:#17FBA2;animation-delay:200ms}.rc:nth-child(4){--cc:#23F9B2;animation-delay:300ms}
+.rc:nth-child(5){--cc:#30F7C3;animation-delay:400ms}.rc:nth-child(6){--cc:#3DF5D4;animation-delay:100ms}
+.rc:nth-child(7){--cc:#45F4DE;animation-delay:200ms}.rc:nth-child(8){--cc:#53F1F0;animation-delay:300ms}
+.rc:nth-child(9){--cc:#60EFFF;animation-delay:400ms}
+@keyframes rp{0%{background:transparent}30%{background:var(--cc)}60%,100%{background:transparent}}
+
+@media(max-width:600px){
+  .filtros{flex-direction:column}
+  .filtros input[type=text]{width:100%}
+  .field-row{grid-template-columns:1fr}
+  .stats-inner{gap:0}
+  .stat-n{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      Vanina Buzzacchi
+      <span>Agenda de Edificios · Río Cuarto</span>
+    </div>
+    <div class="nav-actions">
+      <a href="/dashboard.html" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:8px 14px;border-radius:30px;margin-right:4px;">← Dashboard</a>
+      <button class="btn-new" onclick="abrirModal()">
+        + Nuevo edificio
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat">
+      <span class="stat-n" id="statTotal">0</span>
+      <span class="stat-l">Total</span>
+    </div>
+    <div class="stat">
+      <span class="stat-n" id="statPendiente" style="color:#ffc107">0</span>
+      <span class="stat-l">Pendientes</span>
+    </div>
+    <div class="stat">
+      <span class="stat-n" id="statVisitado" style="color:#25D366">0</span>
+      <span class="stat-l">Visitados</span>
+    </div>
+    <div class="stat">
+      <span class="stat-n" id="statContacto" style="color:var(--gold2)">0</span>
+      <span class="stat-l">Con contacto</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="wrap">
+
+  <!-- FILTROS -->
+  <div class="filtros">
+    <input type="text" id="buscar" placeholder="🔍  Buscar edificio, dirección o zona..." oninput="renderGrid()"/>
+    <button class="filtro-btn active" data-estado="todos" onclick="setFiltro(this)">Todos</button>
+    <button class="filtro-btn" data-estado="pendiente" onclick="setFiltro(this)">⏳ Pendientes</button>
+    <button class="filtro-btn" data-estado="visitado" onclick="setFiltro(this)">✅ Visitados</button>
+    <button class="filtro-btn" data-estado="contacto" onclick="setFiltro(this)">⭐ Con contacto</button>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<!-- MODAL FORM -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitulo">Nuevo edificio</h2>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="field">
+        <label>Nombre del edificio</label>
+        <input type="text" id="fNombre" placeholder="Ej: Edificio Torre Verde"/>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Dirección</label>
+          <input type="text" id="fDireccion" placeholder="Ej: Bv. Roca 456"/>
+        </div>
+        <div class="field">
+          <label>Barrio / Zona</label>
+          <input type="text" id="fZona" placeholder="Ej: Centro, Urca..."/>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Pisos</label>
+          <input type="number" id="fPisos" placeholder="Ej: 8" min="1"/>
+        </div>
+        <div class="field">
+          <label>Unidades aprox.</label>
+          <input type="number" id="fUnidades" placeholder="Ej: 32" min="1"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Nombre del contacto</label>
+        <input type="text" id="fContactoNombre" placeholder="Encargado, propietario, administración..."/>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Teléfono / WhatsApp</label>
+          <input type="tel" id="fTelefono" placeholder="+54 9 358..."/>
+        </div>
+        <div class="field">
+          <label>Próxima visita</label>
+          <input type="date" id="fFechaVisita"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Estado</label>
+        <div class="estado-opts" id="estadoOpts">
+          <div class="estado-opt" data-val="pendiente" onclick="selEstado(this)">⏳ Pendiente</div>
+          <div class="estado-opt" data-val="visitado"  onclick="selEstado(this)">✅ Visitado</div>
+          <div class="estado-opt" data-val="contacto"  onclick="selEstado(this)">⭐ Con contacto</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notas</label>
+        <textarea id="fNotas" placeholder="Observaciones, acuerdos, referencias, horarios de atención..."></textarea>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-delete" id="btnEliminar" style="display:none" onclick="eliminarEdificio()">🗑</button>
+      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-save" onclick="guardarEdificio()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// API — /api/edificios (mismo patrón que el CRM)
+// ══════════════════════════════════════════════
+const API = '/api/edificios';
+
+async function loadData() {
+  try {
+    const r = await fetch(API);
+    if (!r.ok) throw new Error('API error');
+    const d = await r.json();
+    return Array.isArray(d) ? d : [];
+  } catch(e) {
+    console.warn('API edificios no disponible, usando localStorage como fallback', e);
+    try { return JSON.parse(localStorage.getItem('vb_edificios') || '[]'); }
+    catch { return []; }
+  }
+}
+
+async function saveRemote(edificio, method = 'POST') {
+  const url = method === 'DELETE' ? `${API}/${edificio.id}` :
+              edificio.id ? `${API}/${edificio.id}` : API;
+  try {
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: method !== 'DELETE' ? JSON.stringify(edificio) : undefined,
+    });
+    return r.ok;
+  } catch(e) {
+    // Fallback localStorage si el server no tiene el endpoint aún
+    const arr = JSON.parse(localStorage.getItem('vb_edificios') || '[]');
+    if (method === 'DELETE') {
+      localStorage.setItem('vb_edificios', JSON.stringify(arr.filter(x => x.id !== edificio.id)));
+    } else if (edificio.id && arr.find(x => x.id === edificio.id)) {
+      localStorage.setItem('vb_edificios', JSON.stringify(arr.map(x => x.id === edificio.id ? edificio : x)));
+    } else {
+      arr.unshift(edificio);
+      localStorage.setItem('vb_edificios', JSON.stringify(arr));
+    }
+    return true;
+  }
+}
+
+let edificios = [];
+let filtroActivo = 'todos';
+let editandoId   = null;
+let estadoSel    = 'pendiente';
+
+// ══════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════
+function updateStats() {
+  document.getElementById('statTotal').textContent     = edificios.length;
+  document.getElementById('statPendiente').textContent = edificios.filter(e => e.estado === 'pendiente').length;
+  document.getElementById('statVisitado').textContent  = edificios.filter(e => e.estado === 'visitado').length;
+  document.getElementById('statContacto').textContent  = edificios.filter(e => e.estado === 'contacto').length;
+}
+
+// ══════════════════════════════════════════════
+// FILTRO
+// ══════════════════════════════════════════════
+function setFiltro(btn) {
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filtroActivo = btn.dataset.estado;
+  renderGrid();
+}
+
+// ══════════════════════════════════════════════
+// RENDER GRID
+// ══════════════════════════════════════════════
+function renderGrid() {
+  const q    = (document.getElementById('buscar').value || '').toLowerCase().trim();
+  const grid = document.getElementById('grid');
+
+  let lista = [...edificios];
+
+  if (filtroActivo !== 'todos')
+    lista = lista.filter(e => e.estado === filtroActivo);
+
+  if (q)
+    lista = lista.filter(e =>
+      (e.nombre    || '').toLowerCase().includes(q) ||
+      (e.direccion || '').toLowerCase().includes(q) ||
+      (e.zona      || '').toLowerCase().includes(q) ||
+      (e.notas     || '').toLowerCase().includes(q)
+    );
+
+  if (lista.length === 0) {
+    grid.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🏢</div>
+        <h3>${q || filtroActivo !== 'todos' ? 'Sin resultados' : 'Aún no hay edificios'}</h3>
+        <p>${q ? 'Probá con otra búsqueda' : 'Agregá el primero con el botón + Nuevo edificio'}</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = lista.map(e => cardHTML(e)).join('');
+}
+
+function estadoBadge(estado) {
+  const map = {
+    pendiente: ['estado-pendiente', '⏳ Pendiente'],
+    visitado:  ['estado-visitado',  '✅ Visitado'],
+    contacto:  ['estado-contacto',  '⭐ Con contacto'],
+  };
+  const [cls, label] = map[estado] || map.pendiente;
+  return `<span class="estado-badge ${cls}">${label}</span>`;
+}
+
+function cardHTML(e) {
+  const pisos    = e.pisos    ? `<div class="meta-tag">🏗 ${e.pisos} pisos</div>` : '';
+  const unidades = e.unidades ? `<div class="meta-tag">🚪 ${e.unidades} unidades</div>` : '';
+  const zona     = e.zona     ? `<div class="meta-tag">📍 ${e.zona}</div>` : '';
+  const visita   = e.fechaVisita ? `<div class="meta-tag">📅 ${formatDate(e.fechaVisita)}</div>` : '';
+  const tel      = e.telefono ? `<div class="meta-tag">📞 ${e.telefono}</div>` : '';
+
+  const waHref = e.telefono
+    ? `https://wa.me/${e.telefono.replace(/\D/g,'')}?text=${encodeURIComponent('Hola! Te contacto de parte de Vanina Buzzacchi Negocios Inmobiliarios.')}`
+    : '#';
+
+  const mapHref = e.direccion
+    ? `https://maps.google.com/?q=${encodeURIComponent((e.direccion || '') + ' Rio Cuarto Cordoba Argentina')}`
+    : '#';
+
+  return `
+  <div class="card" id="card-${e.id}">
+    <div class="card-ripple">
+      <div class="rl">
+        <div class="rc"></div><div class="rc"></div><div class="rc"></div>
+        <div class="rc"></div><div class="rc"></div><div class="rc"></div>
+        <div class="rc"></div><div class="rc"></div><div class="rc"></div>
+      </div>
+    </div>
+    <div class="card-top">
+      <div class="card-icon">🏢</div>
+      <div class="card-title-wrap">
+        <div class="card-nombre">${e.nombre || 'Sin nombre'}</div>
+        <div class="card-dir">${e.direccion || 'Sin dirección'}</div>
+      </div>
+      ${estadoBadge(e.estado)}
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        ${zona}${pisos}${unidades}${tel}${visita}
+      </div>
+      <div class="card-notas">${e.notas || '<span style="color:var(--border)">Sin notas aún</span>'}</div>
+    </div>
+    <div class="card-footer">
+      <button class="btn-accion btn-editar" onclick="editarEdificio('${e.id}')">✏️ Editar</button>
+      ${e.telefono
+        ? `<button class="btn-accion btn-wa-card" onclick="event.stopPropagation();window.open('${waHref}','_blank')">💬 WA</button>`
+        : ''}
+      ${e.direccion
+        ? `<button class="btn-accion btn-mapa" onclick="event.stopPropagation();window.open('${mapHref}','_blank')">🗺 Mapa</button>`
+        : ''}
+    </div>
+  </div>`;
+}
+
+function formatDate(str) {
+  if (!str) return '';
+  const [y,m,d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ══════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════
+function abrirModal(id = null) {
+  editandoId = id;
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('modalTitulo').textContent = id ? 'Editar edificio' : 'Nuevo edificio';
+  document.getElementById('btnEliminar').style.display = id ? 'block' : 'none';
+
+  // Limpiar form
+  ['fNombre','fDireccion','fZona','fPisos','fUnidades',
+   'fContactoNombre','fTelefono','fFechaVisita','fNotas']
+    .forEach(f => document.getElementById(f).value = '');
+  estadoSel = 'pendiente';
+  updateEstadoOpts();
+
+  // Si es edición, cargar datos
+  if (id) {
+    const e = edificios.find(x => x.id === id);
+    if (e) {
+      document.getElementById('fNombre').value          = e.nombre || '';
+      document.getElementById('fDireccion').value       = e.direccion || '';
+      document.getElementById('fZona').value            = e.zona || '';
+      document.getElementById('fPisos').value           = e.pisos || '';
+      document.getElementById('fUnidades').value        = e.unidades || '';
+      document.getElementById('fContactoNombre').value  = e.contactoNombre || '';
+      document.getElementById('fTelefono').value        = e.telefono || '';
+      document.getElementById('fFechaVisita').value     = e.fechaVisita || '';
+      document.getElementById('fNotas').value           = e.notas || '';
+      estadoSel = e.estado || 'pendiente';
+      updateEstadoOpts();
+    }
+  }
+
+  overlay.classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editandoId = null;
+}
+
+function cerrarModalOverlay(e) {
+  if (e.target === document.getElementById('modalOverlay')) cerrarModal();
+}
+
+function selEstado(el) {
+  estadoSel = el.dataset.val;
+  updateEstadoOpts();
+}
+
+function updateEstadoOpts() {
+  document.querySelectorAll('.estado-opt').forEach(o => {
+    o.className = 'estado-opt';
+    if (o.dataset.val === estadoSel) o.classList.add(`sel-${estadoSel}`);
+  });
+}
+
+// ══════════════════════════════════════════════
+// CRUD
+// ══════════════════════════════════════════════
+async function guardarEdificio() {
+  const nombre = document.getElementById('fNombre').value.trim();
+  if (!nombre) { showToast('⚠️ Ingresá el nombre del edificio'); return; }
+
+  const datos = {
+    nombre,
+    direccion:      document.getElementById('fDireccion').value.trim(),
+    zona:           document.getElementById('fZona').value.trim(),
+    pisos:          document.getElementById('fPisos').value.trim(),
+    unidades:       document.getElementById('fUnidades').value.trim(),
+    contactoNombre: document.getElementById('fContactoNombre').value.trim(),
+    telefono:       document.getElementById('fTelefono').value.trim(),
+    fechaVisita:    document.getElementById('fFechaVisita').value,
+    notas:          document.getElementById('fNotas').value.trim(),
+    estado:         estadoSel,
+    updatedAt:      new Date().toISOString(),
+  };
+
+  if (editandoId) {
+    const idx = edificios.findIndex(e => e.id === editandoId);
+    if (idx > -1) edificios[idx] = { ...edificios[idx], ...datos };
+    showToast('✓ Edificio actualizado');
+  } else {
+    datos.id        = 'ed_' + Date.now();
+    datos.createdAt = new Date().toISOString();
+    edificios.unshift(datos);
+    showToast('✓ Edificio agregado');
+  }
+
+  const method = editandoId ? 'PUT' : 'POST';
+  await saveRemote(datos, method);
+  edificios = await loadData();
+  cerrarModal();
+  renderGrid();
+  updateStats();
+}
+
+function editarEdificio(id) {
+  abrirModal(id);
+}
+
+async function eliminarEdificio() {
+  if (!editandoId) return;
+  if (!confirm('¿Eliminás este edificio? No se puede deshacer.')) return;
+  await saveRemote({ id: editandoId }, 'DELETE');
+  edificios = await loadData();
+  cerrarModal();
+  renderGrid();
+  updateStats();
+  showToast('🗑 Edificio eliminado');
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ══════════════════════════════════════════════
+// INIT — carga desde API
+// ══════════════════════════════════════════════
+async function init() {
+  edificios = await loadData();
+  renderGrid();
+  updateStats();
+}
+init();
+</script>
+</body>
+</html>
