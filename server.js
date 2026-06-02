@@ -424,7 +424,15 @@ function sbToInm(r) {
     scriptVenta:         r.script_venta,
     mapsUrl:             r.maps_url,
     mediaUrls:           r.media_urls,
-    imagenes:            Array.isArray(r.imagenes) ? r.imagenes : [],
+    imagenes:            (() => {
+      const SUPA_URL  = process.env.SUPABASE_URL || "";
+      const SUPA_BASE = SUPA_URL.replace(/\/$/, "") + "/storage/v1/object/public/Subidas/";
+      const imgs = Array.isArray(r.imagenes) ? r.imagenes : [];
+      return imgs.filter(Boolean).map(img => {
+        if (!img || img.startsWith("http://") || img.startsWith("https://")) return img;
+        return SUPA_BASE + "propiedad_" + r.id + "/" + img;
+      });
+    })(),
     estadoPublicacion:   r.estado_publicacion || "borrador",
     rating:              r.rating,
     origen:              r.origen,
@@ -610,6 +618,19 @@ app.post("/editar/:id", upload.fields([{ name: "imagenes" }]), async (req, res) 
     // Reconstruir lista de imágenes: las que ya existían (nombresImagenes) + nuevas
     let imagenesExistentes = req.body.nombresImagenes || [];
     if (!Array.isArray(imagenesExistentes)) imagenesExistentes = [imagenesExistentes];
+
+    // Normalizar: si alguna URL es solo nombre de archivo (sin http), construir URL pública Supabase
+    const SUPA_URL  = process.env.SUPABASE_URL || "";
+    const SUPA_BASE = SUPA_URL.replace(/\/$/, "") + "/storage/v1/object/public/Subidas/";
+    imagenesExistentes = imagenesExistentes
+      .filter(Boolean)
+      .map(img => {
+        if (img.startsWith("http://") || img.startsWith("https://")) return img;
+        // Es nombre simple — construir URL con la carpeta de la propiedad
+        const folder = `propiedad_${id}`;
+        return SUPA_BASE + folder + "/" + img;
+      });
+
     const imagenes = [...imagenesExistentes, ...nuevasFotos];
 
     const payload = {
