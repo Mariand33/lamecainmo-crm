@@ -202,6 +202,14 @@
             <span class="tpl-icon">✨</span>
             <span class="tpl-label">Completo</span>
           </button>
+          <button class="tpl-btn" data-tpl="inmueble-card" onclick="setTpl(this)">
+            <span class="tpl-icon">🏡</span>
+            <span class="tpl-label">Inmueble Card</span>
+          </button>
+          <button class="tpl-btn" data-tpl="captador" onclick="setTpl(this)">
+            <span class="tpl-icon">📣</span>
+            <span class="tpl-label">Captador</span>
+          </button>
         </div>
       </div>
 
@@ -233,6 +241,49 @@
           <select id="ctrlImagen" onchange="cambiarImagen()">
             <option value="">— Seleccioná foto —</option>
           </select>
+        </div>
+
+        <!-- Campos extra para plantilla Inmueble Card y Captador -->
+        <div id="extraFields" style="display:none">
+          <div class="ctrl-group">
+            <label>Zona / Badge</label>
+            <input type="text" id="ctrlZona" oninput="render()" placeholder="Sector universitario"/>
+          </div>
+          <div class="ctrl-group">
+            <label>Tipo operación</label>
+            <select id="ctrlOperacion" onchange="render()">
+              <option value="Inmuebles en venta">Inmuebles en venta</option>
+              <option value="Inmuebles en alquiler">Inmuebles en alquiler</option>
+              <option value="Búsqueda de Alquileres">Búsqueda de Alquileres</option>
+              <option value="Búsqueda de Compra">Búsqueda de Compra</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+            <div class="ctrl-group" style="margin:0">
+              <label>🛏 Dorm.</label>
+              <input type="number" id="ctrlDorm" oninput="render()" placeholder="3" min="0" max="9"/>
+            </div>
+            <div class="ctrl-group" style="margin:0">
+              <label>🚿 Baños</label>
+              <input type="number" id="ctrlBanos" oninput="render()" placeholder="2" min="0" max="9"/>
+            </div>
+            <div class="ctrl-group" style="margin:0">
+              <label>🚗 Coch.</label>
+              <input type="number" id="ctrlCochera" oninput="render()" placeholder="1" min="0" max="9"/>
+            </div>
+          </div>
+          <div class="ctrl-group">
+            <label>Superficie (m²)</label>
+            <input type="text" id="ctrlM2" oninput="render()" placeholder="250"/>
+          </div>
+          <div class="ctrl-group">
+            <label>CTA inferior</label>
+            <input type="text" id="ctrlCta" oninput="render()" placeholder="¡Agendá tu visita!"/>
+          </div>
+          <div class="ctrl-group">
+            <label>Teléfono (captador)</label>
+            <input type="text" id="ctrlTelefono" oninput="render()" placeholder="358 5189949"/>
+          </div>
         </div>
 
         <div class="ctrl-group">
@@ -340,32 +391,95 @@
           <button class="fmt-tab" data-ratio="43" onclick="setRatio(this,4,3)">Landscape 4:3</button>
         </div>
 
-        <!-- CANVAS VISIBLE = preview exacta + descarga idéntica -->
+        <!-- VISTA PREVIA HTML (inmediata, sin canvas) -->
         <div id="livePreview" style="
           position:relative; border-radius:16px; overflow:hidden;
           border:1px solid rgba(255,255,255,.08); background:#0a1a10;
-          max-width:520px; width:100%;
+          aspect-ratio:1; max-width:520px; width:100%;
         ">
-          <canvas id="postCanvas" width="1080" height="1080" style="
-            display:block; width:100%; height:auto;
-            border-radius:14px;
-          "></canvas>
-          <div class="loading-overlay" id="loadingOverlay">Generando...</div>
+          <!-- Foto de fondo -->
+          <div id="prevFoto" style="
+            position:absolute; inset:0;
+            background-size:cover; background-position:center;
+            transition:background-image .25s;
+          "></div>
+          <!-- Overlay degradado -->
+          <div id="prevOverlay" style="
+            position:absolute; inset:0;
+            background:linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%);
+          "></div>
+          <!-- Verde marca (solo plantilla verde) -->
+          <div id="prevVerde" style="display:none; position:absolute; inset:0;
+            background:linear-gradient(135deg,#0a1e12,#143d2f,#0f2318);">
+            <div style="position:absolute;top:12%;left:7%;width:12%;height:2px;background:#c9a84c;border-radius:2px"></div>
+          </div>
+          <!-- Textos sobre foto -->
+          <div id="prevTextos" style="
+            position:absolute; inset:0;
+            display:flex; flex-direction:column; justify-content:flex-end;
+            padding:6% 7% 5%;
+          ">
+            <div id="prevTitulo" style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(22px,7.5vw,56px);
+              font-style:italic; font-weight:400;
+              color:#fff; line-height:1.1; margin-bottom:2%;
+              text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6);
+            "></div>
+            <div id="prevSubtitulo" style="
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(9px,1.8vw,14px);
+              font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+              color:rgba(255,255,255,.72);
+              text-shadow:0 1px 8px rgba(0,0,0,.8);
+              margin-bottom:1%;
+            "></div>
+            <div id="prevPrecio" style="
+              display:inline-block; align-self:flex-start;
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(10px,2.2vw,17px);
+              font-weight:700; letter-spacing:.06em;
+              background:rgba(201,168,76,.92); color:#0a1e12;
+              padding:.35em .9em; border-radius:30px; margin-bottom:4%;
+            "></div>
+          </div>
+          <!-- LOGO BRANDING — posicionado independientemente -->
+          <div id="prevBranding" style="
+            position:absolute; left:7%; top:88%;
+            text-shadow:0 2px 12px rgba(0,0,0,.9);
+          ">
+            <div style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(13px,3.8vw,30px);
+              font-style:italic; font-weight:500; color:#fff;
+              line-height:1.1;
+            ">Vanina Buzzacchi</div>
+            <div style="
+              font-family:'Montserrat',sans-serif;
+              font-size:clamp(7px,1.4vw,11px);
+              font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+              color:rgba(255,255,255,.65);
+              margin-top:.15em;
+            ">NEGOCIOS INMOBILIARIOS</div>
+          </div>
+          <!-- Frase centrada (plantillas foto-titulo y completo) -->
+          <div id="prevFraseCentro" style="
+            display:none; position:absolute; inset:0;
+            align-items:center; justify-content:center;
+          ">
+            <div id="prevFraseTexto" style="
+              font-family:'Cormorant Garamond',serif;
+              font-size:clamp(24px,8vw,64px);
+              font-style:italic; font-weight:300; color:#fff;
+              text-align:center; padding:0 8%;
+              text-shadow:0 2px 20px rgba(0,0,0,.9);
+              line-height:1.15;
+            "></div>
+          </div>
         </div>
 
-        <!-- Elementos dummy para no romper referencias JS existentes -->
-        <div id="prevFoto"        style="display:none"></div>
-        <div id="prevOverlay"     style="display:none"></div>
-        <div id="prevVerde"       style="display:none"></div>
-        <div id="prevTextos"      style="display:none">
-          <div id="prevTitulo"></div>
-          <div id="prevSubtitulo"></div>
-          <div id="prevPrecio"></div>
-        </div>
-        <div id="prevBranding"    style="display:none"></div>
-        <div id="prevFraseCentro" style="display:none">
-          <div id="prevFraseTexto"></div>
-        </div>
+        <!-- Canvas oculto — solo para descarga 1080px -->
+        <canvas id="postCanvas" width="1080" height="1080" style="display:none"></canvas>
       </div>
 
       <div class="download-row" style="margin-top:12px">
@@ -566,6 +680,9 @@ function setTpl(btn){
   document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   tplActual = btn.dataset.tpl;
+  // Mostrar campos extra solo para las nuevas plantillas
+  const extra = document.getElementById('extraFields');
+  if (extra) extra.style.display = (tplActual === 'inmueble-card' || tplActual === 'captador') ? 'block' : 'none';
   render();
   renderLivePreview();
 }
@@ -600,17 +717,130 @@ function render(){
 
   if (tplActual === 'verde-frase'){
     renderVerdeMarca(W, H);
+  } else if (tplActual === 'inmueble-card'){
+    renderInmuebleCard(W, H);
+  } else if (tplActual === 'captador'){
+    renderCaptador(W, H);
   } else {
     renderFoto(W, H);
   }
 }
 
 // ══════════════════════════════════════
-// LIVE PREVIEW = canvas directo (pixel-perfect)
+// LIVE PREVIEW HTML (instantáneo)
 // ══════════════════════════════════════
 function renderLivePreview(){
-  // El canvas ES la preview — simplemente re-renderizamos
-  render();
+  const titulo    = document.getElementById('ctrlTitulo').value    || '';
+  const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
+  const precio    = document.getElementById('ctrlPrecio').value    || '';
+  const frase     = document.getElementById('ctrlFrase').value     || '';
+  const esVerde   = tplActual === 'verde-frase';
+
+  // Foto de fondo
+  const fotaUrl = imagenActualSrc || '';
+  document.getElementById('prevFoto').style.backgroundImage   = fotaUrl ? `url(${fotaUrl})` : 'none';
+  document.getElementById('prevVerde').style.display          = esVerde ? 'block' : 'none';
+  document.getElementById('prevOverlay').style.opacity        = esVerde ? '0' : '1';
+
+  // Overlay de color
+  const ovEl = document.getElementById('prevOverlay');
+  if (!esVerde && overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
+    ovEl.style.background = `linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%)`;
+  }
+
+  // Textos
+  const tituloEl    = document.getElementById('prevTitulo');
+  const subtEl      = document.getElementById('prevSubtitulo');
+  const precioEl    = document.getElementById('prevPrecio');
+
+  // Ajustar posición textos según plantilla
+  const textosEl = document.getElementById('prevTextos');
+
+  if (tplActual === 'foto-titulo') {
+    tituloEl.textContent    = titulo || frase;
+    subtEl.textContent      = '';
+    precioEl.textContent    = '';
+    precioEl.style.display  = 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (tplActual === 'foto-precio') {
+    tituloEl.textContent    = titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (tplActual === 'foto-completo') {
+    tituloEl.textContent    = titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    textosEl.style.justifyContent = 'flex-end';
+  }
+  else if (esVerde) {
+    tituloEl.textContent    = frase || titulo;
+    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
+    precioEl.textContent    = precio;
+    precioEl.style.display  = precio ? 'inline-block' : 'none';
+    // En verde el precio es dorado texto
+    precioEl.style.background = 'transparent';
+    precioEl.style.color      = '#c9a84c';
+    precioEl.style.padding    = '0';
+    textosEl.style.justifyContent = 'center';
+    // Resetear en otros templates
+    document.getElementById('prevPrecio').style.background = 'rgba(201,168,76,.92)';
+    document.getElementById('prevPrecio').style.color      = '#0a1e12';
+    document.getElementById('prevPrecio').style.padding    = '.35em .9em';
+  }
+
+  // ratio del live preview
+  const ratioMap = {'1':'1/1','916':'9/16','43':'4/3'};
+  const activeRatio = document.querySelector('.fmt-tab.active')?.dataset.ratio || '1';
+  document.getElementById('livePreview').style.aspectRatio = ratioMap[activeRatio] || '1/1';
+
+  // Aplicar sliders al live preview
+  const logoSizePct = sl('slLogoSize') / 100;
+  const logoSubPct  = sl('slLogoSub')  / 100;
+  const logoXPct    = sl('slLogoX');     // %
+  const logoYPct    = sl('slLogoY');     // % desde arriba
+  const titSizePct  = sl('slTitSize')  / 100;
+  const titYPct     = sl('slTitY');
+  const subSizePct  = sl('slSubSize')  / 100;
+  const subYPct     = sl('slSubY');
+
+  // Branding (logo)
+  const brandEl = document.getElementById('prevBranding');
+  if (brandEl) {
+    brandEl.style.position = 'absolute';
+    brandEl.style.left     = logoXPct + '%';
+    brandEl.style.top      = logoYPct + '%';
+    brandEl.style.marginTop = '0';
+    brandEl.style.paddingTop = '0';
+    const nameEl = brandEl.querySelector('div:first-child');
+    const negEl  = brandEl.querySelector('div:last-child');
+    if (nameEl) nameEl.style.fontSize = `clamp(10px, ${3.8 * logoSizePct}vw, ${30 * logoSizePct}px)`;
+    if (negEl)  negEl.style.fontSize  = `clamp(6px,  ${1.4 * logoSubPct}vw, ${11 * logoSubPct}px)`;
+  }
+
+  // Título
+  const titEl = document.getElementById('prevTitulo');
+  if (titEl) titEl.style.fontSize = `clamp(18px, ${7.5 * titSizePct}vw, ${56 * titSizePct}px)`;
+
+  // Textos posición Y (mover el contenedor de textos usando padding-bottom relativo)
+  const textosEl2 = document.getElementById('prevTextos');
+  if (textosEl2 && tplActual !== 'verde-frase') {
+    // Convertimos titY a padding-bottom: 100% - titY aproximado
+    const pb = Math.max(0, 100 - titYPct - 12);
+    textosEl2.style.paddingBottom = pb + '%';
+    textosEl2.style.justifyContent = 'flex-end';
+  }
+
+  // Subtítulo y precio size
+  const subtElS = document.getElementById('prevSubtitulo');
+  const precioElS = document.getElementById('prevPrecio');
+  if (subtElS) subtElS.style.fontSize = `clamp(8px, ${1.8 * subSizePct}vw, ${14 * subSizePct}px)`;
+  if (precioElS && precioElS.style.display !== 'none')
+    precioElS.style.fontSize = `clamp(9px, ${2.2 * subSizePct}vw, ${17 * subSizePct}px)`;
 }
 
 function renderFoto(W, H){
@@ -910,9 +1140,8 @@ function roundRect(ctx, x, y, w, h, r){
 // DESCARGAR
 // ══════════════════════════════════════
 async function descargar(){
-  // Canvas ya está actualizado (es la misma preview visible)
-  // Solo pequeña espera por si hay fuentes en carga
-  await new Promise(r => setTimeout(r, 30));
+  render();
+  await new Promise(r => setTimeout(r, 80)); // dejar que el canvas termine de pintar
   const titulo = document.getElementById('ctrlTitulo').value || 'post';
   const filename = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
   try {
@@ -993,6 +1222,419 @@ cargarPropiedades();
 initSliders();
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
+
+// ══════════════════════════════════════════════════════════
+// PLANTILLA: INMUEBLE CARD (estilo foto de las imágenes)
+// ══════════════════════════════════════════════════════════
+function renderInmuebleCard(W, H) {
+  const titulo    = document.getElementById('ctrlTitulo').value    || 'Casa Moderna';
+  const precio    = document.getElementById('ctrlPrecio').value    || '';
+  const zona      = (document.getElementById('ctrlZona')?.value    || document.getElementById('ctrlSubtitulo').value || '').trim();
+  const operacion = document.getElementById('ctrlOperacion')?.value || 'Inmuebles en venta';
+  const dorm      = document.getElementById('ctrlDorm')?.value     || '';
+  const banos     = document.getElementById('ctrlBanos')?.value    || '';
+  const cochera   = document.getElementById('ctrlCochera')?.value  || '';
+  const m2        = document.getElementById('ctrlM2')?.value       || '';
+  const cta       = document.getElementById('ctrlCta')?.value      || '¡Agendá tu visita!';
+
+  // ── Fondo verde ───────────────────────────────────────
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0a5c32');
+  bg.addColorStop(1, '#062a17');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Orb decorativo esquina superior derecha
+  const orb = ctx.createRadialGradient(W*0.9, H*0.05, 0, W*0.9, H*0.05, W*0.55);
+  orb.addColorStop(0, 'rgba(255,255,255,0.04)');
+  orb.addColorStop(1, 'transparent');
+  ctx.fillStyle = orb;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Barra búsqueda superior ───────────────────────────
+  const barY = H * 0.055;
+  const barH = H * 0.072;
+  const barX = W * 0.08;
+  const barW = W * 0.84;
+  // Pill blanco
+  roundRect(ctx, barX, barY, barW, barH, barH/2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  // Ícono lupa
+  ctx.font = `${W*0.032}px sans-serif`;
+  ctx.fillStyle = '#666';
+  ctx.textAlign = 'left';
+  ctx.fillText('🔍', barX + barH*0.2, barY + barH*0.68);
+  // Texto de búsqueda
+  ctx.font = `500 ${W*0.030}px 'Montserrat'`;
+  ctx.fillStyle = '#333';
+  ctx.fillText(operacion, barX + barH*0.85, barY + barH*0.67);
+  // Ícono casa (derecha del pill)
+  const iconPillX = barX + barW - barH * 1.05;
+  const iconPillR = barH * 0.48;
+  ctx.beginPath();
+  ctx.arc(iconPillX + iconPillR, barY + barH/2, iconPillR, 0, Math.PI*2);
+  ctx.fillStyle = '#c9a84c';
+  ctx.fill();
+  ctx.font = `${W*0.030}px sans-serif`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏠', iconPillX + iconPillR, barY + barH*0.72);
+
+  // ── Foto principal con bordes redondeados ─────────────
+  const fotoX = W * 0.06;
+  const fotoY = H * 0.165;
+  const fotoW = W * 0.88;
+  const fotoH = H * 0.48;
+  const fotoR = W * 0.045;
+
+  ctx.save();
+  roundRect(ctx, fotoX, fotoY, fotoW, fotoH, fotoR);
+  ctx.clip();
+  if (imagenActual) {
+    // cover fit
+    const ar = imagenActual.width / imagenActual.height;
+    const arT = fotoW / fotoH;
+    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
+    if (ar > arT) { sw = imagenActual.height * arT; sx = (imagenActual.width - sw)/2; }
+    else          { sh = imagenActual.width / arT;  sy = (imagenActual.height - sh)/2; }
+    ctx.drawImage(imagenActual, sx, sy, sw, sh, fotoX, fotoY, fotoW, fotoH);
+  } else {
+    ctx.fillStyle = '#1a3a25';
+    ctx.fillRect(fotoX, fotoY, fotoW, fotoH);
+    ctx.font = `${W*0.06}px sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.textAlign = 'center';
+    ctx.fillText('🏠', W/2, fotoY + fotoH/2 + W*0.02);
+  }
+  ctx.restore();
+
+  // ── Badge zona (arriba derecha de la foto) ─────────────
+  if (zona) {
+    ctx.font = `600 ${W*0.028}px 'Montserrat'`;
+    const bw = ctx.measureText(zona).width + W*0.06;
+    const bh = W * 0.065;
+    const bx = fotoX + fotoW - bw - W*0.03;
+    const by = fotoY + W*0.03;
+    roundRect(ctx, bx, by, bw, bh, bh/2);
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.fill();
+    ctx.fillStyle = '#2a6e45';
+    ctx.textAlign = 'left';
+    ctx.fillText(zona, bx + W*0.03, by + bh*0.68);
+  }
+
+  // ── Pill precio (sobre el borde inferior de la foto) ──
+  if (precio) {
+    ctx.font = `700 ${W*0.038}px 'Montserrat'`;
+    const pw = ctx.measureText(precio).width + W*0.07;
+    const ph = W * 0.075;
+    const px = fotoX + fotoW - pw - W*0.03;
+    const py = fotoY + fotoH - ph * 0.5;
+    roundRect(ctx, px, py, pw, ph, ph*0.35);
+    const gPrice = ctx.createLinearGradient(px, py, px+pw, py);
+    gPrice.addColorStop(0, '#b8922a');
+    gPrice.addColorStop(1, '#e3c067');
+    ctx.fillStyle = gPrice;
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(precio, px + pw/2, py + ph*0.68);
+  }
+
+  // ── Panel blanco inferior ──────────────────────────────
+  const panelY = fotoY + fotoH - W*0.02;
+  const panelH = H - panelY - H*0.02;
+  const panelR = W * 0.045;
+  roundRect(ctx, fotoX, panelY, fotoW, panelH, panelR);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+
+  const px2 = fotoX + W*0.05;
+  let cy = panelY + panelH*0.22;
+
+  // Título en el panel
+  ctx.font = `italic 600 ${W*0.052}px 'Cormorant Garamond'`;
+  ctx.fillStyle = '#c9a84c';
+  ctx.textAlign = 'left';
+  // Wrap a 2 líneas si hace falta
+  const maxW = fotoW - W*0.1;
+  const words = titulo.split(' ');
+  let line1 = '', line2 = '';
+  let built = '';
+  for (const w of words) {
+    const test = built ? built + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && built) { line1 = built; built = w; }
+    else built = test;
+  }
+  line2 = built;
+  if (!line1) { line1 = line2; line2 = ''; }
+  ctx.fillText(line1, px2, cy);
+  if (line2) { cy += panelH*0.21; ctx.fillText(line2, px2, cy); }
+
+  cy += panelH * 0.22;
+
+  // ── Iconos dormitorios / baños / cochera / m2 ──────────
+  const iconSize = W * 0.068;
+  const iconPad  = W * 0.018;
+  const iconY    = cy;
+  const icons = [];
+  if (dorm)    icons.push({ emoji:'🛏', val: dorm });
+  if (banos)   icons.push({ emoji:'🚿', val: banos });
+  if (cochera) icons.push({ emoji:'🚗', val: cochera });
+  if (m2)      icons.push({ emoji:'⤡',  val: m2 + 'm²', noBox: true });
+
+  let ix = px2;
+  icons.forEach(ic => {
+    if (!ic.noBox) {
+      // Cuadro dorado redondeado con emoji
+      roundRect(ctx, ix, iconY - iconSize*0.75, iconSize, iconSize, iconSize*0.22);
+      const gIco = ctx.createLinearGradient(ix, iconY-iconSize*0.75, ix+iconSize, iconY+iconSize*0.25);
+      gIco.addColorStop(0, '#d4a43a');
+      gIco.addColorStop(1, '#c9a84c');
+      ctx.fillStyle = gIco;
+      ctx.fill();
+      ctx.font = `${iconSize*0.55}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(ic.emoji, ix + iconSize/2, iconY - iconSize*0.75 + iconSize*0.68);
+      // Número al lado
+      ctx.font = `600 ${W*0.032}px 'Montserrat'`;
+      ctx.fillStyle = '#333';
+      ctx.fillText(ic.val, ix + iconSize + W*0.025, iconY - iconSize*0.1);
+      ix += iconSize + W*0.085;
+    } else {
+      // m² con ícono especial
+      roundRect(ctx, ix, iconY - iconSize*0.75, iconSize, iconSize, iconSize*0.22);
+      ctx.fillStyle = '#1a4a2e';
+      ctx.fill();
+      ctx.font = `700 ${iconSize*0.42}px 'Montserrat'`;
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText('⤢', ix + iconSize/2, iconY - iconSize*0.75 + iconSize*0.65);
+      ctx.font = `600 ${W*0.032}px 'Montserrat'`;
+      ctx.fillStyle = '#333';
+      ctx.fillText(ic.val, ix + iconSize + W*0.025, iconY - iconSize*0.1);
+      ix += iconSize + W*0.085;
+    }
+  });
+
+  // ── CTA ─────────────────────────────────────────────────
+  if (cta) {
+    ctx.font = `500 ${W*0.030}px 'Montserrat'`;
+    ctx.fillStyle = '#1a6e3a';
+    ctx.textAlign = 'left';
+    ctx.fillText('🏠 ' + cta, px2, panelY + panelH*0.88);
+  }
+
+  // ── Logo Vanina Buzzacchi ──────────────────────────────
+  ctx.font = `italic 400 ${W*0.055}px 'Cormorant Garamond'`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText('Vanina Buzzacchi', W/2, H * 0.945);
+  ctx.font = `500 ${W*0.020}px 'Montserrat'`;
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.letterSpacing = '0.12em';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', W/2, H * 0.968);
+  ctx.letterSpacing = '0';
+}
+
+// ══════════════════════════════════════════════════════════
+// PLANTILLA: CAPTADOR (busco propiedades para clientes)
+// ══════════════════════════════════════════════════════════
+function renderCaptador(W, H) {
+  const titulo    = document.getElementById('ctrlTitulo').value    || 'Busco CASA o Dpto para ALQUILAR';
+  const precio    = document.getElementById('ctrlPrecio').value    || '';
+  const zona      = (document.getElementById('ctrlZona')?.value    || document.getElementById('ctrlSubtitulo').value || '').trim();
+  const operacion = document.getElementById('ctrlOperacion')?.value || 'Búsqueda de Alquileres';
+  const cta       = document.getElementById('ctrlCta')?.value      || '¡Agendá tu visita!';
+  const telefono  = document.getElementById('ctrlTelefono')?.value || '358 5189949';
+
+  // Features captador
+  const features = ['Requisitos Claros','Perfil Profesional','Seguro de Caución','Zonas de Interés'];
+
+  // ── Fondo verde ───────────────────────────────────────
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#0a5c32');
+  bg.addColorStop(1, '#062a17');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const orb = ctx.createRadialGradient(W*0.9, H*0.05, 0, W*0.9, H*0.05, W*0.55);
+  orb.addColorStop(0, 'rgba(255,255,255,0.04)');
+  orb.addColorStop(1, 'transparent');
+  ctx.fillStyle = orb;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Barra búsqueda superior ───────────────────────────
+  const barY = H * 0.055;
+  const barH = H * 0.072;
+  const barX = W * 0.08;
+  const barW = W * 0.84;
+  roundRect(ctx, barX, barY, barW, barH, barH/2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.font = `${W*0.032}px sans-serif`;
+  ctx.fillStyle = '#666';
+  ctx.textAlign = 'left';
+  ctx.fillText('🔍', barX + barH*0.2, barY + barH*0.68);
+  ctx.font = `500 ${W*0.030}px 'Montserrat'`;
+  ctx.fillStyle = '#333';
+  ctx.fillText(operacion, barX + barH*0.85, barY + barH*0.67);
+  const iconPillX = barX + barW - barH * 1.05;
+  const iconPillR = barH * 0.48;
+  ctx.beginPath();
+  ctx.arc(iconPillX + iconPillR, barY + barH/2, iconPillR, 0, Math.PI*2);
+  ctx.fillStyle = '#c9a84c';
+  ctx.fill();
+  ctx.font = `${W*0.030}px sans-serif`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText('🏠', iconPillX + iconPillR, barY + barH*0.72);
+
+  // ── Foto con bordes redondeados ───────────────────────
+  const fotoX = W * 0.06;
+  const fotoY = H * 0.165;
+  const fotoW = W * 0.88;
+  const fotoH = H * 0.46;
+  const fotoR = W * 0.045;
+
+  ctx.save();
+  roundRect(ctx, fotoX, fotoY, fotoW, fotoH, fotoR);
+  ctx.clip();
+  if (imagenActual) {
+    const ar = imagenActual.width / imagenActual.height;
+    const arT = fotoW / fotoH;
+    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
+    if (ar > arT) { sw = imagenActual.height * arT; sx = (imagenActual.width - sw)/2; }
+    else          { sh = imagenActual.width / arT;  sy = (imagenActual.height - sh)/2; }
+    ctx.drawImage(imagenActual, sx, sy, sw, sh, fotoX, fotoY, fotoW, fotoH);
+  } else {
+    ctx.fillStyle = '#1a3a25';
+    ctx.fillRect(fotoX, fotoY, fotoW, fotoH);
+  }
+  ctx.restore();
+
+  // Badge zona
+  if (zona) {
+    ctx.font = `600 ${W*0.028}px 'Montserrat'`;
+    const bw = ctx.measureText(zona).width + W*0.06;
+    const bh = W * 0.065;
+    const bx = fotoX + fotoW - bw - W*0.03;
+    const by = fotoY + W*0.03;
+    roundRect(ctx, bx, by, bw, bh, bh/2);
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.fill();
+    ctx.fillStyle = '#2a6e45';
+    ctx.textAlign = 'left';
+    ctx.fillText(zona, bx + W*0.03, by + bh*0.68);
+  }
+
+  // Badge "CLIENTES DISPONIBLES"
+  const cdW = W * 0.28;
+  const cdH = W * 0.10;
+  const cdX = fotoX + fotoW - cdW - W*0.03;
+  const cdY = fotoY + fotoH - cdH*0.5;
+  roundRect(ctx, cdX, cdY, cdW, cdH, cdH*0.22);
+  const gCD = ctx.createLinearGradient(cdX, cdY, cdX+cdW, cdY+cdH);
+  gCD.addColorStop(0, '#b8922a');
+  gCD.addColorStop(1, '#e3c067');
+  ctx.fillStyle = gCD;
+  ctx.fill();
+  ctx.font = `700 ${W*0.026}px 'Montserrat'`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText('CLIENTES', cdX + cdW/2, cdY + cdH*0.38);
+  ctx.fillText('DISPONIBLES', cdX + cdW/2, cdY + cdH*0.72);
+
+  // ── Panel blanco inferior ──────────────────────────────
+  const panelY = fotoY + fotoH - W*0.02;
+  const panelH = H - panelY - H*0.135;
+  const panelR = W * 0.045;
+  roundRect(ctx, fotoX, panelY, fotoW, panelH, panelR);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+
+  const px2 = fotoX + W*0.05;
+  let cy = panelY + panelH*0.24;
+
+  // Título en panel
+  ctx.font = `italic 600 ${W*0.052}px 'Cormorant Garamond'`;
+  ctx.fillStyle = '#c9a84c';
+  ctx.textAlign = 'left';
+  const words = titulo.split(' ');
+  let line1='', line2='', built='';
+  const maxW = fotoW - W*0.1;
+  for (const w of words) {
+    const test = built ? built + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && built) { line1=built; built=w; }
+    else built=test;
+  }
+  line2=built;
+  if (!line1) { line1=line2; line2=''; }
+  ctx.fillText(line1, px2, cy);
+  if (line2) { cy += panelH*0.21; ctx.fillText(line2, px2, cy); }
+  cy += panelH * 0.2;
+
+  // Features en dos columnas con checkmarks
+  const featW = (fotoW - W*0.1) / 2;
+  ctx.font = `500 ${W*0.026}px 'Montserrat'`;
+  features.forEach((f, i) => {
+    const fx = px2 + (i%2) * featW;
+    const fy = cy + Math.floor(i/2) * panelH*0.22;
+    // Ícono dorado cuadro
+    const iSz = W*0.058;
+    roundRect(ctx, fx, fy - iSz*0.75, iSz, iSz, iSz*0.22);
+    const gF = ctx.createLinearGradient(fx, fy-iSz*0.75, fx+iSz, fy+iSz*0.25);
+    gF.addColorStop(0, '#d4a43a');
+    gF.addColorStop(1, '#c9a84c');
+    ctx.fillStyle = gF;
+    ctx.fill();
+    ctx.font = `${iSz*0.55}px sans-serif`;
+    ctx.fillStyle='#fff';
+    ctx.textAlign='center';
+    const emojis = ['🛏','🚿','🚗','⤡'];
+    ctx.fillText(emojis[i], fx+iSz/2, fy-iSz*0.75+iSz*0.68);
+    // Checkmark + texto
+    ctx.font = `500 ${W*0.026}px 'Montserrat'`;
+    ctx.fillStyle = '#555';
+    ctx.textAlign = 'left';
+    ctx.fillText('✓ ' + f, fx, fy + panelH*0.1);
+  });
+
+  // CTA
+  cy = panelY + panelH*0.88;
+  if (cta) {
+    ctx.font = `500 ${W*0.028}px 'Montserrat'`;
+    ctx.fillStyle = '#1a6e3a';
+    ctx.textAlign = 'left';
+    ctx.fillText('🏠 ' + cta, px2, cy);
+  }
+
+  // ── Logo + teléfono ────────────────────────────────────
+  ctx.font = `italic 400 ${W*0.052}px 'Cormorant Garamond'`;
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.fillText('Vanina Buzzacchi', W/2, H * 0.925);
+  ctx.font = `500 ${W*0.019}px 'Montserrat'`;
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS', W/2, H * 0.948);
+
+  if (telefono) {
+    // Ícono WA + teléfono
+    ctx.font = `600 ${W*0.030}px 'Montserrat'`;
+    ctx.fillStyle = '#25D366';
+    ctx.fillText('📞 ' + telefono, W/2, H * 0.975);
+  }
+
+  // Estrella decorativa esquina inferior derecha
+  ctx.font = `${W*0.05}px sans-serif`;
+  ctx.fillStyle = 'rgba(201,168,76,0.4)';
+  ctx.textAlign = 'right';
+  ctx.fillText('✦', W*0.95, H*0.985);
+  ctx.textAlign = 'left';
+}
+
 </script>
 </body>
 </html>
