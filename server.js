@@ -78,17 +78,74 @@ app.get("/:page.html", (req, res) => {
   res.status(404).send(`Página ${page} no encontrada`);
 });
 
-// GET — listar todos
-app.get('/api/edificios', ...)
+// ── EDIFICIOS CRUD ──────────────────────────────────────────
+app.get('/api/edificios', requireAuth, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('edificios')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(data || []);
+  } catch (e) {
+    console.error('GET /api/edificios:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
-// POST — crear
-app.post('/api/edificios', ...)
+app.post('/api/edificios', requireAuth, async (req, res) => {
+  try {
+    const body = { ...req.body };
+    delete body.id;
+    body.created_at = new Date().toISOString();
+    body.updated_at = new Date().toISOString();
+    const { data, error } = await supabase
+      .from('edificios')
+      .insert([body])
+      .select()
+      .single();
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    console.error('POST /api/edificios:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
-// PUT — editar
-app.put('/api/edificios/:id', ...)
+app.put('/api/edificios/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const body = { ...req.body };
+    delete body.id;
+    body.updated_at = new Date().toISOString();
+    const { data, error } = await supabase
+      .from('edificios')
+      .update(body)
+      .eq('id', id)
+      .select()
+      .single();
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    console.error('PUT /api/edificios/:id:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
-// DELETE — eliminar
-app.delete('/api/edificios/:id', ...)
+app.delete('/api/edificios/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase
+      .from('edificios')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('DELETE /api/edificios/:id:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // =========================
 // SUPABASE
