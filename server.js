@@ -79,7 +79,7 @@ app.get("/:page.html", (req, res) => {
 });
 
 // ── EDIFICIOS CRUD ──────────────────────────────────────────
-app.get('/api/edificios', requireAuth, async (req, res) => {
+app.get('/api/edificios', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('edificios')
@@ -93,7 +93,7 @@ app.get('/api/edificios', requireAuth, async (req, res) => {
   }
 });
 
-app.post('/api/edificios', requireAuth, async (req, res) => {
+app.post('/api/edificios', async (req, res) => {
   try {
     const body = { ...req.body };
     delete body.id;
@@ -112,7 +112,7 @@ app.post('/api/edificios', requireAuth, async (req, res) => {
   }
 });
 
-app.put('/api/edificios/:id', requireAuth, async (req, res) => {
+app.put('/api/edificios/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const body = { ...req.body };
@@ -132,7 +132,7 @@ app.put('/api/edificios/:id', requireAuth, async (req, res) => {
   }
 });
 
-app.delete('/api/edificios/:id', requireAuth, async (req, res) => {
+app.delete('/api/edificios/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { error } = await supabase
