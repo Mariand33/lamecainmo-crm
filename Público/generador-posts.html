@@ -1,497 +1,670 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Generador de Posts · Buzzacchi</title>
-  <link rel="manifest" href="/manifest.json"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --dark:    #0d0d0d;
-      --dark-2:  #141414;
-      --dark-3:  #1c1c1c;
-      --border:  rgba(255,255,255,.08);
-      --gold:    #c9a84c;
-      --green:   #0f2318;
-      --green-2: #143d2f;
-      --muted:   #666;
-      --sidebar-w: 252px;
-    }
-    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-    body { font-family:'Montserrat',sans-serif; background:var(--dark); color:#fff; display:flex; min-height:100vh }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Generador de Posts · Buzzacchi</title>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500;1,600&family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --dark:#080c0a;
+  --dark2:#0d1410;
+  --dark3:#131c17;
+  --dark4:#1a2620;
+  --border:rgba(255,255,255,.06);
+  --border2:rgba(255,255,255,.1);
+  --gold:#c9a84c;
+  --gold2:#e3c067;
+  --neon:#00ff87;
+  --neon2:#00e67a;
+  --neon-dim:rgba(0,255,135,.12);
+  --neon-glow:0 0 20px rgba(0,255,135,.3),0 0 40px rgba(0,255,135,.12);
+  --gold-glow:0 0 20px rgba(201,168,76,.3);
+  --muted:#4a6055;
+  --muted2:#6a8070;
+  --sidebar-w:240px;
+  --text:#e8f0ea;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--dark);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden}
 
-    /* SIDEBAR */
-    .sidebar{width:var(--sidebar-w);height:100vh;background:var(--dark-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;overflow:hidden}
-    .logo-buzzacchi{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
-    .logo-buzzacchi img{max-width:120px;height:auto;display:block;margin-bottom:7px}
-    .logo-frase{font-size:10px;letter-spacing:.05em;color:var(--muted);line-height:1.45}
-    .sidebar nav{flex:1;overflow-y:auto;padding:10px 10px 16px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
-    .nav-section-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#444;padding:12px 12px 4px;display:block}
-    .sidebar nav a{display:flex;align-items:center;gap:9px;color:rgba(255,255,255,.5);text-decoration:none;padding:9px 12px;border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-left:2px solid transparent;transition:.18s}
-    .sidebar nav a:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.05)}
-    .sidebar nav a.active{color:var(--gold);background:rgba(201,168,76,.1);border-left-color:var(--gold)}
-    .sidebar-footer{padding:13px 18px;border-top:1px solid var(--border);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#444}
+/* ── SCANLINES sutil ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+}
 
-    /* MAIN */
-    .content { margin-left:var(--sidebar-w); flex:1; padding:28px 30px 60px; }
-    .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; padding-bottom:20px; border-bottom:1px solid var(--border); }
-    .topbar h1 { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:400; }
-    .topbar p { font-size:12px; color:var(--muted); margin-top:4px }
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);height:100vh;
+  background:linear-gradient(180deg,#0a1410 0%,#080c0a 100%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;z-index:100;
+}
+.sb-brand{padding:22px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-brand img{max-width:110px;height:auto;display:block;margin-bottom:6px}
+.sb-brand span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block}
+.sidebar nav{flex:1;overflow-y:auto;padding:8px 10px 16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.nav-lbl{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:#2a3a30;padding:10px 10px 3px;display:block}
+.sidebar nav a{
+  display:flex;align-items:center;gap:8px;
+  color:var(--muted2);text-decoration:none;
+  padding:8px 10px;border-radius:8px;font-size:11px;
+  letter-spacing:.04em;transition:.15s;
+  border:1px solid transparent;
+}
+.sidebar nav a:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.sidebar nav a.active{
+  color:var(--neon);background:var(--neon-dim);
+  border-color:rgba(0,255,135,.15);
+  box-shadow:var(--neon-glow);
+}
+.sb-footer{padding:12px 16px;border-top:1px solid var(--border);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#2a3a30}
 
-    /* LAYOUT */
-    .generator-layout { display:grid; grid-template-columns:340px 1fr; gap:24px; align-items:start; }
+/* ── MAIN ── */
+.content{margin-left:var(--sidebar-w);flex:1;padding:24px 28px 60px;min-width:0}
 
-    /* PANEL IZQ */
-    .panel { background:var(--dark-2); border:1px solid var(--border); border-radius:14px; padding:20px; }
-    .panel h3 { font-size:12px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+/* ── TOPBAR ── */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;padding-bottom:18px;
+  border-bottom:1px solid var(--border);
+}
+.topbar-left h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:400;color:#fff;
+  display:flex;align-items:center;gap:10px;
+}
+.topbar-left h1::before{
+  content:'';width:3px;height:22px;
+  background:linear-gradient(180deg,var(--neon),transparent);
+  border-radius:2px;box-shadow:var(--neon-glow);
+  display:inline-block;
+}
+.topbar-left p{font-size:11px;color:var(--muted2);margin-top:3px;letter-spacing:.04em}
+.status-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:20px;padding:6px 14px;font-size:11px;color:var(--muted2);
+}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:var(--neon-glow);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-    .prop-list { display:flex; flex-direction:column; gap:6px; max-height:240px; overflow-y:auto; margin-bottom:20px; scrollbar-width:thin; scrollbar-color:rgba(201,168,76,.3) transparent; }
-    .prop-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; border:1px solid transparent; cursor:pointer; transition:.15s; }
-    .prop-item:hover { background:rgba(255,255,255,.04); border-color:var(--border); }
-    .prop-item.selected { background:rgba(201,168,76,.08); border-color:rgba(201,168,76,.3); }
-    .prop-item-img { width:42px; height:42px; object-fit:cover; border-radius:6px; flex-shrink:0; background:#222; }
-    .prop-item-info { min-width:0; }
-    .prop-item-title { font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .prop-item-sub { font-size:11px; color:var(--muted); }
+/* ── GRID 3 COLUMNAS ── */
+.gen-grid{
+  display:grid;
+  grid-template-columns:268px 1fr 256px;
+  gap:18px;
+  align-items:start;
+}
 
-    /* PLANTILLAS */
-    .templates { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }
-    .tpl-btn { border:1.5px solid var(--border); background:transparent; border-radius:8px; padding:10px 8px; cursor:pointer; transition:.15s; font-family:'Montserrat',sans-serif; text-align:center; }
-    .tpl-btn:hover { border-color:rgba(201,168,76,.4); background:rgba(201,168,76,.05); }
-    .tpl-btn.active { border-color:var(--gold); background:rgba(201,168,76,.1); }
-    .tpl-btn .tpl-icon { font-size:20px; display:block; margin-bottom:4px; }
-    .tpl-btn .tpl-label { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.6); }
-    .tpl-btn.active .tpl-label { color:var(--gold); }
+/* ── PANEL ── */
+.panel{
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+}
+.panel-head{
+  padding:14px 18px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.panel-head-num{
+  width:22px;height:22px;border-radius:6px;
+  background:var(--neon-dim);border:1px solid rgba(0,255,135,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--neon);
+  box-shadow:var(--neon-glow);flex-shrink:0;
+}
+.panel-head h3{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted2);font-weight:600;
+}
+.panel-body{padding:16px 18px}
 
-    /* CONTROLES */
-    .ctrl-group { margin-bottom:14px; }
-    .ctrl-group label { display:block; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
-    .ctrl-group input, .ctrl-group select, .ctrl-group textarea {
-      width:100%; background:var(--dark-3); border:1px solid var(--border); border-radius:8px;
-      color:#fff; padding:8px 12px; font-family:'Montserrat',sans-serif; font-size:12px; outline:none;
-    }
-    .ctrl-group input:focus, .ctrl-group select:focus, .ctrl-group textarea:focus { border-color:rgba(201,168,76,.4); }
-    .ctrl-group textarea { resize:vertical; min-height:60px; }
-    .ctrl-group select option { background:var(--dark-3); }
+/* ── PROP LIST ── */
+.prop-list{
+  display:flex;flex-direction:column;gap:5px;
+  max-height:220px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(0,255,135,.2) transparent;
+}
+.prop-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:9px;
+  border:1px solid transparent;cursor:pointer;transition:.12s;
+}
+.prop-item:hover{background:rgba(255,255,255,.03);border-color:var(--border)}
+.prop-item.selected{
+  background:var(--neon-dim);
+  border-color:rgba(0,255,135,.2);
+}
+.prop-img{width:38px;height:38px;object-fit:cover;border-radius:6px;flex-shrink:0;background:var(--dark3)}
+.prop-info-title{font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.prop-info-sub{font-size:10px;color:var(--muted2)}
 
-    .color-row { display:flex; gap:6px; }
-    .color-swatch { width:28px; height:28px; border-radius:6px; border:2px solid transparent; cursor:pointer; transition:.15s; flex-shrink:0; }
-    .color-swatch.active { border-color:#fff; transform:scale(1.15); }
+/* ── TEMPLATES ── */
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.tpl-btn{
+  border:1px solid var(--border);
+  background:var(--dark3);
+  border-radius:10px;padding:10px 6px;
+  cursor:pointer;transition:.15s;
+  font-family:'Inter',sans-serif;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.tpl-btn:hover{border-color:rgba(0,255,135,.2);background:rgba(0,255,135,.04)}
+.tpl-btn.active{
+  border-color:var(--neon);background:var(--neon-dim);
+  box-shadow:inset 0 0 20px rgba(0,255,135,.05),var(--neon-glow);
+}
+.tpl-icon{font-size:18px}
+.tpl-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.tpl-btn.active .tpl-label{color:var(--neon)}
 
-    .btn { border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:12px; font-weight:600; transition:.15s; }
-    .btn:hover { opacity:.85; }
-    .btn-gold { background:linear-gradient(120deg,#c9a84c,#e3c067); color:#0a1e12; }
-    .btn-outline { background:transparent; border:1.5px solid var(--border); color:rgba(255,255,255,.7); }
-    .btn-full { width:100%; padding:12px; font-size:13px; }
-    .btn-row { display:flex; gap:8px; margin-top:16px; }
+/* ── INPUTS ── */
+.ctrl-grp{margin-bottom:11px}
+.ctrl-grp label{
+  display:block;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted2);margin-bottom:5px;
+}
+.ctrl-grp input,.ctrl-grp select,.ctrl-grp textarea{
+  width:100%;background:var(--dark3);
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--text);padding:8px 11px;
+  font-family:'Inter',sans-serif;font-size:12px;outline:none;
+  transition:border-color .15s;
+}
+.ctrl-grp input:focus,.ctrl-grp select:focus,.ctrl-grp textarea:focus{
+  border-color:rgba(0,255,135,.3);
+  box-shadow:0 0 0 2px rgba(0,255,135,.06);
+}
+.ctrl-grp textarea{resize:vertical;min-height:56px;line-height:1.5}
+.ctrl-grp select option{background:var(--dark3)}
+.ctrl-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctrl-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 
-    /* PREVIEW */
-    .preview-panel { display:flex; flex-direction:column; gap:16px; }
-    .canvas-wrap { position:relative; border-radius:16px; overflow:hidden; border:1px solid var(--border); background:#111; aspect-ratio:1; max-width:520px; }
-    canvas { display:block; width:100% !important; height:auto !important; max-width:100%; }
+/* ── OVERLAY COLORS ── */
+.overlay-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cswatch{
+  width:26px;height:26px;border-radius:6px;
+  border:2px solid transparent;cursor:pointer;transition:.15s;
+}
+.cswatch.active{border-color:#fff;transform:scale(1.18)}
 
-    .format-tabs { display:flex; gap:6px; }
-    .fmt-tab { border:1.5px solid var(--border); background:transparent; border-radius:8px; padding:7px 14px; font-family:'Montserrat',sans-serif; font-size:11px; font-weight:600; color:rgba(255,255,255,.5); cursor:pointer; transition:.15s; letter-spacing:.05em; }
-    .fmt-tab.active { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,.08); }
+/* ── BTNS ── */
+.btn{
+  border:none;padding:8px 16px;border-radius:9px;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  font-size:12px;font-weight:600;transition:.15s;
+}
+.btn:hover{opacity:.85}
+.btn-neon{
+  background:linear-gradient(135deg,var(--neon2),#00cc77);
+  color:#051510;
+  box-shadow:0 4px 20px rgba(0,255,135,.25);
+}
+.btn-neon:hover{box-shadow:0 6px 28px rgba(0,255,135,.4);transform:translateY(-1px)}
+.btn-gold{
+  background:linear-gradient(135deg,#b8922a,var(--gold2));
+  color:#0a1e12;
+  box-shadow:0 4px 20px rgba(201,168,76,.2);
+}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted2);
+}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-full{width:100%;padding:12px;font-size:13px}
 
-    .download-row { display:flex; gap:10px; align-items:center; }
-    .download-row .hint { font-size:11px; color:var(--muted); }
+/* ── CANVAS COL ── */
+.canvas-col{display:flex;flex-direction:column;gap:12px}
 
-    .status-bar { font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px; }
-    .status-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); }
+.fmt-tabs{display:flex;gap:6px;margin-bottom:4px}
+.fmt-tab{
+  border:1px solid var(--border);background:var(--dark2);
+  border-radius:8px;padding:6px 13px;
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:600;
+  color:var(--muted2);cursor:pointer;transition:.15s;letter-spacing:.06em;text-transform:uppercase;
+}
+.fmt-tab.active{border-color:var(--neon);color:var(--neon);background:var(--neon-dim)}
 
-    /* Loading */
-    .loading-overlay { position:absolute; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; font-size:13px; color:rgba(255,255,255,.7); display:none; }
+.canvas-wrap{
+  position:relative;border-radius:14px;overflow:hidden;
+  border:1px solid var(--border);background:#050a07;
+  box-shadow:0 0 0 1px rgba(0,255,135,.04),0 24px 80px rgba(0,0,0,.6);
+}
+/* Glow neón sutil en el borde del canvas */
+.canvas-wrap::before{
+  content:'';position:absolute;inset:-1px;border-radius:15px;
+  background:linear-gradient(135deg,rgba(0,255,135,.08),transparent 50%,rgba(201,168,76,.04));
+  pointer-events:none;z-index:2;
+}
+canvas{display:block;width:100%!important;height:auto!important;cursor:crosshair}
 
-    /* SLIDERS */
-    .slider-section { margin-bottom:18px; }
-    .slider-section-title {
-      font-size:9px; letter-spacing:.18em; text-transform:uppercase;
-      color:#555; margin-bottom:10px; display:flex; align-items:center; gap:8px;
-    }
-    .slider-section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-    .slider-row { display:grid; grid-template-columns:1fr 42px; align-items:center; gap:8px; margin-bottom:8px; }
-    .slider-row label { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
-    .slider-val { font-size:11px; color:var(--gold); text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
-    input[type=range] {
-      -webkit-appearance:none; appearance:none;
-      width:100%; height:4px; border-radius:4px;
-      background:linear-gradient(to right,var(--gold) 0%, var(--gold) 50%,#2a2a2a 50%,#2a2a2a 100%);
-      outline:none; cursor:pointer; grid-column:1/-1;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance:none; width:14px; height:14px;
-      border-radius:50%; background:var(--gold); border:2px solid #fff; cursor:pointer;
-    }
-    input[type=range]::-moz-range-thumb {
-      width:14px; height:14px; border-radius:50%; background:var(--gold); border:2px solid #fff;
-    }
-    .btn-reset-sliders {
-      background:transparent; border:1px solid var(--border); border-radius:6px;
-      color:var(--muted); font-size:10px; letter-spacing:.08em; padding:5px 10px;
-      cursor:pointer; font-family:'Montserrat',sans-serif; transition:.15s; width:100%;
-    }
-    .btn-reset-sliders:hover { border-color:rgba(201,168,76,.4); color:var(--gold); }
+/* Overlay drag hint */
+.drag-hint{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.75);
+  border:1px solid rgba(0,255,135,.2);
+  color:var(--neon);font-size:10px;letter-spacing:.08em;
+  padding:5px 14px;border-radius:20px;
+  pointer-events:none;transition:opacity .6s;z-index:5;
+  white-space:nowrap;
+  box-shadow:var(--neon-glow);
+}
 
-    @media(max-width:900px){
-      :root{--sidebar-w:0}
-      .sidebar{display:none}
-      .generator-layout{grid-template-columns:1fr}
-    }
-  </style>
+/* Indicadores de elemento seleccionado */
+.sel-indicator{
+  position:absolute;pointer-events:none;z-index:4;
+  border:1px dashed rgba(0,255,135,.5);border-radius:4px;
+  box-shadow:0 0 8px rgba(0,255,135,.2);
+  display:none;
+}
+.sel-handle{
+  position:absolute;width:8px;height:8px;
+  background:var(--neon);border-radius:2px;
+  box-shadow:var(--neon-glow);
+  cursor:nwse-resize;
+}
+
+.dl-row{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.dl-hint{font-size:10px;color:var(--muted);letter-spacing:.04em}
+
+/* ── EQ PANEL (3ra columna) ── */
+.eq-panel{display:flex;flex-direction:column;gap:12px}
+
+.eq-card{
+  background:var(--dark2);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  position:sticky;top:24px;
+}
+.eq-head{
+  padding:12px 16px 10px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.eq-head-title{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);font-weight:600}
+.eq-head-badge{
+  font-size:9px;color:var(--neon);
+  background:var(--neon-dim);border:1px solid rgba(0,255,135,.15);
+  padding:2px 8px;border-radius:10px;
+}
+.eq-body{padding:14px 16px}
+
+/* Hint drag */
+.drag-tip{
+  background:rgba(0,255,135,.05);
+  border:1px solid rgba(0,255,135,.12);
+  border-radius:8px;padding:8px 11px;
+  font-size:10px;color:rgba(0,255,135,.7);
+  letter-spacing:.04em;line-height:1.5;
+  margin-bottom:14px;
+}
+
+/* Sliders */
+.sl-section{margin-bottom:16px}
+.sl-section-title{
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:#2a3830;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.sl-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.sl-row{margin-bottom:10px}
+.sl-row-top{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:4px;
+}
+.sl-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+.sl-val{font-size:11px;color:var(--neon);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:3px;border-radius:3px;
+  background:linear-gradient(to right,var(--neon) 0%,var(--neon) 50%,#1a2620 50%,#1a2620 100%);
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--neon);
+  border:2px solid var(--dark);cursor:pointer;
+  box-shadow:var(--neon-glow);
+}
+input[type=range]::-moz-range-thumb{
+  width:13px;height:13px;border-radius:50%;
+  background:var(--neon);border:2px solid var(--dark);
+}
+
+/* Elem selector tabs */
+.elem-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.elem-tab{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:7px;padding:5px 10px;
+  font-size:10px;color:var(--muted2);cursor:pointer;transition:.12s;
+  font-family:'Inter',sans-serif;letter-spacing:.04em;
+}
+.elem-tab:hover{border-color:rgba(0,255,135,.15)}
+.elem-tab.active{
+  background:var(--neon-dim);border-color:rgba(0,255,135,.25);
+  color:var(--neon);
+}
+
+.btn-reset{
+  width:100%;background:transparent;
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--muted2);font-size:10px;letter-spacing:.08em;
+  padding:7px;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s;
+}
+.btn-reset:hover{border-color:rgba(0,255,135,.2);color:var(--neon)}
+
+@media(max-width:1200px){
+  .gen-grid{grid-template-columns:260px 1fr}
+  .eq-panel{display:none}
+}
+@media(max-width:900px){
+  :root{--sidebar-w:0}
+  .sidebar{display:none}
+  .gen-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="logo-buzzacchi">
+  <div class="sb-brand">
     <img src="/logo.png" alt="Vanina Buzzacchi"/>
-    <div class="logo-frase">Confianza, trayectoria y resultados</div>
+    <span>Negocios Inmobiliarios · Río Cuarto</span>
   </div>
   <nav>
     <a href="/dashboard.html">🏠 Dashboard</a>
-    <span class="nav-section-label">Marketing</span>
-    <a href="/generador-posts.html" class="active">📸 Generador Instagram</a>
-    <span class="nav-section-label">Administración</span>
+    <span class="nav-lbl">Marketing</span>
+    <a href="/generador-posts.html" class="active">📸 Generador Posts</a>
+    <span class="nav-lbl">Administración</span>
     <a href="/alquileres.html">🏘 Alquileres</a>
-    <span class="nav-section-label">Sistema</span>
+    <span class="nav-lbl">Sistema</span>
     <a href="/logout">🚪 Cerrar Sesión</a>
   </nav>
-  <div class="sidebar-footer">Equipo Buzzacchi · Río Cuarto</div>
+  <div class="sb-footer">Equipo Buzzacchi · 2025</div>
 </aside>
 
 <!-- MAIN -->
 <main class="content">
+
   <div class="topbar">
-    <div>
+    <div class="topbar-left">
       <h1>Generador de Posts</h1>
-      <p>Creá contenido para Instagram con el estilo Buzzacchi en segundos</p>
+      <p>Creá contenido para Instagram · Facebook · WhatsApp en segundos</p>
+    </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      <span id="statusText">Seleccioná una propiedad</span>
     </div>
   </div>
 
-  <div class="generator-layout">
+  <div class="gen-grid">
 
-    <!-- PANEL IZQUIERDO -->
-    <div>
-      <div class="panel" style="margin-bottom:16px">
-        <h3>1 · Elegí la propiedad</h3>
-        <div class="prop-list" id="propList">
-          <div style="text-align:center;padding:30px;color:var(--muted);font-size:12px">Cargando propiedades...</div>
-        </div>
-      </div>
+    <!-- ══ COL 1: CONTROLES ══ -->
+    <div style="display:flex;flex-direction:column;gap:14px">
 
-      <div class="panel" style="margin-bottom:16px">
-        <h3>2 · Plantilla</h3>
-        <div class="templates">
-          <button class="tpl-btn active" data-tpl="foto-titulo" onclick="setTpl(this)">
-            <span class="tpl-icon">🏠</span>
-            <span class="tpl-label">Foto + título</span>
-          </button>
-          <button class="tpl-btn" data-tpl="foto-precio" onclick="setTpl(this)">
-            <span class="tpl-icon">💰</span>
-            <span class="tpl-label">Foto + precio</span>
-          </button>
-          <button class="tpl-btn" data-tpl="verde-frase" onclick="setTpl(this)">
-            <span class="tpl-icon">🌿</span>
-            <span class="tpl-label">Verde marca</span>
-          </button>
-          <button class="tpl-btn" data-tpl="foto-completo" onclick="setTpl(this)">
-            <span class="tpl-icon">✨</span>
-            <span class="tpl-label">Completo</span>
-          </button>
-          <button class="tpl-btn" data-tpl="inmueble-card" onclick="setTpl(this)">
-            <span class="tpl-icon">🏡</span>
-            <span class="tpl-label">Inmueble Card</span>
-          </button>
-          <button class="tpl-btn" data-tpl="captador" onclick="setTpl(this)">
-            <span class="tpl-icon">📣</span>
-            <span class="tpl-label">Captador</span>
-          </button>
-        </div>
-      </div>
-
+      <!-- 1. Propiedad -->
       <div class="panel">
-        <h3>3 · Personalizar</h3>
-
-        <div class="ctrl-group">
-          <label>Título / Nombre</label>
-          <input type="text" id="ctrlTitulo" oninput="render();renderLivePreview()" placeholder="Castillo Normando"/>
+        <div class="panel-head">
+          <div class="panel-head-num">1</div>
+          <h3>Elegí la propiedad</h3>
         </div>
-
-        <div class="ctrl-group">
-          <label>Subtítulo / Zona</label>
-          <input type="text" id="ctrlSubtitulo" oninput="render();renderLivePreview()" placeholder="Banda Norte · Río Cuarto"/>
-        </div>
-
-        <div class="ctrl-group">
-          <label>Precio</label>
-          <input type="text" id="ctrlPrecio" oninput="render();renderLivePreview()" placeholder="USD 185.000"/>
-        </div>
-
-        <div class="ctrl-group">
-          <label>Frase / Descripción corta</label>
-          <textarea id="ctrlFrase" oninput="render();renderLivePreview()" placeholder="Naturaleza y confort"></textarea>
-        </div>
-
-        <div class="ctrl-group">
-          <label>Imagen de fondo</label>
-          <select id="ctrlImagen" onchange="cambiarImagen()">
-            <option value="">— Seleccioná foto —</option>
-          </select>
-        </div>
-
-        <!-- Campos extra para plantilla Inmueble Card y Captador -->
-        <div id="extraFields" style="display:none">
-          <div class="ctrl-group">
-            <label>Zona / Badge</label>
-            <input type="text" id="ctrlZona" oninput="render()" placeholder="Sector universitario"/>
+        <div class="panel-body">
+          <div class="prop-list" id="propList">
+            <div style="text-align:center;padding:24px;color:var(--muted2);font-size:11px">Cargando propiedades...</div>
           </div>
-          <div class="ctrl-group">
-            <label>Tipo operación</label>
-            <select id="ctrlOperacion" onchange="render()">
-              <option value="Inmuebles en venta">Inmuebles en venta</option>
-              <option value="Inmuebles en alquiler">Inmuebles en alquiler</option>
-              <option value="Búsqueda de Alquileres">Búsqueda de Alquileres</option>
-              <option value="Búsqueda de Compra">Búsqueda de Compra</option>
+        </div>
+      </div>
+
+      <!-- 2. Plantilla -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-head-num">2</div>
+          <h3>Plantilla</h3>
+        </div>
+        <div class="panel-body">
+          <div class="tpl-grid">
+            <button class="tpl-btn active" data-tpl="foto-titulo" onclick="setTpl(this)">
+              <span class="tpl-icon">🏠</span>
+              <span class="tpl-label">Foto título</span>
+            </button>
+            <button class="tpl-btn" data-tpl="foto-precio" onclick="setTpl(this)">
+              <span class="tpl-icon">💰</span>
+              <span class="tpl-label">Foto precio</span>
+            </button>
+            <button class="tpl-btn" data-tpl="foto-completo" onclick="setTpl(this)">
+              <span class="tpl-icon">✨</span>
+              <span class="tpl-label">Completo</span>
+            </button>
+            <button class="tpl-btn" data-tpl="verde-frase" onclick="setTpl(this)">
+              <span class="tpl-icon">🌿</span>
+              <span class="tpl-label">Verde marca</span>
+            </button>
+            <button class="tpl-btn" data-tpl="inmueble-card" onclick="setTpl(this)">
+              <span class="tpl-icon">🏡</span>
+              <span class="tpl-label">Inmueble Card</span>
+            </button>
+            <button class="tpl-btn" data-tpl="captador" onclick="setTpl(this)">
+              <span class="tpl-icon">📣</span>
+              <span class="tpl-label">Captador</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Textos e imagen -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-head-num">3</div>
+          <h3>Textos e imagen</h3>
+        </div>
+        <div class="panel-body">
+          <div class="ctrl-grp">
+            <label>Foto</label>
+            <select id="ctrlImagen" onchange="cambiarImagen()">
+              <option value="">— Elegí una foto —</option>
             </select>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
-            <div class="ctrl-group" style="margin:0">
-              <label>🛏 Dorm.</label>
-              <input type="number" id="ctrlDorm" oninput="render()" placeholder="3" min="0" max="9"/>
-            </div>
-            <div class="ctrl-group" style="margin:0">
-              <label>🚿 Baños</label>
-              <input type="number" id="ctrlBanos" oninput="render()" placeholder="2" min="0" max="9"/>
-            </div>
-            <div class="ctrl-group" style="margin:0">
-              <label>🚗 Coch.</label>
-              <input type="number" id="ctrlCochera" oninput="render()" placeholder="1" min="0" max="9"/>
-            </div>
+          <div class="ctrl-grp">
+            <label>Título principal</label>
+            <input type="text" id="ctrlTitulo" placeholder="Casa Moderna de 2 plantas..."/>
           </div>
-          <div class="ctrl-group">
-            <label>Superficie (m²)</label>
-            <input type="text" id="ctrlM2" oninput="render()" placeholder="250"/>
+          <div class="ctrl-grp">
+            <label>Subtítulo / Zona</label>
+            <input type="text" id="ctrlSubtitulo" placeholder="Sector universitario"/>
           </div>
-          <div class="ctrl-group">
-            <label>CTA inferior</label>
-            <input type="text" id="ctrlCta" oninput="render()" placeholder="¡Agendá tu visita!"/>
+          <div class="ctrl-grp">
+            <label>Precio</label>
+            <input type="text" id="ctrlPrecio" placeholder="USD 160.000"/>
           </div>
-          <div class="ctrl-group">
-            <label>Teléfono (captador)</label>
-            <input type="text" id="ctrlTelefono" oninput="render()" placeholder="358 5189949"/>
+          <div class="ctrl-grp">
+            <label>Frase (plantilla verde)</label>
+            <textarea id="ctrlFrase" placeholder="Tu próxima propiedad&#10;te está esperando"></textarea>
           </div>
-        </div>
 
-        <div class="ctrl-group">
-          <label>Color overlay</label>
-          <div class="color-row" id="overlayColors">
-            <div class="color-swatch active" data-color="rgba(0,0,0,0.45)" style="background:#000" onclick="setColor(this)"></div>
-            <div class="color-swatch" data-color="rgba(10,30,18,0.65)" style="background:#0a1e12" onclick="setColor(this)"></div>
-            <div class="color-swatch" data-color="rgba(30,15,5,0.55)" style="background:#1e0f05" onclick="setColor(this)"></div>
-            <div class="color-swatch" data-color="rgba(5,10,30,0.55)" style="background:#050a1e" onclick="setColor(this)"></div>
-            <div class="color-swatch" data-color="rgba(0,0,0,0)" style="background:linear-gradient(45deg,#555,#888)" onclick="setColor(this)" title="Sin overlay"></div>
+          <!-- CAMPOS EXTRA para inmueble-card y captador -->
+          <div id="extraFields" style="display:none;border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+            <div class="ctrl-grp">
+              <label>Tipo de operación</label>
+              <select id="ctrlOperacion" onchange="render()">
+                <option>Inmuebles en venta</option>
+                <option>Inmuebles en alquiler</option>
+                <option>Búsqueda de Alquileres</option>
+                <option>Búsqueda de Compra</option>
+              </select>
+            </div>
+            <div class="ctrl-grid3">
+              <div class="ctrl-grp">
+                <label>🛏 Dorm.</label>
+                <input type="number" id="ctrlDorm" min="0" max="9" placeholder="3" oninput="render()"/>
+              </div>
+              <div class="ctrl-grp">
+                <label>🚿 Baños</label>
+                <input type="number" id="ctrlBanos" min="0" max="9" placeholder="2" oninput="render()"/>
+              </div>
+              <div class="ctrl-grp">
+                <label>🚗 Coch.</label>
+                <input type="number" id="ctrlCochera" min="0" max="9" placeholder="1" oninput="render()"/>
+              </div>
+            </div>
+            <div class="ctrl-grid2">
+              <div class="ctrl-grp">
+                <label>Superficie m²</label>
+                <input type="text" id="ctrlM2" placeholder="250" oninput="render()"/>
+              </div>
+              <div class="ctrl-grp">
+                <label>CTA</label>
+                <input type="text" id="ctrlCta" value="¡Agendá tu visita!" oninput="render()"/>
+              </div>
+            </div>
+            <div class="ctrl-grp">
+              <label>Teléfono (captador)</label>
+              <input type="text" id="ctrlTelefono" placeholder="358 5189949" oninput="render()"/>
+            </div>
           </div>
-        </div>
 
-        <div class="btn-row">
-          <button class="btn btn-outline" onclick="render()">↻ Actualizar</button>
-          <button class="btn btn-gold btn-full" onclick="descargar()">⬇ Descargar PNG</button>
+          <!-- Overlay color -->
+          <div class="ctrl-grp" id="overlayGroup">
+            <label>Tono overlay</label>
+            <div class="overlay-row">
+              <div class="cswatch active" style="background:rgba(0,0,0,0.45)" data-color="rgba(0,0,0,0.45)" onclick="setColor(this)" title="Negro"></div>
+              <div class="cswatch" style="background:rgba(10,20,12,0.5)" data-color="rgba(10,20,12,0.5)" onclick="setColor(this)" title="Verde oscuro"></div>
+              <div class="cswatch" style="background:rgba(201,168,76,0.2)" data-color="rgba(201,168,76,0.2)" onclick="setColor(this)" title="Dorado"></div>
+              <div class="cswatch" style="background:rgba(30,60,40,0.4)" data-color="rgba(30,60,40,0.4)" onclick="setColor(this)" title="Verde"></div>
+              <div class="cswatch" style="background:rgba(0,0,0,0)" data-color="rgba(0,0,0,0)" onclick="setColor(this)" title="Sin overlay" style="border:1px dashed #333"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- PANEL AJUSTES POSICIÓN Y TAMAÑO -->
-      <div class="panel" style="margin-top:16px">
-        <h3>4 · Posición y tamaño</h3>
-
-        <!-- LOGO / BRANDING -->
-        <div class="slider-section">
-          <div class="slider-section-title">Logo · Vanina Buzzacchi</div>
-
-          <div class="slider-row">
-            <label>Tamaño nombre</label>
-            <span class="slider-val" id="valLogoSize">100%</span>
-            <input type="range" id="slLogoSize" min="40" max="180" value="100"
-              oninput="updateSlider(this,'valLogoSize','%');render();renderLivePreview()">
-          </div>
-
-          <div class="slider-row">
-            <label>Posición X</label>
-            <span class="slider-val" id="valLogoX">7%</span>
-            <input type="range" id="slLogoX" min="0" max="60" value="7"
-              oninput="updateSlider(this,'valLogoX','%');render();renderLivePreview()">
-          </div>
-
-          <div class="slider-row">
-            <label>Posición Y</label>
-            <span class="slider-val" id="valLogoY">92%</span>
-            <input type="range" id="slLogoY" min="40" max="98" value="92"
-              oninput="updateSlider(this,'valLogoY','%');render();renderLivePreview()">
-          </div>
-
-          <div class="slider-row">
-            <label>Tamaño subtexto</label>
-            <span class="slider-val" id="valLogoSub">100%</span>
-            <input type="range" id="slLogoSub" min="40" max="200" value="100"
-              oninput="updateSlider(this,'valLogoSub','%');render();renderLivePreview()">
-          </div>
-        </div>
-
-        <!-- TÍTULO -->
-        <div class="slider-section">
-          <div class="slider-section-title">Título principal</div>
-
-          <div class="slider-row">
-            <label>Tamaño fuente</label>
-            <span class="slider-val" id="valTitSize">100%</span>
-            <input type="range" id="slTitSize" min="40" max="200" value="100"
-              oninput="updateSlider(this,'valTitSize','%');render();renderLivePreview()">
-          </div>
-
-          <div class="slider-row">
-            <label>Posición Y</label>
-            <span class="slider-val" id="valTitY">75%</span>
-            <input type="range" id="slTitY" min="20" max="95" value="75"
-              oninput="updateSlider(this,'valTitY','%');render();renderLivePreview()">
-          </div>
-        </div>
-
-        <!-- SUBTÍTULO / PRECIO -->
-        <div class="slider-section">
-          <div class="slider-section-title">Subtítulo y precio</div>
-
-          <div class="slider-row">
-            <label>Tamaño fuente</label>
-            <span class="slider-val" id="valSubSize">100%</span>
-            <input type="range" id="slSubSize" min="40" max="200" value="100"
-              oninput="updateSlider(this,'valSubSize','%');render();renderLivePreview()">
-          </div>
-
-          <div class="slider-row">
-            <label>Posición Y</label>
-            <span class="slider-val" id="valSubY">82%</span>
-            <input type="range" id="slSubY" min="20" max="97" value="82"
-              oninput="updateSlider(this,'valSubY','%');render();renderLivePreview()">
-          </div>
-        </div>
-
-        <button class="btn-reset-sliders" onclick="resetSliders()">↺ Restablecer valores por defecto</button>
-      </div>
     </div>
 
-    <!-- PANEL DERECHO - PREVIEW -->
-    <div class="preview-panel">
+    <!-- ══ COL 2: CANVAS PREVIEW ══ -->
+    <div class="canvas-col">
       <div>
-        <div class="format-tabs" style="margin-bottom:12px">
-          <button class="fmt-tab active" data-ratio="1" onclick="setRatio(this,1,1)">Cuadrado 1:1</button>
-          <button class="fmt-tab" data-ratio="916" onclick="setRatio(this,9,16)">Story 9:16</button>
-          <button class="fmt-tab" data-ratio="43" onclick="setRatio(this,4,3)">Landscape 4:3</button>
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-ratio="1" onclick="setRatio(this,1,1)">1:1 Cuadrado</button>
+          <button class="fmt-tab" data-ratio="916" onclick="setRatio(this,9,16)">9:16 Story</button>
+          <button class="fmt-tab" data-ratio="43" onclick="setRatio(this,4,3)">4:3 Landscape</button>
         </div>
-
-        <!-- VISTA PREVIA HTML (inmediata, sin canvas) -->
-        <div id="livePreview" style="
-          position:relative; border-radius:16px; overflow:hidden;
-          border:1px solid rgba(255,255,255,.08); background:#0a1a10;
-          max-width:520px; width:100%;
-          display:none;
-        ">
-          <!-- Foto de fondo -->
-          <div id="prevFoto" style="
-            position:absolute; inset:0;
-            background-size:cover; background-position:center;
-            transition:background-image .25s;
-          "></div>
-          <!-- Overlay degradado -->
-          <div id="prevOverlay" style="
-            position:absolute; inset:0;
-            background:linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%);
-          "></div>
-          <!-- Verde marca (solo plantilla verde) -->
-          <div id="prevVerde" style="display:none; position:absolute; inset:0;
-            background:linear-gradient(135deg,#0a1e12,#143d2f,#0f2318);">
-            <div style="position:absolute;top:12%;left:7%;width:12%;height:2px;background:#c9a84c;border-radius:2px"></div>
-          </div>
-          <!-- Textos sobre foto -->
-          <div id="prevTextos" style="
-            position:absolute; inset:0;
-            display:flex; flex-direction:column; justify-content:flex-end;
-            padding:6% 7% 5%;
-          ">
-            <div id="prevTitulo" style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(22px,7.5vw,56px);
-              font-style:italic; font-weight:400;
-              color:#fff; line-height:1.1; margin-bottom:2%;
-              text-shadow: 0 2px 18px rgba(0,0,0,.85), 0 0 40px rgba(0,0,0,.6);
-            "></div>
-            <div id="prevSubtitulo" style="
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(9px,1.8vw,14px);
-              font-weight:500; letter-spacing:.12em; text-transform:uppercase;
-              color:rgba(255,255,255,.72);
-              text-shadow:0 1px 8px rgba(0,0,0,.8);
-              margin-bottom:1%;
-            "></div>
-            <div id="prevPrecio" style="
-              display:inline-block; align-self:flex-start;
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(10px,2.2vw,17px);
-              font-weight:700; letter-spacing:.06em;
-              background:rgba(201,168,76,.92); color:#0a1e12;
-              padding:.35em .9em; border-radius:30px; margin-bottom:4%;
-            "></div>
-          </div>
-          <!-- LOGO BRANDING — posicionado independientemente -->
-          <div id="prevBranding" style="
-            position:absolute; left:7%; top:88%;
-            text-shadow:0 2px 12px rgba(0,0,0,.9);
-          ">
-            <div style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(13px,3.8vw,30px);
-              font-style:italic; font-weight:500; color:#fff;
-              line-height:1.1;
-            ">Vanina Buzzacchi</div>
-            <div style="
-              font-family:'Montserrat',sans-serif;
-              font-size:clamp(7px,1.4vw,11px);
-              font-weight:500; letter-spacing:.18em; text-transform:uppercase;
-              color:rgba(255,255,255,.65);
-              margin-top:.15em;
-            ">NEGOCIOS INMOBILIARIOS</div>
-          </div>
-          <!-- Frase centrada (plantillas foto-titulo y completo) -->
-          <div id="prevFraseCentro" style="
-            display:none; position:absolute; inset:0;
-            align-items:center; justify-content:center;
-          ">
-            <div id="prevFraseTexto" style="
-              font-family:'Cormorant Garamond',serif;
-              font-size:clamp(24px,8vw,64px);
-              font-style:italic; font-weight:300; color:#fff;
-              text-align:center; padding:0 8%;
-              text-shadow:0 2px 20px rgba(0,0,0,.9);
-              line-height:1.15;
-            "></div>
-          </div>
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="postCanvas" width="1080" height="1080"
+            onmousedown="startDrag(event)"
+            ontouchstart="startDragTouch(event)">
+          </canvas>
+          <div class="drag-hint" id="dragHint">✦ arrastrá · pinzá para mover y redimensionar</div>
         </div>
-
-        <!-- Canvas = preview visible + descarga idéntica -->
-        <canvas id="postCanvas" width="1080" height="1080" style="display:block;width:100%;height:auto;border-radius:14px;"></canvas>
       </div>
-
-      <div class="download-row" style="margin-top:12px">
-        <button class="btn btn-gold" onclick="descargar()">⬇ Descargar 1080px PNG</button>
-        <span class="hint">Listo para subir a Instagram · Facebook · WhatsApp</span>
+      <div class="dl-row">
+        <button class="btn btn-neon btn-full" onclick="descargar()">
+          ⬇ Descargar PNG 1080px
+        </button>
       </div>
-      <div class="status-bar" id="statusBar">
-        <div class="status-dot"></div>
-        <span id="statusText">Seleccioná una propiedad para empezar</span>
+      <div style="font-size:10px;color:var(--muted);text-align:center;letter-spacing:.04em">
+        Listo para Instagram · Facebook · WhatsApp
       </div>
     </div>
+
+    <!-- ══ COL 3: ECUALIZADOR ══ -->
+    <div class="eq-panel">
+      <div class="eq-card">
+        <div class="eq-head">
+          <span class="eq-head-title">Ajustar elementos</span>
+          <span class="eq-head-badge">LIVE</span>
+        </div>
+        <div class="eq-body">
+
+          <div class="drag-tip">
+            ✦ Hacé clic sobre el texto en la imagen y arrastralo para moverlo.<br>Usá los sliders para ajustar tamaños.
+          </div>
+
+          <!-- Selector de elemento activo -->
+          <div class="elem-tabs" id="elemTabs">
+            <div class="elem-tab active" data-elem="titulo" onclick="selectElem(this)">Título</div>
+            <div class="elem-tab" data-elem="subtitulo" onclick="selectElem(this)">Subtítulo</div>
+            <div class="elem-tab" data-elem="precio" onclick="selectElem(this)">Precio</div>
+            <div class="elem-tab" data-elem="logo" onclick="selectElem(this)">Logo</div>
+          </div>
+
+          <!-- LOGO -->
+          <div class="sl-section" id="sec-logo" style="display:none">
+            <div class="sl-section-title">Logo · Vanina Buzzacchi</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño nombre</span><span class="sl-val" id="valLogoSize">100%</span></div>
+              <input type="range" id="slLogoSize" min="40" max="180" value="100" oninput="updateSlider(this,'valLogoSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño subtexto</span><span class="sl-val" id="valLogoSub">100%</span></div>
+              <input type="range" id="slLogoSub" min="40" max="200" value="100" oninput="updateSlider(this,'valLogoSub','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición X</span><span class="sl-val" id="valLogoX">7%</span></div>
+              <input type="range" id="slLogoX" min="0" max="60" value="7" oninput="updateSlider(this,'valLogoX','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valLogoY">92%</span></div>
+              <input type="range" id="slLogoY" min="40" max="98" value="92" oninput="updateSlider(this,'valLogoY','%');render()">
+            </div>
+          </div>
+
+          <!-- TÍTULO -->
+          <div class="sl-section" id="sec-titulo">
+            <div class="sl-section-title">Título principal</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño fuente</span><span class="sl-val" id="valTitSize">100%</span></div>
+              <input type="range" id="slTitSize" min="40" max="200" value="100" oninput="updateSlider(this,'valTitSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valTitY">75%</span></div>
+              <input type="range" id="slTitY" min="5" max="95" value="75" oninput="updateSlider(this,'valTitY','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición X</span><span class="sl-val" id="valTitX">7%</span></div>
+              <input type="range" id="slTitX" min="0" max="60" value="7" oninput="updateSlider(this,'valTitX','%');render()">
+            </div>
+          </div>
+
+          <!-- SUBTÍTULO -->
+          <div class="sl-section" id="sec-subtitulo" style="display:none">
+            <div class="sl-section-title">Subtítulo y precio</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño fuente</span><span class="sl-val" id="valSubSize">100%</span></div>
+              <input type="range" id="slSubSize" min="40" max="200" value="100" oninput="updateSlider(this,'valSubSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valSubY">82%</span></div>
+              <input type="range" id="slSubY" min="5" max="97" value="82" oninput="updateSlider(this,'valSubY','%');render()">
+            </div>
+          </div>
+
+          <!-- PRECIO -->
+          <div class="sl-section" id="sec-precio" style="display:none">
+            <div class="sl-section-title">Precio</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño fuente</span><span class="sl-val" id="valPrecioSize">100%</span></div>
+              <input type="range" id="slPrecioSize" min="40" max="200" value="100" oninput="updateSlider(this,'valPrecioSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valPrecioY">89%</span></div>
+              <input type="range" id="slPrecioY" min="5" max="97" value="89" oninput="updateSlider(this,'valPrecioY','%');render()">
+            </div>
+          </div>
+
+          <button class="btn-reset" onclick="resetSliders()">↺ Restablecer valores</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -499,54 +672,65 @@
 // ══════════════════════════════════════
 // STATE
 // ══════════════════════════════════════
-let propiedades = [];
+let propiedades     = [];
 let propSeleccionada = null;
-let imagenActual    = null; // HTMLImageElement para canvas (descarga)
-let imagenActualSrc = '';   // URL original para live preview
-let tplActual = 'foto-titulo';
-let overlayColor = 'rgba(0,0,0,0.45)';
+let imagenActual    = null;
+let imagenActualSrc = '';
+let tplActual       = 'foto-titulo';
+let overlayColor    = 'rgba(0,0,0,0.45)';
 let canvasW = 1080, canvasH = 1080;
+let elemActivo      = 'titulo';
 
-// ── SLIDER DEFAULTS ──────────────────────────────────────────────
 const SLIDER_DEFAULTS = {
-  slLogoSize: 100, slLogoX: 7, slLogoY: 92, slLogoSub: 100,
-  slTitSize: 100, slTitY: 75,
-  slSubSize: 100, slSubY: 82,
+  slLogoSize:100, slLogoX:7, slLogoY:92, slLogoSub:100,
+  slTitSize:100, slTitY:75, slTitX:7,
+  slSubSize:100, slSubY:82,
+  slPrecioSize:100, slPrecioY:89,
 };
 
-function sl(id){ return parseInt(document.getElementById(id)?.value ?? SLIDER_DEFAULTS[id]); }
+const canvas = document.getElementById('postCanvas');
+const ctx    = canvas.getContext('2d');
+
+function sl(id){ return parseInt(document.getElementById(id)?.value ?? SLIDER_DEFAULTS[id] ?? 100); }
 
 function updateSlider(input, valId, unit){
-  // Update gradient fill position
-  const min = parseFloat(input.min), max = parseFloat(input.max), val = parseFloat(input.value);
-  const pct = ((val - min) / (max - min)) * 100;
-  input.style.background = `linear-gradient(to right,var(--gold) 0%,var(--gold) ${pct}%,#2a2a2a ${pct}%,#2a2a2a 100%)`;
-  document.getElementById(valId).textContent = input.value + unit;
+  const min=parseFloat(input.min),max=parseFloat(input.max),val=parseFloat(input.value);
+  const pct=((val-min)/(max-min))*100;
+  input.style.background=`linear-gradient(to right,var(--neon) 0%,var(--neon) ${pct}%,#1a2620 ${pct}%,#1a2620 100%)`;
+  const el=document.getElementById(valId);
+  if(el) el.textContent=Math.round(val)+unit;
 }
 
 function resetSliders(){
-  Object.entries(SLIDER_DEFAULTS).forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.value = val;
-    // Trigger update display
+  Object.entries(SLIDER_DEFAULTS).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.value=val;
     el.dispatchEvent(new Event('input'));
   });
+  render();
 }
 
-// Init slider gradient fills on load
 function initSliders(){
-  Object.keys(SLIDER_DEFAULTS).forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
-    const pct = ((val - min) / (max - min)) * 100;
-    el.style.background = `linear-gradient(to right,var(--gold) 0%,var(--gold) ${pct}%,#2a2a2a ${pct}%,#2a2a2a 100%)`;
+  Object.keys(SLIDER_DEFAULTS).forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const min=parseFloat(el.min),max=parseFloat(el.max),val=parseFloat(el.value);
+    const pct=((val-min)/(max-min))*100;
+    el.style.background=`linear-gradient(to right,var(--neon) 0%,var(--neon) ${pct}%,#1a2620 ${pct}%,#1a2620 100%)`;
   });
 }
 
-const canvas  = document.getElementById('postCanvas');
-const ctx     = canvas.getContext('2d');
+// ── Selector de elemento activo ──────────────────────────────
+function selectElem(tab){
+  document.querySelectorAll('.elem-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  elemActivo = tab.dataset.elem;
+  ['titulo','subtitulo','precio','logo'].forEach(e=>{
+    const sec=document.getElementById('sec-'+e);
+    if(sec) sec.style.display = e===elemActivo ? 'block':'none';
+  });
+}
 
 // ══════════════════════════════════════
 // CARGAR PROPIEDADES
@@ -555,476 +739,549 @@ async function cargarPropiedades(){
   try{
     const res  = await fetch('/api/inmuebles-publicos');
     const data = await res.json();
-    propiedades = (data.inmuebles || data || []).filter(p =>
-      p.estadoPublicacion !== 'vendida' && p.estadoPublicacion !== 'alquilada'
+    propiedades = (data.inmuebles||data||[]).filter(p=>
+      p.estadoPublicacion!=='vendida'&&p.estadoPublicacion!=='alquilada'
     );
     renderListaProp();
-  } catch(e){
-    document.getElementById('propList').innerHTML =
-      '<div style="text-align:center;padding:20px;color:#e05252;font-size:12px">Error cargando propiedades. Verificá la conexión.</div>';
+  }catch(e){
+    document.getElementById('propList').innerHTML=
+      '<div style="text-align:center;padding:20px;color:#e05252;font-size:11px">Error cargando. Verificá conexión.</div>';
   }
 }
 
 function getImgSrc(img){
-  if (!img) return '';
-  return img.startsWith('http') ? img : '/uploads/' + img;
+  if(!img)return'';
+  return img.startsWith('http')?img:'/uploads/'+img;
 }
 
 function renderListaProp(){
-  const list = document.getElementById('propList');
-  if (!propiedades.length){
-    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Sin propiedades disponibles</div>';
+  const list=document.getElementById('propList');
+  if(!propiedades.length){
+    list.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted2);font-size:11px">Sin propiedades</div>';
     return;
   }
-  list.innerHTML = propiedades.map((p,i) => {
-    const img = p.imagenes && p.imagenes.length ? getImgSrc(p.imagenes[0]) : '';
-    const op  = (p.tipoOperacion||'').toLowerCase().includes('venta') ? 'Venta' : 'Alquiler';
-    return `
-      <div class="prop-item" data-idx="${i}" onclick="seleccionarProp(${i})">
-        ${img ? `<img class="prop-item-img" src="${img}" loading="lazy" onerror="this.style.display='none'">` : '<div class="prop-item-img" style="background:#1c1c1c"></div>'}
-        <div class="prop-item-info">
-          <div class="prop-item-title">${p.titulo||'Propiedad'}</div>
-          <div class="prop-item-sub">${op} · ${p.zona||'Río Cuarto'}</div>
-        </div>
+  list.innerHTML=propiedades.map((p,i)=>{
+    const img=p.imagenes&&p.imagenes.length?getImgSrc(p.imagenes[0]):'';
+    const op=(p.tipoOperacion||'').toLowerCase().includes('venta')?'Venta':'Alquiler';
+    return`<div class="prop-item" data-idx="${i}" onclick="seleccionarProp(${i})">
+      ${img?`<img class="prop-img" src="${img}" loading="lazy" onerror="this.style.display='none'">`:'<div class="prop-img"></div>'}
+      <div>
+        <div class="prop-info-title">${p.titulo||'Propiedad'}</div>
+        <div class="prop-info-sub">${op} · ${p.zona||'Río Cuarto'}</div>
       </div>
-    `;
+    </div>`;
   }).join('');
 }
 
 function seleccionarProp(idx){
-  propSeleccionada = propiedades[idx];
-  document.querySelectorAll('.prop-item').forEach((el,i) => {
-    el.classList.toggle('selected', i === idx);
-  });
-
-  // Llenar controles
-  document.getElementById('ctrlTitulo').value    = propSeleccionada.titulo || '';
-  document.getElementById('ctrlSubtitulo').value = propSeleccionada.zona   || 'Río Cuarto';
-  const precio = propSeleccionada.precio
-    ? `${propSeleccionada.moneda||'USD'} ${Number(propSeleccionada.precio).toLocaleString('es-AR')}`
-    : '';
-  document.getElementById('ctrlPrecio').value = precio;
-  document.getElementById('ctrlFrase').value  = '';
-
-  // Llenar selector de imágenes
-  const imgSel = document.getElementById('ctrlImagen');
-  imgSel.innerHTML = '<option value="">— Elegí una foto —</option>';
-  if (propSeleccionada.imagenes && propSeleccionada.imagenes.length){
-    propSeleccionada.imagenes.forEach((img, i) => {
-      const opt = document.createElement('option');
-      opt.value = getImgSrc(img);
-      opt.textContent = `Foto ${i+1}`;
-      if (i===0) opt.selected = true;
+  propSeleccionada=propiedades[idx];
+  document.querySelectorAll('.prop-item').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('ctrlTitulo').value    =propSeleccionada.titulo||'';
+  document.getElementById('ctrlSubtitulo').value =propSeleccionada.zona||'Río Cuarto';
+  const precio=propSeleccionada.precio?`${propSeleccionada.moneda||'USD'} ${Number(propSeleccionada.precio).toLocaleString('es-AR')}`:'';
+  document.getElementById('ctrlPrecio').value=precio;
+  document.getElementById('ctrlFrase').value='';
+  // Campos extra
+  if(document.getElementById('ctrlDorm'))    document.getElementById('ctrlDorm').value    =propSeleccionada.dormitorios||'';
+  if(document.getElementById('ctrlBanos'))   document.getElementById('ctrlBanos').value   =propSeleccionada.banos||'';
+  if(document.getElementById('ctrlCochera')) document.getElementById('ctrlCochera').value =propSeleccionada.cochera||'';
+  if(document.getElementById('ctrlM2'))      document.getElementById('ctrlM2').value      =propSeleccionada.m2Totales||propSeleccionada.superficie||'';
+  if(document.getElementById('ctrlZona'))    document.getElementById('ctrlZona').value    =propSeleccionada.zona||'';
+  // Fotos
+  const imgSel=document.getElementById('ctrlImagen');
+  imgSel.innerHTML='<option value="">— Elegí una foto —</option>';
+  if(propSeleccionada.imagenes&&propSeleccionada.imagenes.length){
+    propSeleccionada.imagenes.forEach((img,i)=>{
+      const opt=document.createElement('option');
+      opt.value=getImgSrc(img);opt.textContent=`Foto ${i+1}`;
+      if(i===0)opt.selected=true;
       imgSel.appendChild(opt);
     });
     cargarImagen(getImgSrc(propSeleccionada.imagenes[0]));
-  } else {
+  }else{
     cargarImagen(null);
   }
-
-  setStatus(`Propiedad seleccionada: ${propSeleccionada.titulo||'Propiedad'}`);
+  setStatus(`✓ ${propSeleccionada.titulo||'Propiedad'}`);
 }
 
 // ══════════════════════════════════════
 // IMAGEN
 // ══════════════════════════════════════
 function cambiarImagen(){
-  const src = document.getElementById('ctrlImagen').value;
-  if (src) cargarImagen(src);
+  const src=document.getElementById('ctrlImagen').value;
+  if(src)cargarImagen(src);
 }
 
 async function cargarImagen(src){
-  imagenActualSrc = src || '';  // guardar para live preview
-  if (!src){ imagenActual = null; render(); renderLivePreview(); return; }
-
+  imagenActualSrc=src||'';
+  if(!src){imagenActual=null;render();return;}
   setStatus('⏳ Cargando imagen…');
-  renderLivePreview(); // mostrar inmediatamente con la URL directa
-
-  // Asegurar fuentes cargadas antes de render
-  try { await document.fonts.ready; } catch(e){}
-
-  // Intentar proxy primero (resuelve CORS de Supabase para el canvas)
-  const proxySrc = src.startsWith('http')
-    ? `/api/proxy-image?url=${encodeURIComponent(src)}`
-    : src;
-
-  const cargarUrl = (url, usarCors) => new Promise((res, rej) => {
-    const img = new Image();
-    if (usarCors) img.crossOrigin = 'anonymous';
-    img.onload  = () => res(img);
-    img.onerror = () => rej(new Error('fail'));
-    img.src = url;
+  try{await document.fonts.ready;}catch(e){}
+  const proxySrc=src.startsWith('http')?`/api/proxy-image?url=${encodeURIComponent(src)}`:src;
+  const cargarUrl=(url,cors)=>new Promise((res,rej)=>{
+    const img=new Image();
+    if(cors)img.crossOrigin='anonymous';
+    img.onload=()=>res(img);img.onerror=()=>rej();
+    img.src=url;
   });
-
-  // Estrategia: 1) proxy+cors, 2) directo+cors, 3) directo sin cors (preview ok, descarga puede fallar)
-  let cargada = false;
-  for (const [url, cors] of [[proxySrc, true], [src, true], [src, false]]) {
-    try {
-      imagenActual = await cargarUrl(url, cors);
-      cargada = true;
-      break;
-    } catch { /* siguiente */ }
+  let ok=false;
+  for(const[url,cors]of[[proxySrc,true],[src,true],[src,false]]){
+    try{imagenActual=await cargarUrl(url,cors);ok=true;break;}catch{}
   }
-  if (!cargada) {
-    imagenActual = null;
-    setStatus('⚠ Sin imagen — escribí el texto y descargá igualmente');
-  }
+  if(!ok){imagenActual=null;setStatus('⚠ Sin imagen — escribí el texto y descargá');}
   render();
-  renderLivePreview();
-  if (cargada) setStatus('✅ Imagen cargada · Listo para descargar');
+  if(ok)setStatus('✅ Listo para descargar');
 }
 
 // ══════════════════════════════════════
-// PLANTILLAS
+// PLANTILLAS / RATIO / COLOR
 // ══════════════════════════════════════
 function setTpl(btn){
-  document.querySelectorAll('.tpl-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tpl-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  tplActual = btn.dataset.tpl;
-  // Mostrar campos extra solo para las nuevas plantillas
-  const extra = document.getElementById('extraFields');
-  if (extra) extra.style.display = (tplActual === 'inmueble-card' || tplActual === 'captador') ? 'block' : 'none';
+  tplActual=btn.dataset.tpl;
+  const extra=document.getElementById('extraFields');
+  const overlay=document.getElementById('overlayGroup');
+  const isCard=tplActual==='inmueble-card'||tplActual==='captador';
+  if(extra) extra.style.display=isCard?'block':'none';
+  if(overlay) overlay.style.display=isCard?'none':'block';
   render();
-  renderLivePreview();
 }
 
 function setColor(el){
-  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('active'));
   el.classList.add('active');
-  overlayColor = el.dataset.color;
+  overlayColor=el.dataset.color;
   render();
-  renderLivePreview();
 }
 
-function setRatio(btn, w, h){
-  document.querySelectorAll('.fmt-tab').forEach(b => b.classList.remove('active'));
+function setRatio(btn,w,h){
+  document.querySelectorAll('.fmt-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  canvasW = 1080; canvasH = Math.round(1080 * h / w);
-  canvas.width  = canvasW;
-  canvas.height = canvasH;
+  canvasW=1080;canvasH=Math.round(1080*h/w);
+  canvas.width=canvasW;canvas.height=canvasH;
   render();
-  renderLivePreview();
+}
+
+function setStatus(msg){
+  document.getElementById('statusText').textContent=msg;
 }
 
 // ══════════════════════════════════════
-// RENDER CANVAS
+// RENDER PRINCIPAL
 // ══════════════════════════════════════
 function render(){
-  const W = canvasW, H = canvasH;
-  // Asegurar dimensiones correctas del canvas
-  if (canvas.width !== W)  canvas.width  = W;
-  if (canvas.height !== H) canvas.height = H;
-  ctx.clearRect(0, 0, W, H);
-
-  if (tplActual === 'verde-frase'){
-    renderVerdeMarca(W, H);
-  } else if (tplActual === 'inmueble-card'){
-    renderInmuebleCard(W, H);
-  } else if (tplActual === 'captador'){
-    renderCaptador(W, H);
-  } else {
-    renderFoto(W, H);
-  }
+  const W=canvasW,H=canvasH;
+  if(canvas.width!==W)canvas.width=W;
+  if(canvas.height!==H)canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+  if(tplActual==='verde-frase') renderVerdeMarca(W,H);
+  else if(tplActual==='inmueble-card') renderInmuebleCard(W,H);
+  else if(tplActual==='captador') renderCaptador(W,H);
+  else renderFoto(W,H);
 }
+function renderLivePreview(){render();}
 
-// ══════════════════════════════════════
-// LIVE PREVIEW = canvas directo
-// ══════════════════════════════════════
-function renderLivePreview(){
-  render();
-}
-
-function renderFoto(W, H){
-  // Fondo negro
-  ctx.fillStyle = '#0a1a10';
-  ctx.fillRect(0, 0, W, H);
-
-  // Foto de fondo
-  if (imagenActual){
-    const ratio = Math.max(W / imagenActual.width, H / imagenActual.height);
-    const iw = imagenActual.width  * ratio;
-    const ih = imagenActual.height * ratio;
-    const ix = (W - iw) / 2;
-    const iy = (H - ih) / 2;
-    ctx.drawImage(imagenActual, ix, iy, iw, ih);
+// ── renderFoto ────────────────────────────────────────────────
+function renderFoto(W,H){
+  ctx.fillStyle='#0a1a10';
+  ctx.fillRect(0,0,W,H);
+  if(imagenActual){
+    const ratio=Math.max(W/imagenActual.width,H/imagenActual.height);
+    const iw=imagenActual.width*ratio,ih=imagenActual.height*ratio;
+    ctx.drawImage(imagenActual,(W-iw)/2,(H-ih)/2,iw,ih);
   }
-
-  // Overlay gradiente oscuro para que el texto sea legible
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0,   'rgba(0,0,0,0.08)');
-  grad.addColorStop(0.5, 'rgba(0,0,0,0.10)');
-  grad.addColorStop(1,   'rgba(0,0,0,0.72)');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Overlay de color seleccionado (sutil)
-  if (overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
-    ctx.fillStyle = overlayColor;
-    ctx.globalAlpha = 0.28;
-    ctx.fillRect(0, 0, W, H);
-    ctx.globalAlpha = 1;
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,0,0,0.08)');
+  grad.addColorStop(0.5,'rgba(0,0,0,0.10)');
+  grad.addColorStop(1,'rgba(0,0,0,0.72)');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  if(overlayColor&&overlayColor!=='rgba(0,0,0,0)'){
+    ctx.fillStyle=overlayColor;ctx.globalAlpha=0.28;
+    ctx.fillRect(0,0,W,H);ctx.globalAlpha=1;
   }
+  const titulo=document.getElementById('ctrlTitulo').value||'';
+  const subtitulo=document.getElementById('ctrlSubtitulo').value||'';
+  const precio=document.getElementById('ctrlPrecio').value||'';
+  const frase=document.getElementById('ctrlFrase').value||'';
+  const titX=W*(sl('slTitX')/100);
 
-  const titulo    = document.getElementById('ctrlTitulo').value || '';
-  const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
-  const precio    = document.getElementById('ctrlPrecio').value || '';
-  const frase     = document.getElementById('ctrlFrase').value || '';
-
-  if (tplActual === 'foto-titulo'){
-    // Título en cursiva abajo izquierda (estilo Buzzacchi)
-    const txt = titulo || frase;
-    if (txt) {
-      const padX = W * 0.065;
-      let fs = W * 0.115 * (sl('slTitSize') / 100);
-      ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
-      while (ctx.measureText(txt).width > W * 0.84 && fs > 44) {
-        fs -= 4;
-        ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
-      }
-      ctx.fillStyle   = '#ffffff';
-      ctx.textAlign   = 'left';
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur  = 32;
-      ctx.fillText(txt, padX, H * (sl('slTitY') / 100));
-      ctx.shadowBlur  = 0;
+  if(tplActual==='foto-titulo'){
+    const txt=titulo||frase;
+    if(txt){
+      let fs=W*0.115*(sl('slTitSize')/100);
+      ctx.font=`italic 400 ${fs}px 'Cormorant Garamond'`;
+      while(ctx.measureText(txt).width>W*0.84&&fs>44){fs-=4;ctx.font=`italic 400 ${fs}px 'Cormorant Garamond'`;}
+      ctx.fillStyle='#fff';ctx.textAlign='left';
+      ctx.shadowColor='rgba(0,0,0,0.9)';ctx.shadowBlur=32;
+      ctx.fillText(txt,titX,H*(sl('slTitY')/100));ctx.shadowBlur=0;
     }
-    drawBranding(W, H);
+    drawBranding(W,H);
   }
-
-  else if (tplActual === 'foto-precio'){
-    // Franja inferior con info
-    const fH = H * 0.32;
-    const grd = ctx.createLinearGradient(0, H - fH, 0, H);
-    grd.addColorStop(0, 'rgba(0,0,0,0)');
-    grd.addColorStop(1, 'rgba(0,0,0,0.85)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, H - fH, W, fH);
-
-    if (titulo){
-      ctx.font = `italic 500 ${W*0.072*(sl('slTitSize')/100)}px 'Cormorant Garamond'`;
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'left';
-      ctx.shadowColor = 'rgba(0,0,0,0.6)';
-      ctx.shadowBlur  = 20;
-      ctx.fillText(titulo, W * 0.07, H * (sl('slTitY') / 100));
-      ctx.shadowBlur = 0;
+  else if(tplActual==='foto-precio'){
+    const fH=H*0.32;
+    const grd=ctx.createLinearGradient(0,H-fH,0,H);
+    grd.addColorStop(0,'rgba(0,0,0,0)');grd.addColorStop(1,'rgba(0,0,0,0.85)');
+    ctx.fillStyle=grd;ctx.fillRect(0,H-fH,W,fH);
+    if(titulo){
+      ctx.font=`italic 500 ${W*0.072*(sl('slTitSize')/100)}px 'Cormorant Garamond'`;
+      ctx.fillStyle='#fff';ctx.textAlign='left';
+      ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=20;
+      ctx.fillText(titulo,titX,H*(sl('slTitY')/100));ctx.shadowBlur=0;
     }
-    if (subtitulo){
-      ctx.font = `500 ${W*0.028*(sl('slSubSize')/100)}px 'Montserrat'`;
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.textAlign = 'left';
-      ctx.fillText(subtitulo.toUpperCase(), W * 0.07, H * (sl('slSubY') / 100));
+    if(subtitulo){
+      ctx.font=`500 ${W*0.028*(sl('slSubSize')/100)}px 'Montserrat'`;
+      ctx.fillStyle='rgba(255,255,255,0.75)';ctx.textAlign='left';
+      ctx.fillText(subtitulo.toUpperCase(),titX,H*(sl('slSubY')/100));
     }
-    if (precio){
-      // Pill precio
-      ctx.font = `700 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
-      const pw = ctx.measureText(precio).width + W*0.06;
-      const px = W * 0.07, py = H * Math.min((sl('slSubY') / 100) + 0.07, 0.97);
-      ctx.fillStyle = 'rgba(201,168,76,0.9)';
-      roundRect(ctx, px - W*0.02, py - W*0.04, pw, W*0.065, W*0.015);
-      ctx.fill();
-      ctx.fillStyle = '#0a1e12';
-      ctx.fillText(precio, px, py);
+    if(precio){
+      ctx.font=`700 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
+      const pw=ctx.measureText(precio).width+W*0.06;
+      const px=titX,py=H*Math.min((sl('slSubY')/100)+0.07,0.97);
+      ctx.fillStyle='rgba(201,168,76,0.9)';
+      roundRect(ctx,px-W*0.02,py-W*0.04,pw,W*0.065,W*0.015);ctx.fill();
+      ctx.fillStyle='#0a1e12';ctx.fillText(precio,px,py);
     }
-    drawBranding(W, H);
+    drawBranding(W,H);
   }
-
-  else if (tplActual === 'foto-completo'){
-    // Overlay más fuerte
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(0, 0, W, H);
-
-    drawTituloScript(frase || titulo, W, H * (sl('slTitY') / 100), W, 100 * (sl('slTitSize') / 100));
-
-    if (subtitulo){
-      ctx.font = `500 ${W*0.026*(sl('slSubSize')/100)}px 'Montserrat'`;
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.textAlign = 'center';
-      ctx.fillText(subtitulo.toUpperCase(), W/2, H * (sl('slSubY') / 100));
+  else if(tplActual==='foto-completo'){
+    ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fillRect(0,0,W,H);
+    drawTituloScript(frase||titulo,W,H*(sl('slTitY')/100),W,100*(sl('slTitSize')/100));
+    if(subtitulo){
+      ctx.font=`500 ${W*0.026*(sl('slSubSize')/100)}px 'Montserrat'`;
+      ctx.fillStyle='rgba(255,255,255,0.7)';ctx.textAlign='center';
+      ctx.fillText(subtitulo.toUpperCase(),W/2,H*(sl('slSubY')/100));
     }
-
-    if (precio){
-      ctx.font = `600 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
-      ctx.fillStyle = '#c9a84c';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0,0,0,0.8)';
-      ctx.shadowBlur  = 15;
-      ctx.fillText(precio, W/2, H * Math.min((sl('slSubY') / 100) + 0.07, 0.97));
-      ctx.shadowBlur = 0;
+    if(precio){
+      ctx.font=`600 ${W*0.038*(sl('slSubSize')/100)}px 'Montserrat'`;
+      ctx.fillStyle='#c9a84c';ctx.textAlign='center';
+      ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=15;
+      ctx.fillText(precio,W/2,H*Math.min((sl('slSubY')/100)+0.07,0.97));ctx.shadowBlur=0;
     }
-
-    // Detalles propiedad
-    if (propSeleccionada){
-      const details = [];
-      if (propSeleccionada.superficie) details.push(`${propSeleccionada.superficie}m²`);
-      if (propSeleccionada.dormitorios) details.push(`${propSeleccionada.dormitorios} dorm.`);
-      if (propSeleccionada.banos)       details.push(`${propSeleccionada.banos} baños`);
-      if (details.length){
-        ctx.font = `400 ${W*0.024}px 'Montserrat'`;
-        ctx.fillStyle = 'rgba(255,255,255,0.65)';
-        ctx.textAlign = 'center';
-        ctx.fillText(details.join('  ·  '), W/2, H * 0.70);
+    if(propSeleccionada){
+      const det=[];
+      if(propSeleccionada.superficie)det.push(`${propSeleccionada.superficie}m²`);
+      if(propSeleccionada.dormitorios)det.push(`${propSeleccionada.dormitorios} dorm.`);
+      if(propSeleccionada.banos)det.push(`${propSeleccionada.banos} baños`);
+      if(det.length){
+        ctx.font=`400 ${W*0.024}px 'Montserrat'`;
+        ctx.fillStyle='rgba(255,255,255,0.65)';ctx.textAlign='center';
+        ctx.fillText(det.join('  ·  '),W/2,H*0.70);
       }
     }
-    drawBranding(W, H);
+    drawBranding(W,H);
   }
 }
 
-function renderVerdeMarca(W, H){
-  // Fondo verde marca
-  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0,   '#0a1e12');
-  bgGrad.addColorStop(0.5, '#143d2f');
-  bgGrad.addColorStop(1,   '#0f2318');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Textura sutil (líneas diagonales)
-  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-  ctx.lineWidth = 1;
-  for (let i = -H; i < W + H; i += 60){
-    ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i + H, H);
-    ctx.stroke();
-  }
-
-  // Orb decorativo
-  const orb = ctx.createRadialGradient(W*0.85, H*0.15, 0, W*0.85, H*0.15, W*0.45);
-  orb.addColorStop(0, 'rgba(201,168,76,0.06)');
-  orb.addColorStop(1, 'transparent');
-  ctx.fillStyle = orb;
-  ctx.fillRect(0, 0, W, H);
-
-  const titulo  = document.getElementById('ctrlTitulo').value || '';
-  const frase   = document.getElementById('ctrlFrase').value || '';
-  const precio  = document.getElementById('ctrlPrecio').value || '';
-  const sub     = document.getElementById('ctrlSubtitulo').value || '';
-
-  // Línea dorada superior
-  ctx.fillStyle = '#c9a84c';
-  ctx.fillRect(W*0.07, H*0.12, W*0.12, 2);
-
-  if (frase){
-    // Frase en script cursivo
-    const lines = frase.split('\n').filter(Boolean);
-    const lineH = H * 0.11;
-    const startY = H * 0.35 - ((lines.length - 1) * lineH / 2);
-    lines.forEach((line, i) => {
-      ctx.font = `italic 400 ${W*0.10}px 'Cormorant Garamond'`;
-      ctx.fillStyle = '#fff';
-      ctx.textAlign  = 'left';
-      ctx.shadowColor = 'rgba(0,0,0,0.3)';
-      ctx.shadowBlur  = 10;
-      ctx.fillText(line, W * 0.07, startY + i * lineH);
-      ctx.shadowBlur = 0;
+// ── renderVerdeMarca ──────────────────────────────────────────
+function renderVerdeMarca(W,H){
+  const bgGrad=ctx.createLinearGradient(0,0,W,H);
+  bgGrad.addColorStop(0,'#0a1e12');bgGrad.addColorStop(0.5,'#143d2f');bgGrad.addColorStop(1,'#0f2318');
+  ctx.fillStyle=bgGrad;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,0.02)';ctx.lineWidth=1;
+  for(let i=-H;i<W+H;i+=60){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
+  const orb=ctx.createRadialGradient(W*0.85,H*0.15,0,W*0.85,H*0.15,W*0.45);
+  orb.addColorStop(0,'rgba(201,168,76,0.06)');orb.addColorStop(1,'transparent');
+  ctx.fillStyle=orb;ctx.fillRect(0,0,W,H);
+  const titulo=document.getElementById('ctrlTitulo').value||'';
+  const frase=document.getElementById('ctrlFrase').value||'';
+  const precio=document.getElementById('ctrlPrecio').value||'';
+  const sub=document.getElementById('ctrlSubtitulo').value||'';
+  ctx.fillStyle='#c9a84c';ctx.fillRect(W*0.07,H*0.12,W*0.12,2);
+  if(frase){
+    const lines=frase.split('\n').filter(Boolean);
+    const lineH=H*0.11,startY=H*0.35-((lines.length-1)*lineH/2);
+    lines.forEach((line,i)=>{
+      ctx.font=`italic 400 ${W*0.10}px 'Cormorant Garamond'`;
+      ctx.fillStyle='#fff';ctx.textAlign='left';
+      ctx.shadowColor='rgba(0,0,0,0.3)';ctx.shadowBlur=10;
+      ctx.fillText(line,W*0.07,startY+i*lineH);ctx.shadowBlur=0;
     });
   }
-
-  if (titulo && !frase){
-    ctx.font = `italic 300 ${W*0.085}px 'Cormorant Garamond'`;
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'left';
-    ctx.fillText(titulo, W * 0.07, H * 0.42);
+  if(titulo&&!frase){
+    ctx.font=`italic 300 ${W*0.085}px 'Cormorant Garamond'`;
+    ctx.fillStyle='#fff';ctx.textAlign='left';
+    ctx.fillText(titulo,W*0.07,H*0.42);
   }
-
-  if (sub){
-    ctx.font = `500 ${W*0.024}px 'Montserrat'`;
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.textAlign = 'left';
-    ctx.fillText(sub.toUpperCase(), W * 0.07, H * 0.52);
+  if(sub){
+    ctx.font=`500 ${W*0.024}px 'Montserrat'`;
+    ctx.fillStyle='rgba(255,255,255,0.55)';ctx.textAlign='left';
+    ctx.fillText(sub.toUpperCase(),W*0.07,H*0.52);
   }
-
-  if (precio){
-    ctx.font = `600 ${W*0.038}px 'Montserrat'`;
-    ctx.fillStyle = '#c9a84c';
-    ctx.textAlign = 'left';
-    ctx.fillText(precio, W * 0.07, H * 0.60);
+  if(precio){
+    ctx.font=`600 ${W*0.038}px 'Montserrat'`;
+    ctx.fillStyle='#c9a84c';ctx.textAlign='left';
+    ctx.fillText(precio,W*0.07,H*0.60);
   }
-
-  // Línea dorada inferior
-  ctx.fillStyle = 'rgba(201,168,76,0.3)';
-  ctx.fillRect(W*0.07, H*0.80, W*0.86, 1);
-
-  drawBrandingVerde(W, H);
+  ctx.fillStyle='rgba(201,168,76,0.3)';ctx.fillRect(W*0.07,H*0.80,W*0.86,1);
+  drawBrandingVerde(W,H);
 }
 
-// ══════════════════════════════════════
-// HELPERS DE DIBUJO
-// ══════════════════════════════════════
-function drawTituloScript(texto, W, y, maxW, fontSize){
-  if (!texto) return;
-  ctx.font = `italic 400 ${fontSize}px 'Cormorant Garamond'`;
-  // Auto-escalar si es muy largo
-  let tw = ctx.measureText(texto).width;
-  let fs = fontSize;
-  while (tw > maxW * 0.85 && fs > 40){
-    fs -= 4;
-    ctx.font = `italic 400 ${fs}px 'Cormorant Garamond'`;
-    tw = ctx.measureText(texto).width;
-  }
-  ctx.textAlign   = 'center';
-  ctx.fillStyle   = '#ffffff';
-  ctx.shadowColor = 'rgba(0,0,0,0.8)';
-  ctx.shadowBlur  = 30;
-  ctx.fillText(texto, W/2, y);
-  ctx.shadowBlur  = 0;
+// ── Helpers dibujo ────────────────────────────────────────────
+function drawTituloScript(texto,W,y,maxW,fontSize){
+  if(!texto)return;
+  ctx.font=`italic 400 ${fontSize}px 'Cormorant Garamond'`;
+  let tw=ctx.measureText(texto).width,fs=fontSize;
+  while(tw>maxW*0.85&&fs>40){fs-=4;ctx.font=`italic 400 ${fs}px 'Cormorant Garamond'`;tw=ctx.measureText(texto).width;}
+  ctx.textAlign='center';ctx.fillStyle='#fff';
+  ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=30;
+  ctx.fillText(texto,W/2,y);ctx.shadowBlur=0;
 }
 
-function drawBranding(W, H){
-  // Logo abajo izquierda — igual al estilo de las capturas de Instagram
-  const padX  = W * (sl('slLogoX') / 100);
-  const logoY = H * (sl('slLogoY') / 100);
-  const sizeScale  = sl('slLogoSize') / 100;
-  const subScale   = sl('slLogoSub') / 100;
-
-  // Sombra para legibilidad sobre cualquier foto
-  ctx.shadowColor = 'rgba(0,0,0,0.85)';
-  ctx.shadowBlur  = 24;
-
-  // "Vanina Buzzacchi" en cursiva
-  ctx.font      = `italic 500 ${W*0.046*sizeScale}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'left';
-  ctx.fillText('Vanina Buzzacchi', padX, logoY);
-
-  // "NEGOCIOS INMOBILIARIOS" debajo, más pequeño, dorado
-  ctx.font      = `500 ${W*0.018*subScale}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.72)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031 * subScale);
-
-  ctx.shadowBlur = 0;
-  ctx.textAlign  = 'left';
+function drawBranding(W,H){
+  const padX=W*(sl('slLogoX')/100),logoY=H*(sl('slLogoY')/100);
+  const ss=sl('slLogoSize')/100,sub=sl('slLogoSub')/100;
+  ctx.shadowColor='rgba(0,0,0,0.85)';ctx.shadowBlur=24;
+  ctx.font=`italic 500 ${W*0.046*ss}px 'Cormorant Garamond'`;
+  ctx.fillStyle='#fff';ctx.textAlign='left';
+  ctx.fillText('Vanina Buzzacchi',padX,logoY);
+  ctx.font=`500 ${W*0.018*sub}px 'Montserrat'`;
+  ctx.fillStyle='rgba(255,255,255,0.72)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',padX,logoY+W*0.031*sub);
+  ctx.shadowBlur=0;
 }
 
-function drawBrandingVerde(W, H){
-  const padX      = W * (sl('slLogoX') / 100);
-  const logoY     = H * (sl('slLogoY') / 100);
-  const sizeScale = sl('slLogoSize') / 100;
-  const subScale  = sl('slLogoSub') / 100;
-
-  ctx.font      = `italic 500 ${W*0.046*sizeScale}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'left';
-  ctx.fillText('Vanina Buzzacchi', padX, logoY);
-
-  ctx.font      = `500 ${W*0.018*subScale}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(201,168,76,0.82)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', padX, logoY + W * 0.031 * subScale);
+function drawBrandingVerde(W,H){
+  const padX=W*(sl('slLogoX')/100),logoY=H*(sl('slLogoY')/100);
+  const ss=sl('slLogoSize')/100,sub=sl('slLogoSub')/100;
+  ctx.font=`italic 500 ${W*0.046*ss}px 'Cormorant Garamond'`;
+  ctx.fillStyle='#fff';ctx.textAlign='left';
+  ctx.fillText('Vanina Buzzacchi',padX,logoY);
+  ctx.font=`500 ${W*0.018*sub}px 'Montserrat'`;
+  ctx.fillStyle='rgba(201,168,76,0.82)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',padX,logoY+W*0.031*sub);
 }
 
-function roundRect(ctx, x, y, w, h, r){
+function roundRect(ctx,x,y,w,h,r){
   ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y);
-  ctx.arcTo(x+w, y, x+w, y+r, r);
-  ctx.lineTo(x+w, y+h-r);
-  ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
-  ctx.lineTo(x+r, y+h);
-  ctx.arcTo(x, y+h, x, y+h-r, r);
-  ctx.lineTo(x, y+r);
-  ctx.arcTo(x, y, x+r, y, r);
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
   ctx.closePath();
+}
+
+// ── renderInmuebleCard ────────────────────────────────────────
+function renderInmuebleCard(W,H){
+  const titulo   =document.getElementById('ctrlTitulo').value||'Casa Moderna';
+  const precio   =document.getElementById('ctrlPrecio').value||'';
+  const zona     =(document.getElementById('ctrlSubtitulo').value||'').trim();
+  const operacion=document.getElementById('ctrlOperacion')?.value||'Inmuebles en venta';
+  const dorm     =document.getElementById('ctrlDorm')?.value||'';
+  const banos    =document.getElementById('ctrlBanos')?.value||'';
+  const cochera  =document.getElementById('ctrlCochera')?.value||'';
+  const m2       =document.getElementById('ctrlM2')?.value||'';
+  const cta      =document.getElementById('ctrlCta')?.value||'¡Agendá tu visita!';
+
+  // Fondo verde moderno
+  const bg=ctx.createLinearGradient(0,0,W*0.4,H);
+  bg.addColorStop(0,'#0d3320');bg.addColorStop(0.45,'#0a2a1a');bg.addColorStop(1,'#051510');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const o1=ctx.createRadialGradient(W*0.88,0,0,W*0.88,0,W*0.72);
+  o1.addColorStop(0,'rgba(20,90,65,0.38)');o1.addColorStop(1,'transparent');
+  ctx.fillStyle=o1;ctx.fillRect(0,0,W,H);
+  const o2=ctx.createRadialGradient(0,H,0,0,H,W*0.6);
+  o2.addColorStop(0,'rgba(201,168,76,0.07)');o2.addColorStop(1,'transparent');
+  ctx.fillStyle=o2;ctx.fillRect(0,0,W,H);
+
+  // Barra búsqueda
+  const barY=H*0.055,barH=H*0.072,barX=W*0.08,barW=W*0.84;
+  roundRect(ctx,barX,barY,barW,barH,barH/2);ctx.fillStyle='#fff';ctx.fill();
+  ctx.font=`${W*0.032}px sans-serif`;ctx.fillStyle='#666';ctx.textAlign='left';
+  ctx.fillText('🔍',barX+barH*0.2,barY+barH*0.68);
+  ctx.font=`500 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#333';
+  ctx.fillText(operacion,barX+barH*0.85,barY+barH*0.67);
+  const ipX=barX+barW-barH*1.05,ipR=barH*0.48;
+  ctx.beginPath();ctx.arc(ipX+ipR,barY+barH/2,ipR,0,Math.PI*2);
+  ctx.fillStyle='#c9a84c';ctx.fill();
+  ctx.font=`${W*0.030}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('🏠',ipX+ipR,barY+barH*0.72);
+
+  // Foto
+  const fotoX=W*0.06,fotoY=H*0.165,fotoW=W*0.88,fotoH=H*0.48,fotoR=W*0.045;
+  ctx.save();roundRect(ctx,fotoX,fotoY,fotoW,fotoH,fotoR);ctx.clip();
+  if(imagenActual){
+    const ar=imagenActual.width/imagenActual.height,arT=fotoW/fotoH;
+    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
+    if(ar>arT){sw=imagenActual.height*arT;sx=(imagenActual.width-sw)/2;}
+    else{sh=imagenActual.width/arT;sy=(imagenActual.height-sh)/2;}
+    ctx.drawImage(imagenActual,sx,sy,sw,sh,fotoX,fotoY,fotoW,fotoH);
+  }else{
+    ctx.fillStyle='#1a3a25';ctx.fillRect(fotoX,fotoY,fotoW,fotoH);
+    ctx.font=`${W*0.08}px sans-serif`;ctx.fillStyle='rgba(255,255,255,0.1)';
+    ctx.textAlign='center';ctx.fillText('🏠',W/2,fotoY+fotoH/2+W*0.03);
+  }
+  ctx.restore();
+
+  // Badge zona
+  if(zona){
+    ctx.font=`600 ${W*0.028}px 'Montserrat'`;
+    const bw=ctx.measureText(zona).width+W*0.06,bh=W*0.065;
+    const bx=fotoX+fotoW-bw-W*0.03,by=fotoY+W*0.03;
+    roundRect(ctx,bx,by,bw,bh,bh/2);ctx.fillStyle='rgba(255,255,255,0.92)';ctx.fill();
+    ctx.fillStyle='#2a6e45';ctx.textAlign='left';ctx.fillText(zona,bx+W*0.03,by+bh*0.68);
+  }
+
+  // Precio pill
+  if(precio){
+    ctx.font=`700 ${W*0.038}px 'Montserrat'`;
+    const pw=ctx.measureText(precio).width+W*0.07,ph=W*0.075;
+    const px=fotoX+fotoW-pw-W*0.03,py=fotoY+fotoH-ph*0.5;
+    roundRect(ctx,px,py,pw,ph,ph*0.35);
+    const gP=ctx.createLinearGradient(px,py,px+pw,py);
+    gP.addColorStop(0,'#b8922a');gP.addColorStop(1,'#e3c067');
+    ctx.fillStyle=gP;ctx.fill();
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(precio,px+pw/2,py+ph*0.68);
+  }
+
+  // Panel blanco
+  const panelY=fotoY+fotoH-W*0.02,panelH=H-panelY-H*0.02,panelR=W*0.045;
+  roundRect(ctx,fotoX,panelY,fotoW,panelH,panelR);ctx.fillStyle='#fff';ctx.fill();
+  const px2=fotoX+W*0.05;let cy=panelY+panelH*0.22;
+
+  // Título en panel
+  ctx.font=`italic 600 ${W*0.052}px 'Cormorant Garamond'`;
+  ctx.fillStyle='#c9a84c';ctx.textAlign='left';
+  const maxTW=fotoW-W*0.1,words=titulo.split(' ');
+  let l1='',l2='',built='';
+  for(const w of words){const t=built?built+' '+w:w;if(ctx.measureText(t).width>maxTW&&built){l1=built;built=w;}else built=t;}
+  l2=built;if(!l1){l1=l2;l2='';}
+  ctx.fillText(l1,px2,cy);if(l2){cy+=panelH*0.21;ctx.fillText(l2,px2,cy);}
+  cy+=panelH*0.22;
+
+  // Iconos
+  const iSz=W*0.068;let ix=px2;
+  const icons=[];
+  if(dorm)   icons.push({emoji:'🛏',val:dorm});
+  if(banos)  icons.push({emoji:'🚿',val:banos});
+  if(cochera)icons.push({emoji:'🚗',val:cochera});
+  if(m2)     icons.push({emoji:'⤢', val:m2+'m²',dark:true});
+  icons.forEach(ic=>{
+    roundRect(ctx,ix,cy-iSz*0.75,iSz,iSz,iSz*0.22);
+    if(ic.dark){ctx.fillStyle='#1a4a2e';ctx.fill();}
+    else{
+      const gI=ctx.createLinearGradient(ix,cy-iSz*0.75,ix+iSz,cy+iSz*0.25);
+      gI.addColorStop(0,'#d4a43a');gI.addColorStop(1,'#c9a84c');
+      ctx.fillStyle=gI;ctx.fill();
+    }
+    ctx.font=`${iSz*0.55}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(ic.emoji,ix+iSz/2,cy-iSz*0.75+iSz*0.68);
+    ctx.font=`600 ${W*0.032}px 'Montserrat'`;ctx.fillStyle='#333';
+    ctx.fillText(ic.val,ix+iSz+W*0.025,cy-iSz*0.1);
+    ix+=iSz+W*0.085;
+  });
+
+  // CTA
+  if(cta){
+    ctx.font=`500 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';
+    ctx.fillText('🏠 '+cta,px2,panelY+panelH*0.88);
+  }
+
+  // Logo
+  ctx.font=`italic 400 ${W*0.055}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Vanina Buzzacchi',W/2,H*0.945);
+  ctx.font=`500 ${W*0.020}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,H*0.968);
+}
+
+// ── renderCaptador ────────────────────────────────────────────
+function renderCaptador(W,H){
+  const titulo   =document.getElementById('ctrlTitulo').value||'Busco CASA o Dpto para ALQUILAR';
+  const zona     =(document.getElementById('ctrlSubtitulo').value||'').trim();
+  const operacion=document.getElementById('ctrlOperacion')?.value||'Búsqueda de Alquileres';
+  const cta      =document.getElementById('ctrlCta')?.value||'¡Agendá tu visita!';
+  const telefono =document.getElementById('ctrlTelefono')?.value||'358 5189949';
+  const features =['Requisitos Claros','Perfil Profesional','Seguro de Caución','Zonas de Interés'];
+
+  // Fondo verde
+  const bg=ctx.createLinearGradient(0,0,W*0.4,H);
+  bg.addColorStop(0,'#0d3320');bg.addColorStop(0.45,'#0a2a1a');bg.addColorStop(1,'#051510');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const o1=ctx.createRadialGradient(W*0.88,0,0,W*0.88,0,W*0.72);
+  o1.addColorStop(0,'rgba(20,90,65,0.38)');o1.addColorStop(1,'transparent');
+  ctx.fillStyle=o1;ctx.fillRect(0,0,W,H);
+  const o2=ctx.createRadialGradient(0,H,0,0,H,W*0.6);
+  o2.addColorStop(0,'rgba(201,168,76,0.07)');o2.addColorStop(1,'transparent');
+  ctx.fillStyle=o2;ctx.fillRect(0,0,W,H);
+
+  // Barra
+  const barY=H*0.055,barH=H*0.072,barX=W*0.08,barW=W*0.84;
+  roundRect(ctx,barX,barY,barW,barH,barH/2);ctx.fillStyle='#fff';ctx.fill();
+  ctx.font=`${W*0.032}px sans-serif`;ctx.fillStyle='#666';ctx.textAlign='left';
+  ctx.fillText('🔍',barX+barH*0.2,barY+barH*0.68);
+  ctx.font=`500 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#333';
+  ctx.fillText(operacion,barX+barH*0.85,barY+barH*0.67);
+  const ipX=barX+barW-barH*1.05,ipR=barH*0.48;
+  ctx.beginPath();ctx.arc(ipX+ipR,barY+barH/2,ipR,0,Math.PI*2);
+  ctx.fillStyle='#c9a84c';ctx.fill();
+  ctx.font=`${W*0.030}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('🏠',ipX+ipR,barY+barH*0.72);
+
+  // Foto
+  const fotoX=W*0.06,fotoY=H*0.165,fotoW=W*0.88,fotoH=H*0.46,fotoR=W*0.045;
+  ctx.save();roundRect(ctx,fotoX,fotoY,fotoW,fotoH,fotoR);ctx.clip();
+  if(imagenActual){
+    const ar=imagenActual.width/imagenActual.height,arT=fotoW/fotoH;
+    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
+    if(ar>arT){sw=imagenActual.height*arT;sx=(imagenActual.width-sw)/2;}
+    else{sh=imagenActual.width/arT;sy=(imagenActual.height-sh)/2;}
+    ctx.drawImage(imagenActual,sx,sy,sw,sh,fotoX,fotoY,fotoW,fotoH);
+  }else{ctx.fillStyle='#1a3a25';ctx.fillRect(fotoX,fotoY,fotoW,fotoH);}
+  ctx.restore();
+
+  if(zona){
+    ctx.font=`600 ${W*0.028}px 'Montserrat'`;
+    const bw=ctx.measureText(zona).width+W*0.06,bh=W*0.065;
+    const bx=fotoX+fotoW-bw-W*0.03,by=fotoY+W*0.03;
+    roundRect(ctx,bx,by,bw,bh,bh/2);ctx.fillStyle='rgba(255,255,255,0.92)';ctx.fill();
+    ctx.fillStyle='#2a6e45';ctx.textAlign='left';ctx.fillText(zona,bx+W*0.03,by+bh*0.68);
+  }
+
+  // CLIENTES DISPONIBLES badge
+  const cdW=W*0.28,cdH=W*0.10,cdX=fotoX+fotoW-cdW-W*0.03,cdY=fotoY+fotoH-cdH*0.5;
+  roundRect(ctx,cdX,cdY,cdW,cdH,cdH*0.22);
+  const gCD=ctx.createLinearGradient(cdX,cdY,cdX+cdW,cdY+cdH);
+  gCD.addColorStop(0,'#b8922a');gCD.addColorStop(1,'#e3c067');ctx.fillStyle=gCD;ctx.fill();
+  ctx.font=`700 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('CLIENTES',cdX+cdW/2,cdY+cdH*0.38);ctx.fillText('DISPONIBLES',cdX+cdW/2,cdY+cdH*0.72);
+
+  // Panel blanco
+  const panelY=fotoY+fotoH-W*0.02,panelH=H-panelY-H*0.135,panelR=W*0.045;
+  roundRect(ctx,fotoX,panelY,fotoW,panelH,panelR);ctx.fillStyle='#fff';ctx.fill();
+  const px2=fotoX+W*0.05;let cy=panelY+panelH*0.24;
+
+  // Título
+  ctx.font=`italic 600 ${W*0.052}px 'Cormorant Garamond'`;ctx.fillStyle='#c9a84c';ctx.textAlign='left';
+  const maxTW=fotoW-W*0.1,words=titulo.split(' ');
+  let l1='',l2='',built='';
+  for(const w of words){const t=built?built+' '+w:w;if(ctx.measureText(t).width>maxTW&&built){l1=built;built=w;}else built=t;}
+  l2=built;if(!l1){l1=l2;l2='';}
+  ctx.fillText(l1,px2,cy);if(l2){cy+=panelH*0.21;ctx.fillText(l2,px2,cy);}
+  cy+=panelH*0.2;
+
+  // Features
+  const featW=(fotoW-W*0.1)/2;
+  features.forEach((f,i)=>{
+    const fx=px2+(i%2)*featW,fy=cy+Math.floor(i/2)*panelH*0.22;
+    const iSz=W*0.058;
+    roundRect(ctx,fx,fy-iSz*0.75,iSz,iSz,iSz*0.22);
+    const gF=ctx.createLinearGradient(fx,fy-iSz*0.75,fx+iSz,fy+iSz*0.25);
+    gF.addColorStop(0,'#d4a43a');gF.addColorStop(1,'#c9a84c');ctx.fillStyle=gF;ctx.fill();
+    ctx.font=`${iSz*0.55}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(['🛏','🚿','🚗','⤢'][i],fx+iSz/2,fy-iSz*0.75+iSz*0.68);
+    ctx.font=`500 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='#555';ctx.textAlign='left';
+    ctx.fillText('✓ '+f,fx,fy+panelH*0.1);
+  });
+
+  if(cta){ctx.font=`500 ${W*0.028}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';ctx.fillText('🏠 '+cta,px2,panelY+panelH*0.88);}
+
+  ctx.font=`italic 400 ${W*0.052}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Vanina Buzzacchi',W/2,H*0.925);
+  ctx.font=`500 ${W*0.019}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.55)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,H*0.948);
+  if(telefono){ctx.font=`600 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#25D366';ctx.fillText('📞 '+telefono,W/2,H*0.975);}
+  ctx.font=`${W*0.05}px sans-serif`;ctx.fillStyle='rgba(201,168,76,0.4)';ctx.textAlign='right';
+  ctx.fillText('✦',W*0.95,H*0.985);ctx.textAlign='left';
 }
 
 // ══════════════════════════════════════
@@ -1032,500 +1289,204 @@ function roundRect(ctx, x, y, w, h, r){
 // ══════════════════════════════════════
 async function descargar(){
   render();
-  await new Promise(r => setTimeout(r, 80)); // dejar que el canvas termine de pintar
-  const titulo = document.getElementById('ctrlTitulo').value || 'post';
-  const filename = `buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
-  try {
-    // Método 1: toBlob (más robusto que toDataURL)
-    canvas.toBlob(blob => {
-      if (!blob) { fallbackDescarga(filename); return; }
-      const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
-      a.download = filename;
-      a.href     = url;
-      document.body.appendChild(a);
-      a.click();
+  await new Promise(r=>setTimeout(r,80));
+  const titulo=document.getElementById('ctrlTitulo').value||'post';
+  const filename=`buzzacchi-${titulo.replace(/\s+/g,'-').toLowerCase()}-${Date.now()}.png`;
+  try{
+    canvas.toBlob(blob=>{
+      if(!blob){fallbackDescarga(filename);return;}
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.download=filename;a.href=url;
+      document.body.appendChild(a);a.click();
       document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      setStatus('✅ Descargado: ' + filename);
-    }, 'image/png', 1.0);
-  } catch(e) {
-    fallbackDescarga(filename);
-  }
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      setStatus('✅ Descargado: '+filename);
+    },'image/png',1.0);
+  }catch(e){fallbackDescarga(filename);}
 }
-
 function fallbackDescarga(filename){
-  try {
-    const dataUrl = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.download = filename;
-    a.href     = dataUrl;
-    a.click();
-    setStatus('✅ Descargado (fallback): ' + filename);
-  } catch(e2) {
-    setStatus('❌ Error: ' + e2.message);
-    // Último recurso: abrir en nueva pestaña para guardar manual
-    const w = window.open();
-    w.document.write('<img src="' + canvas.toDataURL('image/png') + '" style="max-width:100%"/>');
-    w.document.title = filename;
-    setStatus('⚠ Abrimos la imagen en nueva pestaña — guardala con clic derecho → Guardar imagen');
+  try{
+    const a=document.createElement('a');
+    a.download=filename;a.href=canvas.toDataURL('image/png');a.click();
+  }catch(e){
+    const w=window.open();
+    w.document.write(`<img src="${canvas.toDataURL('image/png')}" style="max-width:100%"/>`);
   }
 }
 
-function setStatus(msg){
-  document.getElementById('statusText').textContent = msg;
+// ══════════════════════════════════════
+// DRAG + RESIZE SOBRE CANVAS
+// ══════════════════════════════════════
+let dragState=null;
+
+function getCanvasPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const scale=canvas.width/rect.width;
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  return{x:(cx-rect.left)*scale,y:(cy-rect.top)*scale};
 }
+
+function hitZone(x,y,W,H){
+  const zones=[
+    {elem:'logo',    slY:'slLogoY',slX:'slLogoX',  slSize:'slLogoSize'},
+    {elem:'titulo',  slY:'slTitY', slX:'slTitX',   slSize:'slTitSize'},
+    {elem:'subtitulo',slY:'slSubY',slX:null,        slSize:'slSubSize'},
+    {elem:'precio',  slY:'slPrecioY',slX:null,      slSize:'slPrecioSize'},
+  ];
+  const HIT=H*0.06;
+  for(const z of zones){
+    const zy=H*(sl(z.slY)/100);
+    if(Math.abs(y-zy)<HIT) return z;
+  }
+  return null;
+}
+
+function startDrag(e){
+  const W=canvas.width,H=canvas.height;
+  const pos=getCanvasPos(e);
+  const zone=hitZone(pos.x,pos.y,W,H);
+  if(!zone)return;
+  e.preventDefault();
+  dragState={zone,lastX:pos.x,lastY:pos.y,startSize:sl(zone.slSize)};
+  canvas.style.cursor='grabbing';
+  // Activar tab del elemento
+  document.querySelectorAll('.elem-tab').forEach(t=>{
+    if(t.dataset.elem===zone.elem)t.click();
+  });
+  const hint=document.getElementById('dragHint');
+  if(hint)hint.style.opacity='0';
+  document.addEventListener('mousemove',onDrag);
+  document.addEventListener('mouseup',endDrag);
+}
+function startDragTouch(e){
+  const W=canvas.width,H=canvas.height;
+  const pos=getCanvasPos(e);
+  const zone=hitZone(pos.x,pos.y,W,H);
+  if(!zone)return;
+  dragState={zone,lastX:pos.x,lastY:pos.y,startSize:sl(zone.slSize)};
+  document.addEventListener('touchmove',onDragTouch,{passive:false});
+  document.addEventListener('touchend',endDrag);
+}
+
+function onDrag(e){if(!dragState)return;const pos=getCanvasPos(e);applyDrag(pos);}
+function onDragTouch(e){if(!dragState)return;e.preventDefault();const pos=getCanvasPos(e);applyDrag(pos);}
+
+function applyDrag(pos){
+  const W=canvas.width,H=canvas.height;
+  const z=dragState.zone;
+  const dy=pos.y-dragState.lastY;
+  const dx=pos.x-dragState.lastX;
+
+  // Mover Y
+  const newY=Math.max(3,Math.min(98,(pos.y/H)*100));
+  const slY=document.getElementById(z.slY);
+  if(slY){slY.value=newY;updateSlider(slY,z.slY.replace('sl','val'),'%');}
+
+  // Mover X si tiene
+  if(z.slX){
+    const newX=Math.max(0,Math.min(60,(pos.x/W)*100));
+    const slX=document.getElementById(z.slX);
+    if(slX){slX.value=newX;updateSlider(slX,z.slX.replace('sl','val'),'%');}
+  }
+
+  // Resize: scroll vertical grande = agrandar, pequeño = achicar
+  // Doble toque sostenido o shift+drag → resize
+  if(e&&e.shiftKey&&z.slSize){
+    const newSize=Math.max(40,Math.min(200,dragState.startSize-dy*0.5));
+    const slSz=document.getElementById(z.slSize);
+    if(slSz){slSz.value=newSize;updateSlider(slSz,z.slSize.replace('sl','val'),'%');}
+  }
+
+  dragState.lastX=pos.x;dragState.lastY=pos.y;
+  render();
+}
+
+function endDrag(){
+  dragState=null;canvas.style.cursor='crosshair';
+  document.removeEventListener('mousemove',onDrag);
+  document.removeEventListener('mouseup',endDrag);
+  document.removeEventListener('touchmove',onDragTouch);
+  document.removeEventListener('touchend',endDrag);
+}
+
+// ── Pinch to resize (mobile) ──────────────────────────────────
+let pinchStart=null;
+canvas.addEventListener('touchstart',e=>{
+  if(e.touches.length===2){
+    pinchStart=Math.hypot(
+      e.touches[0].clientX-e.touches[1].clientX,
+      e.touches[0].clientY-e.touches[1].clientY
+    );
+    if(dragState)dragState.startSize=sl(dragState.zone.slSize);
+  }
+},{passive:true});
+
+canvas.addEventListener('touchmove',e=>{
+  if(e.touches.length===2&&pinchStart&&dragState?.zone?.slSize){
+    e.preventDefault();
+    const dist=Math.hypot(
+      e.touches[0].clientX-e.touches[1].clientX,
+      e.touches[0].clientY-e.touches[1].clientY
+    );
+    const ratio=dist/pinchStart;
+    const newSize=Math.max(40,Math.min(200,dragState.startSize*ratio));
+    const slSz=document.getElementById(dragState.zone.slSize);
+    if(slSz){slSz.value=newSize;updateSlider(slSz,dragState.zone.slSize.replace('sl','val'),'%');}
+    render();
+  }
+},{passive:false});
+
+canvas.addEventListener('touchend',()=>{pinchStart=null;},{passive:true});
 
 // ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
-// Esperar fuentes → luego render demo
 async function initDemo(){
-  try {
+  try{
     await document.fonts.ready;
-    // Forzar carga de las fuentes usadas en el canvas
     await Promise.all([
       document.fonts.load("italic 500 110px 'Cormorant Garamond'"),
       document.fonts.load("500 28px 'Montserrat'"),
     ]);
-  } catch(e){ /* continúa igual */ }
+  }catch(e){}
 
-  ctx.fillStyle = '#0a1e12';
-  ctx.fillRect(0, 0, canvasW, canvasH);
-  ctx.font      = `italic 400 110px 'Cormorant Garamond'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.textAlign = 'center';
-  ctx.fillText('Vanina Buzzacchi', canvasW/2, canvasH/2);
-  ctx.font      = `500 28px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(201,168,76,0.4)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', canvasW/2, canvasH/2 + 60);
-  ctx.font      = `400 22px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.2)';
-  ctx.fillText('← Seleccioná una propiedad para empezar', canvasW/2, canvasH*0.7);
+  // Fondo demo con neón sutil
+  const bg=ctx.createLinearGradient(0,0,canvasW,canvasH);
+  bg.addColorStop(0,'#0a1e12');bg.addColorStop(1,'#060e09');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,canvasW,canvasH);
+
+  // Grid lines decorativas
+  ctx.strokeStyle='rgba(0,255,135,0.03)';ctx.lineWidth=1;
+  for(let i=0;i<canvasW;i+=90){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,canvasH);ctx.stroke();}
+  for(let i=0;i<canvasH;i+=90){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(canvasW,i);ctx.stroke();}
+
+  // Orb neón central
+  const orb=ctx.createRadialGradient(canvasW/2,canvasH/2,0,canvasW/2,canvasH/2,canvasW*0.4);
+  orb.addColorStop(0,'rgba(0,255,135,0.04)');orb.addColorStop(1,'transparent');
+  ctx.fillStyle=orb;ctx.fillRect(0,0,canvasW,canvasH);
+
+  ctx.font=`italic 400 ${canvasW*0.09}px 'Cormorant Garamond'`;
+  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.textAlign='center';
+  ctx.fillText('Vanina Buzzacchi',canvasW/2,canvasH/2-20);
+  ctx.font=`500 ${canvasW*0.024}px 'Montserrat'`;
+  ctx.fillStyle='rgba(201,168,76,0.3)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',canvasW/2,canvasH/2+50);
+  ctx.font=`400 ${canvasW*0.020}px 'Montserrat'`;
+  ctx.fillStyle='rgba(0,255,135,0.25)';
+  ctx.fillText('← seleccioná una propiedad para empezar',canvasW/2,canvasH*0.72);
 }
-initDemo();
-// Llamar renderLivePreview cuando el usuario escribe (también cubre render tardío de fuentes)
-document.querySelectorAll('#ctrlTitulo,#ctrlSubtitulo,#ctrlPrecio,#ctrlFrase').forEach(el => {
-  el.addEventListener('input', () => { render(); renderLivePreview(); });
+
+document.querySelectorAll('#ctrlTitulo,#ctrlSubtitulo,#ctrlPrecio,#ctrlFrase').forEach(el=>{
+  el.addEventListener('input',()=>render());
 });
 
+initDemo();
 cargarPropiedades();
 initSliders();
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
-
-// ══════════════════════════════════════════════════════════
-// PLANTILLA: INMUEBLE CARD (estilo foto de las imágenes)
-// ══════════════════════════════════════════════════════════
-function renderInmuebleCard(W, H) {
-  const titulo    = document.getElementById('ctrlTitulo').value    || 'Casa Moderna';
-  const precio    = document.getElementById('ctrlPrecio').value    || '';
-  const zona      = (document.getElementById('ctrlZona')?.value    || document.getElementById('ctrlSubtitulo').value || '').trim();
-  const operacion = document.getElementById('ctrlOperacion')?.value || 'Inmuebles en venta';
-  const dorm      = document.getElementById('ctrlDorm')?.value     || '';
-  const banos     = document.getElementById('ctrlBanos')?.value    || '';
-  const cochera   = document.getElementById('ctrlCochera')?.value  || '';
-  const m2        = document.getElementById('ctrlM2')?.value       || '';
-  const cta       = document.getElementById('ctrlCta')?.value      || '¡Agendá tu visita!';
-
-  // ── Fondo verde ───────────────────────────────────────
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#0a5c32');
-  bg.addColorStop(1, '#062a17');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Orb decorativo esquina superior derecha
-  const orb = ctx.createRadialGradient(W*0.9, H*0.05, 0, W*0.9, H*0.05, W*0.55);
-  orb.addColorStop(0, 'rgba(255,255,255,0.04)');
-  orb.addColorStop(1, 'transparent');
-  ctx.fillStyle = orb;
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Barra búsqueda superior ───────────────────────────
-  const barY = H * 0.055;
-  const barH = H * 0.072;
-  const barX = W * 0.08;
-  const barW = W * 0.84;
-  // Pill blanco
-  roundRect(ctx, barX, barY, barW, barH, barH/2);
-  ctx.fillStyle = '#fff';
-  ctx.fill();
-  // Ícono lupa
-  ctx.font = `${W*0.032}px sans-serif`;
-  ctx.fillStyle = '#666';
-  ctx.textAlign = 'left';
-  ctx.fillText('🔍', barX + barH*0.2, barY + barH*0.68);
-  // Texto de búsqueda
-  ctx.font = `500 ${W*0.030}px 'Montserrat'`;
-  ctx.fillStyle = '#333';
-  ctx.fillText(operacion, barX + barH*0.85, barY + barH*0.67);
-  // Ícono casa (derecha del pill)
-  const iconPillX = barX + barW - barH * 1.05;
-  const iconPillR = barH * 0.48;
-  ctx.beginPath();
-  ctx.arc(iconPillX + iconPillR, barY + barH/2, iconPillR, 0, Math.PI*2);
-  ctx.fillStyle = '#c9a84c';
-  ctx.fill();
-  ctx.font = `${W*0.030}px sans-serif`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('🏠', iconPillX + iconPillR, barY + barH*0.72);
-
-  // ── Foto principal con bordes redondeados ─────────────
-  const fotoX = W * 0.06;
-  const fotoY = H * 0.165;
-  const fotoW = W * 0.88;
-  const fotoH = H * 0.48;
-  const fotoR = W * 0.045;
-
-  ctx.save();
-  roundRect(ctx, fotoX, fotoY, fotoW, fotoH, fotoR);
-  ctx.clip();
-  if (imagenActual) {
-    // cover fit
-    const ar = imagenActual.width / imagenActual.height;
-    const arT = fotoW / fotoH;
-    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
-    if (ar > arT) { sw = imagenActual.height * arT; sx = (imagenActual.width - sw)/2; }
-    else          { sh = imagenActual.width / arT;  sy = (imagenActual.height - sh)/2; }
-    ctx.drawImage(imagenActual, sx, sy, sw, sh, fotoX, fotoY, fotoW, fotoH);
-  } else {
-    ctx.fillStyle = '#1a3a25';
-    ctx.fillRect(fotoX, fotoY, fotoW, fotoH);
-    ctx.font = `${W*0.06}px sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.textAlign = 'center';
-    ctx.fillText('🏠', W/2, fotoY + fotoH/2 + W*0.02);
-  }
-  ctx.restore();
-
-  // ── Badge zona (arriba derecha de la foto) ─────────────
-  if (zona) {
-    ctx.font = `600 ${W*0.028}px 'Montserrat'`;
-    const bw = ctx.measureText(zona).width + W*0.06;
-    const bh = W * 0.065;
-    const bx = fotoX + fotoW - bw - W*0.03;
-    const by = fotoY + W*0.03;
-    roundRect(ctx, bx, by, bw, bh, bh/2);
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.fill();
-    ctx.fillStyle = '#2a6e45';
-    ctx.textAlign = 'left';
-    ctx.fillText(zona, bx + W*0.03, by + bh*0.68);
-  }
-
-  // ── Pill precio (sobre el borde inferior de la foto) ──
-  if (precio) {
-    ctx.font = `700 ${W*0.038}px 'Montserrat'`;
-    const pw = ctx.measureText(precio).width + W*0.07;
-    const ph = W * 0.075;
-    const px = fotoX + fotoW - pw - W*0.03;
-    const py = fotoY + fotoH - ph * 0.5;
-    roundRect(ctx, px, py, pw, ph, ph*0.35);
-    const gPrice = ctx.createLinearGradient(px, py, px+pw, py);
-    gPrice.addColorStop(0, '#b8922a');
-    gPrice.addColorStop(1, '#e3c067');
-    ctx.fillStyle = gPrice;
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.fillText(precio, px + pw/2, py + ph*0.68);
-  }
-
-  // ── Panel blanco inferior ──────────────────────────────
-  const panelY = fotoY + fotoH - W*0.02;
-  const panelH = H - panelY - H*0.02;
-  const panelR = W * 0.045;
-  roundRect(ctx, fotoX, panelY, fotoW, panelH, panelR);
-  ctx.fillStyle = '#fff';
-  ctx.fill();
-
-  const px2 = fotoX + W*0.05;
-  let cy = panelY + panelH*0.22;
-
-  // Título en el panel
-  ctx.font = `italic 600 ${W*0.052}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#c9a84c';
-  ctx.textAlign = 'left';
-  // Wrap a 2 líneas si hace falta
-  const maxW = fotoW - W*0.1;
-  const words = titulo.split(' ');
-  let line1 = '', line2 = '';
-  let built = '';
-  for (const w of words) {
-    const test = built ? built + ' ' + w : w;
-    if (ctx.measureText(test).width > maxW && built) { line1 = built; built = w; }
-    else built = test;
-  }
-  line2 = built;
-  if (!line1) { line1 = line2; line2 = ''; }
-  ctx.fillText(line1, px2, cy);
-  if (line2) { cy += panelH*0.21; ctx.fillText(line2, px2, cy); }
-
-  cy += panelH * 0.22;
-
-  // ── Iconos dormitorios / baños / cochera / m2 ──────────
-  const iconSize = W * 0.068;
-  const iconPad  = W * 0.018;
-  const iconY    = cy;
-  const icons = [];
-  if (dorm)    icons.push({ emoji:'🛏', val: dorm });
-  if (banos)   icons.push({ emoji:'🚿', val: banos });
-  if (cochera) icons.push({ emoji:'🚗', val: cochera });
-  if (m2)      icons.push({ emoji:'⤡',  val: m2 + 'm²', noBox: true });
-
-  let ix = px2;
-  icons.forEach(ic => {
-    if (!ic.noBox) {
-      // Cuadro dorado redondeado con emoji
-      roundRect(ctx, ix, iconY - iconSize*0.75, iconSize, iconSize, iconSize*0.22);
-      const gIco = ctx.createLinearGradient(ix, iconY-iconSize*0.75, ix+iconSize, iconY+iconSize*0.25);
-      gIco.addColorStop(0, '#d4a43a');
-      gIco.addColorStop(1, '#c9a84c');
-      ctx.fillStyle = gIco;
-      ctx.fill();
-      ctx.font = `${iconSize*0.55}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#fff';
-      ctx.fillText(ic.emoji, ix + iconSize/2, iconY - iconSize*0.75 + iconSize*0.68);
-      // Número al lado
-      ctx.font = `600 ${W*0.032}px 'Montserrat'`;
-      ctx.fillStyle = '#333';
-      ctx.fillText(ic.val, ix + iconSize + W*0.025, iconY - iconSize*0.1);
-      ix += iconSize + W*0.085;
-    } else {
-      // m² con ícono especial
-      roundRect(ctx, ix, iconY - iconSize*0.75, iconSize, iconSize, iconSize*0.22);
-      ctx.fillStyle = '#1a4a2e';
-      ctx.fill();
-      ctx.font = `700 ${iconSize*0.42}px 'Montserrat'`;
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'center';
-      ctx.fillText('⤢', ix + iconSize/2, iconY - iconSize*0.75 + iconSize*0.65);
-      ctx.font = `600 ${W*0.032}px 'Montserrat'`;
-      ctx.fillStyle = '#333';
-      ctx.fillText(ic.val, ix + iconSize + W*0.025, iconY - iconSize*0.1);
-      ix += iconSize + W*0.085;
-    }
-  });
-
-  // ── CTA ─────────────────────────────────────────────────
-  if (cta) {
-    ctx.font = `500 ${W*0.030}px 'Montserrat'`;
-    ctx.fillStyle = '#1a6e3a';
-    ctx.textAlign = 'left';
-    ctx.fillText('🏠 ' + cta, px2, panelY + panelH*0.88);
-  }
-
-  // ── Logo Vanina Buzzacchi ──────────────────────────────
-  ctx.font = `italic 400 ${W*0.055}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('Vanina Buzzacchi', W/2, H * 0.945);
-  ctx.font = `500 ${W*0.020}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.letterSpacing = '0.12em';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', W/2, H * 0.968);
-  ctx.letterSpacing = '0';
-}
-
-// ══════════════════════════════════════════════════════════
-// PLANTILLA: CAPTADOR (busco propiedades para clientes)
-// ══════════════════════════════════════════════════════════
-function renderCaptador(W, H) {
-  const titulo    = document.getElementById('ctrlTitulo').value    || 'Busco CASA o Dpto para ALQUILAR';
-  const precio    = document.getElementById('ctrlPrecio').value    || '';
-  const zona      = (document.getElementById('ctrlZona')?.value    || document.getElementById('ctrlSubtitulo').value || '').trim();
-  const operacion = document.getElementById('ctrlOperacion')?.value || 'Búsqueda de Alquileres';
-  const cta       = document.getElementById('ctrlCta')?.value      || '¡Agendá tu visita!';
-  const telefono  = document.getElementById('ctrlTelefono')?.value || '358 5189949';
-
-  // Features captador
-  const features = ['Requisitos Claros','Perfil Profesional','Seguro de Caución','Zonas de Interés'];
-
-  // ── Fondo verde ───────────────────────────────────────
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#0a5c32');
-  bg.addColorStop(1, '#062a17');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  const orb = ctx.createRadialGradient(W*0.9, H*0.05, 0, W*0.9, H*0.05, W*0.55);
-  orb.addColorStop(0, 'rgba(255,255,255,0.04)');
-  orb.addColorStop(1, 'transparent');
-  ctx.fillStyle = orb;
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Barra búsqueda superior ───────────────────────────
-  const barY = H * 0.055;
-  const barH = H * 0.072;
-  const barX = W * 0.08;
-  const barW = W * 0.84;
-  roundRect(ctx, barX, barY, barW, barH, barH/2);
-  ctx.fillStyle = '#fff';
-  ctx.fill();
-  ctx.font = `${W*0.032}px sans-serif`;
-  ctx.fillStyle = '#666';
-  ctx.textAlign = 'left';
-  ctx.fillText('🔍', barX + barH*0.2, barY + barH*0.68);
-  ctx.font = `500 ${W*0.030}px 'Montserrat'`;
-  ctx.fillStyle = '#333';
-  ctx.fillText(operacion, barX + barH*0.85, barY + barH*0.67);
-  const iconPillX = barX + barW - barH * 1.05;
-  const iconPillR = barH * 0.48;
-  ctx.beginPath();
-  ctx.arc(iconPillX + iconPillR, barY + barH/2, iconPillR, 0, Math.PI*2);
-  ctx.fillStyle = '#c9a84c';
-  ctx.fill();
-  ctx.font = `${W*0.030}px sans-serif`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('🏠', iconPillX + iconPillR, barY + barH*0.72);
-
-  // ── Foto con bordes redondeados ───────────────────────
-  const fotoX = W * 0.06;
-  const fotoY = H * 0.165;
-  const fotoW = W * 0.88;
-  const fotoH = H * 0.46;
-  const fotoR = W * 0.045;
-
-  ctx.save();
-  roundRect(ctx, fotoX, fotoY, fotoW, fotoH, fotoR);
-  ctx.clip();
-  if (imagenActual) {
-    const ar = imagenActual.width / imagenActual.height;
-    const arT = fotoW / fotoH;
-    let sx=0,sy=0,sw=imagenActual.width,sh=imagenActual.height;
-    if (ar > arT) { sw = imagenActual.height * arT; sx = (imagenActual.width - sw)/2; }
-    else          { sh = imagenActual.width / arT;  sy = (imagenActual.height - sh)/2; }
-    ctx.drawImage(imagenActual, sx, sy, sw, sh, fotoX, fotoY, fotoW, fotoH);
-  } else {
-    ctx.fillStyle = '#1a3a25';
-    ctx.fillRect(fotoX, fotoY, fotoW, fotoH);
-  }
-  ctx.restore();
-
-  // Badge zona
-  if (zona) {
-    ctx.font = `600 ${W*0.028}px 'Montserrat'`;
-    const bw = ctx.measureText(zona).width + W*0.06;
-    const bh = W * 0.065;
-    const bx = fotoX + fotoW - bw - W*0.03;
-    const by = fotoY + W*0.03;
-    roundRect(ctx, bx, by, bw, bh, bh/2);
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.fill();
-    ctx.fillStyle = '#2a6e45';
-    ctx.textAlign = 'left';
-    ctx.fillText(zona, bx + W*0.03, by + bh*0.68);
-  }
-
-  // Badge "CLIENTES DISPONIBLES"
-  const cdW = W * 0.28;
-  const cdH = W * 0.10;
-  const cdX = fotoX + fotoW - cdW - W*0.03;
-  const cdY = fotoY + fotoH - cdH*0.5;
-  roundRect(ctx, cdX, cdY, cdW, cdH, cdH*0.22);
-  const gCD = ctx.createLinearGradient(cdX, cdY, cdX+cdW, cdY+cdH);
-  gCD.addColorStop(0, '#b8922a');
-  gCD.addColorStop(1, '#e3c067');
-  ctx.fillStyle = gCD;
-  ctx.fill();
-  ctx.font = `700 ${W*0.026}px 'Montserrat'`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('CLIENTES', cdX + cdW/2, cdY + cdH*0.38);
-  ctx.fillText('DISPONIBLES', cdX + cdW/2, cdY + cdH*0.72);
-
-  // ── Panel blanco inferior ──────────────────────────────
-  const panelY = fotoY + fotoH - W*0.02;
-  const panelH = H - panelY - H*0.135;
-  const panelR = W * 0.045;
-  roundRect(ctx, fotoX, panelY, fotoW, panelH, panelR);
-  ctx.fillStyle = '#fff';
-  ctx.fill();
-
-  const px2 = fotoX + W*0.05;
-  let cy = panelY + panelH*0.24;
-
-  // Título en panel
-  ctx.font = `italic 600 ${W*0.052}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#c9a84c';
-  ctx.textAlign = 'left';
-  const words = titulo.split(' ');
-  let line1='', line2='', built='';
-  const maxW = fotoW - W*0.1;
-  for (const w of words) {
-    const test = built ? built + ' ' + w : w;
-    if (ctx.measureText(test).width > maxW && built) { line1=built; built=w; }
-    else built=test;
-  }
-  line2=built;
-  if (!line1) { line1=line2; line2=''; }
-  ctx.fillText(line1, px2, cy);
-  if (line2) { cy += panelH*0.21; ctx.fillText(line2, px2, cy); }
-  cy += panelH * 0.2;
-
-  // Features en dos columnas con checkmarks
-  const featW = (fotoW - W*0.1) / 2;
-  ctx.font = `500 ${W*0.026}px 'Montserrat'`;
-  features.forEach((f, i) => {
-    const fx = px2 + (i%2) * featW;
-    const fy = cy + Math.floor(i/2) * panelH*0.22;
-    // Ícono dorado cuadro
-    const iSz = W*0.058;
-    roundRect(ctx, fx, fy - iSz*0.75, iSz, iSz, iSz*0.22);
-    const gF = ctx.createLinearGradient(fx, fy-iSz*0.75, fx+iSz, fy+iSz*0.25);
-    gF.addColorStop(0, '#d4a43a');
-    gF.addColorStop(1, '#c9a84c');
-    ctx.fillStyle = gF;
-    ctx.fill();
-    ctx.font = `${iSz*0.55}px sans-serif`;
-    ctx.fillStyle='#fff';
-    ctx.textAlign='center';
-    const emojis = ['🛏','🚿','🚗','⤡'];
-    ctx.fillText(emojis[i], fx+iSz/2, fy-iSz*0.75+iSz*0.68);
-    // Checkmark + texto
-    ctx.font = `500 ${W*0.026}px 'Montserrat'`;
-    ctx.fillStyle = '#555';
-    ctx.textAlign = 'left';
-    ctx.fillText('✓ ' + f, fx, fy + panelH*0.1);
-  });
-
-  // CTA
-  cy = panelY + panelH*0.88;
-  if (cta) {
-    ctx.font = `500 ${W*0.028}px 'Montserrat'`;
-    ctx.fillStyle = '#1a6e3a';
-    ctx.textAlign = 'left';
-    ctx.fillText('🏠 ' + cta, px2, cy);
-  }
-
-  // ── Logo + teléfono ────────────────────────────────────
-  ctx.font = `italic 400 ${W*0.052}px 'Cormorant Garamond'`;
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('Vanina Buzzacchi', W/2, H * 0.925);
-  ctx.font = `500 ${W*0.019}px 'Montserrat'`;
-  ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS', W/2, H * 0.948);
-
-  if (telefono) {
-    // Ícono WA + teléfono
-    ctx.font = `600 ${W*0.030}px 'Montserrat'`;
-    ctx.fillStyle = '#25D366';
-    ctx.fillText('📞 ' + telefono, W/2, H * 0.975);
-  }
-
-  // Estrella decorativa esquina inferior derecha
-  ctx.font = `${W*0.05}px sans-serif`;
-  ctx.fillStyle = 'rgba(201,168,76,0.4)';
-  ctx.textAlign = 'right';
-  ctx.fillText('✦', W*0.95, H*0.985);
-  ctx.textAlign = 'left';
-}
-
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
