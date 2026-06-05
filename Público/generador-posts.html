@@ -395,7 +395,8 @@
         <div id="livePreview" style="
           position:relative; border-radius:16px; overflow:hidden;
           border:1px solid rgba(255,255,255,.08); background:#0a1a10;
-          aspect-ratio:1; max-width:520px; width:100%;
+          max-width:520px; width:100%;
+          display:none;
         ">
           <!-- Foto de fondo -->
           <div id="prevFoto" style="
@@ -478,8 +479,8 @@
           </div>
         </div>
 
-        <!-- Canvas oculto — solo para descarga 1080px -->
-        <canvas id="postCanvas" width="1080" height="1080" style="display:none"></canvas>
+        <!-- Canvas = preview visible + descarga idéntica -->
+        <canvas id="postCanvas" width="1080" height="1080" style="display:block;width:100%;height:auto;border-radius:14px;"></canvas>
       </div>
 
       <div class="download-row" style="margin-top:12px">
@@ -727,120 +728,10 @@ function render(){
 }
 
 // ══════════════════════════════════════
-// LIVE PREVIEW HTML (instantáneo)
+// LIVE PREVIEW = canvas directo
 // ══════════════════════════════════════
 function renderLivePreview(){
-  const titulo    = document.getElementById('ctrlTitulo').value    || '';
-  const subtitulo = document.getElementById('ctrlSubtitulo').value || '';
-  const precio    = document.getElementById('ctrlPrecio').value    || '';
-  const frase     = document.getElementById('ctrlFrase').value     || '';
-  const esVerde   = tplActual === 'verde-frase';
-
-  // Foto de fondo
-  const fotaUrl = imagenActualSrc || '';
-  document.getElementById('prevFoto').style.backgroundImage   = fotaUrl ? `url(${fotaUrl})` : 'none';
-  document.getElementById('prevVerde').style.display          = esVerde ? 'block' : 'none';
-  document.getElementById('prevOverlay').style.opacity        = esVerde ? '0' : '1';
-
-  // Overlay de color
-  const ovEl = document.getElementById('prevOverlay');
-  if (!esVerde && overlayColor && overlayColor !== 'rgba(0,0,0,0)') {
-    ovEl.style.background = `linear-gradient(to bottom, rgba(0,0,0,.05) 0%, rgba(0,0,0,.12) 50%, rgba(0,0,0,.72) 100%)`;
-  }
-
-  // Textos
-  const tituloEl    = document.getElementById('prevTitulo');
-  const subtEl      = document.getElementById('prevSubtitulo');
-  const precioEl    = document.getElementById('prevPrecio');
-
-  // Ajustar posición textos según plantilla
-  const textosEl = document.getElementById('prevTextos');
-
-  if (tplActual === 'foto-titulo') {
-    tituloEl.textContent    = titulo || frase;
-    subtEl.textContent      = '';
-    precioEl.textContent    = '';
-    precioEl.style.display  = 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (tplActual === 'foto-precio') {
-    tituloEl.textContent    = titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (tplActual === 'foto-completo') {
-    tituloEl.textContent    = titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    textosEl.style.justifyContent = 'flex-end';
-  }
-  else if (esVerde) {
-    tituloEl.textContent    = frase || titulo;
-    subtEl.textContent      = subtitulo ? subtitulo.toUpperCase() : '';
-    precioEl.textContent    = precio;
-    precioEl.style.display  = precio ? 'inline-block' : 'none';
-    // En verde el precio es dorado texto
-    precioEl.style.background = 'transparent';
-    precioEl.style.color      = '#c9a84c';
-    precioEl.style.padding    = '0';
-    textosEl.style.justifyContent = 'center';
-    // Resetear en otros templates
-    document.getElementById('prevPrecio').style.background = 'rgba(201,168,76,.92)';
-    document.getElementById('prevPrecio').style.color      = '#0a1e12';
-    document.getElementById('prevPrecio').style.padding    = '.35em .9em';
-  }
-
-  // ratio del live preview
-  const ratioMap = {'1':'1/1','916':'9/16','43':'4/3'};
-  const activeRatio = document.querySelector('.fmt-tab.active')?.dataset.ratio || '1';
-  document.getElementById('livePreview').style.aspectRatio = ratioMap[activeRatio] || '1/1';
-
-  // Aplicar sliders al live preview
-  const logoSizePct = sl('slLogoSize') / 100;
-  const logoSubPct  = sl('slLogoSub')  / 100;
-  const logoXPct    = sl('slLogoX');     // %
-  const logoYPct    = sl('slLogoY');     // % desde arriba
-  const titSizePct  = sl('slTitSize')  / 100;
-  const titYPct     = sl('slTitY');
-  const subSizePct  = sl('slSubSize')  / 100;
-  const subYPct     = sl('slSubY');
-
-  // Branding (logo)
-  const brandEl = document.getElementById('prevBranding');
-  if (brandEl) {
-    brandEl.style.position = 'absolute';
-    brandEl.style.left     = logoXPct + '%';
-    brandEl.style.top      = logoYPct + '%';
-    brandEl.style.marginTop = '0';
-    brandEl.style.paddingTop = '0';
-    const nameEl = brandEl.querySelector('div:first-child');
-    const negEl  = brandEl.querySelector('div:last-child');
-    if (nameEl) nameEl.style.fontSize = `clamp(10px, ${3.8 * logoSizePct}vw, ${30 * logoSizePct}px)`;
-    if (negEl)  negEl.style.fontSize  = `clamp(6px,  ${1.4 * logoSubPct}vw, ${11 * logoSubPct}px)`;
-  }
-
-  // Título
-  const titEl = document.getElementById('prevTitulo');
-  if (titEl) titEl.style.fontSize = `clamp(18px, ${7.5 * titSizePct}vw, ${56 * titSizePct}px)`;
-
-  // Textos posición Y (mover el contenedor de textos usando padding-bottom relativo)
-  const textosEl2 = document.getElementById('prevTextos');
-  if (textosEl2 && tplActual !== 'verde-frase') {
-    // Convertimos titY a padding-bottom: 100% - titY aproximado
-    const pb = Math.max(0, 100 - titYPct - 12);
-    textosEl2.style.paddingBottom = pb + '%';
-    textosEl2.style.justifyContent = 'flex-end';
-  }
-
-  // Subtítulo y precio size
-  const subtElS = document.getElementById('prevSubtitulo');
-  const precioElS = document.getElementById('prevPrecio');
-  if (subtElS) subtElS.style.fontSize = `clamp(8px, ${1.8 * subSizePct}vw, ${14 * subSizePct}px)`;
-  if (precioElS && precioElS.style.display !== 'none')
-    precioElS.style.fontSize = `clamp(9px, ${2.2 * subSizePct}vw, ${17 * subSizePct}px)`;
+  render();
 }
 
 function renderFoto(W, H){
