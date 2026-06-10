@@ -363,14 +363,14 @@ input[type=range]::-moz-range-thumb{
 }
 .btn-reset:hover{border-color:rgba(0,255,135,.2);color:var(--neon)}
 
-@media(max-width:1200px){
-  .gen-grid{grid-template-columns:260px 1fr}
-  .eq-panel{display:none}
+@media(max-width:1100px){
+  .gen-grid{grid-template-columns:240px 1fr 210px}
 }
 @media(max-width:900px){
   :root{--sidebar-w:0}
   .sidebar{display:none}
   .gen-grid{grid-template-columns:1fr}
+  .eq-panel{display:none}
 }
 </style>
 </head>
@@ -1308,11 +1308,13 @@ function renderCaptador(W,H){
     ctx.fillText('✓ '+f,fx+iSz+W*0.016,fy-iSz*0.08);
   });
 
-  cy+=rowGap*2+lineH*0.4;
+  // CTA — va despues de los features, slider ajusta offset
+  cy += rowGap*2 + lineH*0.5;
+  const ctaOffset = (sl('slCtaY') - 78) * W * 0.003; // offset relativo al default
   if(cta){
     ctx.font=`500 ${W*0.026*(sl('slCtaSize')/100)}px 'Montserrat'`;
     ctx.fillStyle='#1a6e3a';ctx.textAlign='left';
-    ctx.fillText('🏠 '+cta,px2,H*(sl('slCtaY')/100));
+    ctx.fillText('🏠 '+cta, px2, cy + ctaOffset);
   }
 
   // Logo Vanina Buzzacchi — controlado por sliders
