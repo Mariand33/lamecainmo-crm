@@ -594,6 +594,8 @@ input[type=range]::-moz-range-thumb{
             <div class="elem-tab" data-elem="subtitulo" onclick="selectElem(this)">Subtítulo</div>
             <div class="elem-tab" data-elem="precio" onclick="selectElem(this)">Precio</div>
             <div class="elem-tab" data-elem="logo" onclick="selectElem(this)">Logo</div>
+            <div class="elem-tab" data-elem="cta" onclick="selectElem(this)">CTA</div>
+            <div class="elem-tab" data-elem="telefono" onclick="selectElem(this)">Teléfono</div>
           </div>
 
           <!-- LOGO -->
@@ -660,6 +662,32 @@ input[type=range]::-moz-range-thumb{
             </div>
           </div>
 
+          <!-- CTA -->
+          <div class="sl-section" id="sec-cta" style="display:none">
+            <div class="sl-section-title">CTA · ¡Agendá tu visita!</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño fuente</span><span class="sl-val" id="valCtaSize">100%</span></div>
+              <input type="range" id="slCtaSize" min="40" max="200" value="100" oninput="updateSlider(this,'valCtaSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valCtaY">78%</span></div>
+              <input type="range" id="slCtaY" min="40" max="99" value="78" oninput="updateSlider(this,'valCtaY','%');render()">
+            </div>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="sl-section" id="sec-telefono" style="display:none">
+            <div class="sl-section-title">Teléfono</div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Tamaño fuente</span><span class="sl-val" id="valTelSize">100%</span></div>
+              <input type="range" id="slTelSize" min="40" max="200" value="100" oninput="updateSlider(this,'valTelSize','%');render()">
+            </div>
+            <div class="sl-row">
+              <div class="sl-row-top"><span class="sl-label">Posición Y</span><span class="sl-val" id="valTelY">97%</span></div>
+              <input type="range" id="slTelY" min="40" max="99" value="97" oninput="updateSlider(this,'valTelY','%');render()">
+            </div>
+          </div>
+
           <button class="btn-reset" onclick="resetSliders()">↺ Restablecer valores</button>
         </div>
       </div>
@@ -686,6 +714,8 @@ const SLIDER_DEFAULTS = {
   slTitSize:100, slTitY:75, slTitX:7,
   slSubSize:100, slSubY:82,
   slPrecioSize:100, slPrecioY:89,
+  slCtaSize:100, slCtaY:78,
+  slTelSize:100, slTelY:97,
 };
 
 const canvas = document.getElementById('postCanvas');
@@ -726,7 +756,7 @@ function selectElem(tab){
   document.querySelectorAll('.elem-tab').forEach(t=>t.classList.remove('active'));
   tab.classList.add('active');
   elemActivo = tab.dataset.elem;
-  ['titulo','subtitulo','precio','logo'].forEach(e=>{
+  ['titulo','subtitulo','precio','logo','cta','telefono'].forEach(e=>{
     const sec=document.getElementById('sec-'+e);
     if(sec) sec.style.display = e===elemActivo ? 'block':'none';
   });
@@ -1279,13 +1309,24 @@ function renderCaptador(W,H){
   });
 
   cy+=rowGap*2+lineH*0.4;
-  if(cta){ctx.font=`500 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';ctx.fillText('🏠 '+cta,px2,cy);}
+  if(cta){
+    ctx.font=`500 ${W*0.026*(sl('slCtaSize')/100)}px 'Montserrat'`;
+    ctx.fillStyle='#1a6e3a';ctx.textAlign='left';
+    ctx.fillText('🏠 '+cta,px2,H*(sl('slCtaY')/100));
+  }
 
-  ctx.font=`italic 400 ${W*0.052}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
-  ctx.fillText('Vanina Buzzacchi',W/2,H*0.925);
-  ctx.font=`500 ${W*0.019}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.55)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,H*0.948);
-  if(telefono){ctx.font=`600 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#25D366';ctx.fillText('📞 '+telefono,W/2,H*0.975);}
+  // Logo Vanina Buzzacchi — controlado por sliders
+  const logoY=H*(sl('slLogoY')/100);
+  const ss=sl('slLogoSize')/100, sub=sl('slLogoSub')/100;
+  ctx.font=`italic 400 ${W*0.052*ss}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Vanina Buzzacchi',W/2,logoY);
+  ctx.font=`500 ${W*0.019*sub}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.55)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,logoY+W*0.028*sub);
+  if(telefono){
+    ctx.font=`600 ${W*0.030*(sl('slTelSize')/100)}px 'Montserrat'`;
+    ctx.fillStyle='#25D366';
+    ctx.fillText('📞 '+telefono,W/2,H*(sl('slTelY')/100));
+  }
   ctx.font=`${W*0.05}px sans-serif`;ctx.fillStyle='rgba(201,168,76,0.4)';ctx.textAlign='right';
   ctx.fillText('✦',W*0.95,H*0.985);ctx.textAlign='left';
 }
