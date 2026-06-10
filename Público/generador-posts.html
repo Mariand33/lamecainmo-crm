@@ -1237,8 +1237,8 @@ function renderCaptador(W,H){
     ctx.fillStyle='#2a6e45';ctx.textAlign='left';ctx.fillText(zona,bx+W*0.03,by+bh*0.68);
   }
 
-  // CLIENTES DISPONIBLES badge
-  const cdW=W*0.28,cdH=W*0.10,cdX=fotoX+fotoW-cdW-W*0.03,cdY=fotoY+fotoH-cdH*0.5;
+  // CLIENTES DISPONIBLES badge — completamente dentro de la foto
+  const cdW=W*0.28,cdH=W*0.10,cdX=fotoX+fotoW-cdW-W*0.03,cdY=fotoY+fotoH-cdH-W*0.03;
   roundRect(ctx,cdX,cdY,cdW,cdH,cdH*0.22);
   const gCD=ctx.createLinearGradient(cdX,cdY,cdX+cdW,cdY+cdH);
   gCD.addColorStop(0,'#b8922a');gCD.addColorStop(1,'#e3c067');ctx.fillStyle=gCD;ctx.fill();
