@@ -1246,34 +1246,40 @@ function renderCaptador(W,H){
   ctx.fillText('CLIENTES',cdX+cdW/2,cdY+cdH*0.38);ctx.fillText('DISPONIBLES',cdX+cdW/2,cdY+cdH*0.72);
 
   // Panel blanco
-  const panelY=fotoY+fotoH-W*0.02,panelH=H-panelY-H*0.135,panelR=W*0.045;
+  const panelY=fotoY+fotoH-W*0.02,panelH=H-panelY-H*0.145,panelR=W*0.045;
   roundRect(ctx,fotoX,panelY,fotoW,panelH,panelR);ctx.fillStyle='#fff';ctx.fill();
-  const px2=fotoX+W*0.05;let cy=panelY+panelH*0.24;
+  const px2=fotoX+W*0.05;
+  const lineH=W*0.065; // espaciado fijo en px, no porcentaje
+  let cy=panelY+W*0.065;
 
-  // Título
-  ctx.font=`italic 600 ${W*0.052}px 'Cormorant Garamond'`;ctx.fillStyle='#c9a84c';ctx.textAlign='left';
+  // Título (fuente levemente reducida para que entre en 2 líneas con margen)
+  ctx.font=`italic 600 ${W*0.046}px 'Cormorant Garamond'`;ctx.fillStyle='#c9a84c';ctx.textAlign='left';
   const maxTW=fotoW-W*0.1,words=titulo.split(' ');
   let l1='',l2='',built='';
   for(const w of words){const t=built?built+' '+w:w;if(ctx.measureText(t).width>maxTW&&built){l1=built;built=w;}else built=t;}
   l2=built;if(!l1){l1=l2;l2='';}
-  ctx.fillText(l1,px2,cy);if(l2){cy+=panelH*0.21;ctx.fillText(l2,px2,cy);}
-  cy+=panelH*0.2;
+  ctx.fillText(l1,px2,cy);
+  if(l2){cy+=lineH;ctx.fillText(l2,px2,cy);}
+  cy+=lineH*1.1;
 
-  // Features
+  // Features — posicionamiento absoluto en px, sin depender de panelH
   const featW=(fotoW-W*0.1)/2;
+  const iSz=W*0.052;
+  const rowGap=lineH*1.3;
   features.forEach((f,i)=>{
-    const fx=px2+(i%2)*featW,fy=cy+Math.floor(i/2)*panelH*0.22;
-    const iSz=W*0.058;
-    roundRect(ctx,fx,fy-iSz*0.75,iSz,iSz,iSz*0.22);
-    const gF=ctx.createLinearGradient(fx,fy-iSz*0.75,fx+iSz,fy+iSz*0.25);
+    const fx=px2+(i%2)*featW;
+    const fy=cy+Math.floor(i/2)*rowGap;
+    roundRect(ctx,fx,fy-iSz*0.78,iSz,iSz,iSz*0.22);
+    const gF=ctx.createLinearGradient(fx,fy-iSz*0.78,fx+iSz,fy+iSz*0.22);
     gF.addColorStop(0,'#d4a43a');gF.addColorStop(1,'#c9a84c');ctx.fillStyle=gF;ctx.fill();
-    ctx.font=`${iSz*0.55}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
-    ctx.fillText(['🛏','🚿','🚗','⤢'][i],fx+iSz/2,fy-iSz*0.75+iSz*0.68);
-    ctx.font=`500 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='#555';ctx.textAlign='left';
-    ctx.fillText('✓ '+f,fx,fy+panelH*0.1);
+    ctx.font=`${iSz*0.52}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText(['🛏','🚿','🚗','⤢'][i],fx+iSz/2,fy-iSz*0.78+iSz*0.65);
+    ctx.font=`500 ${W*0.024}px 'Montserrat'`;ctx.fillStyle='#555';ctx.textAlign='left';
+    ctx.fillText('✓ '+f,fx+iSz+W*0.016,fy-iSz*0.08);
   });
 
-  if(cta){ctx.font=`500 ${W*0.028}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';ctx.fillText('🏠 '+cta,px2,panelY+panelH*0.88);}
+  cy+=rowGap*2+lineH*0.4;
+  if(cta){ctx.font=`500 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';ctx.fillText('🏠 '+cta,px2,cy);}
 
   ctx.font=`italic 400 ${W*0.052}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
   ctx.fillText('Vanina Buzzacchi',W/2,H*0.925);
