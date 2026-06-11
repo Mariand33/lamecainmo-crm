@@ -1103,32 +1103,39 @@ function renderInmuebleCard(W,H){
   const m2       =document.getElementById('ctrlM2')?.value||'';
   const cta      =document.getElementById('ctrlCta')?.value||'¡Agendá tu visita!';
 
-  // Fondo verde moderno
-  const bg=ctx.createLinearGradient(0,0,W*0.4,H);
-  bg.addColorStop(0,'#0d3320');bg.addColorStop(0.45,'#0a2a1a');bg.addColorStop(1,'#051510');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  const o1=ctx.createRadialGradient(W*0.88,0,0,W*0.88,0,W*0.72);
-  o1.addColorStop(0,'rgba(20,90,65,0.38)');o1.addColorStop(1,'transparent');
-  ctx.fillStyle=o1;ctx.fillRect(0,0,W,H);
-  const o2=ctx.createRadialGradient(0,H,0,0,H,W*0.6);
-  o2.addColorStop(0,'rgba(201,168,76,0.07)');o2.addColorStop(1,'transparent');
-  ctx.fillStyle=o2;ctx.fillRect(0,0,W,H);
+  // ── FONDO: verde oscuro base + orbe central más claro (efecto montaña)
+  ctx.fillStyle='#0b2e1c';ctx.fillRect(0,0,W,H);
+  const bgC=ctx.createRadialGradient(W*0.5,H*0.46,0,W*0.5,H*0.46,W*0.78);
+  bgC.addColorStop(0,'rgba(22,90,56,0.85)');bgC.addColorStop(0.5,'rgba(13,58,36,0.55)');bgC.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bgC;ctx.fillRect(0,0,W,H);
+  // Forma geométrica sutil: triángulo/arco muy suave, casi invisible
+  ctx.save();ctx.globalAlpha=0.07;
+  ctx.beginPath();ctx.moveTo(W*0.5,H*-0.05);ctx.lineTo(W*1.1,H*0.55);ctx.lineTo(W*-0.1,H*0.55);ctx.closePath();
+  ctx.fillStyle='#3a9e60';ctx.fill();ctx.restore();
 
-  // Barra búsqueda
-  const barY=H*0.055,barH=H*0.072,barX=W*0.08,barW=W*0.84;
-  roundRect(ctx,barX,barY,barW,barH,barH/2);ctx.fillStyle='#fff';ctx.fill();
-  ctx.font=`${W*0.032}px sans-serif`;ctx.fillStyle='#666';ctx.textAlign='left';
-  ctx.fillText('🔍',barX+barH*0.2,barY+barH*0.68);
-  ctx.font=`500 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#333';
-  ctx.fillText(operacion,barX+barH*0.85,barY+barH*0.67);
-  const ipX=barX+barW-barH*1.05,ipR=barH*0.48;
-  ctx.beginPath();ctx.arc(ipX+ipR,barY+barH/2,ipR,0,Math.PI*2);
-  ctx.fillStyle='#c9a84c';ctx.fill();
-  ctx.font=`${W*0.030}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
-  ctx.fillText('🏠',ipX+ipR,barY+barH*0.72);
+  // ── BARRA BÚSQUEDA — outline blanca, ícono casa dorado outline
+  const barY=H*0.06,barH=H*0.065,barX=W*0.12,barW=W*0.76;
+  roundRect(ctx,barX,barY,barW,barH,barH/2);
+  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1.5;ctx.stroke();
+  // lupa
+  ctx.font=`${W*0.026}px sans-serif`;ctx.fillStyle='rgba(255,255,255,0.7)';ctx.textAlign='left';
+  ctx.fillText('⌕',barX+barH*0.32,barY+barH*0.72);
+  ctx.font=`400 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.85)';
+  ctx.fillText(operacion,barX+barH*0.72,barY+barH*0.67);
+  // ícono casa dorado — círculo con outline casa
+  const ipR=barH*0.52,ipCx=barX+barW-ipR-W*0.012,ipCy=barY+barH/2;
+  ctx.beginPath();ctx.arc(ipCx,ipCy,ipR,0,Math.PI*2);ctx.fillStyle='rgba(201,168,76,0.15)';ctx.fill();
+  ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.5;ctx.stroke();
+  // dibuja casa SVG-style en canvas
+  const hS=ipR*0.55,hX=ipCx,hY=ipCy+hS*0.12;
+  ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.4;ctx.lineJoin='round';ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(hX-hS,hY);ctx.lineTo(hX,hY-hS*1.1);ctx.lineTo(hX+hS,hY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(hX-hS*0.7,hY);ctx.lineTo(hX-hS*0.7,hY+hS*0.9);ctx.lineTo(hX+hS*0.7,hY+hS*0.9);ctx.lineTo(hX+hS*0.7,hY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(hX-hS*0.2,hY+hS*0.9);ctx.lineTo(hX-hS*0.2,hY+hS*0.32);ctx.lineTo(hX+hS*0.2,hY+hS*0.32);ctx.lineTo(hX+hS*0.2,hY+hS*0.9);ctx.stroke();
 
-  // Foto
-  const fotoX=W*0.06,fotoY=H*0.165,fotoW=W*0.88,fotoH=H*0.48,fotoR=W*0.045;
+  // ── FOTO
+  const fotoX=W*0.06,fotoY=H*0.165,fotoW=W*0.88,fotoH=H*0.50,fotoR=W*0.05;
   ctx.save();roundRect(ctx,fotoX,fotoY,fotoW,fotoH,fotoR);ctx.clip();
   if(imagenActual){
     const ar=imagenActual.width/imagenActual.height,arT=fotoW/fotoH;
@@ -1138,80 +1145,126 @@ function renderInmuebleCard(W,H){
     ctx.drawImage(imagenActual,sx,sy,sw,sh,fotoX,fotoY,fotoW,fotoH);
   }else{
     ctx.fillStyle='#1a3a25';ctx.fillRect(fotoX,fotoY,fotoW,fotoH);
-    ctx.font=`${W*0.08}px sans-serif`;ctx.fillStyle='rgba(255,255,255,0.1)';
-    ctx.textAlign='center';ctx.fillText('🏠',W/2,fotoY+fotoH/2+W*0.03);
+    ctx.font=`${W*0.1}px sans-serif`;ctx.fillStyle='rgba(255,255,255,0.08)';
+    ctx.textAlign='center';ctx.fillText('🏠',W/2,fotoY+fotoH/2+W*0.04);
   }
   ctx.restore();
 
-  // Badge zona
+  // Badge zona — fondo blanco, texto verde dorado
   if(zona){
-    ctx.font=`600 ${W*0.028}px 'Montserrat'`;
-    const bw=ctx.measureText(zona).width+W*0.06,bh=W*0.065;
-    const bx=fotoX+fotoW-bw-W*0.03,by=fotoY+W*0.03;
-    roundRect(ctx,bx,by,bw,bh,bh/2);ctx.fillStyle='rgba(255,255,255,0.92)';ctx.fill();
-    ctx.fillStyle='#2a6e45';ctx.textAlign='left';ctx.fillText(zona,bx+W*0.03,by+bh*0.68);
+    ctx.font=`500 ${W*0.026}px 'Montserrat'`;
+    const bw=ctx.measureText(zona).width+W*0.055,bh=W*0.058;
+    const bx=fotoX+fotoW-bw-W*0.025,by=fotoY+W*0.025;
+    roundRect(ctx,bx,by,bw,bh,bh/2);ctx.fillStyle='rgba(255,255,255,0.93)';ctx.fill();
+    ctx.fillStyle='#c9a84c';ctx.textAlign='left';ctx.fillText(zona,bx+W*0.027,by+bh*0.68);
   }
 
-  // Precio pill
+  // Precio pill — dorado, esquina inferior derecha foto
   if(precio){
-    ctx.font=`700 ${W*0.038}px 'Montserrat'`;
-    const pw=ctx.measureText(precio).width+W*0.07,ph=W*0.075;
-    const px=fotoX+fotoW-pw-W*0.03,py=fotoY+fotoH-ph*0.5;
-    roundRect(ctx,px,py,pw,ph,ph*0.35);
-    const gP=ctx.createLinearGradient(px,py,px+pw,py);
-    gP.addColorStop(0,'#b8922a');gP.addColorStop(1,'#e3c067');
+    ctx.font=`700 ${W*0.040}px 'Montserrat'`;
+    const pw=ctx.measureText(precio).width+W*0.07,ph=W*0.078;
+    const ppx=fotoX+fotoW-pw,ppy=fotoY+fotoH-ph*0.45;
+    roundRect(ctx,ppx,ppy,pw,ph,ph*0.28);
+    const gP=ctx.createLinearGradient(ppx,ppy,ppx+pw,ppy);
+    gP.addColorStop(0,'#c9a84c');gP.addColorStop(1,'#e3c067');
     ctx.fillStyle=gP;ctx.fill();
-    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(precio,px+pw/2,py+ph*0.68);
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(precio,ppx+pw/2,ppy+ph*0.68);
   }
 
-  // Panel blanco
-  const panelY=fotoY+fotoH-W*0.02,panelH=H-panelY-H*0.02,panelR=W*0.045;
+  // ── PANEL BLANCO — con sombra suave
+  const panelY=fotoY+fotoH-W*0.025,panelH=H-panelY-H*0.115,panelR=W*0.05;
+  ctx.save();ctx.shadowColor='rgba(0,0,0,0.18)';ctx.shadowBlur=W*0.04;ctx.shadowOffsetY=W*0.01;
   roundRect(ctx,fotoX,panelY,fotoW,panelH,panelR);ctx.fillStyle='#fff';ctx.fill();
-  const px2=fotoX+W*0.05;let cy=panelY+panelH*0.22;
+  ctx.restore();
 
-  // Título en panel
-  ctx.font=`italic 600 ${W*0.052}px 'Cormorant Garamond'`;
+  const px2=fotoX+W*0.05;
+  const lineH=W*0.068;
+  let cy=panelY+W*0.065;
+
+  // Título dorado itálico
+  ctx.font=`italic 600 ${W*0.056}px 'Cormorant Garamond'`;
   ctx.fillStyle='#c9a84c';ctx.textAlign='left';
   const maxTW=fotoW-W*0.1,words=titulo.split(' ');
   let l1='',l2='',built='';
   for(const w of words){const t=built?built+' '+w:w;if(ctx.measureText(t).width>maxTW&&built){l1=built;built=w;}else built=t;}
   l2=built;if(!l1){l1=l2;l2='';}
-  ctx.fillText(l1,px2,cy);if(l2){cy+=panelH*0.21;ctx.fillText(l2,px2,cy);}
-  cy+=panelH*0.22;
+  ctx.fillText(l1,px2,cy);if(l2){cy+=lineH;ctx.fillText(l2,px2,cy);}
+  cy+=lineH*1.2;
 
-  // Iconos
-  const iSz=W*0.068;let ix=px2;
-  const icons=[];
-  if(dorm)   icons.push({emoji:'🛏',val:dorm});
-  if(banos)  icons.push({emoji:'🚿',val:banos});
-  if(cochera)icons.push({emoji:'🚗',val:cochera});
-  if(m2)     icons.push({emoji:'⤢', val:m2+'m²',dark:true});
-  icons.forEach(ic=>{
-    roundRect(ctx,ix,cy-iSz*0.75,iSz,iSz,iSz*0.22);
-    if(ic.dark){ctx.fillStyle='#1a4a2e';ctx.fill();}
-    else{
-      const gI=ctx.createLinearGradient(ix,cy-iSz*0.75,ix+iSz,cy+iSz*0.25);
-      gI.addColorStop(0,'#d4a43a');gI.addColorStop(1,'#c9a84c');
-      ctx.fillStyle=gI;ctx.fill();
-    }
-    ctx.font=`${iSz*0.55}px sans-serif`;ctx.fillStyle='#fff';ctx.textAlign='center';
-    ctx.fillText(ic.emoji,ix+iSz/2,cy-iSz*0.75+iSz*0.68);
-    ctx.font=`600 ${W*0.032}px 'Montserrat'`;ctx.fillStyle='#333';
-    ctx.fillText(ic.val,ix+iSz+W*0.025,cy-iSz*0.1);
-    ix+=iSz+W*0.085;
-  });
-
-  // CTA
-  if(cta){
-    ctx.font=`500 ${W*0.030}px 'Montserrat'`;ctx.fillStyle='#1a6e3a';ctx.textAlign='left';
-    ctx.fillText('🏠 '+cta,px2,panelY+panelH*0.88);
+  // ── ICONOS dibujados en canvas (sin emojis)
+  function drawIconBed(cx,cy,sz,dark){
+    // cama
+    roundRect(ctx,cx,cy,sz,sz,sz*0.2);
+    if(dark){ctx.fillStyle='#1a4a2e';}else{const g=ctx.createLinearGradient(cx,cy,cx+sz,cy+sz);g.addColorStop(0,'#d4a43a');g.addColorStop(1,'#c9a84c');ctx.fillStyle=g;}ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=sz*0.1;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.rect(cx+sz*0.15,cy+sz*0.42,sz*0.7,sz*0.32);ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=sz*0.08;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.15,cy+sz*0.42);ctx.lineTo(cx+sz*0.15,cy+sz*0.28);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.85,cy+sz*0.42);ctx.lineTo(cx+sz*0.85,cy+sz*0.28);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.32,cy+sz*0.3);ctx.arc(cx+sz*0.38,cy+sz*0.3,sz*0.09,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.58,cy+sz*0.3);ctx.arc(cx+sz*0.62,cy+sz*0.3,sz*0.09,0,Math.PI*2);ctx.fill();
+  }
+  function drawIconBath(cx,cy,sz){
+    roundRect(ctx,cx,cy,sz,sz,sz*0.2);
+    const g=ctx.createLinearGradient(cx,cy,cx+sz,cy+sz);g.addColorStop(0,'#d4a43a');g.addColorStop(1,'#c9a84c');ctx.fillStyle=g;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=sz*0.09;ctx.lineCap='round';
+    // bañera
+    ctx.beginPath();ctx.moveTo(cx+sz*0.18,cy+sz*0.38);ctx.lineTo(cx+sz*0.18,cy+sz*0.65);ctx.arc(cx+sz*0.5,cy+sz*0.65,sz*0.32,Math.PI,0);ctx.lineTo(cx+sz*0.82,cy+sz*0.38);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.18,cy+sz*0.52);ctx.lineTo(cx+sz*0.82,cy+sz*0.52);ctx.stroke();
+  }
+  function drawIconCar(cx,cy,sz){
+    roundRect(ctx,cx,cy,sz,sz,sz*0.2);
+    const g=ctx.createLinearGradient(cx,cy,cx+sz,cy+sz);g.addColorStop(0,'#d4a43a');g.addColorStop(1,'#c9a84c');ctx.fillStyle=g;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=sz*0.09;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(cx+sz*0.15,cy+sz*0.58);ctx.lineTo(cx+sz*0.28,cy+sz*0.38);ctx.lineTo(cx+sz*0.72,cy+sz*0.38);ctx.lineTo(cx+sz*0.85,cy+sz*0.58);ctx.lineTo(cx+sz*0.85,cy+sz*0.68);ctx.lineTo(cx+sz*0.15,cy+sz*0.68);ctx.closePath();ctx.stroke();
+    ctx.beginPath();ctx.arc(cx+sz*0.3,cy+sz*0.68,sz*0.1,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx+sz*0.7,cy+sz*0.68,sz*0.1,0,Math.PI*2);ctx.stroke();
+  }
+  function drawIconM2(cx,cy,sz){
+    roundRect(ctx,cx,cy,sz,sz,sz*0.2);ctx.fillStyle='#1a4a2e';ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=sz*0.09;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(cx+sz*0.22,cy+sz*0.45);ctx.lineTo(cx+sz*0.22,cy+sz*0.22);ctx.lineTo(cx+sz*0.45,cy+sz*0.22);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.55,cy+sz*0.78);ctx.lineTo(cx+sz*0.78,cy+sz*0.78);ctx.lineTo(cx+sz*0.78,cy+sz*0.55);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+sz*0.22,cy+sz*0.22);ctx.lineTo(cx+sz*0.78,cy+sz*0.78);ctx.stroke();
   }
 
-  // Logo
-  ctx.font=`italic 400 ${W*0.055}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
-  ctx.fillText('Vanina Buzzacchi',W/2,H*0.945);
-  ctx.font=`500 ${W*0.020}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.6)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,H*0.968);
+  const iSz=W*0.075;let ix=px2;
+  const icons=[];
+  if(dorm)    icons.push({type:'bed',val:dorm});
+  if(banos)   icons.push({type:'bath',val:banos});
+  if(cochera) icons.push({type:'car',val:cochera});
+  if(m2)      icons.push({type:'m2',val:m2+'m²'});
+  icons.forEach(ic=>{
+    const iy=cy-iSz*0.75;
+    if(ic.type==='bed')  drawIconBed(ix,iy,iSz,false);
+    else if(ic.type==='bath') drawIconBath(ix,iy,iSz);
+    else if(ic.type==='car')  drawIconCar(ix,iy,iSz);
+    else if(ic.type==='m2')   drawIconM2(ix,iy,iSz);
+    ctx.font=`600 ${W*0.034}px 'Montserrat'`;ctx.fillStyle='#333';ctx.textAlign='left';
+    ctx.fillText(ic.val,ix+iSz+W*0.022,cy-iSz*0.12);
+    ix+=iSz+W*0.095;
+    if(ix>fotoX+fotoW-iSz*2){ix=px2;cy+=iSz*1.5;}
+  });
+
+  cy+=iSz*0.9;
+
+  // CTA — ícono casita outline dorado + texto verde
+  if(cta){
+    const ctaFS=W*0.030;
+    ctx.font=`500 ${ctaFS}px 'Montserrat'`;ctx.fillStyle='#2a7a4a';ctx.textAlign='left';
+    // casita outline
+    const hh=ctaFS*0.9,hx=px2+ctaFS*0.0,hy=cy-ctaFS*0.78;
+    ctx.strokeStyle='#2a7a4a';ctx.lineWidth=1.5;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(hx,hy+hh*0.42);ctx.lineTo(hx+hh*0.5,hy);ctx.lineTo(hx+hh,hy+hh*0.42);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(hx+hh*0.15,hy+hh*0.42);ctx.lineTo(hx+hh*0.15,hy+hh);ctx.lineTo(hx+hh*0.85,hy+hh);ctx.lineTo(hx+hh*0.85,hy+hh*0.42);ctx.stroke();
+    ctx.fillText(cta,px2+ctaFS*1.4,cy);
+  }
+
+  // ── LOGO fuera del panel
+  const logoY=panelY+panelH+H*0.042;
+  ctx.font=`italic 400 ${W*0.058}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  ctx.fillText('Vanina Buzzacchi',W/2,logoY);
+  ctx.font=`400 ${W*0.020}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.55)';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,logoY+W*0.032);
 }
 
 // ── renderCaptador ────────────────────────────────────────────
@@ -1329,8 +1382,7 @@ function renderCaptador(W,H){
     ctx.fillStyle='#25D366';
     ctx.fillText('📞 '+telefono,W/2,H*(sl('slTelY')/100));
   }
-  ctx.font=`${W*0.05}px sans-serif`;ctx.fillStyle='rgba(201,168,76,0.4)';ctx.textAlign='right';
-  ctx.fillText('✦',W*0.95,H*0.985);ctx.textAlign='left';
+  ctx.textAlign='left';
 }
 
 // ══════════════════════════════════════
