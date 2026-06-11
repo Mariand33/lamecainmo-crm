@@ -1103,39 +1103,57 @@ function renderInmuebleCard(W,H){
   const m2       =document.getElementById('ctrlM2')?.value||'';
   const cta      =document.getElementById('ctrlCta')?.value||'¡Agendá tu visita!';
 
-  // ── FONDO: verde oscuro base + orbe central más claro (efecto montaña)
-  ctx.fillStyle='#0b2e1c';ctx.fillRect(0,0,W,H);
-  const bgC=ctx.createRadialGradient(W*0.5,H*0.46,0,W*0.5,H*0.46,W*0.78);
-  bgC.addColorStop(0,'rgba(22,90,56,0.85)');bgC.addColorStop(0.5,'rgba(13,58,36,0.55)');bgC.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=bgC;ctx.fillRect(0,0,W,H);
-  // Forma geométrica sutil: triángulo/arco muy suave, casi invisible
-  ctx.save();ctx.globalAlpha=0.07;
-  ctx.beginPath();ctx.moveTo(W*0.5,H*-0.05);ctx.lineTo(W*1.1,H*0.55);ctx.lineTo(W*-0.1,H*0.55);ctx.closePath();
-  ctx.fillStyle='#3a9e60';ctx.fill();ctx.restore();
+  // ── FONDO exacto al original
+  // Base: verde muy oscuro casi negro en bordes
+  ctx.fillStyle='#072016';ctx.fillRect(0,0,W,H);
+
+  // Óvalo central más claro — escala X más ancha que Y para forma elíptica
+  ctx.save();
+  ctx.transform(1,0,0,1.6,0,-H*0.3); // escala vertical para hacer elipse
+  const bgOvalo=ctx.createRadialGradient(W*0.5,H*0.5,0,W*0.5,H*0.5,W*0.58);
+  bgOvalo.addColorStop(0  ,'#1d6644');  // verde medio centro
+  bgOvalo.addColorStop(0.4,'#145233');  // transición
+  bgOvalo.addColorStop(0.75,'#0a3020'); // oscurece
+  bgOvalo.addColorStop(1  ,'rgba(4,18,10,0)');
+  ctx.fillStyle=bgOvalo;ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  // Viñeta oscura fuerte en las 4 esquinas
+  const vignette=ctx.createRadialGradient(W*0.5,H*0.5,W*0.28,W*0.5,H*0.5,W*0.88);
+  vignette.addColorStop(0,'rgba(0,0,0,0)');
+  vignette.addColorStop(0.6,'rgba(0,0,0,0.12)');
+  vignette.addColorStop(1,'rgba(0,0,0,0.62)');
+  ctx.fillStyle=vignette;ctx.fillRect(0,0,W,H);
 
   // ── BARRA BÚSQUEDA — outline blanca, ícono casa dorado outline
-  const barY=H*0.06,barH=H*0.065,barX=W*0.12,barW=W*0.76;
+  const barY=H*0.055,barH=H*0.058,barX=W*0.15,barW=W*0.70;
   roundRect(ctx,barX,barY,barW,barH,barH/2);
-  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1.5;ctx.stroke();
-  // lupa
-  ctx.font=`${W*0.026}px sans-serif`;ctx.fillStyle='rgba(255,255,255,0.7)';ctx.textAlign='left';
-  ctx.fillText('⌕',barX+barH*0.32,barY+barH*0.72);
-  ctx.font=`400 ${W*0.026}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.85)';
-  ctx.fillText(operacion,barX+barH*0.72,barY+barH*0.67);
-  // ícono casa dorado — círculo con outline casa
-  const ipR=barH*0.52,ipCx=barX+barW-ipR-W*0.012,ipCy=barY+barH/2;
-  ctx.beginPath();ctx.arc(ipCx,ipCy,ipR,0,Math.PI*2);ctx.fillStyle='rgba(201,168,76,0.15)';ctx.fill();
-  ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.5;ctx.stroke();
-  // dibuja casa SVG-style en canvas
-  const hS=ipR*0.55,hX=ipCx,hY=ipCy+hS*0.12;
-  ctx.strokeStyle='#c9a84c';ctx.lineWidth=1.4;ctx.lineJoin='round';ctx.lineCap='round';
-  ctx.beginPath();ctx.moveTo(hX-hS,hY);ctx.lineTo(hX,hY-hS*1.1);ctx.lineTo(hX+hS,hY);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(hX-hS*0.7,hY);ctx.lineTo(hX-hS*0.7,hY+hS*0.9);ctx.lineTo(hX+hS*0.7,hY+hS*0.9);ctx.lineTo(hX+hS*0.7,hY);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(hX-hS*0.2,hY+hS*0.9);ctx.lineTo(hX-hS*0.2,hY+hS*0.32);ctx.lineTo(hX+hS*0.2,hY+hS*0.32);ctx.lineTo(hX+hS*0.2,hY+hS*0.9);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.55)';ctx.lineWidth=1.2;ctx.stroke();
+  // lupa pequeña
+  ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=1.5;ctx.lineCap='round';
+  const lupaX=barX+barH*0.38,lupaY=barY+barH*0.5,lupaR=barH*0.16;
+  ctx.beginPath();ctx.arc(lupaX,lupaY,lupaR,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lupaX+lupaR*0.7,lupaY+lupaR*0.7);ctx.lineTo(lupaX+lupaR*1.4,lupaY+lupaR*1.4);ctx.stroke();
+  ctx.font=`400 ${W*0.024}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.8)';ctx.textAlign='left';
+  ctx.fillText(operacion,barX+barH*0.72,barY+barH*0.64);
+  // ícono casa — píldora dorada sólida al lado derecho
+  const pilW=barH*1.7,pilH=barH*0.82,pilX=barX+barW-pilW-barH*0.14,pilY=barY+barH*0.09;
+  roundRect(ctx,pilX,pilY,pilW,pilH,pilH/2);
+  ctx.fillStyle='#c9a84c';ctx.fill();
+  // casa outline blanca dentro de la píldora
+  const hCx=pilX+pilW*0.42,hCy=pilY+pilH*0.5,hS2=pilH*0.32;
+  ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=1.3;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();ctx.moveTo(hCx-hS2,hCy+hS2*0.2);ctx.lineTo(hCx,hCy-hS2*0.9);ctx.lineTo(hCx+hS2,hCy+hS2*0.2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(hCx-hS2*0.65,hCy+hS2*0.2);ctx.lineTo(hCx-hS2*0.65,hCy+hS2*1.0);ctx.lineTo(hCx+hS2*0.65,hCy+hS2*1.0);ctx.lineTo(hCx+hS2*0.65,hCy+hS2*0.2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(hCx-hS2*0.22,hCy+hS2*1.0);ctx.lineTo(hCx-hS2*0.22,hCy+hS2*0.32);ctx.lineTo(hCx+hS2*0.22,hCy+hS2*0.32);ctx.lineTo(hCx+hS2*0.22,hCy+hS2*1.0);ctx.stroke();
+  // círculo con signo de ubicación (pin)
+  const pinR=pilH*0.28,pinCx=pilX+pilW*0.78,pinCy=pilY+pilH*0.42;
+  ctx.beginPath();ctx.arc(pinCx,pinCy,pinR,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pinCx,pinCy+pinR);ctx.lineTo(pinCx,pinCy+pinR*1.8);ctx.stroke();
 
-  // ── FOTO
-  const fotoX=W*0.06,fotoY=H*0.165,fotoW=W*0.88,fotoH=H*0.50,fotoR=W*0.05;
+  // ── FOTO — más grande, empieza más arriba
+  const fotoX=W*0.075,fotoY=H*0.148,fotoW=W*0.85,fotoH=H*0.505,fotoR=W*0.048;
   ctx.save();roundRect(ctx,fotoX,fotoY,fotoW,fotoH,fotoR);ctx.clip();
   if(imagenActual){
     const ar=imagenActual.width/imagenActual.height,arT=fotoW/fotoH;
@@ -1171,8 +1189,8 @@ function renderInmuebleCard(W,H){
     ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(precio,ppx+pw/2,ppy+ph*0.68);
   }
 
-  // ── PANEL BLANCO — con sombra suave
-  const panelY=fotoY+fotoH-W*0.025,panelH=H-panelY-H*0.115,panelR=W*0.05;
+  // ── PANEL BLANCO — bordes superiores muy redondeados, cubre hasta logo
+  const panelY=fotoY+fotoH-W*0.038,panelH=H-panelY-H*0.118,panelR=W*0.055;
   ctx.save();ctx.shadowColor='rgba(0,0,0,0.18)';ctx.shadowBlur=W*0.04;ctx.shadowOffsetY=W*0.01;
   roundRect(ctx,fotoX,panelY,fotoW,panelH,panelR);ctx.fillStyle='#fff';ctx.fill();
   ctx.restore();
@@ -1259,12 +1277,13 @@ function renderInmuebleCard(W,H){
     ctx.fillText(cta,px2+ctaFS*1.4,cy);
   }
 
-  // ── LOGO fuera del panel
-  const logoY=panelY+panelH+H*0.042;
-  ctx.font=`italic 400 ${W*0.058}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
+  // ── LOGO — fuera del panel, centrado, tipografía exacta al original
+  const logoY=panelY+panelH+H*0.038;
+  ctx.font=`400 ${W*0.062}px 'Cormorant Garamond'`;ctx.fillStyle='#fff';ctx.textAlign='center';
   ctx.fillText('Vanina Buzzacchi',W/2,logoY);
-  ctx.font=`400 ${W*0.020}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.55)';
-  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,logoY+W*0.032);
+  ctx.font=`500 ${W*0.018}px 'Montserrat'`;ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.letterSpacing='0.12em';
+  ctx.fillText('NEGOCIOS INMOBILIARIOS',W/2,logoY+W*0.030);
 }
 
 // ── renderCaptador ────────────────────────────────────────────
